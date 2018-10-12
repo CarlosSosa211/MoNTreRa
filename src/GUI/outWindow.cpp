@@ -642,12 +642,12 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_pO2ValMax = new QLabel(QString::number(m_maxpO2) + " mmHg");
         m_pO2ValMin = new QLabel("0 mmHg");
 
-        int nrowOxy(50), ncolOxy(480);
+        int nrowOxy(50), ncolOxy(720);
         QImage oxyIm = QImage(ncolOxy, nrowOxy, QImage::Format_RGB32);
 
         for(int i(0); i < nrowOxy; i++){
             for(int j(0); j < ncolOxy; j++){
-                oxyIm.setPixelColor(j, i, QColor::fromHsv((j/2) % 240, 200, 255));
+                oxyIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200, 255));
             }
         }
         m_pO2Bar->setPixmap(QPixmap::fromImage(oxyIm));
@@ -700,12 +700,12 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_vegfValMax = new QLabel(QString::number(m_maxvegf) + "mol/μm³");
         m_vegfValMin = new QLabel("0 mol/μm³");
 
-        int nrowVegf(50), ncolVegf(480);
+        int nrowVegf(50), ncolVegf(720);
         QImage vegfIm = QImage(ncolVegf, nrowVegf, QImage::Format_RGB32);
 
         for(int i(0); i < nrowVegf; i++){
             for(int j(0); j < ncolVegf; j++){
-                vegfIm.setPixelColor(j, i, QColor::fromHsv((j/2) % 240, 200, 255));
+                vegfIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200, 255));
             }
         }
         m_vegfBar->setPixmap(QPixmap::fromImage(vegfIm));
@@ -807,10 +807,6 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     drawMap(m_selMap->currentIndex(), m_slider->value());
 
     showMaximized();
-    /*resize(1300, 400);
-    setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
-                                    qApp->desktop()->availableGeometry()));*/
-    show();
 }
 
 

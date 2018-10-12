@@ -230,20 +230,20 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         m_pO2ValMax = new QLabel(QString::number(m_maxpO2) + " mmHg");
         m_pO2ValMin = new QLabel("0 mmHg");
 
-        int nrowPO2(480), ncolPO2(50);
+        int nrowPO2(50), ncolPO2(720);
         QImage pO2Im = QImage(ncolPO2, nrowPO2, QImage::Format_RGB32);
 
         for(int i(0); i < nrowPO2; i++){
             for(int j(0); j < ncolPO2; j++){
-                pO2Im.setPixelColor(j, i, QColor::fromHsv((i/2) % 240, 200, 255));
+                pO2Im.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200, 255));
             }
         }
         m_pO2Bar->setPixmap(QPixmap::fromImage(pO2Im));
 
         QGridLayout *legOxyLayout = new QGridLayout();
-        legOxyLayout->addWidget(m_pO2Bar, 1, 0, 2, 1);
+        legOxyLayout->addWidget(m_pO2Bar, 0, 1, 1, 2);
         legOxyLayout->addWidget(m_pO2ValMax, 0, 0);
-        legOxyLayout->addWidget(m_pO2ValMin, 3, 0);
+        legOxyLayout->addWidget(m_pO2ValMin, 0, 3);
 
         m_legendPO2->setMinimumWidth(100);
         m_legendPO2->setLayout(legOxyLayout);
@@ -289,20 +289,20 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         m_vegfValMax = new QLabel(QString::number(m_maxvegf) + "mol/μm³");
         m_vegfValMin = new QLabel("0 mol/μm³");
 
-        int nrowVegf(480), ncolVegf(50);
+        int nrowVegf(50), ncolVegf(720);
         QImage vegfIm = QImage(ncolVegf, nrowVegf, QImage::Format_RGB32);
 
         for(int i(0); i < nrowVegf; i++){
             for(int j(0); j < ncolVegf; j++){
-                vegfIm.setPixelColor(j, i, QColor::fromHsv((i/2) % 240, 200, 255));
+                vegfIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200, 255));
             }
         }
         m_vegfBar->setPixmap(QPixmap::fromImage(vegfIm));
 
         QGridLayout *legVegfLayout = new QGridLayout();
-        legVegfLayout->addWidget(m_vegfBar, 1, 0, 2, 1);
+        legVegfLayout->addWidget(m_vegfBar, 0, 1, 1, 2);
         legVegfLayout->addWidget(m_vegfValMax, 0, 0);
-        legVegfLayout->addWidget(m_vegfValMin, 3, 0);
+        legVegfLayout->addWidget(m_vegfValMin, 0, 3);
 
         m_legendVegf->setMinimumWidth(100);
         m_legendVegf->setLayout(legVegfLayout);
@@ -346,12 +346,12 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
     timeLayout->addWidget(m_timeS);
 
     QGridLayout *mapLayout = new QGridLayout;
-    mapLayout->addWidget(m_map, 0, 0);
-    mapLayout->addWidget(m_legendPO2, 0, 1);
-    mapLayout->addWidget(m_legendVegf, 0, 1);
-    mapLayout->addWidget(m_slider, 1, 0);
-    mapLayout->addLayout(timeLayout, 2, 0);
-    mapLayout->addWidget(m_play, 1, 1, 2, 1, Qt::AlignCenter);
+    mapLayout->addWidget(m_map, 0, 0, 1, 2);
+    mapLayout->addWidget(m_legendPO2, 1, 0, 1, 2);
+    mapLayout->addWidget(m_legendVegf, 1, 0, 1, 2);
+    mapLayout->addWidget(m_slider, 2, 0);
+    mapLayout->addLayout(timeLayout, 3, 0, 1, 2);
+    mapLayout->addWidget(m_play, 2, 1, 1, 1, Qt::AlignCenter);
     m_mapGroup->setLayout(mapLayout);
 
     QHBoxLayout *hLayout = new QHBoxLayout;
@@ -394,10 +394,6 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
 
     drawMap(m_selMap->currentIndex(), m_slider->value());
     showMaximized();
-    /*resize(1300, 1000);
-    setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
-                                    qApp->desktop()->availableGeometry()));*/
-    show();
 }
 
 
@@ -479,7 +475,7 @@ void OutWindowOxy::drawMap(int numMap, int mapIter){
         }
 
         m_pixPO2->convertFromImage(*m_imPO2);
-        m_map->setPixmap(m_pixPO2->scaledToWidth(700));
+        m_map->setPixmap(m_pixPO2->scaledToWidth(1000));
         m_legendPO2->show();
         m_legendVegf->hide();
         break;
@@ -502,7 +498,7 @@ void OutWindowOxy::drawMap(int numMap, int mapIter){
         }
 
         m_pixVegf->convertFromImage(*m_imVegf);
-        m_map->setPixmap(m_pixVegf->scaledToWidth(700));
+        m_map->setPixmap(m_pixVegf->scaledToWidth(1000));
         m_legendPO2->hide();
         m_legendVegf->show();
         break;
