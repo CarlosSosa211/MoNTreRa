@@ -47,7 +47,7 @@ shape = ['o', 's', 'v', 'd'];
 nfig = 1;
 quit = 0;
 
-path = uigetdir('/home/pc-gorgona/Carlos/Results');
+path = uigetdir('../../Carlos/Results');
 while(~quit)
     output = input(['Select an output [timeTo95 (1), timeTo99 (2), tumDens (3), intTumDens (4) '...
         'or all of them (-1)] or quit (0): ']);
