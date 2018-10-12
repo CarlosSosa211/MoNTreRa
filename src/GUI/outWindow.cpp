@@ -453,11 +453,11 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_imState->setColor(6, m_brownMit.rgb());
         m_imState->setColor(7, m_greenApop.rgb());
 
-        m_fib     = new QLabel("Fibroblasts", m_legendSt);
+        m_fib     = new QLabel("Healthy cells", m_legendSt);
         m_tum     = new QLabel("Tumor cells", m_legendSt);
         m_tumDam  = new QLabel("Damaged tumor cells", m_legendSt);
-        m_normVes = new QLabel("Normal vessels", m_legendSt);
-        m_tumVes  = new QLabel("Tumor vessels", m_legendSt);
+        m_normVes = new QLabel("Pre-existing vessels", m_legendSt);
+        m_tumVes  = new QLabel("Neo-created vessels", m_legendSt);
         m_hypNec  = new QLabel("Hypoxic necrotic cells", m_legendSt);
         m_mitCat  = new QLabel("Mitotic catastrophe cells", m_legendSt);
         m_apop    = new QLabel("Apoptotic cells", m_legendSt);
@@ -642,20 +642,20 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_pO2ValMax = new QLabel(QString::number(m_maxpO2) + " mmHg");
         m_pO2ValMin = new QLabel("0 mmHg");
 
-        int nrowOxy(480), ncolOxy(50);
+        int nrowOxy(50), ncolOxy(480);
         QImage oxyIm = QImage(ncolOxy, nrowOxy, QImage::Format_RGB32);
 
         for(int i(0); i < nrowOxy; i++){
             for(int j(0); j < ncolOxy; j++){
-                oxyIm.setPixelColor(j, i, QColor::fromHsv((i/2) % 240, 200, 255));
+                oxyIm.setPixelColor(j, i, QColor::fromHsv((j/2) % 240, 200, 255));
             }
         }
         m_pO2Bar->setPixmap(QPixmap::fromImage(oxyIm));
 
         QGridLayout *legOxyLayout = new QGridLayout();
-        legOxyLayout->addWidget(m_pO2Bar, 1, 0, 2, 1);
+        legOxyLayout->addWidget(m_pO2Bar, 0, 1, 1, 2);
         legOxyLayout->addWidget(m_pO2ValMax, 0, 0);
-        legOxyLayout->addWidget(m_pO2ValMin, 3, 0);
+        legOxyLayout->addWidget(m_pO2ValMin, 0, 3);
 
         m_legendPO2->setMinimumWidth(100);
         m_legendPO2->setLayout(legOxyLayout);
@@ -700,20 +700,20 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_vegfValMax = new QLabel(QString::number(m_maxvegf) + "mol/μm³");
         m_vegfValMin = new QLabel("0 mol/μm³");
 
-        int nrowVegf(480), ncolVegf(50);
+        int nrowVegf(50), ncolVegf(480);
         QImage vegfIm = QImage(ncolVegf, nrowVegf, QImage::Format_RGB32);
 
         for(int i(0); i < nrowVegf; i++){
             for(int j(0); j < ncolVegf; j++){
-                vegfIm.setPixelColor(j, i, QColor::fromHsv((i/2) % 240, 200, 255));
+                vegfIm.setPixelColor(j, i, QColor::fromHsv((j/2) % 240, 200, 255));
             }
         }
         m_vegfBar->setPixmap(QPixmap::fromImage(vegfIm));
 
         QGridLayout *legVegfLayout = new QGridLayout();
-        legVegfLayout->addWidget(m_vegfBar, 1, 0, 2, 1);
+        legVegfLayout->addWidget(m_vegfBar, 0, 1, 1, 2);
         legVegfLayout->addWidget(m_vegfValMax, 0, 0);
-        legVegfLayout->addWidget(m_vegfValMin, 3, 0);
+        legVegfLayout->addWidget(m_vegfValMin, 0, 3);
 
         m_legendVegf->setMinimumWidth(100);
         m_legendVegf->setLayout(legVegfLayout);
@@ -756,14 +756,14 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     timeLayout->addWidget(m_timeS);
 
     QGridLayout *mapLayout = new QGridLayout;
-    mapLayout->addWidget(m_map, 0, 0);
-    mapLayout->addWidget(m_legendSt, 0, 1);
-    mapLayout->addWidget(m_legendCyc, 0, 1);
-    mapLayout->addWidget(m_legendPO2, 0, 1);
-    mapLayout->addWidget(m_legendVegf, 0, 1);
-    mapLayout->addWidget(m_slider, 1, 0);
-    mapLayout->addLayout(timeLayout, 2, 0);
-    mapLayout->addWidget(m_play, 1, 1, 2, 1, Qt::AlignCenter);
+    mapLayout->addWidget(m_map, 0, 0, 1, 2);
+    mapLayout->addWidget(m_legendSt, 1, 0, 1, 2);
+    mapLayout->addWidget(m_legendCyc, 1, 0, 1, 2);
+    mapLayout->addWidget(m_legendPO2, 1, 0, 1, 2);
+    mapLayout->addWidget(m_legendVegf, 1, 0, 1, 2);
+    mapLayout->addWidget(m_slider, 2, 0);
+    mapLayout->addLayout(timeLayout, 3, 0, 1, 2);
+    mapLayout->addWidget(m_play, 2, 1, 1, 1, Qt::AlignCenter);
     m_mapGroup->setLayout(mapLayout);
 
     QHBoxLayout *hLayout = new QHBoxLayout;
@@ -929,7 +929,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
             }
         }
         m_pixState->convertFromImage(*m_imState);
-        m_map->setPixmap(m_pixState->scaledToWidth(700));
+        m_map->setPixmap(m_pixState->scaledToWidth(1000));
         m_legendSt->show();
         m_legendCyc->hide();
         m_legendPO2->hide();
@@ -953,7 +953,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
         }
 
         m_pixTimer->convertFromImage(*m_imTimer);
-        m_map->setPixmap(m_pixTimer->scaledToWidth(700));
+        m_map->setPixmap(m_pixTimer->scaledToWidth(1000));
         m_legendSt->hide();
         m_legendCyc->show();
         m_legendPO2->hide();
@@ -978,7 +978,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
         }
 
         m_pixPO2->convertFromImage(*m_imPO2);
-        m_map->setPixmap(m_pixPO2->scaledToWidth(700));
+        m_map->setPixmap(m_pixPO2->scaledToWidth(1000));
         m_legendCyc->hide();
         m_legendSt->hide();
         m_legendPO2->show();
@@ -1003,7 +1003,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
         }
 
         m_pixVegf->convertFromImage(*m_imVegf);
-        m_map->setPixmap(m_pixVegf->scaledToWidth(700));
+        m_map->setPixmap(m_pixVegf->scaledToWidth(1000));
         m_legendCyc->hide();
         m_legendSt->hide();
         m_legendPO2->hide();
