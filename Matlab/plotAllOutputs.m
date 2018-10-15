@@ -18,13 +18,13 @@ cOut = sortrows(cOut, 1);
 figure(nfig);
 nfig = nfig + 1;
 hold on
-bar(cell2mat(cOut(:, 1:4)));
+bar(cell2mat(cOut(:, 1:2)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
 set(ax,'XTickLabel', cOut(:, 5));
 ax.YGrid = 'on';
-title(['Tissue ', num2str(nTissue), ' - Morris Euclidean distance from origin'])
+title(['Tissue ', num2str(nTissue), ' - All outputs'])
 legend('Time to kill 95%', 'Time to kill 99%', 'Final tumor density',...
     'Integral of tumor density', 'location', 'northwest')
 xtickangle(45)
