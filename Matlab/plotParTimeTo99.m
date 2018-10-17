@@ -27,6 +27,7 @@ end
 
 figure(nfig);
 nfig = nfig + 1;
+
 hold on
 colormap(jet)
 if(tissueSet == 1)
@@ -35,25 +36,27 @@ if(tissueSet == 1)
     nonDensAndVasc = ismember(tTissues, nonDensTissues) & ismember(tTissues, vascTissues);
     nonDensAndNonVasc = ismember(tTissues, nonDensTissues) & ismember(tTissues, nonVascTissues);
     
-    scatter(timeTo99(par, 1, densAndVasc), timeTo99(par, 2, densAndVasc), 20, 'r', 'filled', 'v')
-    scatter(timeTo99(par, 1, densAndNonVasc), timeTo99(par, 2, densAndNonVasc), 20, 'r', 'filled', 'o')
-    scatter(timeTo99(par, 1, nonDensAndVasc), timeTo99(par, 2, nonDensAndVasc), 20, 'g', 'filled', 'v')
-    scatter(timeTo99(par, 1, nonDensAndNonVasc), timeTo99(par, 2, nonDensAndNonVasc), 20, 'g', 'filled', 'o')
+    scatter(timeTo99(par, 1, densAndVasc), timeTo99(par, 2, densAndVasc), 200, 'r', 'filled', 'v')
+    scatter(timeTo99(par, 1, densAndNonVasc), timeTo99(par, 2, densAndNonVasc), 200, 'r', 'filled', 'o')
+    scatter(timeTo99(par, 1, nonDensAndVasc), timeTo99(par, 2, nonDensAndVasc), 200, 'g', 'filled', 'v')
+    scatter(timeTo99(par, 1, nonDensAndNonVasc), timeTo99(par, 2, nonDensAndNonVasc), 200, 'g', 'filled', 'o')
     
-    legend('Dense vascuralized tissues', 'Dense non-vascularized tissues',...
-        'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues',...
-        'Location', 'northwest')
-
 else
     for i = 1:nTissues
-        scatter(timeTo99(par, 1, i), timeTo99(par, 2, i), 20, color(i), 'filled', shape(mod(i, length(shape)) + 1))
+        scatter(timeTo99(par, 1, i), timeTo99(par, 2, i), 200, color(i), 'filled', shape(mod(i, length(shape)) + 1))
     end
 end
+
 plot([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], [0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], '--k')
-xlabel('\mu*')
-ylabel('\sigma')
-title99 = strcat(string(b(par)), ' - Time to kill 99\% of tumor cells');
-title(title99, 'Interpreter', 'latex')
+hold off
+
+xlabel('\mu*', 'fontsize', 20)
+ylabel('\sigma', 'fontsize', 20)
+title99 = strcat(string(b(par)), ' - Time to kill 99\% of tumor cells', 'fontsize', 20);
+title(title99, 'interpreter', 'latex')
 axis([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)]), 0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])])
 grid on
-hold off
+legend('Dense vascuralized tissues', 'Dense non-vascularized tissues',...
+    'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues',...
+    'Location', 'northwest', 'fontsize', 20)
+end

@@ -26,7 +26,8 @@ timeTo99 = zeros(nPar, 3, nTissues);
 
 for i = 1:length(tTissues)
     timeTo99(:, 1:2, i) = load([path, '/morrisTimeTo99_', num2str(tTissues(i)), '.res']);
-    timeTo99(:, 3, i) = sqrt(timeTo99(:, 1, i).^2 + timeTo99(:, 2, i).^2);
+    timeTo99(:, 4, i) = sqrt(timeTo99(:, 1, i).^2 + timeTo99(:, 2, i).^2);
+    timeTo99(:, 3, i) = timeTo99(:, 1, i).^2 ./ timeTo99(:, 4, i);
 end
 
 meanTimeTo99 = mean(timeTo99, 3);
@@ -40,60 +41,63 @@ nfig = nfig + 1;
 hold on
 colormap(jet)
 for i = 1 : size(timeTo99, 1)
-    scatter(meanTimeTo99(i,1), meanTimeTo99(i,2), 20, color(i), 'filled', shape(mod(i, length(shape)) + 1))
+    scatter(meanTimeTo99(i,1), meanTimeTo99(i,2), 500, color(i), 'filled', shape(mod(i, length(shape)) + 1))
 end
 plot([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], [0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], '--k')
-legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex')
-xlabel('\mu*')
-ylabel('\sigma')
+hold off
+
 switch tissueSet
     case 1
-        title('21 tissues - Time to kill 99% of tumor cells')
+        title('21 tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 2
-        title('11 dense tissues - Time to kill 99% of tumor cells')
+        title('11 dense tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 3
-        title('10 non-dense tissues - Time to kill 99% of tumor cells')
+        title('10 non-dense tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 4
-        title('11 vascularized tissues - Time to kill 99% of tumor cells')
+        title('11 vascularized tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 5
-        title('10 non-vascularized tissues - Time to kill 99% of tumor cells')
+        title('10 non-vascularized tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
         
 end
 axis([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)]), 0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])])
 grid on
-hold off
+legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex', 'fontsize', 18)
+xlabel('\mu*', 'fontsize', 20)
+ylabel('\sigma', 'fontsize', 20)
 
 figure(nfig);
 nfig = nfig + 1;
+
 hold on
-hBar = bar(cell2mat(cTimeTo99(:, 1:3)));
+hBar = bar(cell2mat(cTimeTo99(:, 3:4)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
-set(ax,'XTickLabel', cTimeTo99(:, 7));
+set(ax,'XTickLabel', cTimeTo99(:, 9), 'fontsize', 20);
 ax.YGrid = 'on';
 switch tissueSet
     case 1
-        title('21 tissues - Time to kill 99% of tumor cells')
+        title('21 tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 2
-        title('11 dense tissues - Time to kill 99% of tumor cells')
+        title('11 dense tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 3
-        title('10 non-dense tissues - Time to kill 99% of tumor cells')
+        title('10 non-dense tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 4
-        title('11 vascularized tissues - Time to kill 99% of tumor cells')
+        title('11 vascularized tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
     case 5
-        title('10 non-vascularized tissues - Time to kill 99% of tumor cells')
+        title('10 non-vascularized tissues - Time to kill 99% of tumor cells', 'fontsize', 20)
 end
-legend('\mu*', '\sigma', 'dist', 'location', 'northwest')
 xtickangle(45)
 
-ctr = zeros(nPar, 3);
-ydt = zeros(nPar, 3);
-for k = 1:3
+ctr = zeros(nPar, 2);
+ydt = zeros(nPar, 2);
+for k = 1:2
     ctr(:, k) = bsxfun(@plus, hBar(1).XData, [hBar(k).XOffset]');
     ydt(:, k) = hBar(k).YData;
 end
 
-errorbar(ctr, ydt, cell2mat(cTimeTo99(:, 4:6)), '.k')
+errorbar(ctr, ydt, cell2mat(cTimeTo99(:, 7:8)), '.k')
 hold off
+legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$', '$\sqrt{\mu*^2 + \sigma^2}$'},...
+    'fontsize', 20, 'location', 'northwest', 'interpreter', 'latex')
 end

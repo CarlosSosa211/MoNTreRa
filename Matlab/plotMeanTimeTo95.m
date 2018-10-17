@@ -22,79 +22,83 @@ switch tissueSet
 end
 
 nTissues = length(tTissues);
-timeTo95 = zeros(nPar, 2, nTissues);
+timeTo95 = zeros(nPar, 4, nTissues);
 
 for i = 1:length(tTissues)
     timeTo95(:, 1:2, i) = load([path, '/morrisTimeTo95_', num2str(tTissues(i)), '.res']);
-    timeTo95(:, 3, i) = sqrt(timeTo95(:, 1, i).^2 + timeTo95(:, 2, i).^2);
+    timeTo95(:, 4, i) = sqrt(timeTo95(:, 1, i).^2 + timeTo95(:, 2, i).^2);
+    timeTo95(:, 3, i) = timeTo95(:, 1, i).^2 ./ timeTo95(:, 4, i); 
 end
 
 meanTimeTo95 = mean(timeTo95, 3);
 stdTimeTo95 = std(timeTo95, [], 3);
 
 cTimeTo95 = [num2cell(meanTimeTo95), num2cell(stdTimeTo95), b'];
-cTimeTo95 = sortrows(cTimeTo95, 3);
+cTimeTo95 = sortrows(cTimeTo95, 4);
 
 figure(nfig);
 nfig = nfig + 1;
 hold on
 colormap(jet)
 for i = 1 : size(timeTo95, 1)
-    scatter(meanTimeTo95(i,1), meanTimeTo95(i,2), 20, color(i), 'filled', shape(mod(i, length(shape)) + 1))
+    scatter(meanTimeTo95(i,1), meanTimeTo95(i,2), 500, color(i), 'filled', shape(mod(i, length(shape)) + 1))
 end
-plot([0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])], [0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)]], '--k')
-legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex')
-xlabel('\mu*')
-ylabel('\sigma')
+plot([0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])], [0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])], '--k')
+hold off
+
 switch tissueSet
     case 1
-        title('21 tissues - Time to kill 95% of tumor cells')
+        title('21 tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 2
-        title('11 dense tissues - Time to kill 95% of tumor cells')
+        title('11 dense tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 3
-        title('10 non-dense tissues - Time to kill 95% of tumor cells')
+        title('10 non-dense tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 4
-        title('11 vascularized tissues - Time to kill 95% of tumor cells')
+        title('11 vascularized tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 5
-        title('10 non-vascularized tissues - Time to kill 95% of tumor cells')
+        title('10 non-vascularized tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
         
 end
 axis([0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)]), 0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])])
 grid on
-hold off
+legend(b, 'fontsize', 18, 'location', 'bestoutside', 'interpreter', 'latex')
+xlabel('\mu*', 'fontsize', 20)
+ylabel('\sigma', 'fontsize', 20)
 
 figure(nfig);
 nfig = nfig + 1;
+
 hold on
-hBar = bar(cell2mat(cTimeTo95(:, 1:3)));
+hBar = bar(cell2mat(cTimeTo95(:, 3:4)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
-set(ax,'XTickLabel', cTimeTo95(:, 7));
+set(ax,'XTickLabel', cTimeTo95(:, 9), 'fontsize', 20);
 ax.YGrid = 'on';
 switch tissueSet
     case 1
-        title('21 tissues - Time to kill 95% of tumor cells')
+        title('21 tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 2
-        title('11 dense tissues - Time to kill 95% of tumor cells')
+        title('11 dense tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 3
-        title('10 non-dense tissues - Time to kill 95% of tumor cells')
+        title('10 non-dense tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 4
-        title('11 vascularized tissues - Time to kill 95% of tumor cells')
+        title('11 vascularized tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
     case 5
-        title('10 non-vascularized tissues - Time to kill 95% of tumor cells')
+        title('10 non-vascularized tissues - Time to kill 95% of tumor cells', 'fontsize', 20)
         
 end
-legend('\mu*', '\sigma', 'dist', 'location', 'northwest')
 xtickangle(45)
 
-ctr = zeros(nPar, 3);
-ydt = zeros(nPar, 3);
-for k = 1:3
+ctr = zeros(nPar, 2);
+ydt = zeros(nPar, 2);
+for k = 1:2
     ctr(:, k) = bsxfun(@plus, hBar(1).XData, [hBar(k).XOffset]');
     ydt(:, k) = hBar(k).YData;
 end
 
-errorbar(ctr, ydt, cell2mat(cTimeTo95(:, 4:6)), '.k')
+errorbar(ctr, ydt, cell2mat(cTimeTo95(:, 7:8)), '.k')
 hold off
+legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$', '$\sqrt{\mu*^2 + \sigma^2}$'},...
+    'fontsize', 20, 'location', 'northwest', 'interpreter', 'latex')
 end

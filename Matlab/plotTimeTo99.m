@@ -12,13 +12,13 @@ nfig = nfig + 1;
 hold on
 colormap(jet)
 for i = 1 : size(timeTo99, 1)
-    scatter(timeTo99(i,1), timeTo99(i,2), 20, color(i), 'filled', shape(mod(i, length(shape)) + 1))
+    scatter(timeTo99(i,1), timeTo99(i,2), 200, color(i), 'filled', shape(mod(i, length(shape)) + 1))
 end
 plot([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], [0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], '--k')
-legend(b, 'Location', 'bestoutside', 'interpreter', 'latex')
+legend(b, 'Location', 'bestoutside', 'interpreter', 'latex', 'fontsize', 18)
 xlabel('\mu*')
 ylabel('\sigma')
-title(['Tissue ', num2str(nTissue), ' - Time to kill 99% of tumor cells'])
+title(['Tissue ', num2str(nTissue), ' - Time to kill 99% of tumor cells'], 'fontsize', 20)
 axis([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)]), 0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])])
 grid on
 hold off
@@ -35,6 +35,6 @@ set(ax,'XTickLabel', cTimeTo99(:, 5));
 ax.YGrid = 'on';
 title(['Tissue ', num2str(nTissue), ' - Time to kill 99% of tumor cells'])
 legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$', '$\sqrt{\mu*^2 + \sigma^2}$'},...
-    'location', 'northwest', 'interpreter', 'latex')
+    'location', 'northwest', 'interpreter', 'latex', 'fontsize', 20)
 xtickangle(45)
 end

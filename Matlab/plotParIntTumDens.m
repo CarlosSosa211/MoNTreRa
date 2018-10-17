@@ -27,6 +27,7 @@ end
 
 figure(nfig);
 nfig = nfig + 1;
+
 hold on
 colormap(jet)
 if(tissueSet == 1)
@@ -35,24 +36,27 @@ if(tissueSet == 1)
     nonDensAndVasc = ismember(tTissues, nonDensTissues) & ismember(tTissues, vascTissues);
     nonDensAndNonVasc = ismember(tTissues, nonDensTissues) & ismember(tTissues, nonVascTissues);
     
-    scatter(intTumDens(par, 1, densAndVasc), intTumDens(par, 2, densAndVasc), 20, 'r', 'filled', 'v')
-    scatter(intTumDens(par, 1, densAndNonVasc), intTumDens(par, 2, densAndNonVasc), 20, 'r', 'filled', 'o')
-    scatter(intTumDens(par, 1, nonDensAndVasc), intTumDens(par, 2, nonDensAndVasc), 20, 'g', 'filled', 'v')
-    scatter(intTumDens(par, 1, nonDensAndNonVasc), intTumDens(par, 2, nonDensAndNonVasc), 20, 'g', 'filled', 'o')
+    scatter(intTumDens(par, 1, densAndVasc), intTumDens(par, 2, densAndVasc), 200, 'r', 'filled', 'v')
+    scatter(intTumDens(par, 1, densAndNonVasc), intTumDens(par, 2, densAndNonVasc), 200, 'r', 'filled', 'o')
+    scatter(intTumDens(par, 1, nonDensAndVasc), intTumDens(par, 2, nonDensAndVasc), 200, 'g', 'filled', 'v')
+    scatter(intTumDens(par, 1, nonDensAndNonVasc), intTumDens(par, 2, nonDensAndNonVasc), 200, 'g', 'filled', 'o')
     
-    legend('Dense vascuralized tissues', 'Dense non-vascularized tissues',...
-        'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues',...
-        'Location', 'northwest')
 else
     for i = 1:nTissues
-        scatter(intTumDens(par, 1, i), intTumDens(par, 2, i), 20, color(i), 'filled', shape(mod(i, length(shape)) + 1))
+        scatter(intTumDens(par, 1, i), intTumDens(par, 2, i), 200, color(i), 'filled', shape(mod(i, length(shape)) + 1))
     end
 end
+
 plot([0, 1.1 * max([intTumDens(:, 1); intTumDens(:, 2)])], [0, 1.1 * max([intTumDens(:, 1); intTumDens(:, 2)])], '--k')
-xlabel('\mu*')
-ylabel('\sigma')
+hold off
+
+xlabel('\mu*', 'fontsize', 20)
+ylabel('\sigma', 'fontsize', 20)
 titleIntDens = strcat(string(b(par)), ' - Integral of tumor density');
-title(titleIntDens, 'Interpreter', 'Latex')
+title(titleIntDens, 'interpreter', 'latex', 'fontsize', 20)
 axis([0, 1.1 * max([intTumDens(:, 1); intTumDens(:, 2)]), 0, 1.1 * max([intTumDens(:, 1); intTumDens(:, 2)])])
 grid on
-hold off
+legend('Dense vascuralized tissues', 'Dense non-vascularized tissues',...
+    'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues',...
+    'location', 'northwest', 'fontsize', 20)
+end

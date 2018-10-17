@@ -24,16 +24,28 @@ for i = 1:length(tTissues)
 end
 
 meanTimeTo95 = mean(timeTo95, 3);
+maxMeanTimeTo95_ = 1./max(meanTimeTo95);
+meanTimeTo95 = meanTimeTo95 .* maxMeanTimeTo95_;
 stdTimeTo95 = std(timeTo95, [], 3);
+stdTimeTo95 = stdTimeTo95 .* maxMeanTimeTo95_;
 
 meanTimeTo99 = mean(timeTo99, 3);
+maxMeanTimeTo99_ = 1./max(meanTimeTo99);
+meanTimeTo99 = meanTimeTo99 .* maxMeanTimeTo99_;
 stdTimeTo99 = std(timeTo99, [], 3);
+stdTimeTo99 = stdTimeTo99 .* maxMeanTimeTo99_;
 
 meanTumDens = mean(tumDens, 3);
+maxMeanTumDens_ = 1./max(meanTumDens);
+meanTumDens = meanTumDens .* maxMeanTumDens_;
 stdTumDens = std(tumDens, [], 3);
+stdTumDens = stdTumDens .* maxMeanTumDens_;
 
 meanIntTumDens = mean(intTumDens, 3);
+maxMeanIntTumDens_ = 1./max(meanIntTumDens);
+meanIntTumDens = meanIntTumDens .* maxMeanIntTumDens_;
 stdIntTumDens = std(intTumDens, [], 3);
+stdIntTumDens = stdIntTumDens .* maxMeanIntTumDens_;
 
 cOut = [num2cell(meanTimeTo95(:, 3)), num2cell(meanTimeTo99(:, 3))...
     num2cell(meanTumDens(:, 3)), num2cell(meanIntTumDens(:, 3))...
@@ -41,25 +53,29 @@ cOut = [num2cell(meanTimeTo95(:, 3)), num2cell(meanTimeTo99(:, 3))...
     num2cell(stdTumDens(:, 3)), num2cell(stdIntTumDens(:, 3)), b'];
 cOut = sortrows(cOut, 1);
 
+
 figure(nfig);
 nfig = nfig + 1;
+
 hold on
 hBar = bar(cell2mat(cOut(:, 1:4)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
-set(ax,'XTickLabel', cOut(:, 9));
+set(ax,'XTickLabel', cOut(:, 9), 'fontsize', 20);
 ax.YGrid = 'on';
-title('21 tissues - Morris Euclidean distance from origin')
-legend('Time to kill 95%', 'Time to kill 99%', 'location', 'northwest')
+title('21 tissues - Morris Euclidean distance from origin', 'fontsize', 20)
 xtickangle(45)
 
-ctr = zeros(nPar, 2);
-ydt = zeros(nPar, 2);
-for k = 1:2
+ctr = zeros(nPar, 4);
+ydt = zeros(nPar, 4);
+for k = 1:4
     ctr(:, k) = bsxfun(@plus, hBar(1).XData, [hBar(k).XOffset]');
     ydt(:, k) = hBar(k).YData;
 end
 
 errorbar(ctr, ydt, cell2mat(cOut(:, 5:8)), '.k')
 hold off
+legend({'Time to kill 95%', 'Time to kill 99%', 'Final tumor density', 'Integral of tumor density'},...
+    'location', 'northwest', 'fontsize', 20)
+end

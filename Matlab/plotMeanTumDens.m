@@ -22,79 +22,82 @@ switch tissueSet
 end
 
 nTissues = length(tTissues);
-tumDens = zeros(nPar, 3, nTissues);
+tumDens = zeros(nPar, 4, nTissues);
 
 for i = 1:length(tTissues)
     tumDens(:, 1:2, i) = load([path, '/morrisTumDens_', num2str(tTissues(i)), '.res']);
-    tumDens(:, 3, i) = sqrt(tumDens(:, 1, i).^2 + tumDens(:, 2, i).^2);
+    tumDens(:, 4, i) = sqrt(tumDens(:, 1, i).^2 + tumDens(:, 2, i).^2);
+    tumDens(:, 3, i) = tumDens(:, 1, i).^2 ./ tumDens(:, 4, i);
 end
 
 meanTumDens = mean(tumDens, 3);
 stdTumDens = std(tumDens, [], 3);
 
 cTumDens = [num2cell(meanTumDens), num2cell(stdTumDens), b'];
-cTumDens = sortrows(cTumDens, 3);
+cTumDens = sortrows(cTumDens, 4);
 
 figure(nfig);
 nfig = nfig + 1;
 hold on
 colormap(jet)
 for i = 1 : size(tumDens, 1)
-    scatter(meanTumDens(i,1), meanTumDens(i,2), 20, color(i), 'filled', shape(mod(i, length(shape)) + 1))
+    scatter(meanTumDens(i,1), meanTumDens(i,2), 500, color(i), 'filled', shape(mod(i, length(shape)) + 1))
 end
 plot([0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])], [0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])], '--k')
-legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex')
-xlabel('\mu*')
-ylabel('\sigma')
+hold off
+
 switch tissueSet
     case 1
-        title('21 tissues - Final tumor density')
+        title('21 tissues - Final tumor density', 'fontsize', 20)
     case 2
-        title('11 dense tissues - Final tumor density')
+        title('11 dense tissues - Final tumor density', 'fontsize', 20)
     case 3
-        title('10 non-dense tissues - Final tumor density')
+        title('10 non-dense tissues - Final tumor density', 'fontsize', 20)
     case 4
-        title('11 vascularized tissues - Final tumor density')
+        title('11 vascularized tissues - Final tumor density', 'fontsize', 20)
     case 5
-        title('10 non-vascularized tissues - Final tumor density')
+        title('10 non-vascularized tissues - Final tumor density', 'fontsize', 20)
         
 end
 axis([0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)]), 0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])])
 grid on
-hold off
-
+legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex', 'fontsize', 18)
+xlabel('\mu*', 'fontsize', 20)
+ylabel('\sigma', 'fontsize', 20)
 
 figure(nfig);
 nfig = nfig + 1;
+
 hold on
-hBar = bar(cell2mat(cTumDens(:, 1:3)));
+hBar = bar(cell2mat(cTumDens(:, 3:4)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
-set(ax,'XTickLabel', cTumDens(:, 7));
+set(ax,'XTickLabel', cTumDens(:, 9), 'fontsize', 20);
 ax.YGrid = 'on';
 switch tissueSet
     case 1
-        title('21 tissues - Final tumor density')
+        title('21 tissues - Final tumor density', 'fontsize', 20)
     case 2
-        title('11 dense tissues - Final tumor density')
+        title('11 dense tissues - Final tumor density', 'fontsize', 20)
     case 3
-        title('10 non-dense tissues - Final tumor density')
+        title('10 non-dense tissues - Final tumor density', 'fontsize', 20)
     case 4
-        title('11 vascularized tissues - Final tumor density')
+        title('11 vascularized tissues - Final tumor density', 'fontsize', 20)
     case 5
-        title('10 non-vascularized tissues - Final tumor density')
+        title('10 non-vascularized tissues - Final tumor density', 'fontsize', 20)
 end
-legend('\mu*', '\sigma', 'dist', 'location', 'northwest')
-xtickangle(45)
 
-ctr = zeros(nPar, 3);
-ydt = zeros(nPar, 3);
-for k = 1:3
+ctr = zeros(nPar, 2);
+ydt = zeros(nPar, 2);
+for k = 1:2
     ctr(:, k) = bsxfun(@plus, hBar(1).XData, [hBar(k).XOffset]');
     ydt(:, k) = hBar(k).YData;
 end
 
-errorbar(ctr, ydt, cell2mat(cTumDens(:, 4:6)), '.k')
+errorbar(ctr, ydt, cell2mat(cTumDens(:, 7:8)), '.k')
 hold off
+legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$', '$\sqrt{\mu*^2 + \sigma^2}$'},...
+    'fontsize', 20, 'location', 'northwest', 'interpreter', 'latex')
+xtickangle(45)
 end

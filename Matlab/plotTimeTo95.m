@@ -11,13 +11,13 @@ nfig = nfig + 1;
 hold on
 colormap(jet)
 for i = 1 : size(timeTo95, 1)
-    scatter(timeTo95(i,1), timeTo95(i,2), 20, color(i), 'filled', shape(mod(i, length(shape)) + 1))
+    scatter(timeTo95(i,1), timeTo95(i,2), 200, color(i), 'filled', shape(mod(i, length(shape)) + 1))
 end
 plot([0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])], [0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])], '--k')
-legend(b, 'location', 'bestoutside', 'interpreter', 'latex')
-xlabel('\mu*')
-ylabel('\sigma')
-title(['Tissue ', num2str(nTissue), ' - Time to kill 95% of tumor cells'])
+legend(b, 'location', 'bestoutside', 'interpreter', 'latex',  'fontsize', 18)
+xlabel('\mu*', 'fontsize', 20)
+ylabel('\sigma', 'fontsize', 20)
+title(['Tissue ', num2str(nTissue), ' - Time to kill 95% of tumor cells'], 'fontsize', 20)
 axis([0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)]), 0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])])
 grid on
 hold off
@@ -32,8 +32,8 @@ ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
 set(ax,'XTickLabel', cTimeTo95(:, 5));
 ax.YGrid = 'on';
-title(['Tissue ', num2str(nTissue), ' - Time to kill 95% of tumor cells'])
+title(['Tissue ', num2str(nTissue), ' - Time to kill 95% of tumor cells'], 'fontsize', 20)
 legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$', '$\sqrt{\mu*^2 + \sigma^2}$'},...
-    'location', 'northwest', 'interpreter', 'latex')
+    'location', 'northwest', 'interpreter', 'latex', 'fontsize', 20)
 xtickangle(45)
 end

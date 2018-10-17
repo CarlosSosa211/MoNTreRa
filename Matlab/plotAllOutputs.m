@@ -17,15 +17,13 @@ cOut = sortrows(cOut, 1);
 
 figure(nfig);
 nfig = nfig + 1;
-hold on
 bar(cell2mat(cOut(:, 1:2)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
 set(ax,'XTickLabel', cOut(:, 5));
 ax.YGrid = 'on';
-title(['Tissue ', num2str(nTissue), ' - All outputs'])
+title(['Tissue ', num2str(nTissue), ' - All outputs'], 'fontsize', 20)
 legend('Time to kill 95%', 'Time to kill 99%', 'Final tumor density',...
-    'Integral of tumor density', 'location', 'northwest')
+    'Integral of tumor density', 'location', 'northwest', 'fontsize', 20)
 xtickangle(45)
-hold off
