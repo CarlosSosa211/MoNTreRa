@@ -52,11 +52,11 @@ hold off
 
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
-title99 = strcat(string(b(par)), ' - Time to kill 99\% of tumor cells', 'fontsize', 20);
-title(title99, 'interpreter', 'latex')
+title99 = strcat(string(b(par)), ' - Time to kill 99\% of tumor cells');
+title(title99, 'interpreter', 'latex', 'fontsize', 20)
 axis([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)]), 0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])])
 grid on
-legend('Dense vascuralized tissues', 'Dense non-vascularized tissues',...
-    'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues',...
+legend({'Dense vascuralized tissues', 'Dense non-vascularized tissues',...
+    'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues'},...
     'Location', 'northwest', 'fontsize', 20)
 end

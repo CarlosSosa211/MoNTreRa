@@ -52,11 +52,11 @@ hold off
 
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
-titleDens = strcat(string(b(par)), ' - Final tumor density', 'fontsize', 20);
-title(titleDens, 'interpreter', 'latex')
+titleDens = strcat(string(b(par)), ' - Final tumor density');
+title(titleDens, 'interpreter', 'latex', 'fontsize', 20)
 axis([0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)]), 0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])])
 grid on
-legend('Dense vascuralized tissues', 'Dense non-vascularized tissues',...
-        'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues',...
+legend({'Dense vascuralized tissues', 'Dense non-vascularized tissues',...
+        'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues'},...
         'location', 'northwest', 'fontsize', 20)
 end
