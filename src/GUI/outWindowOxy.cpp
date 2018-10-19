@@ -20,10 +20,10 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
 
     double a, b, c;
 
-    std::ifstream fHypDens((nFOutData + "/hypDens.dat").c_str());
+    std::ifstream fHypDens((nFOutData + "/hypDens.res").c_str());
 
     if(!fHypDens.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening hypDens.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening hypDens.res");
     }
 
     else{
@@ -69,10 +69,10 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         m_selChart->addItem("Hypoxic density");
     }
 
-    std::ifstream fPO2Stat((nFOutData + "/pO2Stat.dat").c_str());
+    std::ifstream fPO2Stat((nFOutData + "/pO2Stat.res").c_str());
 
     if(!fPO2Stat.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening pO2Stat.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening pO2Stat.res");
     }
 
     else{
@@ -116,10 +116,10 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         m_selChart->addItem("PO2 statistics");
     }
 
-    std::ifstream fVegfStat((nFOutData + "/vegfStat.dat").c_str());
+    std::ifstream fVegfStat((nFOutData + "/vegfStat.res").c_str());
 
     if(!fVegfStat.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening vegfStat.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening vegfStat.res");
     }
 
     else{
@@ -193,10 +193,10 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         fSimParam.close();
     }
 
-    std::ifstream fPO2((nFOutData + "/po2.dat").c_str());
+    std::ifstream fPO2((nFOutData + "/po2.res").c_str());
 
     if(!fPO2.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening po2.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening po2.res");
     }
 
     else{
@@ -252,10 +252,10 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
     }
 
 
-    std::ifstream fVegf((nFOutData + "/vegf.dat").c_str());
+    std::ifstream fVegf((nFOutData + "/vegf.res").c_str());
 
     if(!fVegf.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening vegf.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening vegf.res");
     }
 
     else{

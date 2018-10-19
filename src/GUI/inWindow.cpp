@@ -379,15 +379,11 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/inTestOxy.dat");
+    loadInData("../InputFiles/in.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
     showMaximized();
-    /*resize(1000, 500);
-                                setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
-                                                                qApp->desktop()->availableGeometry()));*/
-    show();
 }
 
 
@@ -433,9 +429,9 @@ void InWindow::coupSim(bool value){
 
 
 int InWindow::createInFiles(){
-    //QDir dir("../OutputFilesGUI");
-    //dir.removeRecursively();
-    //QDir().mkdir("../OutputFilesGUI");
+    QDir dir("../OutputFilesGUI");
+    dir.removeRecursively();
+    QDir().mkdir("../OutputFilesGUI");
     if(m_histSpec->isChecked()){
         QFile::copy(QString::fromStdString("../HistSpec/tissueDim" +
                                            std::to_string(m_selHistSpec->currentIndex() + 1) +

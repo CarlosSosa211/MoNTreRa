@@ -34,10 +34,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
 
     double a, b, c, d, e, f;
 
-    std::ifstream fTumDens((nFOutData + "/tumDens.dat").c_str());
+    std::ifstream fTumDens((nFOutData + "/tumDens.res").c_str());
 
     if(!fTumDens.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening tumDens.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening tumDens.res");
     }
 
     else{
@@ -83,10 +83,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selChart->addItem("Tumor density");
     }
 
-    std::ifstream fVascDens((nFOutData + "/vascDens.dat").c_str());
+    std::ifstream fVascDens((nFOutData + "/vascDens.res").c_str());
 
     if(!fVascDens.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening vascDens.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening vascDens.res");
     }
 
     else{
@@ -143,10 +143,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selChart->addItem("Vascular density");
     }
 
-    std::ifstream fKilledCells((nFOutData + "/killedCells.dat").c_str());
+    std::ifstream fKilledCells((nFOutData + "/killedCells.res").c_str());
 
     if(!fKilledCells.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening killedCells.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening killedCells.res");
     }
 
     else{
@@ -184,10 +184,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selChart->addItem("Percentage of killed tumor cells");
     }
 
-    std::ifstream fCycle((nFOutData + "/cycle.dat").c_str());
+    std::ifstream fCycle((nFOutData + "/cycle.res").c_str());
 
     if(!fCycle.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening cycle.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening cycle.res");
     }
 
     else{
@@ -250,10 +250,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selChart->addItem("Cell cycle distribution");
     }
 
-    std::ifstream fHypDens((nFOutData + "/hypDens.dat").c_str());
+    std::ifstream fHypDens((nFOutData + "/hypDens.res").c_str());
 
     if(!fHypDens.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening hypDens.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening hypDens.res");
     }
 
     else{
@@ -291,10 +291,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selChart->addItem("Hypoxic density");
     }
 
-    std::ifstream fPO2Stat((nFOutData + "/pO2Stat.dat").c_str());
+    std::ifstream fPO2Stat((nFOutData + "/pO2Stat.res").c_str());
 
     if(!fPO2Stat.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening pO2Stat.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening pO2Stat.res");
     }
 
     else{
@@ -338,10 +338,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selChart->addItem("PO2 statistics");
     }
 
-    std::ifstream fVegfStat((nFOutData + "/vegfStat.dat").c_str());
+    std::ifstream fVegfStat((nFOutData + "/vegfStat.res").c_str());
 
     if(!fVegfStat.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening vegfStat.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening vegfStat.res");
     }
 
     else{
@@ -422,10 +422,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         fSimParam >> m_simTime >> m_simTime >> m_simTimeStep;
         fSimParam.close();
     }
-    std::ifstream fState((nFOutData + "/state.dat").c_str());
+    std::ifstream fState((nFOutData + "/state.res").c_str());
 
     if(!fState.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening state.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening state.res");
     }
 
     else{
@@ -573,10 +573,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selMap->addItem("State of cells");
     }
 
-    std::ifstream fTimer((nFOutData + "/timer.dat").c_str());
+    std::ifstream fTimer((nFOutData + "/timer.res").c_str());
 
     if(!fTimer.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening timer.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening timer.res");
     }
 
     else{
@@ -687,10 +687,10 @@ OutWindow3D::OutWindow3D(std::string nFOutData) : QWidget(){
         m_selMap->addItem("Cell cycle");
     }
 
-    std::ifstream fPO2((nFOutData + "/po2.dat").c_str());
+    std::ifstream fPO2((nFOutData + "/po2.res").c_str());
 
     if(!fPO2.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening po2.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening po2.res");
     }
 
     else{

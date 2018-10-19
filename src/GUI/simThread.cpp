@@ -191,17 +191,17 @@ void SimThread::run(){
 
         sim->initSim();
 
-        std::ofstream fTumDens("../OutputFilesGUI/tumDens.dat");
-        std::ofstream fKilledCells("../OutputFilesGUI/killedCells.dat");
-        std::ofstream fVascDens("../OutputFilesGUI/vascDens.dat");
-        std::ofstream fHypDens("../OutputFilesGUI/hypDens.dat");
-        std::ofstream fPO2Stat("../OutputFilesGUI/pO2Stat.dat");
-        std::ofstream fVEGFStat("../OutputFilesGUI/vegfStat.dat");
-        std::ofstream fState("../OutputFilesGUI/state.dat");
-        std::ofstream fCycle("../OutputFilesGUI/cycle.dat");
-        std::ofstream fTimer("../OutputFilesGUI/timer.dat");
-        std::ofstream fPO2("../OutputFilesGUI/po2.dat");
-        std::ofstream fVEGF("../OutputFilesGUI/vegf.dat");
+        std::ofstream fTumDens("../OutputFilesGUI/tumDens.res");
+        std::ofstream fKilledCells("../OutputFilesGUI/killedCells.res");
+        std::ofstream fVascDens("../OutputFilesGUI/vascDens.res");
+        std::ofstream fHypDens("../OutputFilesGUI/hypDens.res");
+        std::ofstream fPO2Stat("../OutputFilesGUI/pO2Stat.res");
+        std::ofstream fVEGFStat("../OutputFilesGUI/vegfStat.res");
+        std::ofstream fState("../OutputFilesGUI/state.res");
+        std::ofstream fCycle("../OutputFilesGUI/cycle.res");
+        std::ofstream fTimer("../OutputFilesGUI/timer.res");
+        std::ofstream fPO2("../OutputFilesGUI/po2.res");
+        std::ofstream fVEGF("../OutputFilesGUI/vegf.res");
 
         fTumDens << currentTime << " " <<
                     model1->getOut()->at(0) << std::endl;
@@ -296,13 +296,13 @@ void SimThread::run(){
 
         sim->stop();
 
-        std::ofstream fIntTumDens("../OutputFilesGUI/intTumDens.dat");
+        std::ofstream fIntTumDens("../OutputFilesGUI/intTumDens.res");
 
         fIntTumDens << currentTime << " " <<
                        model1->getOut()->at(22) << std::endl;
         fIntTumDens.close();
 
-        std::ofstream fDoseAndTime ("../OutputFilesGUI/doseAndTime.dat");
+        std::ofstream fDoseAndTime ("../OutputFilesGUI/doseAndTime.res");
 
         double perc[6] = {50.0, 80.0, 90.0, 95.0, 99.0, 99.9};
 
@@ -338,11 +338,11 @@ void SimThread::run(){
 
         sim->initSim();
 
-        std::ofstream fHypDens("../OutputFilesGUI/hypDens.dat");
-        std::ofstream fPO2Stat("../OutputFilesGUI/pO2Stat.dat");
-        std::ofstream fVEGFStat("../OutputFilesGUI/vegfStat.dat");
-        std::ofstream fPO2("../OutputFilesGUI/po2.dat");
-        std::ofstream fVEGF("../OutputFilesGUI/vegf.dat");
+        std::ofstream fHypDens("../OutputFilesGUI/hypDens.res");
+        std::ofstream fPO2Stat("../OutputFilesGUI/pO2Stat.res");
+        std::ofstream fVEGFStat("../OutputFilesGUI/vegfStat.res");
+        std::ofstream fPO2("../OutputFilesGUI/po2.res");
+        std::ofstream fVEGF("../OutputFilesGUI/vegf.res");
 
         fHypDens << currentTime << " " <<
                     model1->getOut()->at(0) << std::endl;
