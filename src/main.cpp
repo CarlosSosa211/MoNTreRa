@@ -23,6 +23,7 @@ void evalModelSobolR();
 vector<double> model(vector<double> x);
 void morris(int K, int p, int N);
 void morrisk(int kp, int K, int p, int N);
+void morriskVarRange(int kp, int K, int L, int p, int N);
 void morrisR();
 void sobol(int K, int N);
 void sobolFromFiles(int K);
@@ -38,8 +39,9 @@ int main(){
 
     //sobolFromFiles(2);
 
-     int K(34), p(20), N(100);
-	 morris(K, p, N);
+    int K(34), L(10), p(20), N(2);
+    //morris(K, p, N);
+    morriskVarRange(0, K, L, p, N);
     //morrisk(0, K, p, N);
     //evalModelMorrisR();
     //evalModelSobolR();
@@ -64,11 +66,11 @@ void evalModelMorrisR(){
         for(int k(0); k < K; k++){
             fX >> x[k];
         }
-	y = model(x);
-    fYTumDens << y[0] << endl;
-	fYIntTumDens << y[1] << endl;
-	fYTimeTo95 << y[2] << endl;
-	fYTimeTo99 << y[3] << endl;
+        y = model(x);
+        fYTumDens << y[0] << endl;
+        fYIntTumDens << y[1] << endl;
+        fYTimeTo95 << y[2] << endl;
+        fYTimeTo99 << y[3] << endl;
 
         cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
         cout << "---------------------------------------------" << endl;
@@ -471,7 +473,7 @@ vector<double> model(vector<double> x){
     double simTimeStep, oxySimTimeStep, sclFac, simTime;
 
     simTimeStep    = 6.0; //h;
-    oxySimTimeStep = 1.0; //ms;
+    oxySimTimeStep = 10.0; //ms;
     sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
     
     double cellSize(20.0); //um
@@ -640,28 +642,28 @@ void morris(int K, int p, int N){
         meanTimeTo99[k]   /= N;
     }
 
-    vector<double> stdDevTumDens(K, 0.0);
-    vector<double> stdDevIntTumDens(K, 0.0);
-    vector<double> stdDevTimeTo95(K, 0.0);
-    vector<double> stdDevTimeTo99(K, 0.0);
+    vector<double> stdTumDens(K, 0.0);
+    vector<double> stdIntTumDens(K, 0.0);
+    vector<double> stdTimeTo95(K, 0.0);
+    vector<double> stdTimeTo99(K, 0.0);
 
     for(int k(0); k < K; k++){
         for(int n(0); n < N; n++){
-            stdDevTumDens[k] += (elEffTumDens[k][n] - meanTumDens[k]) *
+            stdTumDens[k] += (elEffTumDens[k][n] - meanTumDens[k]) *
                     (elEffTumDens[k][n] - meanTumDens[k]);
-            stdDevIntTumDens[k] += (elEffIntTumDens[k][n] - meanIntTumDens[k]) *
+            stdIntTumDens[k] += (elEffIntTumDens[k][n] - meanIntTumDens[k]) *
                     (elEffIntTumDens[k][n] - meanIntTumDens[k]);
-            stdDevTimeTo95[k] += (elEffTimeTo95[k][n] - meanTimeTo95[k]) *
+            stdTimeTo95[k] += (elEffTimeTo95[k][n] - meanTimeTo95[k]) *
                     (elEffTimeTo95[k][n] - meanTimeTo95[k]);
-            stdDevTimeTo99[k] += (elEffTimeTo99[k][n] - meanTimeTo99[k]) *
+            stdTimeTo99[k] += (elEffTimeTo99[k][n] - meanTimeTo99[k]) *
                     (elEffTimeTo99[k][n] - meanTimeTo99[k]);
 
         }
 
-        stdDevTumDens[k]    = sqrt(stdDevTumDens[k] / (N - 1.0));
-        stdDevIntTumDens[k] = sqrt(stdDevIntTumDens[k] / (N - 1.0));
-        stdDevTimeTo95[k]   = sqrt(stdDevTimeTo95[k] / (N - 1.0));
-        stdDevTimeTo99[k]   = sqrt(stdDevTimeTo99[k] / (N - 1.0));
+        stdTumDens[k]    = sqrt(stdTumDens[k] / (N - 1.0));
+        stdIntTumDens[k] = sqrt(stdIntTumDens[k] / (N - 1.0));
+        stdTimeTo95[k]   = sqrt(stdTimeTo95[k] / (N - 1.0));
+        stdTimeTo99[k]   = sqrt(stdTimeTo99[k] / (N - 1.0));
     }
 
     ofstream fMorrisTumDens("../OutputFiles/morrisTumDens.res");
@@ -670,15 +672,15 @@ void morris(int K, int p, int N){
     ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99.res");
 
     for(int k(0); k < K; k++){
-        fMorrisTumDens    << meanTumDens[k]    << " " << stdDevTumDens[k]    << endl;
-        fMorrisIntTumDens << meanIntTumDens[k] << " " << stdDevIntTumDens[k] << endl;
-        fMorrisTimeTo95   << meanTimeTo95[k]   << " " << stdDevTimeTo95[k]   << endl;
-        fMorrisTimeTo99   << meanTimeTo99[k]   << " " << stdDevTimeTo99[k]   << endl;
+        fMorrisTumDens    << meanTumDens[k]    << " " << stdTumDens[k]    << endl;
+        fMorrisIntTumDens << meanIntTumDens[k] << " " << stdIntTumDens[k] << endl;
+        fMorrisTimeTo95   << meanTimeTo95[k]   << " " << stdTimeTo95[k]   << endl;
+        fMorrisTimeTo99   << meanTimeTo99[k]   << " " << stdTimeTo99[k]   << endl;
 
-        cout << meanTumDens[k]    << " " << stdDevTumDens[k]    << endl;
-        cout << meanIntTumDens[k] << " " << stdDevIntTumDens[k] << endl;
-        cout << meanTimeTo95[k]   << " " << stdDevTimeTo95[k]   << endl;
-        cout << meanTimeTo99[k]   << " " << stdDevTimeTo99[k]   << endl;
+        cout << meanTumDens[k]    << " " << stdTumDens[k]    << endl;
+        cout << meanIntTumDens[k] << " " << stdIntTumDens[k] << endl;
+        cout << meanTimeTo95[k]   << " " << stdTimeTo95[k]   << endl;
+        cout << meanTimeTo99[k]   << " " << stdTimeTo99[k]   << endl;
     }
     fMorrisTumDens.close();
     fMorrisIntTumDens.close();
@@ -777,45 +779,223 @@ void morrisk(int kp, int K, int p, int N){
     meanTimeTo95   /= N;
     meanTimeTo99   /= N;
 
-    double stdDevTumDens(0.0), stdDevIntTumDens(0.0);
-    double stdDevTimeTo95(0.0), stdDevTimeTo99(0.0);
+    double stdTumDens(0.0), stdIntTumDens(0.0);
+    double stdTimeTo95(0.0), stdTimeTo99(0.0);
 
     for(int n(0); n < N; n++){
-        stdDevTumDens += (elEffTumDens[n] - meanTumDens) *
+        stdTumDens += (elEffTumDens[n] - meanTumDens) *
                 (elEffTumDens[n] - meanTumDens);
-        stdDevIntTumDens += (elEffIntTumDens[n] - meanIntTumDens) *
+        stdIntTumDens += (elEffIntTumDens[n] - meanIntTumDens) *
                 (elEffIntTumDens[n] - meanIntTumDens);
-        stdDevTimeTo95 += (elEffTimeTo95[n] - meanTimeTo95) *
+        stdTimeTo95 += (elEffTimeTo95[n] - meanTimeTo95) *
                 (elEffTimeTo95[n] - meanTimeTo95);
-        stdDevTimeTo99 += (elEffTimeTo99[n] - meanTimeTo99) *
+        stdTimeTo99 += (elEffTimeTo99[n] - meanTimeTo99) *
                 (elEffTimeTo99[n] - meanTimeTo99);
 
     }
 
-    stdDevTumDens    = sqrt(stdDevTumDens / (N - 1.0));
-    stdDevIntTumDens = sqrt(stdDevIntTumDens / (N - 1.0));
-    stdDevTimeTo95   = sqrt(stdDevTimeTo95 / (N - 1.0));
-    stdDevTimeTo99   = sqrt(stdDevTimeTo99 / (N - 1.0));
+    stdTumDens    = sqrt(stdTumDens / (N - 1.0));
+    stdIntTumDens = sqrt(stdIntTumDens / (N - 1.0));
+    stdTimeTo95   = sqrt(stdTimeTo95 / (N - 1.0));
+    stdTimeTo99   = sqrt(stdTimeTo99 / (N - 1.0));
 
     ofstream fMorrisTumDens("../OutputFiles/morrisTumDens.res");
     ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens.res");
     ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95.res");
     ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99.res");
 
-    fMorrisTumDens    << meanTumDens    << " " << stdDevTumDens    << endl;
-    fMorrisIntTumDens << meanIntTumDens << " " << stdDevIntTumDens << endl;
-    fMorrisTimeTo95   << meanTimeTo95   << " " << stdDevTimeTo95   << endl;
-    fMorrisTimeTo99   << meanTimeTo99   << " " << stdDevTimeTo99   << endl;
+    fMorrisTumDens    << meanTumDens    << " " << stdTumDens    << endl;
+    fMorrisIntTumDens << meanIntTumDens << " " << stdIntTumDens << endl;
+    fMorrisTimeTo95   << meanTimeTo95   << " " << stdTimeTo95   << endl;
+    fMorrisTimeTo99   << meanTimeTo99   << " " << stdTimeTo99   << endl;
 
-    cout << meanTumDens    << " " << stdDevTumDens    << endl;
-    cout << meanIntTumDens << " " << stdDevIntTumDens << endl;
-    cout << meanTimeTo95   << " " << stdDevTimeTo95   << endl;
-    cout << meanTimeTo99   << " " << stdDevTimeTo99   << endl;
+    cout << meanTumDens    << " " << stdTumDens    << endl;
+    cout << meanIntTumDens << " " << stdIntTumDens << endl;
+    cout << meanTimeTo95   << " " << stdTimeTo95   << endl;
+    cout << meanTimeTo99   << " " << stdTimeTo99   << endl;
 
     fMorrisTumDens.close();
     fMorrisIntTumDens.close();
     fMorrisTimeTo95.close();
     fMorrisTimeTo99.close();
+}
+
+
+void morriskVarRange(int kp, int K, int L, int p, int N){
+    double _pm1(1.0 / (p - 1.0));
+    double delta(0.5 * _pm1 * p);
+    double _delta(1.0 / delta);
+    vector<double> h(K), x0(K);
+
+    ifstream frefParInt("../InputFiles/refParInt.dat");
+    for(int k(0); k < K; k++){
+        frefParInt >> x0[k];
+        frefParInt >> h[k];
+        h[k] -= x0[k];
+    }
+    frefParInt.close();
+
+    int M(K + 1);
+    vector<int> vP;
+    vector<double> xp(M);
+    vector<vector<double> > B(M, vector<double>(K, 0.0));
+    vector<vector<double> > Bp;
+    vector<vector<double> > Bpp(M, vector<double>(K, 0.0));
+    vector<vector<double> > y(M, vector<double>(4));
+
+    for(int k(0); k < K; k++){
+        vP.push_back(k);
+    }
+
+    for(int m(1); m < M; m++){
+        for(int k(0); k <m ; k++){
+            B[m][k] = 1.0;
+        }
+    }
+
+    int diffk, nEv(0);
+    int nEvTot((K + 1) * N * L);
+    double h10(0.1 * h[kp]);
+
+    vector<vector<double> > elEffTumDens(K, vector<double>(N));
+    vector<vector<double> > elEffIntTumDens(K, vector<double>(N));
+    vector<vector<double> > elEffTimeTo95(K, vector<double>(N));
+    vector<vector<double> > elEffTimeTo99(K, vector<double>(N));
+
+    vector<double> meanTumDens(K), stdTumDens(K);
+    vector<double> meanIntTumDens(K), stdIntTumDens(K);
+    vector<double> meanTimeTo95(K), stdTimeTo95(K);
+    vector<double> meanTimeTo99(K), stdTimeTo99(K);
+
+    for(int l(0); l < L; l++){
+        for(int k(0); k < K; k++){
+            fill(elEffTumDens[k].begin(), elEffTumDens[k].end(), 0.0);
+            fill(elEffIntTumDens[k].begin(), elEffIntTumDens[k].end(), 0.0);
+            fill(elEffTimeTo95[k].begin(), elEffTimeTo95[k].end(), 0.0);
+            fill(elEffTimeTo99[k].begin(), elEffTimeTo99[k].end(), 0.0);
+        }
+        fill(meanTumDens.begin(), meanTumDens.end(), 0.0);
+        fill(meanIntTumDens.begin(), meanIntTumDens.end(), 0.0);
+        fill(meanTimeTo95.begin(), meanTimeTo95.end(), 0.0);
+        fill(meanTimeTo99.begin(), meanTimeTo99.end(), 0.0);
+        fill(stdTumDens.begin(), stdTumDens.end(), 0.0);
+        fill(stdIntTumDens.begin(), stdIntTumDens.end(), 0.0);
+        fill(stdTimeTo95.begin(), stdTimeTo95.end(), 0.0);
+        fill(stdTimeTo99.begin(), stdTimeTo99.end(), 0.0);
+
+
+        ofstream fTumDens("../OutputFiles/tumDens_" + to_string(h[kp]) + ".res");
+        ofstream fIntTumDens("../OutputFiles/intTumDens_" + to_string(h[kp]) + ".res");
+        ofstream fTimeTo95("../OutputFiles/timeTo95_" + to_string(h[kp]) + ".res");
+        ofstream fTimeTo99("../OutputFiles/timeTo99_" + to_string(h[kp]) + ".res");
+
+        for(int n(0); n < N; n++){
+            for(int m(0); m < M; m++){
+                xp[m] = _pm1 * (rand() % ((p - 2) / 2 + 1));
+            }
+
+            bool perm;
+            Bp = B;
+            for(int k(0); k < K; k++){
+                perm = rand() % 2;
+                for(int m(0); m < M; m++){
+                    if(perm){
+                        Bp[m][k] = 1.0 - Bp[m][k];
+                    }
+                    Bp[m][k] = xp[k] + delta * Bp[m][k];
+                }
+            }
+
+            random_shuffle(vP.begin(), vP.end());
+
+            for(int m(0); m < M; m++){
+                for(int k(0); k < K; k++){
+                    Bpp[m][k] = x0[k] + Bp[m][vP[k]] * h[k];
+                }
+            }
+
+            for(int m(0); m < M; m++){
+                y[m] = model(Bpp[m]);
+                nEv++;
+
+                fTumDens    << y[m][0] << endl;
+                fIntTumDens << y[m][1] << endl;
+                fTimeTo95   << y[m][2] << endl;
+                fTimeTo99   << y[m][3] << endl;
+
+                cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+                cout << "---------------------------------------------" << endl;
+            }
+
+            for(int m(1); m < M; m++){
+                diffk = find(vP.begin(), vP.end(), m - 1) - vP.begin();
+
+                elEffTumDens[diffk][n]    = fabs(_delta * (y[m][0] - y[m - 1][0]));
+                elEffIntTumDens[diffk][n] = fabs(_delta * (y[m][1] - y[m - 1][1]));
+                elEffTimeTo95[diffk][n]   = fabs(_delta * (y[m][2] - y[m - 1][2]));
+                elEffTimeTo99[diffk][n]   = fabs(_delta * (y[m][3] - y[m - 1][3]));
+
+                meanTumDens[diffk]    += elEffTumDens[diffk][n];
+                meanIntTumDens[diffk] += elEffIntTumDens[diffk][n];
+                meanTimeTo95[diffk]   += elEffTimeTo95[diffk][n];
+                meanTimeTo99[diffk]   += elEffTimeTo99[diffk][n];
+            }
+        }
+
+        fTumDens.close();
+        fIntTumDens.close();
+        fTimeTo99.close();
+        fTimeTo95.close();
+
+        for(int k(0); k < K; k++){
+            meanTumDens[k]    /= N;
+            meanIntTumDens[k] /= N;
+            meanTimeTo95[k]   /= N;
+            meanTimeTo99[k]   /= N;
+        }
+
+        for(int k(0); k < K; k++){
+            for(int n(0); n < N; n++){
+                stdTumDens[k] += (elEffTumDens[k][n] - meanTumDens[k]) *
+                        (elEffTumDens[k][n] - meanTumDens[k]);
+                stdIntTumDens[k] += (elEffIntTumDens[k][n] - meanIntTumDens[k]) *
+                        (elEffIntTumDens[k][n] - meanIntTumDens[k]);
+                stdTimeTo95[k] += (elEffTimeTo95[k][n] - meanTimeTo95[k]) *
+                        (elEffTimeTo95[k][n] - meanTimeTo95[k]);
+                stdTimeTo99[k] += (elEffTimeTo99[k][n] - meanTimeTo99[k]) *
+                        (elEffTimeTo99[k][n] - meanTimeTo99[k]);
+
+            }
+
+            stdTumDens[k]    = sqrt(stdTumDens[k] / (N - 1.0));
+            stdIntTumDens[k] = sqrt(stdIntTumDens[k] / (N - 1.0));
+            stdTimeTo95[k]   = sqrt(stdTimeTo95[k] / (N - 1.0));
+            stdTimeTo99[k]   = sqrt(stdTimeTo99[k] / (N - 1.0));
+        }
+
+        ofstream fMorrisTumDens("../OutputFiles/morrisTumDens" + to_string(h[kp]) + ".res");
+        ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens" + to_string(h[kp]) + ".res");
+        ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95" + to_string(h[kp]) + ".res");
+        ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99" + to_string(h[kp]) + ".res");
+
+        for(int k(0); k < K; k++){
+            fMorrisTumDens    << meanTumDens[k]    << " " << stdTumDens[k]    << endl;
+            fMorrisIntTumDens << meanIntTumDens[k] << " " << stdIntTumDens[k] << endl;
+            fMorrisTimeTo95   << meanTimeTo95[k]   << " " << stdTimeTo95[k]   << endl;
+            fMorrisTimeTo99   << meanTimeTo99[k]   << " " << stdTimeTo99[k]   << endl;
+
+            cout << meanTumDens[k]    << " " << stdTumDens[k]    << endl;
+            cout << meanIntTumDens[k] << " " << stdIntTumDens[k] << endl;
+            cout << meanTimeTo95[k]   << " " << stdTimeTo95[k]   << endl;
+            cout << meanTimeTo99[k]   << " " << stdTimeTo99[k]   << endl;
+        }
+        fMorrisTumDens.close();
+        fMorrisIntTumDens.close();
+        fMorrisTimeTo95.close();
+        fMorrisTimeTo99.close();
+
+        h[kp] += h10;
+    }
 }
 
 
