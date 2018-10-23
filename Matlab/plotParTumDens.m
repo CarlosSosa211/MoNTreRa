@@ -3,6 +3,7 @@ global nPar;
 global allTissues;
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
+global varRange;
 global b color nfig shape;
 
 switch tissueSet
@@ -16,6 +17,8 @@ switch tissueSet
         tTissues = vascTissues;
     case 5
         tTissues = nonVascTissues;
+    case 6
+        tTissues = varRange;
 end
 
 nTissues = length(tTissues);
@@ -40,23 +43,31 @@ if(tissueSet == 1)
     scatter(tumDens(par, 1, densAndNonVasc), tumDens(par, 2, densAndNonVasc), 200, 'r', 'filled', 'o')
     scatter(tumDens(par, 1, nonDensAndVasc), tumDens(par, 2, nonDensAndVasc), 200, 'g', 'filled', 'v')
     scatter(tumDens(par, 1, nonDensAndNonVasc), tumDens(par, 2, nonDensAndNonVasc), 200, 'g', 'filled', 'o')
-    
 else
     for i = 1:nTissues
         scatter(tumDens(par, 1, i), tumDens(par, 2, i), 200, color(i), 'filled', shape(mod(i, length(shape)) + 1))
     end
 end
 
-plot([0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])], [0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])], '--k')
+maxVal = 1.1 * max([reshape(tumDens(par, 1, :), 1, []), reshape(tumDens(par, 2, :), 1, [])]);
+plot([0, maxVal], [0, maxVal], '--k')
 hold off
 
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
 titleDens = strcat(string(b(par)), ' - Final tumor density');
 title(titleDens, 'interpreter', 'latex', 'fontsize', 20)
-axis([0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)]), 0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])])
+axis([0, maxVal, 0, maxVal])
 grid on
-legend({'Dense vascuralized tissues', 'Dense non-vascularized tissues',...
-        'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues'},...
-        'location', 'northwest', 'fontsize', 20)
+switch tissueSet
+    case 1
+        legend({'Dense vascuralized tissues', 'Dense non-vascularized tissues',...
+            'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues'},...
+            'location', 'northwest', 'fontsize', 20)
+    case 6
+        for i = 1:length(varRange)
+            leg(i) = string(varRange(i));
+        end
+        legend(leg,'location', 'bestoutside', 'fontsize', 20)
+end
 end

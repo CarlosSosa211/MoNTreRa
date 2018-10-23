@@ -3,6 +3,7 @@ global nPar;
 global allTissues;
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
+global varRange;
 global b color nfig shape;
 
 switch tissueSet
@@ -16,6 +17,8 @@ switch tissueSet
         tTissues = vascTissues;
     case 5
         tTissues = nonVascTissues;
+    case 6
+        tTissues = varRange;
 end
 
 nTissues = length(tTissues);
@@ -47,16 +50,25 @@ else
     end
 end
 
-plot([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], [0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])], '--k')
+maxVal = 1.1 * max([reshape(timeTo99(par, 1, :), 1, []), reshape(timeTo99(par, 2, :), 1, [])]);
+plot([0, maxVal], [0, maxVal], '--k')
 hold off
 
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
 title99 = strcat(string(b(par)), ' - Time to kill 99\% of tumor cells');
 title(title99, 'interpreter', 'latex', 'fontsize', 20)
-axis([0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)]), 0, 1.1 * max([timeTo99(:, 1); timeTo99(:, 2)])])
+axis([0, maxVal, 0, maxVal])
 grid on
-legend({'Dense vascuralized tissues', 'Dense non-vascularized tissues',...
-    'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues'},...
-    'Location', 'northwest', 'fontsize', 20)
+switch tissueSet
+    case 1
+        legend({'Dense vascuralized tissues', 'Dense non-vascularized tissues',...
+            'Non-dense vascularized tissues', 'Non-dense non-vascularized tissues'},...
+            'location', 'northwest', 'fontsize', 20)
+    case 6
+        for i = 1:length(varRange)
+            leg(i) = string(varRange(i));
+        end
+        legend(leg,'location', 'bestoutside', 'fontsize', 20)
+end
 end
