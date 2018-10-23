@@ -39,7 +39,7 @@ int main(){
 
     //sobolFromFiles(2);
 
-    int K(34), L(10), p(20), N(2);
+    int K(34), L(10), p(20), N(100);
     //morris(K, p, N);
     morriskVarRange(0, K, L, p, N);
     //morrisk(0, K, p, N);
@@ -867,7 +867,11 @@ void morriskVarRange(int kp, int K, int L, int p, int N){
     vector<double> meanTimeTo95(K), stdTimeTo95(K);
     vector<double> meanTimeTo99(K), stdTimeTo99(K);
 
+    ofstream fVarRange("../OutputFiles/varRange.dat");
+    fVarRange << kp << endl;
+
     for(int l(0); l < L; l++){
+        fVarRange << h[kp] << endl;
         for(int k(0); k < K; k++){
             fill(elEffTumDens[k].begin(), elEffTumDens[k].end(), 0.0);
             fill(elEffIntTumDens[k].begin(), elEffIntTumDens[k].end(), 0.0);
@@ -882,7 +886,6 @@ void morriskVarRange(int kp, int K, int L, int p, int N){
         fill(stdIntTumDens.begin(), stdIntTumDens.end(), 0.0);
         fill(stdTimeTo95.begin(), stdTimeTo95.end(), 0.0);
         fill(stdTimeTo99.begin(), stdTimeTo99.end(), 0.0);
-
 
         ofstream fTumDens("../OutputFiles/tumDens_" + to_string(h[kp]) + ".res");
         ofstream fIntTumDens("../OutputFiles/intTumDens_" + to_string(h[kp]) + ".res");
@@ -973,10 +976,10 @@ void morriskVarRange(int kp, int K, int L, int p, int N){
             stdTimeTo99[k]   = sqrt(stdTimeTo99[k] / (N - 1.0));
         }
 
-        ofstream fMorrisTumDens("../OutputFiles/morrisTumDens" + to_string(h[kp]) + ".res");
-        ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens" + to_string(h[kp]) + ".res");
-        ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95" + to_string(h[kp]) + ".res");
-        ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99" + to_string(h[kp]) + ".res");
+        ofstream fMorrisTumDens("../OutputFiles/morrisTumDens_" + to_string(h[kp]) + ".res");
+        ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens_" + to_string(h[kp]) + ".res");
+        ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95_" + to_string(h[kp]) + ".res");
+        ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99_" + to_string(h[kp]) + ".res");
 
         for(int k(0); k < K; k++){
             fMorrisTumDens    << meanTumDens[k]    << " " << stdTumDens[k]    << endl;
