@@ -34,20 +34,20 @@ while(~quit)
             sel = 1;
             if(sel == 0)
                 for i = 1 : length(varRange)
-                    plotTumDens(path, varRange(i))
+                    plotTimeTo95(path, varRange(i))
                 end
             elseif(sel == 1)
-                plotParTumDens(path, par, 6)
+                plotParTimeTo95(path, par, 6)
             end
             
         case 2
             sel = 1;
             if(sel == 0)
                 for i = 1 : length(varRange)
-                    plotTumDens(path, varRange(i))
+                    plotTimeTo99(path, varRange(i))
                 end
             elseif(sel == 1)
-                plotParTumDens(path, par, 6)
+                plotParTimeTo99(path, par, 6)
             end
             
         case 3
@@ -64,10 +64,10 @@ while(~quit)
             sel = 1;
             if(sel == 0)
                 for i = 1 : length(varRange)
-                    plotTumDens(path, varRange(i))
+                    plotIntTumDens(path, varRange(i))
                 end
             elseif(sel == 1)
-                plotParTumDens(path, par, 6)
+                plotParIntTumDens(path, par, 6)
             end
                      
         case 0
