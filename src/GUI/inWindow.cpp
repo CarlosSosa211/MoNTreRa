@@ -379,7 +379,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/in.dat");
+    loadInData("../InputFiles/inTG.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -768,14 +768,19 @@ int InWindow::loadInData(std::string nFInData){
 
     std::ifstream fInData(nFInData.c_str());
 
-    int nrow, ncol, nlayer;
-    double tumDens, sigmaTum, vascDens, sigmaVasc;
-    std::vector<double> cycDistrib(4, 0.0);
+    bool histSpec;
+    int nrow(0), ncol(0), nlayer(0);
+    double tumDens(0.0), sigmaTum(0.0), vascDens(0.0), sigmaVasc(0.0);
 
-    fInData >> nrow >> ncol >> nlayer;
-    fInData >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
-    for(int i(0); i < 4; i++){
-        fInData >> cycDistrib.at(i);
+    fInData >> histSpec;
+    m_histSpec->setChecked(histSpec);
+    m_artif->setChecked(!histSpec);
+    if(histSpec){
+        m_selHistSpec->setCurrentIndex(histSpec - 1);
+    }
+    else{
+        fInData >> nrow >> ncol >> nlayer;
+        fInData >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
     }
 
     m_nrow->setValue(nrow);
@@ -785,9 +790,16 @@ int InWindow::loadInData(std::string nFInData){
     m_sigmaTum->setValue(sigmaTum);
     m_vascDens->setValue(vascDens);
     m_sigmaVasc->setValue(sigmaVasc);
+
+    std::vector<double> cycDistrib(4, 0.0);
+
+    for(int i(0); i < 4; i++){
+        fInData >> cycDistrib.at(i);
+    }
     for(int i(0); i < 4; i++){
         m_dist.at(i)->setValue(cycDistrib.at(i));
     }
+
     bool tumGrowth;
     int edgeOrder(0);
     double doubTime(0.0);
