@@ -31,17 +31,17 @@ double toyModel(vector<double> x);
 
 int main(){
     //srand(time(NULL));
-    //int K(33), N(1e4);
-    //sobol(K, N);
+    int K(2), N(1e6);
+    sobol(K, N);
 
     //vector<double> x = {0.8, 0.8};
     //model(x);
 
     //sobolFromFiles(2);
 
-    int K(34), L(10), p(20), N(100);
+    //int K(34), L(10), p(20), N(100);
     //morris(K, p, N);
-    morriskVarRange(0, K, L, p, N);
+    //morriskVarRange(0, K, L, p, N);
     //morrisk(0, K, p, N);
     //evalModelMorrisR();
     //evalModelSobolR();
@@ -1033,12 +1033,18 @@ void sobol(int K, int N){
     }
 
     double alpha, beta, sigma2, f0;
+    double alphaConv, betaConv, sigma2Conv, f0Conv;
+    int Nconv;
     vector<double> SI(K), TSI(K);
+    vector<vector<double> > SIConv, TSIConv;
     ofstream fSens("../OutputFiles/sobol.res");
 
-    fSens << K << endl;
+    fSens << K << " " << 0 << endl;
 
     for(int k(0); k < K; k++){
+        SIConv.push_back(vector<double>());
+        TSIConv.push_back(vector<double>());
+        Nconv = 2;
         Xc = Xa;
         alpha = 0.0;
         beta = 0.0;
@@ -1054,6 +1060,15 @@ void sobol(int K, int N){
             beta += (Ya[i] - Yc[i]) * (Ya[i] - Yc[i]);
             f0 += Yb[i] + Yc[i];
             sigma2 += Yb[i] * Yb[i] + Yc[i] * Yc[i];
+            if(i == Nconv){
+                alphaConv = alpha / Nconv;
+                f0Conv = 0.5 * f0 / Nconv;
+                sigma2Conv = 0.5 * sigma2 / Nconv;
+                sigma2Conv -= f0Conv * f0Conv;
+                SIConv[k].push_back((alphaConv - f0Conv * f0Conv) / sigma2Conv);
+                TSIConv[k].push_back(beta / (2.0 * Nconv * sigma2Conv));
+                Nconv *= 2;
+            }
         }
         alpha /= N;
         f0 /= 2.0 * N;
@@ -1065,7 +1080,23 @@ void sobol(int K, int N){
         cout << SI[k] << " " << TSI[k] << endl;
     }
 
+    ofstream fConvSI("../OutputFiles/convSI.res");
+    ofstream fConvTSI("../OutputFiles/convTSI.res");
+    Nconv = 2;
+    for(int i(0); i < SIConv[0].size(); i++){
+        fConvSI << Nconv << " ";
+        fConvTSI << Nconv << " ";
+        Nconv *= 2;
+        for(int k(0); k < K; k++){
+            fConvSI << SIConv[k][i] << " ";
+            fConvTSI << TSIConv[k][i] << " ";
+        }
+        fConvSI << endl;
+        fConvTSI << endl;
+    }
     fSens.close();
+    fConvSI.close();
+    fConvTSI.close();
 }
 
 
@@ -1149,7 +1180,7 @@ double toyModel(vector<double> x){
         return 0.125 * (63.0 * pow(x[1], 5) -
                 70.0 * pow(x[1], 3) +
                 15.0 * x[1]);
-    }*/
-    //return x[0] * x[1];
-    return x[0] + x[1]  + x[2] * x[2] + x[3] * x[4];
+    }
+    return x[0] * x[1];*/
+    return x[0] * x[1];
 }
