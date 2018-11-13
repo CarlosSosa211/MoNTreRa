@@ -27,21 +27,21 @@ void morriskVarRange(int kp, int K, int L, int p, int N);
 void morrisR();
 void sobol(int K, int N);
 void sobolFromFiles(int K);
-double toyModel(vector<double> x);
+vector<double> toyModel(vector<double> x);
 
 int main(){
-    //srand(time(NULL));
-    int K(2), N(1e6);
-    sobol(K, N);
+    srand(time(NULL));
+    //int K(5), N(1e6);
+    //sobol(K, N);
 
     //vector<double> x = {0.8, 0.8};
     //model(x);
 
     //sobolFromFiles(2);
 
-    //int K(34), L(10), p(20), N(100);
+    int K(5), L(10), p(20), N(100);
     //morris(K, p, N);
-    //morriskVarRange(0, K, L, p, N);
+    morriskVarRange(2, K, L, p, N);
     //morrisk(0, K, p, N);
     //evalModelMorrisR();
     //evalModelSobolR();
@@ -97,7 +97,7 @@ void evalModelSobolR(){
         for(int k(0); k < K; k++){
             fX >> x[k];
         }
-        fY << toyModel(x) << endl;
+        //fY << toyModel(x) << endl;
         //cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
         //cout << "---------------------------------------------" << endl;
     }
@@ -918,7 +918,8 @@ void morriskVarRange(int kp, int K, int L, int p, int N){
             }
 
             for(int m(0); m < M; m++){
-                y[m] = model(Bpp[m]);
+                //y[m] = model(Bpp[m]);
+                y[m] = toyModel(Bpp[m]);
                 nEv++;
 
                 fTumDens    << y[m][0] << endl;
@@ -1022,11 +1023,11 @@ void sobol(int K, int N){
     }
 
     for(int i(0); i < N; i++){
-        Ya[i] = toyModel(Xa[i]);
+        //Ya[i] = toyModel(Xa[i]);
         nEv++;
         //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
         //cout << "---------------------------------------------" << endl;
-        Yb[i] = toyModel(Xb[i]);
+        //Yb[i] = toyModel(Xb[i]);
         nEv++;
         //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
         //cout << "---------------------------------------------" << endl;
@@ -1052,7 +1053,7 @@ void sobol(int K, int N){
         f0 = 0.0;
         for(int i(0); i < N; i++){
             Xc[i][k] = Xb[i][k];
-            Yc[i] = toyModel(Xc[i]);
+            //Yc[i] = toyModel(Xc[i]);
             nEv++;
             //cout << nEv << " out of " << nEvTot << " evaluations of the model";
             //cout << "---------------------------------------------" << endl;
@@ -1157,7 +1158,7 @@ void sobolFromFiles(int K){
 }
 
 
-double toyModel(vector<double> x){
+vector<double> toyModel(vector<double> x){
     //Legendre polynomial of degree d
     /*int d(x[0]);
 
@@ -1182,5 +1183,10 @@ double toyModel(vector<double> x){
                 15.0 * x[1]);
     }
     return x[0] * x[1];*/
-    return x[0] * x[1];
+
+    vector<double> outputs(4, 0.0);
+    outputs[0] = x[0] + 10.0 * x[1] + x[2] * x[2] + x[3] * x[4];
+
+    return outputs;
+
 }
