@@ -14,9 +14,9 @@ allTissues = [densTissues, nonDensTissues];
 
 nDensTissues = length(densTissues);
 nVascTissues = length(vascTissues);
-nTissues = length(allTissues); 
+nTissues = length(allTissues);
 
-nPar = 33;
+nPar = 34;
 b = {'$T_{tum}$', '$T_{heal}$', '$T_{end}$', '$\bar{v}$', '$\alpha_{heal}$'...
     '$\alpha/\beta_{heal}$', '$\alpha_{tumG1}$', '$\alpha/\beta_{tumG1}$'...
     '$\alpha_{tumS}$', '$\alpha/\beta_{tumS}$' '$\alpha_{tumG2}$'...
@@ -26,13 +26,14 @@ b = {'$T_{tum}$', '$T_{heal}$', '$T_{end}$', '$\bar{v}$', '$\alpha_{heal}$'...
     '$d_{thres}$', '$T_{arrest}$', '$pO_2^{nec}$', '$d$', '$D^{O_2}$'...
     '$V_{max}^{O_2}$', '$K_M^{O_2}$', '$D^{VEGF}$', '$V_{max}^{VEGF}$'...
     '$K_M^{VEGF}$', '$pO_2^{preEnd}$', '$pO_2^{neoEnd}$', '$pO_2^{hyp}$', '$v^{hyp}$'};
-color = linspace(0, 1, nPar);
+color = linspace(0, 1, nTissues);
 shape = ['o', 's', 'v', 'd'];
 
 nfig = 1;
 quit = 0;
 
-path = uigetdir('../../Carlos/Results');
+% path = uigetdir('../../Carlos/Results');
+path = '../../Carlos/Results/Morris100_34Par_Cluster';
 while(~quit)
     output = input(['Select an output [timeTo95 (1), timeTo99 (2), tumDens (3), intTumDens (4)] '...
         'or quit (0): ']);
@@ -41,7 +42,7 @@ while(~quit)
             par = input(['Select one parameter (from 1 to ', num2str(nPar)...
                 ') or all of them (0): ']);
             tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
-            'vascularized (4) or non-vascularized (5) tissues: ']);
+                'vascularized (4) or non-vascularized (5) tissues: ']);
             if(par >= 1 && par <= nPar)
                 plotParTimeTo95(path, par, tissueSet)
             elseif(par == 0)
@@ -54,7 +55,7 @@ while(~quit)
             par = input(['Select one parameter (from 1 to ', num2str(nPar)...
                 ') or all of them (0): ']);
             tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
-            'vascularized (4) or non-vascularized (5) tissues: ']);
+                'vascularized (4) or non-vascularized (5) tissues: ']);
             if(par >= 1 && par <= nPar)
                 plotParTimeTo99(path, par, tissueSet)
             elseif(par == 0)
@@ -67,12 +68,25 @@ while(~quit)
             par = input(['Select one parameter (from 1 to ', num2str(nPar)...
                 ') or all of them (0): ']);
             tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
-            'vascularized (4) or non-vascularized (5) tissues: ']);
+                'vascularized (4) or non-vascularized (5) tissues: ']);
             if(par >= 1 && par <= nPar)
                 plotParTumDens(path, par, tissueSet)
             elseif(par == 0)
                 for i = 1:nPar
                     plotParTumDens(path, i, tissueSet)
+                end
+            end
+            
+        case 4
+            par = input(['Select one parameter (from 1 to ', num2str(nPar)...
+                ') or all of them (0): ']);
+            tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
+                'vascularized (4) or non-vascularized (5) tissues: ']);
+            if(par >= 1 && par <= nPar)
+                plotParIntTumDens(path, par, tissueSet)
+            elseif(par == 0)
+                for i = 1:nPar
+                    plotParIntTumDens(path, i, tissueSet)
                 end
             end
             
