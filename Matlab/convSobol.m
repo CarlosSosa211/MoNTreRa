@@ -15,12 +15,40 @@ for k = 1:K
     errTSI(k, :) = abs(TSI(:, k) - sol(k, 1))';
 end
 
+sumSI = sum(SI, 2);
+sumTSI = sum(TSI, 2);
+
+log10N = log10(N);
 nfig = nfig + 1;
 figure(nfig)
-plot(log10(N), log10(errSI));
-title('SI')
+plot(log10N, log10(errSI), '-o');
+title('Error SI')
+xlabel('log_{10}(N)')
+ylabel('log_{10}(err)')
+grid on
+legend
 
 nfig = nfig + 1;
 figure(nfig)
-plot(log10(N), log10(errTSI));
-title('TSI')
+plot(log10N, log10(errTSI), '-o');
+title('Error TSI')
+xlabel('log_{10}(N)')
+ylabel('log_{10}(err)')
+grid on
+legend
+
+nfig = nfig + 1;
+figure(nfig)
+plot(log10N, sumSI, '-o');
+title('Sum SI')
+xlabel('log_{10}(N)')
+ylabel('\Sigma SI_i')
+grid on
+
+nfig = nfig + 1;
+figure(nfig)
+plot(log10N, sumTSI, '-o');
+title('Sum TSI')
+xlabel('log_{10}(N)')
+ylabel('\Sigma TSI_i')
+grid on
