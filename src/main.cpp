@@ -29,11 +29,16 @@ void model(double *x, double *y);
 void morris(const int K, const int N, const int nOut, const int p,
 	    const double *x0, const double *h, double **mu,
 	    double **sigma);
-void morrisk(int kp, int K, int p, int N);
-void morriskVarRange(int kp, int K, int L, int p, int N);
-void morrisR();
-void morrisRT(const int p, const int N, const string nFRefParInt);
-void morrisToy(const int p, const int N, const string nFRefParInt);
+void morrisRT(const int N, const int p, const string nFRefParInt);
+void morrisToy(const int N, const int p, const string nFRefParInt);
+void morrisVarRange(const int K, const int kp, const int L,
+		    const int N, const int nOut, const int p,
+		    const string nFRefParInt,
+		    double ***mu, double ***sigma);
+void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
+		      const string nFRefParInt);
+void morrisVarRangeToy(const int kp, const int L, const int N, const int p,
+		       const string nFRefParInt);
 void sobol(const int K, const int N, const int nOut,
 	   double **SI, double **TSI, double ***SIConv,
 	   double ***TSIConv);
@@ -49,14 +54,13 @@ int main(){
 
   //sobolFromFiles(2);
 
-  int L(10), p(20), N(100);
-  string nFRefParInt("../InputFiles/refParIntToy.dat");
-  //string nFRefParInt("../InputFiles/refParIntRT.dat");
-
-  //morrisRT(p, N, nFRefParInt);
-  morrisToy(p, N, nFRefParInt); 
-  //morriskVarRange(2, K, L, p, N);
-  //morrisk(0, K, p, N);
+  int kp(0), L(10), p(20), N(10);
+  //string nFRefParInt("../InputFiles/refParIntToy.dat");
+  string nFRefParInt("../InputFiles/refParIntRT.dat");
+  //morrisRT(N, p, nFRefParInt);
+  //morrisToy(N, p, nFRefParInt); 
+  //morrisVarRangeToy(kp, L, N, p, nFRefParInt);
+  morrisVarRangeRT(kp, L, N, p, nFRefParInt);
   //evalModelMorrisR();
   //evalModelSobolR();
   return 0;
@@ -292,7 +296,7 @@ void evalModelMorrisR(){
   fDim >> K >> N;
   fDim.close();
 
-  vector<double> x(K), y(4);
+  double x[K], y[4];
   ifstream fX("../InputFiles/X.dat");
   ofstream fYTumDens("../OutputFiles/YTumDens.res");
   ofstream fYIntTumDens("../OutputFiles/YIntTumDens.res");
@@ -326,7 +330,7 @@ void evalModelSobolR(){
   fDim >> K >> N;
   fDim.close();
 
-  vector<double> x(K);
+  double x[K];
   ifstream fX("../InputFiles/X.dat");
   ofstream fY("../OutputFiles/Y.res");
   int nEv((K + 2) * N);
@@ -359,7 +363,7 @@ void free3D(double ***X, const int nLayer, const int nRow){
 }
 
   
-vector<double> model(vector<double> x){
+void model(double *x, double *y){
   int k(0);
   /*int nrow(90), ncol(90), nlayer(1);
     cout << "Creating tissue with: "  << endl;
@@ -427,20 +431,19 @@ vector<double> model(vector<double> x){
     vascDens, sigmaVasc, inTum, inVes);*/
 
   vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
-  double tumGrowth(1.0);
-  int edgeOrder(1);
+  const double tumGrowth(1.0);
+  const int edgeOrder(1);
   vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
-  double res(1.0);
-  double ang(1.0);
+  const double res(1.0);
+  const double ang(1.0);
 
-
-  double tumTime(x[k]);
+  const double tumTime(x[k]);
   k++;
-  double fibTime(x[k]);
+  const double fibTime(x[k]);
   k++;
-  double vascTumTime(x[k]);
+  const double vascTumTime(x[k]);
   k++;
-  double vegfThres(x[k]);
+  const double vegfThres(x[k]);
   k++;
   vector<double> alpha(8), beta(8);
   for(int i(0); i < 8; i++){
@@ -449,33 +452,33 @@ vector<double> model(vector<double> x){
     beta[i]  = alpha[i] / x[k];
     k++;
   }
-  double doseThres(x[k]);
+  const double doseThres(x[k]);
   k++;
-  double arrestTime(x[k]);
+  const double arrestTime(x[k]);
   k++;
-  double hypNecThres(x[k]);
+  const double hypNecThres(x[k]);
   k++;
-  double dose(x[k]);
+  const double dose(x[k]);
   k++;
   double DO2(x[k]);
   k++;
   double Vmax(x[k]);
   k++;
-  double Km(x[k]);
+  const double Km(x[k]);
   k++;
   double Dvegf(x[k]);
   k++;
   double VmaxVegf(x[k]);
   k++;
-  double KmVegf(x[k]);
+  const double KmVegf(x[k]);
   k++;
-  double pO2NormVes(x[k]);
+  const double pO2NormVes(x[k]);
   k++;
-  double pO2TumVes(x[k]);
+  const double pO2TumVes(x[k]);
   k++;
-  double hypThres(x[k]);
+  const double hypThres(x[k]);
   k++;
-  double hypVegf(x[k]);
+  const double hypVegf(x[k]);
   k++;
 
   cout << "tumTime: " << tumTime << " h" <<endl;
@@ -566,29 +569,17 @@ vector<double> model(vector<double> x){
   cout << "intTumDens: " << intTumDens << endl;
   cout << "timeTo95: " << timeTo95 << " h" << endl;
   cout << "timeTo99: " << timeTo99 << " h" << endl;
-
-  vector<double> outputs(4);
-  outputs[0] = finTumDens;
-  outputs[1] = intTumDens;
-  outputs[2] = timeTo95;
-  outputs[3] = timeTo99;
-
-  return outputs;
+  
+  y[0] = finTumDens;
+  y[1] = intTumDens;
+  y[2] = timeTo95;
+  y[3] = timeTo99;
 }
 
 
 void morris(const int K, const int N, const int nOut, const int p,
 	    const double *x0, const double *h, double **mu,
 	    double **sigma){
-  int const M(K + 1);
-  double B[M][K];
-
-  for(int m(1); m < M; m++){
-    for(int k(0); k <m ; k++){
-      B[m][k] = 1.0;
-    }
-  }
-
   vector<int> vP;
 
   for(int k(0); k < K; k++){
@@ -596,17 +587,18 @@ void morris(const int K, const int N, const int nOut, const int p,
   }
 
   int diffk, nEv(0);
-  int const nEvTot((K + 1) * N);
-  double const _pm1(1.0 / (p - 1.0));
-  double const delta(0.5 * _pm1 * p);
-  double const _delta(1.0 / delta);
+  const int M(K + 1);
+  const int nEvTot((K + 1) * N);
+  const double _pm1(1.0 / (p - 1.0));
+  const double delta(0.5 * _pm1 * p);
+  const double _delta(1.0 / delta);
   double xp[M];
-  double **Bp, **Bpp;
+  double **B, **Bp;
   double **y;
   double ***elEff;
 
+  B     = alloc2D(M, K);
   Bp    = alloc2D(M, K);
-  Bpp   = alloc2D(M, K);
   y     = alloc2D(M, nOut);
   elEff = alloc3D(nOut, K, N);
   
@@ -615,11 +607,14 @@ void morris(const int K, const int N, const int nOut, const int p,
   for(int n(0); n < N; n++){
     for(int m(0); m < M; m++){
       xp[m] = _pm1 * (rand() % ((p - 2) / 2 + 1));
-    }
-
-    for(int m(0); m < M; m++){
       for(int k(0); k < K; k++){
-	Bp[m][k] = B[m][k];
+	B[m][k] = 0.0;
+      }
+    }
+    
+    for(int m(1); m < M; m++){
+      for(int k(0); k < m ; k++){
+	B[m][k] = 1.0;
       }
     }
     
@@ -627,9 +622,9 @@ void morris(const int K, const int N, const int nOut, const int p,
       perm = rand() % 2;
       for(int m(0); m < M; m++){
 	if(perm){
-	  Bp[m][k] = 1.0 - Bp[m][k];
+	  B[m][k] = 1.0 - B[m][k];
 	}
-	Bp[m][k] = xp[k] + delta * Bp[m][k];
+	B[m][k] = xp[k] + delta * B[m][k];
       }
     }
 
@@ -637,13 +632,13 @@ void morris(const int K, const int N, const int nOut, const int p,
 
     for(int m(0); m < M; m++){
       for(int k(0); k < K; k++){
-	Bpp[m][k] = x0[k] + Bp[m][vP[k]] * h[k];
+	Bp[m][k] = x0[k] + B[m][vP[k]] * h[k];
       }
     }
 
     for(int m(0); m < M; m++){
-      toyModel(Bpp[m], y[m]);
-      //model(Bpp[m], y[m]);
+      //toyModel(Bp[m], y[m]);
+      model(Bp[m], y[m]);
       nEv++;
       cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
       cout << "---------------------------------------------" << endl;
@@ -658,8 +653,8 @@ void morris(const int K, const int N, const int nOut, const int p,
     }
   }
 
+  free2D(B, M);
   free2D(Bp, M);
-  free2D(Bpp, M);
   free2D(y, M);
   
   for(int k(0); k < K; k++){
@@ -685,322 +680,8 @@ void morris(const int K, const int N, const int nOut, const int p,
 }
 
 
-void morrisk(int kp, int K, int p, int N){
-  ifstream frefParMean("../InputFiles/refParMean.dat");
-  double _pm1(1.0 / (p - 1.0));
-  double delta(0.5 * _pm1 * p);
-  double _delta(1.0 / delta);
-  double h, x0;
-  vector<double> xmean(K);
-
-  for(int k(0); k < K; k++){
-    frefParMean >> xmean[k];
-  }
-  frefParMean.close();
-
-  ifstream frefParInt("../InputFiles/refParInt.dat");
-  for(int k(-1); k < kp; k++){
-    frefParInt >> x0;
-    frefParInt >> h;
-  }
-  frefParInt.close();
-
-  h -= x0;
-
-  int nEv(0), nEvTot(2 * N);
-  vector<double> xp(2);
-  vector<double> B(2);
-  vector<vector<double> > Bp(2, vector<double>(K, 0.0));
-  vector<vector<double> > y(2, vector<double>(4));
-
-  vector<double> elEffTumDens(N);
-  vector<double> elEffIntTumDens(N);
-  vector<double> elEffTimeTo95(N);
-  vector<double> elEffTimeTo99(N);
-
-  double meanTumDens(0.0), meanIntTumDens(0.0);
-  double meanTimeTo95(0.0), meanTimeTo99(0.0);
-
-  ofstream fTumDens("../OutputFiles/tumDens.res");
-  ofstream fIntTumDens("../OutputFiles/intTumDens.res");
-  ofstream fTimeTo95("../OutputFiles/timeTo95.res");
-  ofstream fTimeTo99("../OutputFiles/timeTo99.res");
-
-  for(int n(0); n < N; n++){
-    xp[0] = _pm1 * (rand() % ((p - 2) / 2 + 1));
-    xp[1] = _pm1 * (rand() % ((p - 2) / 2 + 1));
-
-    B[0] = xp[0];
-    B[1] = xp[1] + delta;
-
-    for(int m(0); m < 2; m++){
-      for(int k(0); k < K; k++){
-	Bp[m][k] = xmean[k];
-      }
-    }
-    Bp[0][kp] = x0 + B[0] * h;
-    Bp[1][kp] = x0 + B[1] * h;
-
-    for(int m(0); m < 2; m++){
-      y[m] = model(Bp[m]);
-      nEv++;
-
-      fTumDens    << y[m][0] << endl;
-      fIntTumDens << y[m][1] << endl;
-      fTimeTo95   << y[m][2] << endl;
-      fTimeTo99   << y[m][3] << endl;
-
-      cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-      cout << "---------------------------------------------" << endl;
-    }
-
-    elEffTumDens[n]    = fabs(_delta * (y[1][0] - y[0][0]));
-    elEffIntTumDens[n] = fabs(_delta * (y[1][1] - y[0][1]));
-    elEffTimeTo95[n]   = fabs(_delta * (y[1][2] - y[0][2]));
-    elEffTimeTo99[n]   = fabs(_delta * (y[1][3] - y[0][3]));
-
-    meanTumDens    += elEffTumDens[n];
-    meanIntTumDens += elEffIntTumDens[n];
-    meanTimeTo95   += elEffTimeTo95[n];
-    meanTimeTo99   += elEffTimeTo99[n];
-  }
-
-  fTumDens.close();
-  fIntTumDens.close();
-  fTimeTo99.close();
-  fTimeTo95.close();
-
-  meanTumDens    /= N;
-  meanIntTumDens /= N;
-  meanTimeTo95   /= N;
-  meanTimeTo99   /= N;
-
-  double stdTumDens(0.0), stdIntTumDens(0.0);
-  double stdTimeTo95(0.0), stdTimeTo99(0.0);
-
-  for(int n(0); n < N; n++){
-    stdTumDens += (elEffTumDens[n] - meanTumDens) *
-      (elEffTumDens[n] - meanTumDens);
-    stdIntTumDens += (elEffIntTumDens[n] - meanIntTumDens) *
-      (elEffIntTumDens[n] - meanIntTumDens);
-    stdTimeTo95 += (elEffTimeTo95[n] - meanTimeTo95) *
-      (elEffTimeTo95[n] - meanTimeTo95);
-    stdTimeTo99 += (elEffTimeTo99[n] - meanTimeTo99) *
-      (elEffTimeTo99[n] - meanTimeTo99);
-
-  }
-
-  stdTumDens    = sqrt(stdTumDens / (N - 1.0));
-  stdIntTumDens = sqrt(stdIntTumDens / (N - 1.0));
-  stdTimeTo95   = sqrt(stdTimeTo95 / (N - 1.0));
-  stdTimeTo99   = sqrt(stdTimeTo99 / (N - 1.0));
-
-  ofstream fMorrisTumDens("../OutputFiles/morrisTumDens.res");
-  ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens.res");
-  ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95.res");
-  ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99.res");
-
-  fMorrisTumDens    << meanTumDens    << " " << stdTumDens    << endl;
-  fMorrisIntTumDens << meanIntTumDens << " " << stdIntTumDens << endl;
-  fMorrisTimeTo95   << meanTimeTo95   << " " << stdTimeTo95   << endl;
-  fMorrisTimeTo99   << meanTimeTo99   << " " << stdTimeTo99   << endl;
-
-  cout << meanTumDens    << " " << stdTumDens    << endl;
-  cout << meanIntTumDens << " " << stdIntTumDens << endl;
-  cout << meanTimeTo95   << " " << stdTimeTo95   << endl;
-  cout << meanTimeTo99   << " " << stdTimeTo99   << endl;
-
-  fMorrisTumDens.close();
-  fMorrisIntTumDens.close();
-  fMorrisTimeTo95.close();
-  fMorrisTimeTo99.close();
-}
-
-
-void morriskVarRange(int kp, int K, int L, int p, int N){
-  double _pm1(1.0 / (p - 1.0));
-  double delta(0.5 * _pm1 * p);
-  double _delta(1.0 / delta);
-  vector<double> h(K), x0(K);
-
-  ifstream frefParInt("../InputFiles/refParInt.dat");
-  for(int k(0); k < K; k++){
-    frefParInt >> x0[k];
-    frefParInt >> h[k];
-    h[k] -= x0[k];
-  }
-  frefParInt.close();
-
-  int M(K + 1);
-  vector<int> vP;
-  vector<double> xp(M);
-  vector<vector<double> > B(M, vector<double>(K, 0.0));
-  vector<vector<double> > Bp;
-  vector<vector<double> > Bpp(M, vector<double>(K, 0.0));
-  vector<vector<double> > y(M, vector<double>(4));
-
-  for(int k(0); k < K; k++){
-    vP.push_back(k);
-  }
-
-  for(int m(1); m < M; m++){
-    for(int k(0); k <m ; k++){
-      B[m][k] = 1.0;
-    }
-  }
-
-  int diffk, nEv(0);
-  int nEvTot((K + 1) * N * L);
-  double h10(0.1 * h[kp]);
-
-  vector<vector<double> > elEffTumDens(K, vector<double>(N));
-  vector<vector<double> > elEffIntTumDens(K, vector<double>(N));
-  vector<vector<double> > elEffTimeTo95(K, vector<double>(N));
-  vector<vector<double> > elEffTimeTo99(K, vector<double>(N));
-
-  vector<double> meanTumDens(K), stdTumDens(K);
-  vector<double> meanIntTumDens(K), stdIntTumDens(K);
-  vector<double> meanTimeTo95(K), stdTimeTo95(K);
-  vector<double> meanTimeTo99(K), stdTimeTo99(K);
-
-  ofstream fVarRange("../OutputFiles/varRange.dat");
-  fVarRange << kp << endl;
-
-  for(int l(0); l < L; l++){
-    fVarRange << h[kp] << endl;
-    for(int k(0); k < K; k++){
-      fill(elEffTumDens[k].begin(), elEffTumDens[k].end(), 0.0);
-      fill(elEffIntTumDens[k].begin(), elEffIntTumDens[k].end(), 0.0);
-      fill(elEffTimeTo95[k].begin(), elEffTimeTo95[k].end(), 0.0);
-      fill(elEffTimeTo99[k].begin(), elEffTimeTo99[k].end(), 0.0);
-    }
-    fill(meanTumDens.begin(), meanTumDens.end(), 0.0);
-    fill(meanIntTumDens.begin(), meanIntTumDens.end(), 0.0);
-    fill(meanTimeTo95.begin(), meanTimeTo95.end(), 0.0);
-    fill(meanTimeTo99.begin(), meanTimeTo99.end(), 0.0);
-    fill(stdTumDens.begin(), stdTumDens.end(), 0.0);
-    fill(stdIntTumDens.begin(), stdIntTumDens.end(), 0.0);
-    fill(stdTimeTo95.begin(), stdTimeTo95.end(), 0.0);
-    fill(stdTimeTo99.begin(), stdTimeTo99.end(), 0.0);
-
-    ofstream fTumDens("../OutputFiles/tumDens_" + to_string(h[kp]) + ".res");
-    ofstream fIntTumDens("../OutputFiles/intTumDens_" + to_string(h[kp]) + ".res");
-    ofstream fTimeTo95("../OutputFiles/timeTo95_" + to_string(h[kp]) + ".res");
-    ofstream fTimeTo99("../OutputFiles/timeTo99_" + to_string(h[kp]) + ".res");
-
-    for(int n(0); n < N; n++){
-      for(int m(0); m < M; m++){
-	xp[m] = _pm1 * (rand() % ((p - 2) / 2 + 1));
-      }
-
-      bool perm;
-      Bp = B;
-      for(int k(0); k < K; k++){
-	perm = rand() % 2;
-	for(int m(0); m < M; m++){
-	  if(perm){
-	    Bp[m][k] = 1.0 - Bp[m][k];
-	  }
-	  Bp[m][k] = xp[k] + delta * Bp[m][k];
-	}
-      }
-
-      random_shuffle(vP.begin(), vP.end());
-
-      for(int m(0); m < M; m++){
-	for(int k(0); k < K; k++){
-	  Bpp[m][k] = x0[k] + Bp[m][vP[k]] * h[k];
-	}
-      }
-
-      for(int m(0); m < M; m++){
-	//y[m] = model(Bpp[m]);
-	//y[m] = toyModel(Bpp[m]);
-	nEv++;
-
-	fTumDens    << y[m][0] << endl;
-	fIntTumDens << y[m][1] << endl;
-	fTimeTo95   << y[m][2] << endl;
-	fTimeTo99   << y[m][3] << endl;
-
-	cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-	cout << "---------------------------------------------" << endl;
-      }
-
-      for(int m(1); m < M; m++){
-	diffk = find(vP.begin(), vP.end(), m - 1) - vP.begin();
-
-	elEffTumDens[diffk][n]    = fabs(_delta * (y[m][0] - y[m - 1][0]));
-	elEffIntTumDens[diffk][n] = fabs(_delta * (y[m][1] - y[m - 1][1]));
-	elEffTimeTo95[diffk][n]   = fabs(_delta * (y[m][2] - y[m - 1][2]));
-	elEffTimeTo99[diffk][n]   = fabs(_delta * (y[m][3] - y[m - 1][3]));
-
-	meanTumDens[diffk]    += elEffTumDens[diffk][n];
-	meanIntTumDens[diffk] += elEffIntTumDens[diffk][n];
-	meanTimeTo95[diffk]   += elEffTimeTo95[diffk][n];
-	meanTimeTo99[diffk]   += elEffTimeTo99[diffk][n];
-      }
-    }
-
-    fTumDens.close();
-    fIntTumDens.close();
-    fTimeTo99.close();
-    fTimeTo95.close();
-
-    for(int k(0); k < K; k++){
-      meanTumDens[k]    /= N;
-      meanIntTumDens[k] /= N;
-      meanTimeTo95[k]   /= N;
-      meanTimeTo99[k]   /= N;
-    }
-
-    for(int k(0); k < K; k++){
-      for(int n(0); n < N; n++){
-	stdTumDens[k] += (elEffTumDens[k][n] - meanTumDens[k]) *
-	  (elEffTumDens[k][n] - meanTumDens[k]);
-	stdIntTumDens[k] += (elEffIntTumDens[k][n] - meanIntTumDens[k]) *
-	  (elEffIntTumDens[k][n] - meanIntTumDens[k]);
-	stdTimeTo95[k] += (elEffTimeTo95[k][n] - meanTimeTo95[k]) *
-	  (elEffTimeTo95[k][n] - meanTimeTo95[k]);
-	stdTimeTo99[k] += (elEffTimeTo99[k][n] - meanTimeTo99[k]) *
-	  (elEffTimeTo99[k][n] - meanTimeTo99[k]);
-
-      }
-
-      stdTumDens[k]    = sqrt(stdTumDens[k] / (N - 1.0));
-      stdIntTumDens[k] = sqrt(stdIntTumDens[k] / (N - 1.0));
-      stdTimeTo95[k]   = sqrt(stdTimeTo95[k] / (N - 1.0));
-      stdTimeTo99[k]   = sqrt(stdTimeTo99[k] / (N - 1.0));
-    }
-
-    ofstream fMorrisTumDens("../OutputFiles/morrisTumDens_" + to_string(h[kp]) + ".res");
-    ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens_" + to_string(h[kp]) + ".res");
-    ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95_" + to_string(h[kp]) + ".res");
-    ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99_" + to_string(h[kp]) + ".res");
-
-    for(int k(0); k < K; k++){
-      fMorrisTumDens    << meanTumDens[k]    << " " << stdTumDens[k]    << endl;
-      fMorrisIntTumDens << meanIntTumDens[k] << " " << stdIntTumDens[k] << endl;
-      fMorrisTimeTo95   << meanTimeTo95[k]   << " " << stdTimeTo95[k]   << endl;
-      fMorrisTimeTo99   << meanTimeTo99[k]   << " " << stdTimeTo99[k]   << endl;
-
-      cout << meanTumDens[k]    << " " << stdTumDens[k]    << endl;
-      cout << meanIntTumDens[k] << " " << stdIntTumDens[k] << endl;
-      cout << meanTimeTo95[k]   << " " << stdTimeTo95[k]   << endl;
-      cout << meanTimeTo99[k]   << " " << stdTimeTo99[k]   << endl;
-    }
-    fMorrisTumDens.close();
-    fMorrisIntTumDens.close();
-    fMorrisTimeTo95.close();
-    fMorrisTimeTo99.close();
-
-    h[kp] += h10;
-  }
-}
-
-
-void morrisRT(const int p, const int N, const string nFRefParInt){
-  int const K(34), nOut(4);
+void morrisRT(const int N, const int p, const string nFRefParInt){
+  const int K(34), nOut(4);
   double h[K], x0[K];
   ifstream fRefParInt(nFRefParInt.c_str());
       
@@ -1017,6 +698,13 @@ void morrisRT(const int p, const int N, const string nFRefParInt){
   mu    = alloc2D(nOut, K);
   sigma = alloc2D(nOut, K);
   
+  for(int j(0); j < nOut; j++){
+    for(int k(0); k < K; k++){
+      mu[j][k]    = 0.0;
+      sigma[j][k] = 0.0;
+    }
+  }
+
   morris(K, N, nOut, p, x0, h, mu, sigma);
   
   ofstream fMorrisTumDens("../OutputFiles/morrisTumDens.res");
@@ -1042,7 +730,7 @@ void morrisRT(const int p, const int N, const string nFRefParInt){
 
 
 void morrisToy(const int p, const int N, const string nFRefParInt){
-  int const K(5), nOut(1);
+  const int K(5), nOut(1);
   double h[K], x0[K];
   ifstream fRefParInt(nFRefParInt.c_str());
       
@@ -1058,7 +746,14 @@ void morrisToy(const int p, const int N, const string nFRefParInt){
 
   mu    = alloc2D(nOut, K);
   sigma = alloc2D(nOut, K);
-  
+
+  for(int j(0); j < nOut; j++){
+    for(int k(0); k < K; k++){
+      mu[j][k]    = 0.0;
+      sigma[j][k] = 0.0;
+    }
+  }
+
   morris(K, N, nOut, p, x0, h, mu, sigma);
   
   ofstream fMorrisY("../OutputFiles/morrisY.res");
@@ -1071,6 +766,111 @@ void morrisToy(const int p, const int N, const string nFRefParInt){
 
   free2D(mu, nOut);
   free2D(sigma, nOut);
+}
+
+
+void morrisVarRange(const int K, const int kp, const int L,
+		    const int N, const int nOut, const int p,
+		    const string nFRefParInt,
+		    double ***mu, double ***sigma){
+  double h[K], x0[K];
+  ifstream fRefParInt(nFRefParInt.c_str());
+  
+  for(int k(0); k < K; k++){
+    fRefParInt >> x0[k];
+    fRefParInt >> h[k];
+    h[k] -= x0[k];
+  }
+  fRefParInt.close();
+
+  int nEv(0);
+  const int nEvTot((K + 1) * N * L);
+  const double h10(0.1 * h[kp]);
+  ofstream fVarRange("../OutputFiles/morrisVarRange.res");
+  
+  fVarRange << kp << endl;
+  
+  for(int l(0); l < L; l++){
+    fVarRange << h[kp] << endl;
+    morris(K, N, nOut, p, x0, h, mu[l], sigma[l]);
+    h[kp] += h10;
+  }
+
+  fVarRange.close();
+}
+
+
+void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
+		      const string nFRefParInt){
+  const int K(34), nOut(4);
+  double ***mu, ***sigma;
+
+  mu    = alloc3D(L, nOut, K);
+  sigma = alloc3D(L, nOut, K);
+
+  for(int l(0); l < L; l++){
+    for(int j(0); j < nOut; j++){
+      for(int k(0); k < K; k++){
+	mu[l][j][k]    = 0.0;
+	sigma[l][j][k] = 0.0;
+      }
+    }
+  }
+
+  morrisVarRange(K, kp, L, N, nOut, p, nFRefParInt, mu, sigma);
+
+  for(int l(0); l < L; l++){  
+    ofstream fMorrisTumDens("../OutputFiles/morrisTumDens_" + to_string(l) + ".res");
+    ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens_" + to_string(l) + ".res");
+    ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95_" + to_string(l) + ".res");
+    ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99_" + to_string(l) + ".res");
+
+    for(int k(0); k < K; k++){
+      fMorrisTumDens    << mu[l][0][k] << " " << sigma[l][0][k] << endl;
+      fMorrisIntTumDens << mu[l][1][k] << " " << sigma[l][1][k] << endl;
+      fMorrisTimeTo95   << mu[l][2][k] << " " << sigma[l][2][k] << endl;
+      fMorrisTimeTo99   << mu[l][3][k] << " " << sigma[l][3][k] << endl;
+    }
+    fMorrisTumDens.close();
+    fMorrisIntTumDens.close();
+    fMorrisTimeTo95.close();
+    fMorrisTimeTo99.close();
+  }
+
+  free3D(mu, L, nOut);
+  free3D(sigma, L, nOut);  
+}
+
+
+void morrisVarRangeToy(const int kp, const int L, const int N, const int p,
+		       const string nFRefParInt){
+  const int K(5), nOut(1);
+  double ***mu, ***sigma;
+
+  mu    = alloc3D(L, nOut, K);
+  sigma = alloc3D(L, nOut, K);
+
+  for(int l(0); l < L; l++){
+    for(int j(0); j < nOut; j++){
+      for(int k(0); k < K; k++){
+	mu[l][j][k]    = 0.0;
+	sigma[l][j][k] = 0.0;
+      }
+    }
+  }
+
+  morrisVarRange(K, kp, L, N, nOut, p, nFRefParInt, mu, sigma);
+
+  for(int l(0); l < L; l++){  
+    ofstream fMorrisY("../OutputFiles/morrisY_" + to_string(l) + ".res");
+    for(int k(0); k < K; k++){
+      fMorrisY << mu[l][0][k] << " " << sigma[l][0][k] << endl;
+    }
+    fMorrisY.close();
+  }
+
+  free3D(mu, L, nOut);
+  free3D(sigma, L, nOut);  
 }
 
 
@@ -1102,17 +902,18 @@ void sobol(const int K, const int N, const int nOut,
   }
 
   for(int i(0); i < N; i++){
-    toyModel(Xa[i], Ya[i]);
+    //toyModel(Xa[i], Ya[i]);
+    model(Xa[i], Ya[i]);
     nEv++;
     //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
     //cout << "---------------------------------------------" << endl;
-    toyModel(Xb[i], Yb[i]);
+    //toyModel(Xb[i], Yb[i]);
+    model(Xb[i], Yb[i]);
     nEv++;
     //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
     //cout << "---------------------------------------------" << endl;
   }
 
-    
   int iConv(0), nConv;
   double alpha[nOut], beta[nOut], sigma2[nOut], f0[nOut];
   double f02, f02Conv, sigma2Conv;
@@ -1142,6 +943,7 @@ void sobol(const int K, const int N, const int nOut,
     Xc[i][0] = Xb[i][0];
     
     toyModel(Xc[i], Yc[i]);
+    model(Xc[i], Yc[i]);
     nEv++;
     //cout << nEv << " out of " << nEvTot << " evaluations of the model";
     //cout << "---------------------------------------------" << endl;
@@ -1188,6 +990,7 @@ void sobol(const int K, const int N, const int nOut,
       Xc[i][k] = Xb[i][k];
       
       toyModel(Xc[i], Yc[i]);
+      model(Xc[i], Yc[i]);
       nEv++;
       //cout << nEv << " out of " << nEvTot << " evaluations of the model";
       //cout << "---------------------------------------------" << endl;
@@ -1286,7 +1089,7 @@ void sobolFromFiles(int K){
 }
 
 void sobolRT(const int N){
-  int const K(34), NConv(log(N) / log(2.0)), nOut(4);
+  const int K(34), NConv(log(N) / log(2.0)), nOut(4);
   double **SI, **TSI;
   double ***SIConv, ***TSIConv;
   
