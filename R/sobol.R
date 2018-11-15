@@ -1,6 +1,6 @@
 library(sensitivity)
 nFactors <- 5
-nRep <- 10000
+nRep <- 100000
 
 X1 <- data.frame(matrix(runif(nFactors * nRep), nrow = nRep))
 X2 <- data.frame(matrix(runif(nFactors * nRep), nrow = nRep))

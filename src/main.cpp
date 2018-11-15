@@ -21,14 +21,13 @@ int createInFiles(int nrow, int ncol, int nlayer,
                   double tumDens, double sigmaTum,
                   double vascDens, double sigmaVasc,
                   vector<bool> &inTum, vector<bool> &inVes);
-void evalModelMorrisR();
-void evalModelSobolR();
+void evalR(const int nMethod, const int nModel);
 void free2D(double **X, const int nRow);
 void free3D(double ***X, const int nLayer, const int nRow);
 void model(double *x, double *y);
-void morris(const int K, const int N, const int nOut, const int p,
-	    const double *x0, const double *h, double **mu,
-	    double **sigma);
+void morris(const int K, const int L, const int N, const int nOut,
+	    const int p, const double *x0, const double *h,
+	    double **mu, double **sigma);
 void morrisRT(const int N, const int p, const string nFRefParInt);
 void morrisToy(const int N, const int p, const string nFRefParInt);
 void morrisVarRange(const int K, const int kp, const int L,
@@ -40,29 +39,31 @@ void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
 void morrisVarRangeToy(const int kp, const int L, const int N, const int p,
 		       const string nFRefParInt);
 void sobol(const int K, const int N, const int nOut,
-	   double **SI, double **TSI, double ***SIConv,
-	   double ***TSIConv);
+	   const double *x0, const double *h,
+	   double **SI, double **TSI,
+	   double ***SIConv, double ***TSIConv);
 void sobolFromFiles(int K);
-void sobolRT(const int N);
-void sobolToy(const int N);
+void sobolRT(const int N, const string nFRefParInt);
+void sobolToy(const int N, const string nFRefParInt);
 void toyModel(double *x, double *y);
 
 int main(){
-  srand(time(NULL));
-  //int N(10e5);
-  //sobolToy(N);
+  //const int N(1e5);
+  //const int kp(0), L(10), p(20), N(10);
+  const int nMethod(1), nModel(0);
+  //string nFRefParInt("../InputFiles/refParIntRT.dat");
+  string nFRefParInt("../InputFiles/refParIntToy.dat");
 
+  srand(time(NULL));
+  evalR(nMethod, nModel);
+  //morrisRT(N, p, nFRefParInt);
+  //morrisToy(N, p, nFRefParInt);
+  //morrisVarRangeRT(kp, L, N, p, nFRefParInt);
+  //morrisVarRangeToy(kp, L, N, p, nFRefParInt);
+  //sobolRT(N, nFRefParInt);
+  //sobolToy(N, nFRefParInt);
   //sobolFromFiles(2);
 
-  int kp(0), L(10), p(20), N(10);
-  //string nFRefParInt("../InputFiles/refParIntToy.dat");
-  string nFRefParInt("../InputFiles/refParIntRT.dat");
-  //morrisRT(N, p, nFRefParInt);
-  //morrisToy(N, p, nFRefParInt); 
-  //morrisVarRangeToy(kp, L, N, p, nFRefParInt);
-  morrisVarRangeRT(kp, L, N, p, nFRefParInt);
-  //evalModelMorrisR();
-  //evalModelSobolR();
   return 0;
 }
 
@@ -290,60 +291,90 @@ int createInFiles(int nrow, int ncol, int nlayer,
 }
 
 
-void evalModelMorrisR(){
-  ifstream fDim("../InputFiles/morrisDim.dat");
-  int K, N;
-  fDim >> K >> N;
-  fDim.close();
-
-  double x[K], y[4];
-  ifstream fX("../InputFiles/X.dat");
-  ofstream fYTumDens("../OutputFiles/YTumDens.res");
-  ofstream fYIntTumDens("../OutputFiles/YIntTumDens.res");
-  ofstream fYTimeTo95("../OutputFiles/YTimeTo95.res");
-  ofstream fYTimeTo99("../OutputFiles/YTimeTo99.res");
-  int nEv((K + 1) * N);
-  for(int i(0); i < nEv; i++){
-    for(int k(0); k < K; k++){
-      fX >> x[k];
-    }
-    //y = model(x);
-    fYTumDens << y[0] << endl;
-    fYIntTumDens << y[1] << endl;
-    fYTimeTo95 << y[2] << endl;
-    fYTimeTo99 << y[3] << endl;
-
-    cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
-    cout << "---------------------------------------------" << endl;
+void evalR(const int nMethod, const int nModel){
+  string nFDim;
+  
+  switch(nMethod){
+  case 0:
+    nFDim = "../InputFiles/morrisDim.dat";
+    break;
+  case 1:
+    nFDim = "../InputFiles/sobolDim.dat";
   }
-  fX.close();
-  fYTumDens.close();
-  fYIntTumDens.close();
-  fYTimeTo95.close();
-  fYTimeTo99.close();
-}
+    
+  int K;
+  double doubN;
+  ifstream fDim(nFDim.c_str());
 
-
-void evalModelSobolR(){
-  ifstream fDim("../InputFiles/sobolDim.dat");
-  int K, N;
-  fDim >> K >> N;
+  fDim >> K >> doubN;
   fDim.close();
+
+  int N(doubN), nEv;
+  
+  switch(nMethod){
+  case 0:
+    nEv = (K + 1) * N;
+    break;
+  case 1:
+    nEv = (K + 2) * N;
+    break;
+  }
 
   double x[K];
   ifstream fX("../InputFiles/X.dat");
-  ofstream fY("../OutputFiles/Y.res");
-  int nEv((K + 2) * N);
-  for(int i(0); i < nEv; i++){
-    for(int k(0); k < K; k++){
-      fX >> x[k];
+  
+  switch(nModel){
+  case 0:{
+    const int nOut(1);
+    double y[nOut];
+    ofstream fY("../OutputFiles/Y.res");
+    
+    for(int i(0); i < nEv; i++){
+      for(int k(0); k < K; k++){
+	fX >> x[k];
+      }
+      toyModel(x, y);
+      //cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
+      //cout << "---------------------------------------------" << endl;
+
+      fY << y[0] << endl;
     }
-    //fY << toyModel(x) << endl;
-    //cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
-    //cout << "---------------------------------------------" << endl;
+
+    fY.close();
+    break;
   }
+    
+  case 1:{
+    const int nOut(4);
+    double y[nOut];  
+    ofstream fYTumDens("../OutputFiles/YTumDens.res");
+    ofstream fYIntTumDens("../OutputFiles/YIntTumDens.res");
+    ofstream fYTimeTo95("../OutputFiles/YTimeTo95.res");
+    ofstream fYTimeTo99("../OutputFiles/YTimeTo99.res");
+    
+    for(int i(0); i < nEv; i++){
+      for(int k(0); k < K; k++){
+	fX >> x[k];
+      }
+      model(x, y);
+      //cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
+      //cout << "---------------------------------------------" << endl;
+
+      fYTumDens    << y[0] << endl;
+      fYIntTumDens << y[1] << endl;
+      fYTimeTo95   << y[2] << endl;
+      fYTimeTo99   << y[3] << endl;
+    }
+
+    fYTumDens.close();
+    fYIntTumDens.close();
+    fYTimeTo95.close();
+    fYTimeTo99.close();
+    break;
+  }
+  }
+
   fX.close();
-  fY.close();
 }
 
 
@@ -529,8 +560,8 @@ void model(double *x, double *y){
   oxySimTimeStep = 10.0; //ms;
   sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
     
-  double cellSize(20.0); //um
-  double nu(oxySimTimeStep / (cellSize * cellSize));
+  const double cellSize(20.0); //um
+  const double nu(oxySimTimeStep / (cellSize * cellSize));
   DO2 *= nu;
   Vmax *= oxySimTimeStep;
   Dvegf *= nu;
@@ -577,9 +608,9 @@ void model(double *x, double *y){
 }
 
 
-void morris(const int K, const int N, const int nOut, const int p,
-	    const double *x0, const double *h, double **mu,
-	    double **sigma){
+void morris(const int K, const int L, const int N, const int nOut,
+	    const int p, const double *x0, const double *h,
+	    double **mu, double **sigma){
   vector<int> vP;
 
   for(int k(0); k < K; k++){
@@ -588,7 +619,7 @@ void morris(const int K, const int N, const int nOut, const int p,
 
   int diffk, nEv(0);
   const int M(K + 1);
-  const int nEvTot((K + 1) * N);
+  const int nEvTot(L * (K + 1) * N);
   const double _pm1(1.0 / (p - 1.0));
   const double delta(0.5 * _pm1 * p);
   const double _delta(1.0 / delta);
@@ -705,7 +736,7 @@ void morrisRT(const int N, const int p, const string nFRefParInt){
     }
   }
 
-  morris(K, N, nOut, p, x0, h, mu, sigma);
+  morris(K, 1, N, nOut, p, x0, h, mu, sigma);
   
   ofstream fMorrisTumDens("../OutputFiles/morrisTumDens.res");
   ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens.res");
@@ -754,7 +785,7 @@ void morrisToy(const int p, const int N, const string nFRefParInt){
     }
   }
 
-  morris(K, N, nOut, p, x0, h, mu, sigma);
+  morris(K, 1, N, nOut, p, x0, h, mu, sigma);
   
   ofstream fMorrisY("../OutputFiles/morrisY.res");
 
@@ -792,7 +823,7 @@ void morrisVarRange(const int K, const int kp, const int L,
   
   for(int l(0); l < L; l++){
     fVarRange << h[kp] << endl;
-    morris(K, N, nOut, p, x0, h, mu[l], sigma[l]);
+    morris(K, L, N, nOut, p, x0, h, mu[l], sigma[l]);
     h[kp] += h10;
   }
 
@@ -875,8 +906,9 @@ void morrisVarRangeToy(const int kp, const int L, const int N, const int p,
 
 
 void sobol(const int K, const int N, const int nOut,
-	   double **SI, double **TSI, double ***SIConv,
-	   double ***TSIConv){
+	   const double *x0, const double *h,
+	   double **SI, double **TSI,
+	   double ***SIConv, double ***TSIConv){
   int nEv(0), nEvTot((K + 2) * N);
   double **Xa, **Xb, **Xc;
   double **Ya, **Yb, **Yc;
@@ -896,19 +928,19 @@ void sobol(const int K, const int N, const int nOut,
     //Xb[i][0] = rand() % 5 + 1;
     //Xb[i][1] = -1.0 + 2.0 * (double)(rand()) / (double)(RAND_MAX);
     for(int k(0); k < K; k++){
-      Xa[i][k] = (double)(rand()) / (double)(RAND_MAX);
-      Xb[i][k] = (double)(rand()) / (double)(RAND_MAX);
+      Xa[i][k] = x0[k] + (double)(rand()) / (double)(RAND_MAX) * h[k];
+      Xb[i][k] = x0[k] + (double)(rand()) / (double)(RAND_MAX) * h[k];
     }
   }
 
   for(int i(0); i < N; i++){
-    //toyModel(Xa[i], Ya[i]);
-    model(Xa[i], Ya[i]);
+    toyModel(Xa[i], Ya[i]);
+    //model(Xa[i], Ya[i]);
     nEv++;
     //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
     //cout << "---------------------------------------------" << endl;
-    //toyModel(Xb[i], Yb[i]);
-    model(Xb[i], Yb[i]);
+    toyModel(Xb[i], Yb[i]);
+    //model(Xb[i], Yb[i]);
     nEv++;
     //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
     //cout << "---------------------------------------------" << endl;
@@ -917,11 +949,7 @@ void sobol(const int K, const int N, const int nOut,
   int iConv(0), nConv;
   double alpha[nOut], beta[nOut], sigma2[nOut], f0[nOut];
   double f02, f02Conv, sigma2Conv;
-
-  ofstream fSens("../OutputFiles/sobol.res");
-
-  fSens << K << " " << 0 << endl;
-
+  
   for(int i(0); i < N; i++){
     for(int k(0); k < K; k++){
       Xc[i][k] = Xa[i][k];
@@ -943,7 +971,7 @@ void sobol(const int K, const int N, const int nOut,
     Xc[i][0] = Xb[i][0];
     
     toyModel(Xc[i], Yc[i]);
-    model(Xc[i], Yc[i]);
+    //model(Xc[i], Yc[i]);
     nEv++;
     //cout << nEv << " out of " << nEvTot << " evaluations of the model";
     //cout << "---------------------------------------------" << endl;
@@ -990,7 +1018,7 @@ void sobol(const int K, const int N, const int nOut,
       Xc[i][k] = Xb[i][k];
       
       toyModel(Xc[i], Yc[i]);
-      model(Xc[i], Yc[i]);
+      //model(Xc[i], Yc[i]);
       nEv++;
       //cout << nEv << " out of " << nEvTot << " evaluations of the model";
       //cout << "---------------------------------------------" << endl;
@@ -1088,8 +1116,19 @@ void sobolFromFiles(int K){
   fSens.close();
 }
 
-void sobolRT(const int N){
+void sobolRT(const int N, const string nFRefParInt){
   const int K(34), NConv(log(N) / log(2.0)), nOut(4);
+  double h[K], x0[K];
+  ifstream fRefParInt(nFRefParInt.c_str());
+  
+  for(int k(0); k < K; k++){
+    fRefParInt >> x0[k];
+    fRefParInt >> h[k];
+    h[k] -= x0[k];
+  }
+  
+  fRefParInt.close();
+
   double **SI, **TSI;
   double ***SIConv, ***TSIConv;
   
@@ -1098,7 +1137,7 @@ void sobolRT(const int N){
   SIConv  = alloc3D(NConv, nOut, K);
   TSIConv = alloc3D(NConv, nOut, K);
 
-  sobol(K, N, nOut, SI, TSI, SIConv, TSIConv);
+  sobol(K, N, nOut, x0, h, SI, TSI, SIConv, TSIConv);
 
   ofstream fSobolTumDens("../OutputFiles/sobolTumDens.res");
   ofstream fSobolIntTumDens("../OutputFiles/sobolIntTumDens.res");
@@ -1112,6 +1151,11 @@ void sobolRT(const int N){
   ofstream fConvTSITimeTo95("../OutputFiles/convTSITimeTo95.res");
   ofstream fConvSITimeTo99("../OutputFiles/convSITimeTo99.res");
   ofstream fConvTSITimeTo99("../OutputFiles/convTSITimeTo99.res");
+
+  fSobolTumDens    << K << " " << 0 << endl;
+  fSobolIntTumDens << K << " " << 0 << endl;
+  fSobolTimeTo95   << K << " " << 0 << endl;
+  fSobolTimeTo99   << K << " " << 0 << endl;
 
   for(int k(0); k < K; k++){
     fSobolTumDens    << SI[0][k] << " " << TSI[0][k] << endl;
@@ -1129,6 +1173,7 @@ void sobolRT(const int N){
       fConvSITimeTo99    << SIConv[l][3][k]  << " ";
       fConvTSITimeTo99   << TSIConv[l][3][k] << " ";
     }
+    
     fConvSITumDens     << endl;
     fConvTSITumDens    << endl;
     fConvSIIntTumDens  << endl;
@@ -1136,9 +1181,9 @@ void sobolRT(const int N){
     fConvSITimeTo95    << endl;
     fConvTSITimeTo95   << endl;
     fConvSITimeTo99    << endl;
-    fConvTSITimeTo99   << endl;
-	
+    fConvTSITimeTo99   << endl;	
   }
+  
   fSobolTumDens.close();
   fSobolIntTumDens.close();
   fSobolTimeTo95.close();
@@ -1159,8 +1204,19 @@ void sobolRT(const int N){
 }
 
 
-void sobolToy(const int N){
-  int const K(2), NConv(log(N) / log(2.0)), nOut(1);
+void sobolToy(const int N, const string nFRefParInt){
+  int const K(5), NConv(log(N) / log(2.0)), nOut(1);
+  double h[K], x0[K];
+  ifstream fRefParInt(nFRefParInt.c_str());
+  
+  for(int k(0); k < K; k++){
+    fRefParInt >> x0[k];
+    fRefParInt >> h[k];
+    h[k] -= x0[k];
+  }
+  
+  fRefParInt.close();
+
   double **SI, **TSI;
   double ***SIConv, ***TSIConv;
   
@@ -1169,12 +1225,14 @@ void sobolToy(const int N){
   SIConv  = alloc3D(NConv, nOut, K);
   TSIConv = alloc3D(NConv, nOut, K);
 
-  sobol(K, N, nOut, SI, TSI, SIConv, TSIConv);
+  sobol(K, N, nOut, x0, h,  SI, TSI, SIConv, TSIConv);
 
   ofstream fSobolY("../OutputFiles/sobolY.res");
   ofstream fConvSIY("../OutputFiles/convSIY.res");
   ofstream fConvTSIY("../OutputFiles/convTSIY.res");
 
+  fSobolY << K << " " << 0 << endl;
+  
   for(int k(0); k < K; k++){
     fSobolY << SI[0][k] << " " << TSI[0][k] << endl;
 
@@ -1224,6 +1282,5 @@ void toyModel(double *x, double *y){
     }
     return x[0] * x[1];*/
 
-  y[0] = x[0] + 10.0 * x[1] + x[2] * x[2] + x[3] * x[4];
-  //y[0] = x[0] * x[1];
+  y[0] = x[0] + 2.0 * x[1] + x[2] * x[2] + x[3] * x[4];
 }
