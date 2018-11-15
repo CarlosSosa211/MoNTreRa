@@ -1,3 +1,9 @@
 build*
 OutputFiles*
 *~
+src/GUI/RT.pro.user
+InputFiles/X.dat
+InputFiles/inTum.dat
+InputFiles/inVes.dat
+InputFiles/sobolDim.dat
+InputFiles/tissueDim.dat
