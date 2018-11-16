@@ -29,28 +29,28 @@
 
 class OxyTissue : public Model{
 public:
-    OxyTissue(const int nrow, const int ncol, const int nlayer,
-              const std::string nFInVes, const double Dvegf,
-              const double D, const double Vmax, const double Km,
-              const double pO2NormVes, const double pO2TumVes,
-              const double hypThres, const double  VmaxVegf,
-              const double KmVegf, const double hypVegf);
-    OxyTissue(const int nrow, const int ncol, const int nlayer,
-              const std::vector<bool> &inVes, const double Dvegf,
-              const double D, const double Vmax, const double Km,
-              const double pO2NormVes, const double pO2TumVes,
-              const double hypThres, const double VmaxVegf,
-              const double KmVegf, const double hypVegf);
-    virtual ~OxyTissue();
-    virtual int initModel();
-    virtual int calcModelOut();
-    virtual int updateModel(double currentTime, const double DT);
-    virtual int terminateModel();
-    int getNumHyp() const;
+  OxyTissue(const int nrow, const int ncol, const int nlayer,
+	    const std::string nFInVes, const double Dvegf,
+	    const double D, const double Vmax, const double Km,
+	    const double pO2NormVes, const double pO2TumVes,
+	    const double hypThres, const double  VmaxVegf,
+	    const double KmVegf, const double hypVegf);
+  OxyTissue(const int nrow, const int ncol, const int nlayer,
+	    const std::vector<bool> &inVes, const double Dvegf,
+	    const double D, const double Vmax, const double Km,
+	    const double pO2NormVes, const double pO2TumVes,
+	    const double hypThres, const double VmaxVegf,
+	    const double KmVegf, const double hypVegf);
+  virtual ~OxyTissue();
+  virtual int initModel();
+  virtual int calcModelOut();
+  virtual int updateModel(double currentTime, const double DT);
+  virtual int terminateModel();
+  int getNumHyp() const;
 
 protected:
-    int m_ncol, m_nlayer, m_nrow;
-    std::vector<std::vector<std::vector<Model *> > > m_map;
+  int m_ncol, m_nlayer, m_nrow;
+  Model ****m_map;
 };
 
 #endif
