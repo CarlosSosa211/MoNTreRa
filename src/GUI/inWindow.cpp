@@ -33,6 +33,7 @@ InWindow::InWindow() : QWidget(){
     m_nrow        = new QSpinBox(m_artifGroup);
     m_ncol        = new QSpinBox(m_artifGroup);
     m_nlayer      = new QSpinBox(m_artifGroup);
+    m_cellSize    = new QDoubleSpinBox(m_artifGroup);
     m_tumDens     = new QDoubleSpinBox(m_artifGroup);
     m_sigmaTum    = new QDoubleSpinBox(m_artifGroup);
     m_vascDens    = new QDoubleSpinBox(m_artifGroup);
@@ -139,6 +140,7 @@ InWindow::InWindow() : QWidget(){
     m_nrow->setMaximum(499);
     m_ncol->setMaximum(499);
     m_nlayer->setMaximum(499);
+    m_cellSize->setMaximum(30.0);
     m_tumDens->setMaximum(1.0);
     m_tumDens->setSingleStep(0.01);
     m_sigmaTum->setMaximum(2.0);
@@ -215,6 +217,7 @@ InWindow::InWindow() : QWidget(){
     artifLayout->addRow("Number of rows", m_nrow);
     artifLayout->addRow("Number of columns", m_ncol);
     artifLayout->addRow("Number of layers", m_nlayer);
+    artifLayout->addRow("Cell size (μm)", m_cellSize);
     artifLayout->addRow("Initial tumor density", m_tumDens);
     artifLayout->addRow("Standard deviation\nof tumor cells", m_sigmaTum);
     artifLayout->addRow("Initial vascular density", m_vascDens);
@@ -455,9 +458,10 @@ int InWindow::createInFiles(){
     else{
         std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
 
-        fTissueDim << m_nrow->value() << std::endl;
-        fTissueDim << m_ncol->value() << std::endl;
-        fTissueDim << m_nlayer->value() << std::endl;
+        fTissueDim << m_nrow->value()     << std::endl;
+        fTissueDim << m_ncol->value()     << std::endl;
+        fTissueDim << m_nlayer->value()   << std::endl;
+        fTissueDim << m_cellSize->value() << std::endl;
 
         fTissueDim.close();
 
@@ -689,13 +693,11 @@ int InWindow::createInFiles(){
         fParam << m_fibDoubTime->value() << std::endl;
     }
 
-    double cellSize(20.0); //um
-    double nu(m_oxySimTimeStep->value() / (cellSize * cellSize));
-
     fParam << m_paramAng->isChecked() << std::endl;
     if(m_paramAng->isChecked()){
         fParam << m_angTime->value() << std::endl;
-        fParam << m_Dvegf->value() * nu << std::endl;
+        fParam << m_Dvegf->value() *
+                  m_oxySimTimeStep->value()  << std::endl;
         fParam << m_VmaxVegf->value() *
                   m_oxySimTimeStep-> value() << std::endl;
         fParam << m_KmVegf->value() << std::endl;
@@ -725,7 +727,8 @@ int InWindow::createInFiles(){
 
     fParam << m_paramOxy->isChecked() << std::endl;
     if(m_paramOxy->isChecked()){
-        fParam << m_D->value() * nu << std::endl;
+        fParam << m_D->value() *
+                  m_oxySimTimeStep->value() << std::endl;
         fParam << m_Vmax->value() *
                   m_oxySimTimeStep->value() << std::endl;
         fParam << m_Km->value() << std::endl;
@@ -770,6 +773,7 @@ int InWindow::loadInData(std::string nFInData){
 
     bool histSpec;
     int nrow(0), ncol(0), nlayer(0);
+    double cellSize(0.0);
     double tumDens(0.0), sigmaTum(0.0), vascDens(0.0), sigmaVasc(0.0);
 
     fInData >> histSpec;
@@ -780,12 +784,14 @@ int InWindow::loadInData(std::string nFInData){
     }
     else{
         fInData >> nrow >> ncol >> nlayer;
+        fInData >> cellSize;
         fInData >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
     }
 
     m_nrow->setValue(nrow);
     m_ncol->setValue(ncol);
     m_nlayer->setValue(nlayer);
+    m_cellSize->setValue(cellSize);
     m_tumDens->setValue(tumDens);
     m_sigmaTum->setValue(sigmaTum);
     m_vascDens->setValue(vascDens);

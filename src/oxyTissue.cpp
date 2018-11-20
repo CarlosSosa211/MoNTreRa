@@ -18,18 +18,19 @@
 using namespace std;
 
 OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
-                     const string nFInVes, const double Dvegf,
-                     const double DO2, const double Vmax, const double Km,
-                     const double pO2NormVes, const double pO2TumVes,
-                     const double hypThres, const double VmaxVegf,
-                     const double KmVegf, const double hypVegf) :
+                     const double cellSize, const string nFInVes,
+                     const double Dvegf, const double DO2, const double Vmax,
+                     const double Km, const double pO2NormVes,
+                     const double pO2TumVes, const double hypThres,
+                     const double VmaxVegf, const double KmVegf,
+                     const double hypVegf) :
   Model(0, 0, 5, 2, nrow * ncol * nlayer){
   m_nrow   = nrow;
   m_ncol   = ncol;
   m_nlayer = nlayer;
 
-  PAR_DO2   = DO2;
-  PAR_DVEGF = Dvegf;
+  PAR_DO2   = DO2 / (cellSize * cellSize);
+  PAR_DVEGF = Dvegf / (cellSize * cellSize);
 
   for(int k(0); k < m_numComp; k++){
     m_comp->at(k) = new OxyCell(Vmax, Km, pO2NormVes, pO2TumVes,
@@ -74,11 +75,12 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
 
 
 OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
-                     const vector<bool> &inVes, const double Dvegf,
-                     const double DO2, const double Vmax, const double Km,
-                     const double pO2NormVes, const double pO2TumVes,
-                     const double hypThres, const double  VmaxVegf,
-                     const double KmVegf, const double hypVegf) :
+                     const double cellSize, const vector<bool> &inVes,
+                     const double Dvegf, const double DO2, const double Vmax,
+                     const double Km, const double pO2NormVes,
+                     const double pO2TumVes, const double hypThres,
+                     const double  VmaxVegf, const double KmVegf,
+                     const double hypVegf) :
   Model(0, 0, 5, 2, nrow * ncol * nlayer){
   m_nrow   = nrow;
   m_ncol   = ncol;

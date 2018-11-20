@@ -84,6 +84,55 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_selChart->addItem("Tumor density");
     }
 
+    std::ifstream fTumVol((nFOutData + "/tumVol.res").c_str());
+
+    if(!fTumVol.is_open()){
+        QMessageBox::critical(this, "Error", "Problem while opening tumVol.res");
+    }
+
+    else{
+        m_cTumVol = new QChart;
+        m_xTumVol = new QValueAxis;
+        m_yTumVol = new QValueAxis;
+        m_cTumVol->addAxis(m_xTumVol, Qt::AlignBottom);
+        m_cTumVol->addAxis(m_yTumVol, Qt::AlignLeft);
+        m_cTumVol->setMaximumWidth(1000);
+
+        QLineSeries *sTumVol = new QLineSeries(m_cTumVol);
+
+        fTumVol >> a >> b;
+        while(!fTumVol.eof()){
+            sTumVol->append(a, b);
+            fTumVol >> a >> b;
+        }
+        fTumVol.close();
+
+        m_cTumVol->addSeries(sTumVol);
+        m_cTumVol->legend()->hide();
+        m_cTumVol->setTitle("Evolution of the tumor volume");
+
+        m_xTumVol->setTitleText("Time (h)");
+        m_xTumVol->setLabelFormat("%i");
+        sTumVol->attachAxis(m_xTumVol);
+        m_xTumVol->applyNiceNumbers();
+
+        m_yTumVol->setTitleText("Tumor volume (mm³)");
+        m_yTumVol->setLabelFormat("%4.2f");
+        sTumVol->attachAxis(m_yTumVol);
+        m_yTumVol->setMin(0.0);
+        m_yTumVol->applyNiceNumbers();
+
+        m_sDash = new QLineSeries(m_cTumVol);
+        m_sDash->append(0.0, 0.0);
+        m_sDash->append(0.0, 100.0);
+        m_sDash->setPen(QPen(Qt::DashLine));
+        m_cTumVol->addSeries(m_sDash);
+        m_sDash->attachAxis(m_xTumVol);
+        m_sDash->attachAxis(m_yTumVol);
+
+        m_selChart->addItem("Tumor volume");
+    }
+
     std::ifstream fVascDens((nFOutData + "/vascDens.res").c_str());
 
     if(!fVascDens.is_open()){
@@ -816,7 +865,7 @@ void OutWindow::change(){
 }
 
 
-void OutWindow::changeChart(int numChart){
+void OutWindow::changeChart(const int numChart){
     switch(numChart){
     case 0:{
         m_chartView->chart()->removeSeries(m_sDash);
@@ -829,6 +878,15 @@ void OutWindow::changeChart(int numChart){
 
     case 1:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_cTumVol->addSeries(m_sDash);
+        m_sDash->attachAxis(m_xTumVol);
+        m_sDash->attachAxis(m_yTumVol);
+        m_chartView->setChart(m_cTumVol);
+        break;
+    }
+
+    case 2:{
+        m_chartView->chart()->removeSeries(m_sDash);
         m_cVascDens->addSeries(m_sDash);
         m_sDash->attachAxis(m_xVascDens);
         m_sDash->attachAxis(m_yVascDens);
@@ -837,7 +895,7 @@ void OutWindow::changeChart(int numChart){
         break;
     }
 
-    case 2:{
+    case 3:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_cKilledCells->addSeries(m_sDash);
         m_sDash->attachAxis(m_xKilledCells);
@@ -846,7 +904,7 @@ void OutWindow::changeChart(int numChart){
         break;
     }
 
-    case 3:{
+    case 4:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_cCycle->addSeries(m_sDash);
         m_sDash->attachAxis(m_xCycle);
@@ -856,7 +914,7 @@ void OutWindow::changeChart(int numChart){
         break;
     }
 
-    case 4:{
+    case 5:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_cHypDens->addSeries(m_sDash);
         m_sDash->attachAxis(m_xHypDens);
@@ -865,7 +923,7 @@ void OutWindow::changeChart(int numChart){
         break;
     }
 
-    case 5:{
+    case 6:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_cPO2Stat->addSeries(m_sDash);
         m_sDash->attachAxis(m_xPO2Stat);
@@ -875,7 +933,7 @@ void OutWindow::changeChart(int numChart){
         break;
     }
 
-    case 6:{
+    case 7:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_cVegfStat->addSeries(m_sDash);
         m_sDash->attachAxis(m_xVegfStat);
@@ -889,18 +947,18 @@ void OutWindow::changeChart(int numChart){
 }
 
 
-void OutWindow::changeIter(int iter){
+void OutWindow::changeIter(const int iter){
     drawMap(m_selMap->currentIndex(), iter);
     drawChartDashLine(iter);
 }
 
 
-void OutWindow::changeNumMap(int numMap){
+void OutWindow::changeNumMap(const int numMap){
     drawMap(numMap, m_slider->value());
 }
 
 
-void OutWindow::drawChartDashLine(int iter){
+void OutWindow::drawChartDashLine(const int iter){
     QVector<QPointF> points;
     points.push_back(QPointF(iter, 0.0));
     points.push_back(QPointF(iter, 100.0));
@@ -908,7 +966,7 @@ void OutWindow::drawChartDashLine(int iter){
 }
 
 
-void OutWindow::drawMap(int numMap, int mapIter){
+void OutWindow::drawMap(const int numMap, const int mapIter){
     switch(numMap){
     case 0:{
         int iSclFac, jSclFac;
@@ -925,7 +983,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
             }
         }
         m_pixState->convertFromImage(*m_imState);
-        m_map->setPixmap(m_pixState->scaledToWidth(1000));
+        m_map->setPixmap(m_pixState->scaledToHeight(700));
         m_legendSt->show();
         m_legendCyc->hide();
         m_legendPO2->hide();
@@ -949,7 +1007,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
         }
 
         m_pixTimer->convertFromImage(*m_imTimer);
-        m_map->setPixmap(m_pixTimer->scaledToWidth(1000));
+        m_map->setPixmap(m_pixTimer->scaledToHeight(700));
         m_legendSt->hide();
         m_legendCyc->show();
         m_legendPO2->hide();
@@ -974,7 +1032,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
         }
 
         m_pixPO2->convertFromImage(*m_imPO2);
-        m_map->setPixmap(m_pixPO2->scaledToWidth(1000));
+        m_map->setPixmap(m_pixPO2->scaledToHeight(700));
         m_legendCyc->hide();
         m_legendSt->hide();
         m_legendPO2->show();
@@ -999,7 +1057,7 @@ void OutWindow::drawMap(int numMap, int mapIter){
         }
 
         m_pixVegf->convertFromImage(*m_imVegf);
-        m_map->setPixmap(m_pixVegf->scaledToWidth(1000));
+        m_map->setPixmap(m_pixVegf->scaledToHeight(700));
         m_legendCyc->hide();
         m_legendSt->hide();
         m_legendPO2->hide();

@@ -11,8 +11,9 @@ SimThread::SimThread(QObject *parent) : QThread(parent){
 void SimThread::run(){
     std::ifstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
     int nrow, ncol, nlayer;
+    double cellSize;
 
-    fTissueDim >> nrow >> ncol >> nlayer;
+    fTissueDim >> nrow >> ncol >> nlayer >> cellSize;
 
     std::cout << "Tissue dimensions: "  << std::endl;
     std::cout << nrow << " row";
@@ -154,7 +155,7 @@ void SimThread::run(){
         RootSimulator *sim;
         Tissue *model1;
 
-        model1 = new Tissue(nrow, ncol, nlayer, inTum,
+        model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum,
                             inVes, tumGrowth, doubTime, edgeSize,
                             cycDur, cycDistrib, res, fibDoubTime,
                             ang, angTime, vegfThres, alpha, beta,
@@ -164,8 +165,8 @@ void SimThread::run(){
         if(oxy){
             OxyTissue *model2;
 
-            model2 = new OxyTissue(nrow, ncol, nlayer, inVes,
-                                   Dvegf, DO2, Vmax, Km,
+            model2 = new OxyTissue(nrow, ncol, nlayer, cellSize,
+                                   inVes, Dvegf, DO2, Vmax, Km,
                                    pO2NormVes, pO2TumVes,
                                    hypThres, VmaxVegf, KmVegf,
                                    hypVegf);
@@ -192,6 +193,7 @@ void SimThread::run(){
         sim->initSim();
 
         std::ofstream fTumDens("../OutputFilesGUI/tumDens.res");
+        std::ofstream fTumVol("../OutputFilesGUI/tumVol.res");
         std::ofstream fKilledCells("../OutputFilesGUI/killedCells.res");
         std::ofstream fVascDens("../OutputFilesGUI/vascDens.res");
         std::ofstream fHypDens("../OutputFilesGUI/hypDens.res");
@@ -205,6 +207,8 @@ void SimThread::run(){
 
         fTumDens << currentTime << " " <<
                     model1->getOut()->at(0) << std::endl;
+        fTumVol << currentTime << " " <<
+                   model1->getOut()->at(23) << std::endl;
         fVascDens << currentTime << " " <<
                      model1->getOut()->at(6) << " " <<
                      model1->getOut()->at(7) << " " <<
@@ -245,6 +249,8 @@ void SimThread::run(){
 
             fTumDens << currentTime << " " <<
                         model1->getOut()->at(0) << std::endl;
+            fTumVol << currentTime << " " <<
+                       model1->getOut()->at(23) << std::endl;
             fVascDens << currentTime << " " <<
                          model1->getOut()->at(6) << " " <<
                          model1->getOut()->at(7) << " " <<
@@ -281,6 +287,7 @@ void SimThread::run(){
         }
 
         fTumDens.close();
+        fTumVol.close();
         fVascDens.close();
         fKilledCells.close();
         fHypDens.close();
@@ -325,7 +332,7 @@ void SimThread::run(){
         OxyTissue *model1;
         Simulator *sim;
 
-        model1 = new OxyTissue(nrow, ncol, nlayer,
+        model1 = new OxyTissue(nrow, ncol, nlayer, cellSize,
                                inVes, Dvegf, DO2, Vmax,
                                Km, pO2NormVes, pO2TumVes,
                                hypThres, VmaxVegf, KmVegf,

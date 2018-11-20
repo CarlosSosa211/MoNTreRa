@@ -49,6 +49,7 @@ private:
     QComboBox *m_selHistSpec;
     QGroupBox *m_artifGroup;
     QSpinBox *m_nrow, *m_ncol, *m_nlayer;
+    QDoubleSpinBox *m_cellSize;
     QDoubleSpinBox *m_tumDens, *m_sigmaTum, *m_vascDens, *m_sigmaVasc;
     QDoubleSpinBox *m_doubTime;
     QSpinBox *m_edgeOrder;

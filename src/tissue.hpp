@@ -46,6 +46,7 @@
 #define OUT_DOSE_TO_999   m_out->at(20)
 #define OUT_KILLED_CELLS  m_out->at(21)
 #define OUT_INT_TUM_DENS  m_out->at(22)
+#define OUT_TUM_VOL       m_out->at(23)
 
 //Internal parameters
 #define PAR_INIT_TUM_DENS m_param->at(0)
@@ -54,11 +55,12 @@
 
 class Tissue : public Model{
 public:
-    Tissue(const int nrow, const int ncol,
-           const int nlayer, Treatment *const treatment);
     Tissue(const int nrow, const int ncol, const int nlayer,
-           const std::string nFInTum, const std::string nFInVes,
-           const double tumGrowth, const double doubTime, const int edgeOrder,
+           Treatment *const treatment);
+    Tissue(const int nrow, const int ncol, const int nlayer,
+           const double cellSize, const std::string nFInTum,
+           const std::string nFInVes, const double tumGrowth,
+           const double doubTime, const int edgeOrder,
            std::vector<double> cycDur, std::vector<double> cycDistrib,
            const double res, const double fibDoubTime, const double ang,
            const double angTime, const double vegfThres,
@@ -66,8 +68,9 @@ public:
            const double doseThres, const double arresTime, 
            Treatment *const treatment, const double hypNecThres);
     Tissue(const int nrow, const int ncol, const int nlayer,
-           const std::vector<bool> &inTum, const std::vector<bool> &inVes,
-           const double tumGrowth, const double doubTime, const int edgeOrder,
+           const double cellSize, const std::vector<bool> &inTum,
+           const std::vector<bool> &inVes, const double tumGrowth,
+           const double doubTime, const int edgeOrder,
            std::vector<double> cycDur, std::vector<double> cycDistrib,
            const double res, const double fibDoubTime, const double ang,
            const double angTime, const double vegfThres,
@@ -96,6 +99,7 @@ public:
 
 protected:
     int m_ncol, m_nlayer, m_nrow;
+    double m_cellSize;
     double m_doseNeeded[6], m_timeNeeded[6];
     Treatment *m_treatment;
 };

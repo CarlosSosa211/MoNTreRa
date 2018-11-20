@@ -17,10 +17,9 @@
 
 using namespace std;
 
-Tissue::Tissue(const int nrow, const int ncol,
-               const int nlayer,
+Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                Treatment *const treatment) :
-    Model(0, 3, 23, 2, nrow * ncol * nlayer){
+    Model(0, 3, 24, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -35,19 +34,21 @@ Tissue::Tissue(const int nrow, const int ncol,
 
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
-               const string nFInTum, const string nFInVes,
-               const double tumGrowth, const double doubTime,
-               const int edgeOrder, vector<double> cycDur,
-               vector<double> cycDistrib, const double res,
-               const double fibDoubTime, const double ang,
-               const double angTime, const double vegfThres,
-               vector<double> alpha, vector<double> beta,
-               const double doseThres, const double arrestTime, 
-               Treatment *const treatment, const double hypNecThres) :
-    Model(0, 3, 23, 2, nrow * ncol * nlayer){
+               const double cellSize, const string nFInTum,
+               const string nFInVes, const double tumGrowth,
+               const double doubTime, const int edgeOrder,
+               vector<double> cycDur, vector<double> cycDistrib,
+               const double res, const double fibDoubTime,
+               const double ang, const double angTime,
+               const double vegfThres, vector<double> alpha,
+               vector<double> beta, const double doseThres,
+               const double arrestTime, Treatment *const treatment,
+               const double hypNecThres) :
+    Model(0, 3, 24, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
+    m_cellSize = cellSize; //(mm)
 
     m_treatment = treatment;
 
@@ -198,19 +199,21 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
 
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
-               const vector<bool> &inTum, const vector<bool> &inVes,
-               const double tumGrowth, const double doubTime,
-               const int edgeOrder, vector<double> cycDur,
-               vector<double> cycDistrib, const double res,
-               const double fibDoubTime, const double ang,
-               const double angTime, const double vegfThres,
-               vector<double> alpha, vector<double> beta,
-               const double doseThres, const double arrestTime,
-               Treatment *const treatment, const double hypNecThres) :
-    Model(0, 3, 23, 2, nrow * ncol * nlayer){
+               const double cellSize, const vector<bool> &inTum,
+               const vector<bool> &inVes, const double tumGrowth,
+               const double doubTime, const int edgeOrder,
+               vector<double> cycDur, vector<double> cycDistrib,
+               const double res, const double fibDoubTime,
+               const double ang, const double angTime,
+               const double vegfThres, vector<double> alpha,
+               vector<double> beta, const double doseThres,
+               const double arrestTime, Treatment *const treatment,
+               const double hypNecThres) :
+    Model(0, 3, 24, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
+    m_cellSize = cellSize * 1e-3; //(mm)
 
     m_treatment = treatment;
 
@@ -367,8 +370,10 @@ int Tissue::calcModelOut(){
     OUT_NORM_VES_DENS = double(getNumNormVes()) / double(m_numComp) * 100.0;
     OUT_TUM_VES_DENS  = double(getNumTumVes()) / double(m_numComp) * 100.0;
 
-    if(getNumTum()){
-        double numTum100(100.0 / double(getNumTum()));
+    const int numTum(getNumTum());
+
+    if(numTum){
+        const double numTum100(100.0 / double(numTum));
         OUT_G1_DENS = numTum100 * double(getNumG1());
         OUT_S_DENS  = numTum100 * double(getNumS());
         OUT_G2_DENS = numTum100 * double(getNumG2());
@@ -396,6 +401,8 @@ int Tissue::calcModelOut(){
     OUT_DOSE_TO_95  = m_doseNeeded[3];
     OUT_DOSE_TO_99  = m_doseNeeded[4];
     OUT_DOSE_TO_999 = m_doseNeeded[5];
+
+    OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize * m_cellSize, 1.5);
 
     return 0;
 }

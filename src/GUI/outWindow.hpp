@@ -22,8 +22,8 @@ class OutWindow : public QWidget{
     Q_OBJECT
 public:
     OutWindow(std::string nFOutData);
-    void drawChartDashLine(int iter);
-    void drawMap(int numMap, int mapIter);
+    void drawChartDashLine(const int iter);
+    void drawMap(const int numMap, const int mapIter);
 
 private:
     int m_mapNrow, m_mapNcol, m_mapSclFac;
@@ -35,9 +35,10 @@ private:
     QGroupBox *m_selChartGroup, *m_selMapGroup, *m_mapGroup;
     QGroupBox *m_legendSt, *m_legendCyc, *m_legendPO2, *m_legendVegf;
     QChartView *m_chartView;
-    QChart *m_cTumDens, *m_cVascDens, *m_cKilledCells, *m_cCycle;
-    QChart *m_cHypDens, *m_cPO2Stat, *m_cVegfStat;
+    QChart *m_cTumDens, *m_cTumVol, *m_cVascDens, *m_cKilledCells;
+    QChart *m_cCycle, *m_cHypDens, *m_cPO2Stat, *m_cVegfStat;
     QValueAxis *m_xTumDens, *m_yTumDens;
+    QValueAxis *m_xTumVol, *m_yTumVol;
     QValueAxis *m_xVascDens, *m_yVascDens;
     QValueAxis *m_xKilledCells, *m_yKilledCells;
     QValueAxis *m_xCycle, *m_yCycle;
@@ -69,9 +70,9 @@ private:
 
 private slots:
     void change();
-    void changeChart(int numChart);
-    void changeIter(int iter);
-    void changeNumMap(int numMap);
+    void changeChart(const int numChart);
+    void changeIter(const int iter);
+    void changeNumMap(const int numMap);
     void newSim();
     void play();
     void saveAllMaps();
