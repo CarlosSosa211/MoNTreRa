@@ -47,16 +47,17 @@ void sobolRT(const int N, const string nFRefParInt);
 void sobolToy(const int N, const string nFRefParInt);
 void toyModel(double *x, double *y);
 
+
 int main(){
   //const int N(1e5);
-  //const int kp(0), L(10), p(20), N(10);
-  const int nMethod(1), nModel(0);
-  //string nFRefParInt("../InputFiles/refParIntRT.dat");
-  string nFRefParInt("../InputFiles/refParIntToy.dat");
+  const int kp(0), L(10), p(20), N(100);
+  //const int nMethod(1), nModel(0);
+  string nFRefParInt("../InputFiles/refParIntRT.dat");
+  //string nFRefParInt("../InputFiles/refParIntToy.dat");
 
   srand(time(NULL));
-  evalR(nMethod, nModel);
-  //morrisRT(N, p, nFRefParInt);
+  //evalR(nMethod, nModel);
+  morrisRT(N, p, nFRefParInt);
   //morrisToy(N, p, nFRefParInt);
   //morrisVarRangeRT(kp, L, N, p, nFRefParInt);
   //morrisVarRangeToy(kp, L, N, p, nFRefParInt);
@@ -430,10 +431,12 @@ void model(double *x, double *y){
     cout << "sigmaVasc: " << sigmaVasc << endl;*/
 
   int nrow, ncol, nlayer;
+  double cellSize;
 
   std::ifstream fInTissueDim("../InputFiles/tissueDim.dat");
 
   fInTissueDim >> nrow >> ncol >> nlayer;
+  fInTissueDim >> cellSize;
   fInTissueDim.close();
 
   vector<bool> inTum;
@@ -549,7 +552,7 @@ void model(double *x, double *y){
   Tissue *model1;
   OxyTissue *model2;
 
-  model1 = new Tissue(nrow, ncol, nlayer, inTum, inVes,
+  model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes,
 		      tumGrowth, tumTime, edgeOrder, cycDur, cycDistrib,
 		      res, fibTime, ang, vascTumTime, vegfThres, alpha,
 		      beta, doseThres, arrestTime, treatment, hypNecThres);
@@ -560,19 +563,15 @@ void model(double *x, double *y){
   oxySimTimeStep = 10.0; //ms;
   sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
     
-  const double cellSize(20.0); //um
-  const double nu(oxySimTimeStep / (cellSize * cellSize));
-  DO2 *= nu;
+  DO2 *= oxySimTimeStep;
   Vmax *= oxySimTimeStep;
-  Dvegf *= nu;
+  Dvegf *= oxySimTimeStep;
   VmaxVegf *= oxySimTimeStep;
 
 
-  model2 = new OxyTissue(nrow, ncol, nlayer, inVes,
-			 Dvegf, DO2, Vmax, Km,
-			 pO2NormVes, pO2TumVes,
-			 hypThres, VmaxVegf,
-			 KmVegf, hypVegf);
+  model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes,
+			 Dvegf, DO2, Vmax, Km, pO2NormVes, pO2TumVes,
+			 hypThres, VmaxVegf, KmVegf, hypVegf);
 
   coupler = new Coupler(model1, model2);
 
