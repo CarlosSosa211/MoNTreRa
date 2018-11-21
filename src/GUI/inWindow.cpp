@@ -137,9 +137,9 @@ InWindow::InWindow() : QWidget(){
     m_selHistSpec->addItems(histSpecList);
     m_artif->setChecked(false);
     m_artifGroup->setEnabled(false);
-    m_nrow->setMaximum(499);
-    m_ncol->setMaximum(499);
-    m_nlayer->setMaximum(499);
+    m_nrow->setMaximum(999);
+    m_ncol->setMaximum(999);
+    m_nlayer->setMaximum(999);
     m_cellSize->setMaximum(30.0);
     m_tumDens->setMaximum(1.0);
     m_tumDens->setSingleStep(0.01);
