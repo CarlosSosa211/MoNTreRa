@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 
 #include <QGridLayout>
@@ -1096,11 +1097,14 @@ void OutWindow::saveAllMaps(){
     switch (m_selMap->currentIndex()){
     case 0:{
         QDir().mkdir("../Figures/state");
+        const int K(m_state.size() * m_simTimeStep);
 
-        for(int k(0); k < m_state.size(); k++){
+        for(int k(0); K; k += m_simTimeStep){
             drawMap(m_selMap->currentIndex(), k);
             emit updateSlider(k);
-            fileName = "../Figures/state/" + QString::number(k) + ".png";
+            fileName = QString::number(k);
+            fileName = fileName.rightJustified(4, '0');
+            fileName = "../Figures/state/" + fileName + ".png";
             m_map->grab().save(fileName);
             qApp->processEvents();
         }
@@ -1109,11 +1113,14 @@ void OutWindow::saveAllMaps(){
 
     case 1:{
         QDir().mkdir("../Figures/timer");
+        const int K(m_timer.size() * m_simTimeStep);
 
-        for(int k(0); k < m_timer.size(); k++){
+        for(int k(0); k < K; k += m_simTimeStep){
             drawMap(m_selMap->currentIndex(), k);
             emit updateSlider(k);
-            fileName = "../Figures/timer/" + QString::number(k) + ".png";
+            fileName = QString::number(k);
+            fileName = fileName.rightJustified(4, '0');
+            fileName = "../Figures/timer/" + fileName + ".png";
             m_map->grab().save(fileName);
             qApp->processEvents();
         }
@@ -1122,11 +1129,14 @@ void OutWindow::saveAllMaps(){
 
     case 2:{
         QDir().mkdir("../Figures/pO2");
+        const int K(m_pO2.size() * m_simTimeStep);
 
-        for(int k(0); k < m_pO2.size(); k++){
+        for(int k(0); k < K; k += m_simTimeStep){
             drawMap(m_selMap->currentIndex(), k);
             emit updateSlider(k);
-            fileName = "../Figures/pO2/" + QString::number(k) + ".png";
+            fileName = QString::number(k);
+            fileName = fileName.rightJustified(4, '0');
+            fileName = "../Figures/pO2/" + fileName + ".png";
             m_map->grab().save(fileName);
             qApp->processEvents();
         }
@@ -1135,11 +1145,14 @@ void OutWindow::saveAllMaps(){
 
     case 3:{
         QDir().mkdir("../Figures/vegf");
+        const int K(m_vegf.size() * m_simTimeStep);
 
-        for(int k(0); k < m_vegf.size(); k++){
+        for(int k(0); k < K; k += m_simTimeStep){
             drawMap(m_selMap->currentIndex(), k);
             emit updateSlider(k);
-            fileName = "../Figures/vegf/" + QString::number(k) + ".png";
+            fileName = QString::number(k);
+            fileName = fileName.rightJustified(4, '0');
+            fileName = "../Figures/vegf/" + fileName + ".png";
             m_map->grab().save(fileName);
             qApp->processEvents();
         }
