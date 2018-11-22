@@ -23,6 +23,7 @@ ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
 set(ax,'XTickLabel', cOut(:, 5));
 ax.YGrid = 'on';
+ylim([0, inf])
 title(['Tissue ', num2str(nTissue), ' - All outputs'], 'fontsize', 20)
 legend('Time to kill 95%', 'Time to kill 99%', 'Final tumor density',...
     'Integral of tumor density', 'location', 'northwest', 'fontsize', 20)

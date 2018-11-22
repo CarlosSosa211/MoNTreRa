@@ -99,6 +99,7 @@ end
 
 errorbar(ctr, ydt, cell2mat(cTimeTo95(:, 7:8)), '.k')
 hold off
+ylim([0, inf])
 legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$', '$\sqrt{\mu*^2 + \sigma^2}$'},...
     'fontsize', 20, 'location', 'northwest', 'interpreter', 'latex')
 end

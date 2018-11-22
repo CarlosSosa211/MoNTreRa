@@ -76,6 +76,7 @@ end
 
 errorbar(ctr, ydt, cell2mat(cOut(:, 5:8)), '.k')
 hold off
+ylim([0, inf])
 legend({'Time to kill 95%', 'Time to kill 99%', 'Final tumor density', 'Integral of tumor density'},...
     'location', 'northwest', 'fontsize', 20)
 end

@@ -61,7 +61,7 @@ switch tissueSet
 end
 axis([0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)]), 0, 1.1 * max([tumDens(:, 1); tumDens(:, 2)])])
 grid on
-legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex', 'fontsize', 18)
+legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex', 'fontsize', 16)
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
 
@@ -97,6 +97,7 @@ end
 
 errorbar(ctr, ydt, cell2mat(cTumDens(:, 7:8)), '.k')
 hold off
+ylim([0, inf])
 legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$', '$\sqrt{\mu*^2 + \sigma^2}$'},...
     'fontsize', 20, 'location', 'northwest', 'interpreter', 'latex')
 xtickangle(45)
