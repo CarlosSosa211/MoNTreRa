@@ -402,7 +402,12 @@ int Tissue::calcModelOut(){
     OUT_DOSE_TO_99  = m_doseNeeded[4];
     OUT_DOSE_TO_999 = m_doseNeeded[5];
 
-    OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize * m_cellSize, 1.5);
+    if(m_nlayer == 1){
+        OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize * m_cellSize, 1.5);
+    }
+    else{
+        OUT_TUM_VOL = numTum * m_cellSize * m_cellSize * m_cellSize;
+    }
 
     return 0;
 }

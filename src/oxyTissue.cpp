@@ -29,8 +29,15 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     m_ncol   = ncol;
     m_nlayer = nlayer;
 
-    PAR_DO2   = DO2 / (cellSize * cellSize);
-    PAR_DVEGF = Dvegf / (cellSize * cellSize);
+    if(m_nlayer == 1){
+        PAR_DO2   = DO2 / (cellSize * cellSize);
+        PAR_DVEGF = Dvegf / (cellSize * cellSize);
+    }
+
+    else{
+        PAR_DO2   = DO2 / (cellSize * cellSize * cellSize);
+        PAR_DVEGF = Dvegf / (cellSize * cellSize * cellSize);
+    }
 
     for(int k(0); k < m_numComp; k++){
         m_comp->at(k) = new OxyCell(Vmax, Km, pO2NormVes, pO2TumVes,
@@ -86,10 +93,15 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     m_ncol   = ncol;
     m_nlayer = nlayer;
 
+    if(m_nlayer == 1){
     PAR_DO2   = DO2 / (cellSize * cellSize);
     PAR_DVEGF = Dvegf / (cellSize * cellSize);
+    }
 
-    cout << cellSize << endl;
+    else{
+        PAR_DO2   = DO2 / (cellSize * cellSize * cellSize);
+        PAR_DVEGF = Dvegf / (cellSize * cellSize * cellSize);
+    }
 
     for(int k(0); k < m_numComp; k++){
         m_comp->at(k) = new OxyCell(Vmax, Km, pO2NormVes, pO2TumVes,
