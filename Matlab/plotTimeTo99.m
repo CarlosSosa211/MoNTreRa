@@ -6,9 +6,8 @@ timeTo99 = load([path, '/morrisTimeTo99_', num2str(nTissue), '.res']);
 timeTo99(:, 4) = sqrt(timeTo99(:, 1).^2 + timeTo99(:, 2).^2);
 timeTo99(:, 3) = timeTo99(:, 1).^2 ./ timeTo99(:, 4);
 
-
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 hold on
 colormap(jet)
 for i = 1 : size(timeTo99, 1)
@@ -25,8 +24,8 @@ hold off
 
 cTimeTo99 = [num2cell(timeTo99), b'];
 cTimeTo99 = sortrows(cTimeTo99, 4);
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 bar(cell2mat(cTimeTo99(:, 3:4)))
 ax = gca;
 ax.TickLabelInterpreter = 'latex';

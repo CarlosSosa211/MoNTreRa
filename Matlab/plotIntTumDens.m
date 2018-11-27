@@ -6,8 +6,8 @@ intTumDens = load([path, '/morrisIntTumDens_', num2str(nTissue), '.res']);
 intTumDens(:, 4) = sqrt(intTumDens(:, 1).^2 + intTumDens(:, 2).^2);
 intTumDens(:, 3) = intTumDens(:, 1).^2 ./ intTumDens(:, 4);
 
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 hold on
 colormap(jet)
 for i = 1 : size(intTumDens, 1)
@@ -24,8 +24,8 @@ hold off
 
 cIntTumDens = [num2cell(intTumDens), b'];
 cIntTumDens = sortrows(cIntTumDens, 4);
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 bar(cell2mat(cIntTumDens(:, 3:4)))
 ax = gca;
 ax.TickLabelInterpreter = 'latex';

@@ -28,9 +28,8 @@ for i = 1:length(tTissues)
     timeTo99(:, :, i) = load([path, '/morrisTimeTo99_', num2str(tTissues(i)), '.res']);
 end
 
-figure(nfig);
 nfig = nfig + 1;
-
+figure(nfig);
 hold on
 colormap(jet)
 if(tissueSet == 1)
