@@ -533,12 +533,15 @@ void OutWindowOxy::play(){
 
 void OutWindowOxy::saveAllMaps(){
     QString fileName;
-    QDir().mkdir("../Figures/pO2");
+    QDir().mkdir("../Figures/pO2ms");
+    const int K(m_pO2.size() * m_simOxyTimeStep);
 
-    for(int k(0); k < m_pO2.size(); k++){
+    for(int k(0); k < K; k += m_simOxyTimeStep){
         drawMap(m_selMap->currentIndex(), k);
         emit updateSlider(k);
-        fileName = "../Figures/pO2/" + QString::number(k) + ".png";
+        fileName = QString::number(k);
+        fileName = fileName.rightJustified(5, '0');
+        fileName = "../Figures/pO2ms/" + fileName + ".png";
         m_map->grab().save(fileName);
         qApp->processEvents();
     }
