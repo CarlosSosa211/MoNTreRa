@@ -19,7 +19,7 @@ using namespace std;
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                Treatment *const treatment) :
-    Model(0, 3, 24, 2, nrow * ncol * nlayer){
+    Model(0, 7, 28, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -44,7 +44,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, const double doseThres,
                const double arrestTime, Treatment *const treatment,
                const double hypNecThres) :
-    Model(0, 3, 24, 2, nrow * ncol * nlayer){
+    Model(0, 7, 28, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -59,7 +59,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
             for(int j(0); j < m_ncol; j++){
                 m_comp->at(k) = new Cell(i, j, l, tumGrowth, doubTime, cycDur,
                                          res, fibDoubTime, ang, angTime, vegfThres,
-                                         alpha, beta, doseThres, arrestTime, 
+                                         alpha, beta, doseThres, arrestTime,
                                          hypNecThres, this);
                 m_numOut += (m_comp->at(k))->getNumOut();
                 k++;
@@ -209,7 +209,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, const double doseThres,
                const double arrestTime, Treatment *const treatment,
                const double hypNecThres) :
-    Model(0, 3, 24, 2, nrow * ncol * nlayer){
+    Model(0, 7, 28, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -228,7 +228,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
             for(int j(0); j < m_ncol; j++){
                 m_comp->at(k) = new Cell(i, j, l, tumGrowth, doubTime, cycDur,
                                          res, fibDoubTime, ang, angTime,
-                                         vegfThres, alpha, beta, doseThres, 
+                                         vegfThres, alpha, beta, doseThres,
                                          arrestTime, hypNecThres, this);
                 m_numOut += (m_comp->at(k))->getNumOut();
 
@@ -361,8 +361,12 @@ int Tissue::calcModelOut(){
         (m_comp->at(k))->calcModelOut();
     }
 
-    OUT_TUM_DENS     = ST_TUM_DENS;
-    OUT_INT_TUM_DENS = ST_INT_TUM_DENS;
+    OUT_TUM_DENS           = ST_TUM_DENS;
+    OUT_END_TREAT_TUM_DENS = ST_END_TREAT_TUM_DENS;
+    OUT_3MON_TUM_DENS      = ST_3MON_TUM_DENS;
+    OUT_INT_TUM_DENS       = ST_INT_TUM_DENS;
+    OUT_REC_TUM_DENS       = ST_REC_TUM_DENS;
+    OUT_REC_TIME           = ST_REC_TIME;
     if(PAR_INIT_TUM_DENS){
         OUT_KILLED_CELLS = (PAR_INIT_TUM_DENS - ST_TUM_DENS) / PAR_INIT_TUM_DENS * 100.0;
     }
@@ -424,10 +428,12 @@ int Tissue::initModel(){
     ST_TUM_DENS      = PAR_INIT_TUM_DENS;
     ST_PREV_TUM_DENS = PAR_INIT_TUM_DENS;
     ST_INT_TUM_DENS  = 0.0;
+    ST_END_TREAT_TUM_DENS = 0.0;
+    ST_3MON_TUM_DENS      = 0.0;
+    ST_REC_TUM_DENS = 0.0;
+    ST_REC_TIME     = 0.0;
 
     for(int i(0); i < 6; i++){
-        //m_doseNeeded[i] = m_treatment->getTotalDose() + m_treatment->getFraction();
-        //m_timeNeeded[i] = m_treatment->getDuration() + m_treatment->getInterval();
         m_doseNeeded[i] = -1.0;
         m_timeNeeded[i] = -1.0;
     }
@@ -461,7 +467,7 @@ int Tissue::terminateModel(){
         for(int i(0); i < 6; i++){
             if(m_doseNeeded[i] < 0){
                 m_doseNeeded[i] = m_treatment->getTotalDose() + m_treatment->getFraction();
-                m_timeNeeded[i] = m_treatment->getDuration() + m_treatment->getInterval();
+                m_timeNeeded[i] = m_treatment->getDuration() + 720.0 + m_treatment->getInterval();
             }
         }
     }
@@ -496,6 +502,14 @@ int Tissue::updateModel(const double currentTime,
     ST_INT_TUM_DENS += 0.5 * DT * (ST_PREV_TUM_DENS + ST_TUM_DENS);
 
     if(m_treatment){
+        if(currentTime <= m_treatment->getDuration()){
+            ST_END_TREAT_TUM_DENS = ST_TUM_DENS;
+        }
+
+        if(currentTime <= m_treatment->getDuration() + 720.0){
+            ST_3MON_TUM_DENS = ST_TUM_DENS;
+        }
+
         double tumSurv;
         tumSurv = ST_TUM_DENS / PAR_INIT_TUM_DENS;
         if(tumSurv < 0.5 && m_doseNeeded[0] < 0.0){

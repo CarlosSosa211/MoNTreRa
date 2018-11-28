@@ -309,7 +309,7 @@ void SimThread::run(){
                        model1->getOut()->at(22) << std::endl;
         fIntTumDens.close();
 
-        std::ofstream fDoseAndTime ("../OutputFilesGUI/doseAndTime.res");
+        std::ofstream fDoseAndTime("../OutputFilesGUI/doseAndTime.res");
 
         double perc[6] = {50.0, 80.0, 90.0, 95.0, 99.0, 99.9};
 
@@ -320,6 +320,21 @@ void SimThread::run(){
         }
 
         fDoseAndTime.close();
+
+        std::ofstream fEndTreatTumDens("../OutputFilesGUI/endTreatTumDens.res");
+        fEndTreatTumDens << treatment->getDuration() << " " <<
+                            model1->getOut()->at(24);
+        fEndTreatTumDens.close();
+
+        std::ofstream f3MonTumDens("../OutputFilesGUI/3MonTumDens.res");
+        f3MonTumDens << treatment->getDuration() + 720.0 << " " <<
+                        model1->getOut()->at(25);
+        f3MonTumDens.close();
+
+        std::ofstream fRec("../OutputFilesGUI/rec.res");
+        fRec << model1->getOut()->at(27) << " " <<
+                model1->getOut()->at(26);
+        fRec.close();
 
         delete treatment;
         delete model1;
