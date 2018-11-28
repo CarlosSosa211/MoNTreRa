@@ -50,7 +50,7 @@ void toyModel(double *x, double *y);
 
 int main(){
     //const int N(1e5);
-    const int kp(0), L(10), p(20), N(100);
+    const int kp(0), L(10), p(20), N(5);
     //const int nMethod(1), nModel(0);
     string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
@@ -599,7 +599,7 @@ void model(double *x, double *y){
     sim = new RootSimulator(coupler, simTimeStep,
                             oxySimTimeStep, sclFac);
     //simTime = treatment->getDuration();
-    simTime = treatment-getDuration() + 720.0; // + 3 months
+    simTime = treatment->getDuration() + 720.0; // + 3 months
 
     sim->initSim();
     sim->simulate(simTimeStep, simTime);
