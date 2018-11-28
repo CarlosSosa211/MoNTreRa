@@ -11,13 +11,22 @@ tumDens(:, 3) = sqrt(tumDens(:, 1).^2 + tumDens(:, 2).^2);
 intTumDens = load([path, '/morrisIntTumDens_', num2str(nTissue), '.res']);
 intTumDens(:, 3) = sqrt(intTumDens(:, 1).^2 + intTumDens(:, 2).^2);
 
+maxMeanTimeTo95_ = 1./max(timeTo95(:, 3));
+timeTo95(:, 3) = timeTo95(:, 3) .* maxMeanTimeTo95_;
+maxMeanTimeTo99_ = 1./max(timeTo99(:, 3));
+timeTo99(:, 3) = timeTo99(:, 3) .* maxMeanTimeTo99_;
+maxMeanTumDens_ = 1./max(tumDens(:, 3));
+tumDens(:, 3) = tumDens(:, 3) .* maxMeanTumDens_;
+maxMeanIntTumDens_ = 1./max(intTumDens(:, 3));
+intTumDens(:, 3) = intTumDens(:, 3) .* maxMeanIntTumDens_;
+
 cOut = [num2cell(timeTo95(:, 3)), num2cell(timeTo99(:, 3))...
     num2cell(tumDens(:, 3)), num2cell(intTumDens(:, 3)), b'];
 cOut = sortrows(cOut, 1);
 
 figure(nfig);
 nfig = nfig + 1;
-bar(cell2mat(cOut(:, 1:2)));
+bar(cell2mat(cOut(:, 1:4)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
@@ -25,6 +34,6 @@ set(ax,'XTickLabel', cOut(:, 5));
 ax.YGrid = 'on';
 ylim([0, inf])
 title(['Tissue ', num2str(nTissue), ' - All outputs'], 'fontsize', 20)
-legend('Time to kill 95%', 'Time to kill 99%', 'Final tumor density',...
-    'Integral of tumor density', 'location', 'northwest', 'fontsize', 20)
+legend({'Time to kill 95%', 'Time to kill 99%', 'Final tumor density',...
+    'Integral of tumor density'}, 'location', 'northwest', 'fontsize', 20)
 xtickangle(45)
