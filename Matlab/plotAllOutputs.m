@@ -6,8 +6,8 @@ timeTo95 = load([path, '/morrisTimeTo95_', num2str(nTissue), '.res']);
 timeTo95(:, 3) = sqrt(timeTo95(:, 1).^2 + timeTo95(:, 2).^2);
 timeTo99 = load([path, '/morrisTimeTo99_', num2str(nTissue), '.res']);
 timeTo99(:, 3) = sqrt(timeTo99(:, 1).^2 + timeTo99(:, 2).^2);
-tumDens = load([path, '/morrisTumDens_', num2str(nTissue), '.res']);
-tumDens(:, 3) = sqrt(tumDens(:, 1).^2 + tumDens(:, 2).^2);
+endTreatTumDens = load([path, '/morrisEndTreatTumDens_', num2str(nTissue), '.res']);
+endTreatTumDens(:, 3) = sqrt(endTreatTumDens(:, 1).^2 + endTreatTumDens(:, 2).^2);
 intTumDens = load([path, '/morrisIntTumDens_', num2str(nTissue), '.res']);
 intTumDens(:, 3) = sqrt(intTumDens(:, 1).^2 + intTumDens(:, 2).^2);
 
@@ -15,13 +15,13 @@ maxMeanTimeTo95_ = 1./max(timeTo95(:, 3));
 timeTo95(:, 3) = timeTo95(:, 3) .* maxMeanTimeTo95_;
 maxMeanTimeTo99_ = 1./max(timeTo99(:, 3));
 timeTo99(:, 3) = timeTo99(:, 3) .* maxMeanTimeTo99_;
-maxMeanTumDens_ = 1./max(tumDens(:, 3));
-tumDens(:, 3) = tumDens(:, 3) .* maxMeanTumDens_;
+maxMeanEndTreatTumDens_ = 1./max(endTreatTumDens(:, 3));
+endTreatTumDens(:, 3) = endTreatTumDens(:, 3) .* maxMeanEndTreatTumDens_;
 maxMeanIntTumDens_ = 1./max(intTumDens(:, 3));
 intTumDens(:, 3) = intTumDens(:, 3) .* maxMeanIntTumDens_;
 
 cOut = [num2cell(timeTo95(:, 3)), num2cell(timeTo99(:, 3))...
-    num2cell(tumDens(:, 3)), num2cell(intTumDens(:, 3)), b'];
+    num2cell(endTreatTumDens(:, 3)), num2cell(intTumDens(:, 3)), b'];
 cOut = sortrows(cOut, 1);
 
 figure(nfig);
@@ -34,6 +34,6 @@ set(ax,'XTickLabel', cOut(:, 5));
 ax.YGrid = 'on';
 ylim([0, inf])
 title(['Tissue ', num2str(nTissue), ' - All outputs'], 'fontsize', 20)
-legend({'Time to kill 95%', 'Time to kill 99%', 'Final tumor density',...
+legend({'Time to kill 95%', 'Time to kill 99%', 'Tumor density at the end of treat.',...
     'Integral of tumor density'}, 'location', 'northwest', 'fontsize', 20)
 xtickangle(45)

@@ -31,7 +31,7 @@ varRange = varRange(2 : length(varRange));
 shape = ['o', 's', 'v', 'd'];
 
 while(~quit)
-    output = input('Select an output [timeTo95 (1), timeTo99 (2), tumDens (3) or intTumDens (4)] or quit (0): ');
+    output = input('Select an output [timeTo95 (1), timeTo99 (2), endTreatTumDens (3) or intTumDens (4)] or quit (0): ');
     sel = input('Select the studied parameter (1) or all of them (2) or: ');
     switch output
         case 1
@@ -60,11 +60,11 @@ while(~quit)
             if(sel == 2)
                 for i = 1 : length(varRange)
                     color = linspace(0, 1, nPar);
-                    plotTumDens(path, varRange(i))
+                    plotEndTreatTumDens(path, varRange(i))
                 end
             elseif(sel == 1)
                 color = linspace(0, 1, length(varRange));
-                plotParTumDens(path, par, 6)
+                plotParEndTreatTumDens(path, par, 6)
             end
             
         case 4

@@ -35,7 +35,7 @@ quit = 0;
 % path = uigetdir('../../Carlos/Results');
 path = '../../Carlos/Results/Morris100_34Par_Cluster';
 while(~quit)
-    output = input(['Select an output [timeTo95 (1), timeTo99 (2), tumDens (3), intTumDens (4)] '...
+    output = input(['Select an output [timeTo95 (1), timeTo99 (2), endTreatTumDens (3), intTumDens (4)] '...
         'or quit (0): ']);
     switch output
         case 1
@@ -70,10 +70,10 @@ while(~quit)
             tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
                 'vascularized (4) or non-vascularized (5) tissues: ']);
             if(par >= 1 && par <= nPar)
-                plotParTumDens(path, par, tissueSet)
+                plotParEndTreatTumDens(path, par, tissueSet)
             elseif(par == 0)
                 for i = 1:nPar
-                    plotParTumDens(path, i, tissueSet)
+                    plotParEndTreatTumDens(path, i, tissueSet)
                 end
             end
             
