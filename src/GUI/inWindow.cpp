@@ -382,7 +382,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/inTG.dat");
+    loadInData("../InputFiles/in.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -771,9 +771,9 @@ int InWindow::loadInData(std::string nFInData){
 
     std::ifstream fInData(nFInData.c_str());
 
-    bool histSpec;
+    int histSpec;
     int nrow(0), ncol(0), nlayer(0);
-    double cellSize(0.0);
+    double cellSize(20.0);
     double tumDens(0.0), sigmaTum(0.0), vascDens(0.0), sigmaVasc(0.0);
 
     fInData >> histSpec;
