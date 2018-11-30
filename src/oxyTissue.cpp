@@ -94,8 +94,8 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     m_nlayer = nlayer;
 
     if(m_nlayer == 1){
-    PAR_DO2   = DO2 / (cellSize * cellSize);
-    PAR_DVEGF = Dvegf / (cellSize * cellSize);
+        PAR_DO2   = DO2 / (cellSize * cellSize);
+        PAR_DVEGF = Dvegf / (cellSize * cellSize);
     }
 
     else{
@@ -177,566 +177,563 @@ int OxyTissue::calcModelOut(){
 
 
 int OxyTissue::updateModel(double currentTime, const double DT){
-    double diffO2[m_nlayer][m_nrow][m_ncol];
-    double diffVegf[m_nlayer][m_nrow][m_ncol];
-
     if(m_nlayer == 1){
         //First row, first column
-        diffO2[0][0][0] = PAR_DO2 *
-                (((OxyCell *)m_map[0][0][1])->getOutPO2() +
+        ((OxyCell *)m_map[0][0][0])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][0][1])->getOutPO2() +
                 ((OxyCell *)m_map[0][1][0])->getOutPO2() -
-                2.0 * ((OxyCell *)m_map[0][0][0])->getOutPO2());
+                2.0 * ((OxyCell *)m_map[0][0][0])->getOutPO2()));
 
-        diffVegf[0][0][0] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][0][1])->getOutVEGF() +
+        ((OxyCell *)m_map[0][0][0])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][0][1])->getOutVEGF() +
                 ((OxyCell *)m_map[0][1][0])->getOutVEGF() -
-                2.0 * ((OxyCell *)m_map[0][0][0])->getOutVEGF());
+                2.0 * ((OxyCell *)m_map[0][0][0])->getOutVEGF()));
 
         //First row, last column
-        diffO2[0][0][m_ncol - 1] = PAR_DO2 *
-                (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutPO2() +
+        ((OxyCell *)m_map[0][0][m_ncol - 1])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutPO2() +
                 ((OxyCell *)m_map[0][1][m_ncol - 1])->getOutPO2() -
-                2.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutPO2());
+                2.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutPO2()));
 
-        diffVegf[0][0][m_ncol - 1] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutVEGF() +
+        ((OxyCell *)m_map[0][0][m_ncol - 1])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutVEGF() +
                 ((OxyCell *)m_map[0][1][m_ncol - 1])->getOutVEGF() -
-                2.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutVEGF());
+                2.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutVEGF()));
 
         //Last row, first column
-        diffO2[0][m_nrow - 1][0] = PAR_DO2 *
-                (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutPO2() +
+        ((OxyCell *)m_map[0][m_nrow - 1][0])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutPO2() +
                 ((OxyCell *)m_map[0][m_nrow - 1][1])->getOutPO2() -
-                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutPO2());
+                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutPO2()));
 
-        diffVegf[0][m_nrow - 1][0] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutVEGF() +
+        ((OxyCell *)m_map[0][m_nrow - 1][0])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutVEGF() +
                 ((OxyCell *)m_map[0][m_nrow - 1][1])->getOutVEGF() -
-                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutVEGF());
+                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutVEGF()));
 
         //Last row, last column
-        diffO2[0][m_nrow - 1][m_ncol - 1] = PAR_DO2 *
-                (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutPO2() +
+        ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutPO2() +
                 ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 2])->getOutPO2() -
-                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutPO2());
+                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutPO2()));
 
-        diffVegf[0][m_nrow - 1][m_ncol - 1] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutVEGF() +
+        ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutVEGF() +
                 ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 2])->getOutVEGF() -
-                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutVEGF());
+                2.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutVEGF()));
 
         //First row, middle columns
         for(int j(1); j < m_ncol - 1; j++){
-            diffO2[0][0][j] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][0][j - 1])->getOutPO2() +
+            ((OxyCell *)m_map[0][0][j])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][0][j - 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][0][j + 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][1][j])->getOutPO2() -
-                    3.0 * ((OxyCell *)m_map[0][0][j])->getOutPO2());
+                    3.0 * ((OxyCell *)m_map[0][0][j])->getOutPO2()));
 
-            diffVegf[0][0][j] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][0][j - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[0][0][j])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][0][j - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][0][j + 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][1][j])->getOutVEGF() -
-                    3.0 * ((OxyCell *)m_map[0][0][j])->getOutVEGF());
+                    3.0 * ((OxyCell *)m_map[0][0][j])->getOutVEGF()));
         }
 
         //Last row, middle columns
         for(int j(1); j < m_ncol - 1; j++){
-            diffO2[0][m_nrow - 1][j] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutPO2() +
+            ((OxyCell *)m_map[0][m_nrow - 1][j])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][m_nrow - 1][j + 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][m_nrow - 2][j])->getOutPO2() -
-                    3.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutPO2());
+                    3.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutPO2()));
 
-            diffVegf[0][m_nrow - 1][j] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[0][m_nrow - 1][j])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][m_nrow - 1][j + 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][m_nrow - 2][j])->getOutVEGF() -
-                    3.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutVEGF());
+                    3.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutVEGF()));
         }
 
         //First column, middle rows
         for(int i(1); i < m_nrow - 1; i++){
-            diffO2[0][i][0] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][i - 1][0])->getOutPO2() +
+            ((OxyCell *)m_map[0][i][0])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][i - 1][0])->getOutPO2() +
                     ((OxyCell *)m_map[0][i][1])->getOutPO2() +
                     ((OxyCell *)m_map[0][i + 1][0])->getOutPO2() -
-                    3.0 * ((OxyCell *)m_map[0][i][0])->getOutPO2());
+                    3.0 * ((OxyCell *)m_map[0][i][0])->getOutPO2()));
 
-            diffVegf[0][i][0] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][i - 1][0])->getOutVEGF() +
+            ((OxyCell *)m_map[0][i][0])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][i - 1][0])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i][1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i + 1][0])->getOutVEGF() -
-                    3.0 * ((OxyCell *)m_map[0][i][0])->getOutVEGF());
+                    3.0 * ((OxyCell *)m_map[0][i][0])->getOutVEGF()));
         }
 
         //Last column, middle rows
         for(int i(1); i < m_nrow - 1; i++){
-            diffO2[0][i][m_ncol - 1] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutPO2() +
+            ((OxyCell *)m_map[0][i][m_ncol - 1])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][i][m_ncol - 2])->getOutPO2() +
                     ((OxyCell *)m_map[0][i + 1][m_ncol - 1])->getOutPO2() -
-                    3.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutPO2());
+                    3.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutPO2()));
 
-            diffVegf[0][i][m_ncol - 1] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[0][i][m_ncol - 1])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i][m_ncol - 2])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i + 1][m_ncol - 1])->getOutVEGF() -
-                    3.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutVEGF());
+                    3.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutVEGF()));
         }
 
         //Middle rows, middle columns
         for(int i(1); i < m_nrow - 1; i++){
             for(int j(1); j < m_ncol - 1; j++){
-                diffO2[0][i][j] = PAR_DO2 *
-                        (((OxyCell *)m_map[0][i - 1][j])->getOutPO2() +
+                ((OxyCell *)m_map[0][i][j])->
+                        setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][i - 1][j])->getOutPO2() +
                         ((OxyCell *)m_map[0][i][j - 1])->getOutPO2() +
                         ((OxyCell *)m_map[0][i][j + 1])->getOutPO2() +
                         ((OxyCell *)m_map[0][i + 1][j])->getOutPO2() -
-                        4.0 * ((OxyCell *)m_map[0][i][j])->getOutPO2());
+                        4.0 * ((OxyCell *)m_map[0][i][j])->getOutPO2()));
 
-                diffVegf[0][i][j] = PAR_DVEGF *
-                        (((OxyCell *)m_map[0][i - 1][j])->getOutVEGF() +
+                ((OxyCell *)m_map[0][i][j])->
+                        setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][i - 1][j])->getOutVEGF() +
                         ((OxyCell *)m_map[0][i][j - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[0][i][j + 1])->getOutVEGF() +
                         ((OxyCell *)m_map[0][i + 1][j])->getOutVEGF() -
-                        4.0 * ((OxyCell *)m_map[0][i][j])->getOutVEGF());
+                        4.0 * ((OxyCell *)m_map[0][i][j])->getOutVEGF()));
             }
         }
     }
 
     else{
         //First layer, first row, first column
-        diffO2[0][0][0] = PAR_DO2 *
-                (((OxyCell *)m_map[0][0][1])->getOutPO2() +
+        ((OxyCell *)m_map[0][0][0])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][0][1])->getOutPO2() +
                 ((OxyCell *)m_map[0][1][0])->getOutPO2() +
                 ((OxyCell *)m_map[1][0][0])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[0][0][0])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[0][0][0])->getOutPO2()));
 
-        diffVegf[0][0][0] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][0][1])->getOutVEGF() +
+        ((OxyCell *)m_map[0][0][0])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][0][1])->getOutVEGF() +
                 ((OxyCell *)m_map[0][1][0])->getOutVEGF() +
                 ((OxyCell *)m_map[1][0][0])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[0][0][0])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[0][0][0])->getOutVEGF()));
 
         //First layer, first row, last column
-        diffO2[0][0][m_ncol - 1] = PAR_DO2 *
-                (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutPO2() +
+        ((OxyCell *)m_map[0][0][m_ncol - 1])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutPO2() +
                 ((OxyCell *)m_map[0][1][m_ncol - 1])->getOutPO2() +
                 ((OxyCell *)m_map[1][0][m_ncol - 1])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutPO2()));
 
-        diffVegf[0][0][m_ncol - 1] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutVEGF() +
+        ((OxyCell *)m_map[0][0][m_ncol - 1])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][0][m_ncol - 2])->getOutVEGF() +
                 ((OxyCell *)m_map[0][1][m_ncol - 1])->getOutVEGF() +
                 ((OxyCell *)m_map[1][0][m_ncol - 1])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[0][0][m_ncol - 1])->getOutVEGF()));
 
         //First layer, Last row, first column
-        diffO2[0][m_nrow - 1][0] = PAR_DO2 *
-                (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutPO2() +
+        ((OxyCell *)m_map[0][m_nrow - 1][0])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutPO2() +
                 ((OxyCell *)m_map[0][m_nrow - 1][1])->getOutPO2() +
                 ((OxyCell *)m_map[1][m_nrow - 1][0])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutPO2()));
 
-        diffVegf[0][m_nrow - 1][0] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutVEGF() +
+        ((OxyCell *)m_map[0][m_nrow - 1][0])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][m_nrow - 2][0])->getOutVEGF() +
                 ((OxyCell *)m_map[0][m_nrow - 1][1])->getOutVEGF() +
                 ((OxyCell *)m_map[1][m_nrow - 1][0])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][0])->getOutVEGF()));
 
         //First layer, last row, last column
-        diffO2[0][m_nrow - 1][m_ncol - 1] = PAR_DO2 *
-                (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutPO2() +
+        ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutPO2() +
                 ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 2])->getOutPO2() +
                 ((OxyCell *)m_map[1][m_nrow - 1][m_ncol - 1])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutPO2()));
 
-        diffVegf[0][m_nrow - 1][m_ncol - 1] = PAR_DVEGF *
-                (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutVEGF() +
+        ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][m_nrow - 2][m_ncol - 1])->getOutVEGF() +
                 ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 2])->getOutVEGF() +
                 ((OxyCell *)m_map[1][m_nrow - 1][m_ncol - 1])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[0][m_nrow - 1][m_ncol - 1])->getOutVEGF()));
 
         //Last layer, first row, first column
-        diffO2[m_nlayer - 1][0][0] = PAR_DO2 *
-                (((OxyCell *)m_map[m_nlayer - 1][0][1])->getOutPO2() +
+        ((OxyCell *)m_map[m_nlayer - 1][0][0])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][0][1])->getOutPO2() +
                 ((OxyCell *)m_map[m_nlayer - 1][1][0])->getOutPO2() +
                 ((OxyCell *)m_map[m_nlayer - 2][0][0])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][0])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][0])->getOutPO2()));
 
-        diffVegf[m_nlayer - 1][0][0] = PAR_DVEGF *
-                (((OxyCell *)m_map[m_nlayer - 1][0][1])->getOutVEGF() +
+        ((OxyCell *)m_map[m_nlayer - 1][0][0])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][0][1])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 1][1][0])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 2][0][0])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][0])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][0])->getOutVEGF()));
 
         //Last layer, first row, last column
-        diffO2[m_nlayer - 1][0][m_ncol - 1] = PAR_DO2 *
-                (((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 2])->getOutPO2() +
+        ((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 1])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 2])->getOutPO2() +
                 ((OxyCell *)m_map[m_nlayer - 1][1][m_ncol - 1])->getOutPO2() +
                 ((OxyCell *)m_map[m_nlayer - 2][0][m_ncol - 1])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 1])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 1])->getOutPO2()));
 
-        diffVegf[m_nlayer - 1][0][m_ncol - 1] = PAR_DVEGF *
-                (((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 2])->getOutVEGF() +
+        ((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 1])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 2])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 1][1][m_ncol - 1])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 2][0][m_ncol - 1])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 1])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[m_nlayer - 1][0][m_ncol - 1])->getOutVEGF()));
 
         //Last layer, Last row, first column
-        diffO2[m_nlayer - 1][m_nrow - 1][0] = PAR_DO2 *
-                (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][0])->getOutPO2() +
+        ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][0])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][0])->getOutPO2() +
                 ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][1])->getOutPO2() +
                 ((OxyCell *)m_map[m_nlayer - 2][m_nrow - 1][0])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][0])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][0])->getOutPO2()));
 
-        diffVegf[m_nlayer - 1][m_nrow - 1][0] = PAR_DVEGF *
-                (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][0])->getOutVEGF() +
+        ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][0])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][0])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][1])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 2][m_nrow - 1][0])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][0])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][0])->getOutVEGF()));
 
         //Last layer, last row, last column
-        diffO2[m_nlayer - 1][m_nrow - 1][m_ncol - 1] = PAR_DO2 *
-                (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][m_ncol - 1])->getOutPO2() +
+        ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 1])->
+                setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][m_ncol - 1])->getOutPO2() +
                 ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 2])->getOutPO2() +
                 ((OxyCell *)m_map[m_nrow - 2][m_nrow - 1][m_ncol - 1])->getOutPO2() -
-                3.0 * ((OxyCell *)m_map[m_nrow - 1][m_nrow - 1][m_ncol - 1])->getOutPO2());
+                3.0 * ((OxyCell *)m_map[m_nrow - 1][m_nrow - 1][m_ncol - 1])->getOutPO2()));
 
-        diffVegf[m_nlayer - 1][m_nrow - 1][m_ncol - 1] = PAR_DVEGF *
-                (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][m_ncol - 1])->getOutVEGF() +
+        ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 1])->
+                setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][m_ncol - 1])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 2])->getOutVEGF() +
                 ((OxyCell *)m_map[m_nlayer - 2][m_nrow - 1][m_ncol - 1])->getOutVEGF() -
-                3.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 1])->getOutVEGF());
+                3.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 1])->getOutVEGF()));
 
         //First layer, first row, middle columns
         for(int j(1); j < m_ncol - 1; j++){
-            diffO2[0][0][j] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][0][j - 1])->getOutPO2() +
+            ((OxyCell *)m_map[0][0][j])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][0][j - 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][0][j + 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][1][j])->getOutPO2() +
                     ((OxyCell *)m_map[1][0][j])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[0][0][j])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[0][0][j])->getOutPO2()));
 
-            diffVegf[0][0][j] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][0][j - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[0][0][j])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][0][j - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][0][j + 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][1][j])->getOutVEGF() +
                     ((OxyCell *)m_map[1][0][j])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[0][0][j])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[0][0][j])->getOutVEGF()));
         }
 
         //First layer, last row, middle columns
         for(int j(1); j < m_ncol - 1; j++){
-            diffO2[0][m_nrow - 1][j] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutPO2() +
+            ((OxyCell *)m_map[0][m_nrow - 1][j])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][m_nrow - 1][j + 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][m_nrow - 2][j])->getOutPO2() +
                     ((OxyCell *)m_map[1][m_nrow - 1][j])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutPO2()));
 
-            diffVegf[0][m_nrow - 1][j] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[0][m_nrow - 1][j])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][m_nrow - 1][j - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][m_nrow - 1][j + 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][m_nrow - 2][j])->getOutVEGF() +
                     ((OxyCell *)m_map[1][m_nrow - 1][j])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[0][m_nrow - 1][j])->getOutVEGF()));
         }
 
         //First layer, first column, middle rows
         for(int i(1); i < m_nrow - 1; i++){
-            diffO2[0][i][0] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][i - 1][0])->getOutPO2() +
+            ((OxyCell *)m_map[0][i][0])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][i - 1][0])->getOutPO2() +
                     ((OxyCell *)m_map[0][i][1])->getOutPO2() +
                     ((OxyCell *)m_map[0][i + 1][0])->getOutPO2() +
                     ((OxyCell *)m_map[1][i][0])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[0][i][0])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[0][i][0])->getOutPO2()));
 
-            diffVegf[0][i][0] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][i - 1][0])->getOutVEGF() +
+            ((OxyCell *)m_map[0][i][0])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][i - 1][0])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i][1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i + 1][0])->getOutVEGF() +
                     ((OxyCell *)m_map[1][i][0])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[0][i][0])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[0][i][0])->getOutVEGF()));
         }
 
         //First layer, last column, middle rows
         for(int i(1); i < m_nrow - 1; i++){
-            diffO2[0][i][m_ncol - 1] = PAR_DO2 *
-                    (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutPO2() +
+            ((OxyCell *)m_map[0][i][m_ncol - 1])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[0][i][m_ncol - 2])->getOutPO2() +
                     ((OxyCell *)m_map[0][i + 1][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[1][i][m_ncol - 1])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutPO2()));
 
-            diffVegf[0][i][m_ncol - 1] = PAR_DVEGF *
-                    (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[0][i][m_ncol - 1])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][i - 1][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i][m_ncol - 2])->getOutVEGF() +
                     ((OxyCell *)m_map[0][i + 1][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[1][i][m_ncol - 1])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[0][i][m_ncol - 1])->getOutVEGF()));
         }
 
         //Last layer, first row, middle columns
         for(int j(1); j < m_ncol - 1; j++){
-            diffO2[m_nlayer - 1][0][j] = PAR_DO2 *
-                    (((OxyCell *)m_map[m_nlayer - 1][0][j - 1])->getOutPO2() +
+            ((OxyCell *)m_map[m_nlayer - 1][0][j])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][0][j - 1])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][0][j + 1])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][1][j])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 2][0][j])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][0][j])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][0][j])->getOutPO2()));
 
-            diffVegf[m_nlayer - 1][0][j] = PAR_DVEGF *
-                    (((OxyCell *)m_map[m_nlayer - 1][0][j - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[m_nlayer - 1][0][j])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][0][j - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][0][j + 1])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][1][j])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 2][0][j])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][0][j])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][0][j])->getOutVEGF()));
         }
 
         //Last layer, last row, middle columns
         for(int j(1); j < m_ncol - 1; j++){
-            diffO2[m_nlayer - 1][m_nrow - 1][j] = PAR_DO2 *
-                    (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j - 1])->getOutPO2() +
+            ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j])->
+                    setInDiffO2(PAR_DO2 *  (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j - 1])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j + 1])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][j])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 2][m_nrow - 1][j])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j])->getOutPO2()));
 
-            diffVegf[m_nlayer - 1][m_nrow - 1][j] = PAR_DVEGF *
-                    (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j])->
+                    setInDiffVEGF(PAR_DVEGF *  (((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j + 1])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 2][j])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 2][m_nrow - 1][j])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][m_nrow - 1][j])->getOutVEGF()));
         }
 
         //Last layer, first column, middle rows
         for(int i(1); i < m_nrow - 1; i++){
-            diffO2[m_nlayer - 1][i][0] = PAR_DO2 *
-                    (((OxyCell *)m_map[m_nlayer - 1][i - 1][0])->getOutPO2() +
+            ((OxyCell *)m_map[m_nlayer - 1][i][0])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][i - 1][0])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][i][1])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][i + 1][0])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 2][i][0])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][0])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][0])->getOutPO2()));
 
-            diffVegf[m_nlayer - 1][i][0] = PAR_DVEGF *
-                    (((OxyCell *)m_map[m_nlayer - 1][i - 1][0])->getOutVEGF() +
+            ((OxyCell *)m_map[m_nlayer - 1][i][0])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][i - 1][0])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][i][1])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][i + 1][0])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 2][i][0])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][0])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][0])->getOutVEGF()));
         }
 
         //Last layer, last column, middle rows
         for(int i(1); i < m_nrow - 1; i++){
-            diffO2[m_nlayer - 1][i][m_ncol - 1] = PAR_DO2 *
-                    (((OxyCell *)m_map[m_nlayer - 1][i - 1][m_ncol - 1])->getOutPO2() +
+            ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 1])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][i - 1][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 2])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 1][i + 1][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[m_nlayer - 2][i][m_ncol - 1])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 1])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 1])->getOutPO2()));
 
-            diffVegf[m_nlayer - 1][i][m_ncol - 1] = PAR_DVEGF *
-                    (((OxyCell *)m_map[m_nlayer - 1][i - 1][m_ncol - 1])->getOutVEGF() +
+            ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 1])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][i - 1][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 2])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 1][i + 1][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[m_nlayer - 2][i][m_ncol - 1])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 1])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[m_nlayer - 1][i][m_ncol - 1])->getOutVEGF()));
         }
 
         //Middle layers, first row, first column
         for(int l(1); l < m_nlayer- 1; l++){
-            diffO2[l][0][0] = PAR_DO2 *
-                    (((OxyCell *)m_map[l][0][1])->getOutPO2() +
+            ((OxyCell *)m_map[l][0][0])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l][0][1])->getOutPO2() +
                     ((OxyCell *)m_map[l][1][0])->getOutPO2() +
                     ((OxyCell *)m_map[l + 1][0][0])->getOutPO2() +
                     ((OxyCell *)m_map[l - 1][0][0])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[l][0][0])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[l][0][0])->getOutPO2()));
 
-            diffVegf[l][0][0] = PAR_DVEGF *
-                    (((OxyCell *)m_map[l][0][1])->getOutVEGF() +
+            ((OxyCell *)m_map[l][0][0])->
+                    setInDiffVEGF(PAR_DVEGF *  (((OxyCell *)m_map[l][0][1])->getOutVEGF() +
                     ((OxyCell *)m_map[l][1][0])->getOutVEGF() +
                     ((OxyCell *)m_map[l + 1][0][0])->getOutVEGF() +
                     ((OxyCell *)m_map[l - 1][0][0])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[l][0][0])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[l][0][0])->getOutVEGF()));
         }
 
         //Middle layers, first row, last column
         for(int l(1); l < m_nlayer - 1; l++){
-            diffO2[l][0][m_ncol - 1] = PAR_DO2 *
-                    (((OxyCell *)m_map[l][0][m_ncol - 2])->getOutPO2() +
+            ((OxyCell *)m_map[l][0][m_ncol - 1])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l][0][m_ncol - 2])->getOutPO2() +
                     ((OxyCell *)m_map[l][1][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[l + 1][0][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[l - 1][0][m_ncol - 1])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[l][0][m_ncol - 1])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[l][0][m_ncol - 1])->getOutPO2()));
 
-            diffVegf[l][0][m_ncol - 1] = PAR_DVEGF *
-                    (((OxyCell *)m_map[l][0][m_ncol - 2])->getOutVEGF() +
+            ((OxyCell *)m_map[l][0][m_ncol - 1])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l][0][m_ncol - 2])->getOutVEGF() +
                     ((OxyCell *)m_map[l][1][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[l + 1][0][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[l - 1][0][m_ncol - 1])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[l][0][m_ncol - 1])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[l][0][m_ncol - 1])->getOutVEGF()));
         }
 
         //Middle layers, last row, first column
         for(int l(1); l < m_nlayer - 1; l++){
-            diffO2[l][m_nrow - 1][0] = PAR_DO2 *
-                    (((OxyCell *)m_map[l][m_nrow - 1][1])->getOutPO2() +
+            ((OxyCell *)m_map[l][m_nrow - 1][0])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l][m_nrow - 1][1])->getOutPO2() +
                     ((OxyCell *)m_map[l][m_nrow - 2][0])->getOutPO2() +
                     ((OxyCell *)m_map[l + 1][m_nrow - 1][0])->getOutPO2() +
                     ((OxyCell *)m_map[l - 1][m_nrow - 1][0])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][0])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][0])->getOutPO2()));
 
-            diffVegf[l][m_nrow - 1][0] = PAR_DVEGF *
-                    (((OxyCell *)m_map[l][m_nrow - 1][1])->getOutVEGF() +
+            ((OxyCell *)m_map[l][m_nrow - 1][0])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l][m_nrow - 1][1])->getOutVEGF() +
                     ((OxyCell *)m_map[l][m_nrow - 2][0])->getOutVEGF() +
                     ((OxyCell *)m_map[l + 1][m_nrow - 1][0])->getOutVEGF() +
                     ((OxyCell *)m_map[l - 1][m_nrow - 1][0])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][0])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][0])->getOutVEGF()));
         }
 
         //Middle layers, last row, last column
         for(int l(1); l < m_nlayer - 1; l++){
-            diffO2[l][m_nrow - 1][m_ncol - 1] = PAR_DO2 *
-                    (((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 2])->getOutPO2() +
+            ((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 1])->
+                    setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 2])->getOutPO2() +
                     ((OxyCell *)m_map[l][m_nrow - 2][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[l + 1][m_nrow - 1][m_ncol - 1])->getOutPO2() +
                     ((OxyCell *)m_map[l - 1][m_nrow - 1][m_ncol - 1])->getOutPO2() -
-                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 1])->getOutPO2());
+                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 1])->getOutPO2()));
 
-            diffVegf[l][m_nrow - 1][m_ncol - 1] = PAR_DVEGF *
-                    (((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 2])->getOutVEGF() +
+            ((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 1])->
+                    setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 2])->getOutVEGF() +
                     ((OxyCell *)m_map[l][m_nrow - 2][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[l + 1][m_nrow - 1][m_ncol - 1])->getOutVEGF() +
                     ((OxyCell *)m_map[l - 1][m_nrow - 1][m_ncol - 1])->getOutVEGF() -
-                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 1])->getOutVEGF());
+                    4.0 * ((OxyCell *)m_map[l][m_nrow - 1][m_ncol - 1])->getOutVEGF()));
         }
 
         //First layer, middle rows, middle columns
         for(int i(1); i < m_nrow - 1; i++){
             for(int j(1); j < m_ncol - 1; j++){
-                diffO2[0][i][j] = PAR_DO2 *
-                        (((OxyCell *)m_map[0][i - 1][j])->getOutPO2() +
+                ((OxyCell *)m_map[0][i][j])->
+                        setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[0][i - 1][j])->getOutPO2() +
                         ((OxyCell *)m_map[0][i][j - 1])->getOutPO2() +
                         ((OxyCell *)m_map[0][i][j + 1])->getOutPO2() +
                         ((OxyCell *)m_map[0][i + 1][j])->getOutPO2() +
                         ((OxyCell *)m_map[1][i][j])->getOutPO2() -
-                        5.0 * ((OxyCell *)m_map[0][i][j])->getOutPO2());
+                        5.0 * ((OxyCell *)m_map[0][i][j])->getOutPO2()));
 
-                diffVegf[0][i][j] = PAR_DVEGF *
-                        (((OxyCell *)m_map[0][i - 1][j])->getOutVEGF() +
+                ((OxyCell *)m_map[0][i][j])->
+                        setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[0][i - 1][j])->getOutVEGF() +
                         ((OxyCell *)m_map[0][i][j - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[0][i][j + 1])->getOutVEGF() +
                         ((OxyCell *)m_map[0][i + 1][j])->getOutVEGF() +
                         ((OxyCell *)m_map[1][i][j])->getOutVEGF() -
-                        5.0 * ((OxyCell *)m_map[0][i][j])->getOutVEGF());
+                        5.0 * ((OxyCell *)m_map[0][i][j])->getOutVEGF()));
             }
         }
 
         //Last layer, middle rows, middle columns
         for(int i(1); i < m_nrow - 1; i++){
             for(int j(1); j < m_ncol - 1; j++){
-                diffO2[m_nlayer - 1][i][j] = PAR_DO2 *
-                        (((OxyCell *)m_map[m_nlayer - 1][i - 1][j])->getOutPO2() +
+                ((OxyCell *)m_map[m_nlayer - 1][i][j])->
+                        setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[m_nlayer - 1][i - 1][j])->getOutPO2() +
                         ((OxyCell *)m_map[m_nlayer - 1][i][j - 1])->getOutPO2() +
                         ((OxyCell *)m_map[m_nlayer - 1][i][j + 1])->getOutPO2() +
                         ((OxyCell *)m_map[m_nlayer - 1][i + 1][j])->getOutPO2() +
                         ((OxyCell *)m_map[m_nlayer - 2][i][j])->getOutPO2() -
-                        5.0 * ((OxyCell *)m_map[m_nlayer - 1][i][j])->getOutPO2());
+                        5.0 * ((OxyCell *)m_map[m_nlayer - 1][i][j])->getOutPO2()));
 
-                diffVegf[m_nlayer - 1][i][j] = PAR_DVEGF *
-                        (((OxyCell *)m_map[m_nlayer - 1][i - 1][j])->getOutVEGF() +
+                ((OxyCell *)m_map[m_nlayer - 1][i][j])->
+                        setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[m_nlayer - 1][i - 1][j])->getOutVEGF() +
                         ((OxyCell *)m_map[m_nlayer - 1][i][j - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[m_nlayer - 1][i][j + 1])->getOutVEGF() +
                         ((OxyCell *)m_map[m_nlayer - 1][i + 1][j])->getOutVEGF() +
                         ((OxyCell *)m_map[m_nlayer - 2][i][j])->getOutVEGF() -
-                        5.0 * ((OxyCell *)m_map[m_nlayer - 1][i][j])->getOutVEGF());
+                        5.0 * ((OxyCell *)m_map[m_nlayer - 1][i][j])->getOutVEGF()));
             }
         }
 
         //Middle layers, middle rows, first column
         for(int l(1); l < m_nlayer - 1; l++){
             for(int i(1); i < m_nrow - 1; i++){
-                diffO2[l][i][0] = PAR_DO2 *
-                        (((OxyCell *)m_map[l + 1][i][0])->getOutPO2() +
+                ((OxyCell *)m_map[l][i][0])->
+                        setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l + 1][i][0])->getOutPO2() +
                         ((OxyCell *)m_map[l - 1][i][0])->getOutPO2() +
                         ((OxyCell *)m_map[l][i + 1][0])->getOutPO2() +
                         ((OxyCell *)m_map[l][i - 1][0])->getOutPO2() +
                         ((OxyCell *)m_map[l][i][1])->getOutPO2() -
-                        5.0 * ((OxyCell *)m_map[l][i][0])->getOutPO2());
+                        5.0 * ((OxyCell *)m_map[l][i][0])->getOutPO2()));
 
-                diffVegf[l][i][0] = PAR_DVEGF *
-                        (((OxyCell *)m_map[l + 1][i][0])->getOutVEGF() +
+                ((OxyCell *)m_map[l][i][0])->
+                        setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l + 1][i][0])->getOutVEGF() +
                         ((OxyCell *)m_map[l - 1][i][0])->getOutVEGF() +
                         ((OxyCell *)m_map[l][i + 1][0])->getOutVEGF() +
                         ((OxyCell *)m_map[l][i - 1][0])->getOutVEGF() +
                         ((OxyCell *)m_map[l][i][1])->getOutVEGF() -
-                        5.0 * ((OxyCell *)m_map[l][i][0])->getOutVEGF());
+                        5.0 * ((OxyCell *)m_map[l][i][0])->getOutVEGF()));
             }
         }
 
         //Middle layers, middle rows, last column
         for(int l(1); l < m_nlayer - 1; l++){
             for(int i(1); i < m_nrow - 1; i++){
-                diffO2[l][i][m_ncol - 1] = PAR_DO2 *
-                        (((OxyCell *)m_map[l + 1][i][m_ncol - 1])->getOutPO2() +
+                ((OxyCell *)m_map[l][i][m_ncol - 1])->
+                        setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l + 1][i][m_ncol - 1])->getOutPO2() +
                         ((OxyCell *)m_map[l - 1][i][m_ncol - 1])->getOutPO2() +
                         ((OxyCell *)m_map[l][i + 1][m_ncol - 1])->getOutPO2() +
                         ((OxyCell *)m_map[l][i - 1][m_ncol - 1])->getOutPO2() +
                         ((OxyCell *)m_map[l][i][m_ncol - 2])->getOutPO2() -
-                        5.0 * ((OxyCell *)m_map[l][i][m_ncol - 1])->getOutPO2());
+                        5.0 * ((OxyCell *)m_map[l][i][m_ncol - 1])->getOutPO2()));
 
-                diffVegf[l][i][m_ncol - 1] = PAR_DVEGF *
-                        (((OxyCell *)m_map[l + 1][i][m_ncol - 1])->getOutVEGF() +
+                ((OxyCell *)m_map[l][i][m_ncol - 1])->
+                        setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l + 1][i][m_ncol - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l - 1][i][m_ncol - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l][i + 1][m_ncol - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l][i - 1][m_ncol - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l][i][m_ncol - 2])->getOutVEGF() -
-                        5.0 * ((OxyCell *)m_map[l][i][m_ncol - 1])->getOutVEGF());
+                        5.0 * ((OxyCell *)m_map[l][i][m_ncol - 1])->getOutVEGF()));
             }
         }
 
         //Middle layers, first rows, middle columns
         for(int l(1); l < m_nlayer - 1; l++){
             for(int j(1); j < m_ncol - 1; j++){
-                diffO2[l][0][j] = PAR_DO2 *
-                        (((OxyCell *)m_map[l + 1][0][j])->getOutPO2() +
+                ((OxyCell *)m_map[l][0][j])->
+                        setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l + 1][0][j])->getOutPO2() +
                         ((OxyCell *)m_map[l - 1][0][j])->getOutPO2() +
                         ((OxyCell *)m_map[l][0][j + 1])->getOutPO2() +
                         ((OxyCell *)m_map[l][0][j - 1])->getOutPO2() +
                         ((OxyCell *)m_map[l][1][j])->getOutPO2() -
-                        5.0 * ((OxyCell *)m_map[l][0][j])->getOutPO2());
+                        5.0 * ((OxyCell *)m_map[l][0][j])->getOutPO2()));
 
-                diffVegf[l][0][j] = PAR_DVEGF *
-                        (((OxyCell *)m_map[l + 1][0][j])->getOutVEGF() +
+                ((OxyCell *)m_map[l][0][j])->
+                        setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l + 1][0][j])->getOutVEGF() +
                         ((OxyCell *)m_map[l - 1][0][j])->getOutVEGF() +
                         ((OxyCell *)m_map[l][0][j + 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l][0][j - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l][1][j])->getOutVEGF() -
-                        5.0 * ((OxyCell *)m_map[l][0][j])->getOutVEGF());
+                        5.0 * ((OxyCell *)m_map[l][0][j])->getOutVEGF()));
             }
         }
 
         //Middle layers, last rows, middle columns
         for(int l(1); l < m_nlayer - 1; l++){
             for(int j(1); j < m_ncol - 1; j++){
-                diffO2[l][m_nrow - 1][j] = PAR_DO2 *
-                        (((OxyCell *)m_map[l + 1][m_nrow - 1][j])->getOutPO2() +
+                ((OxyCell *)m_map[l][m_nrow - 1][j])->
+                        setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l + 1][m_nrow - 1][j])->getOutPO2() +
                         ((OxyCell *)m_map[l - 1][m_nrow - 1][j])->getOutPO2() +
                         ((OxyCell *)m_map[l][m_nrow - 1][j + 1])->getOutPO2() +
                         ((OxyCell *)m_map[l][m_nrow - 1][j - 1])->getOutPO2() +
                         ((OxyCell *)m_map[l][m_nrow - 2][j])->getOutPO2() -
-                        5.0 * ((OxyCell *)m_map[l][m_nrow - 1][j])->getOutPO2());
+                        5.0 * ((OxyCell *)m_map[l][m_nrow - 1][j])->getOutPO2()));
 
-                diffVegf[l][m_nrow - 1][j] = PAR_DVEGF *
-                        (((OxyCell *)m_map[l + 1][m_nrow - 1][j])->getOutVEGF() +
+                ((OxyCell *)m_map[l][m_nrow - 1][j])->
+                        setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l + 1][m_nrow - 1][j])->getOutVEGF() +
                         ((OxyCell *)m_map[l - 1][m_nrow - 1][j])->getOutVEGF() +
                         ((OxyCell *)m_map[l][m_nrow - 1][j + 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l][m_nrow - 1][j - 1])->getOutVEGF() +
                         ((OxyCell *)m_map[l][m_nrow - 2][j])->getOutVEGF() -
-                        5.0 * ((OxyCell *)m_map[l][m_nrow - 1][j])->getOutVEGF());
+                        5.0 * ((OxyCell *)m_map[l][m_nrow - 1][j])->getOutVEGF()));
             }
         }
 
@@ -744,38 +741,27 @@ int OxyTissue::updateModel(double currentTime, const double DT){
         for(int l(1); l < m_nlayer - 1; l++){
             for(int i(1); i < m_nrow - 1; i++){
                 for(int j(1); j < m_ncol - 1; j++){
-                    diffO2[l][i][j] = PAR_DO2 *
-                            (((OxyCell *)m_map[l + 1][i][j])->getOutPO2() +
-                            ((OxyCell *)m_map[l - 1][i][j])->getOutPO2() +
+                    ((OxyCell *)m_map[l][i][j])->
+                            setInDiffO2(PAR_DO2 * (((OxyCell *)m_map[l + 1][i][j])->getOutPO2() +
+                                        ((OxyCell *)m_map[l - 1][i][j])->getOutPO2() +
                             ((OxyCell *)m_map[l][i + 1][j])->getOutPO2() +
                             ((OxyCell *)m_map[l][i - 1][j])->getOutPO2() +
                             ((OxyCell *)m_map[l][i][j + 1])->getOutPO2() +
                             ((OxyCell *)m_map[l][i][j - 1])->getOutPO2() -
-                            6.0 * ((OxyCell *)m_map[l][i][j])->getOutPO2());
+                            6.0 * ((OxyCell *)m_map[l][i][j])->getOutPO2()));
 
-                    diffVegf[l][i][j] = PAR_DVEGF *
-                            (((OxyCell *)m_map[l + 1][i][j])->getOutVEGF() +
-                            ((OxyCell *)m_map[l - 1][i][j])->getOutVEGF() +
+                    ((OxyCell *)m_map[l][i][j])->
+                            setInDiffVEGF(PAR_DVEGF * (((OxyCell *)m_map[l + 1][i][j])->getOutVEGF() +
+                                          ((OxyCell *)m_map[l - 1][i][j])->getOutVEGF() +
                             ((OxyCell *)m_map[l][i + 1][j])->getOutVEGF() +
                             ((OxyCell *)m_map[l][i - 1][j])->getOutVEGF() +
                             ((OxyCell *)m_map[l][i][j + 1])->getOutVEGF() +
                             ((OxyCell *)m_map[l][i][j - 1])->getOutVEGF() -
-                            6.0 * ((OxyCell *)m_map[l][i][j])->getOutVEGF());
+                            6.0 * ((OxyCell *)m_map[l][i][j])->getOutVEGF()));
                 }
             }
         }
     }
-
-    for(int l(0); l < m_nlayer; l++){
-        for(int i(0); i < m_nrow; i++){
-            for(int j(0); j < m_ncol; j++){
-                ((OxyCell *)m_map[l][i][j])->setInDiffO2(diffO2[l][i][j]);
-                ((OxyCell *)m_map[l][i][j])->setInDiffVEGF(diffVegf[l][i][j]);
-            }
-        }
-    }
-
-
 
     for(int i(0); i < m_numComp; i++){
         (m_comp->at(i))->updateModel(currentTime, DT);
