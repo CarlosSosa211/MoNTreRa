@@ -17,6 +17,10 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
     m_selMap = new QComboBox(m_selMapGroup);
 
     m_chartView = new QChartView;
+    m_sDash = new QLineSeries;
+    m_sDash->append(0.0, 0.0);
+    m_sDash->append(0.0, 100.0);
+    m_sDash->setPen(QPen(Qt::DashLine));
 
     double a, b, c;
 
@@ -58,10 +62,6 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         m_yHypDens->setMin(0.0);
         m_yHypDens->applyNiceNumbers();
 
-        m_sDash = new QLineSeries(m_cHypDens);
-        m_sDash->append(0.0, 0.0);
-        m_sDash->append(0.0, 100.0);
-        m_sDash->setPen(QPen(Qt::DashLine));
         m_cHypDens->addSeries(m_sDash);
         m_sDash->attachAxis(m_xHypDens);
         m_sDash->attachAxis(m_yHypDens);
@@ -475,7 +475,7 @@ void OutWindowOxy::drawMap(int numMap, int mapIter){
         }
 
         m_pixPO2->convertFromImage(*m_imPO2);
-        m_map->setPixmap(m_pixPO2->scaledToWidth(1000));
+        m_map->setPixmap(m_pixPO2->scaledToHeight(500));
         m_legendPO2->show();
         m_legendVegf->hide();
         break;
@@ -498,7 +498,7 @@ void OutWindowOxy::drawMap(int numMap, int mapIter){
         }
 
         m_pixVegf->convertFromImage(*m_imVegf);
-        m_map->setPixmap(m_pixVegf->scaledToWidth(1000));
+        m_map->setPixmap(m_pixVegf->scaledToHeight(500));
         m_legendPO2->hide();
         m_legendVegf->show();
         break;
