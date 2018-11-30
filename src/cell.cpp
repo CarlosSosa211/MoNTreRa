@@ -74,7 +74,7 @@ Cell::Cell(Model *const parent) : Model(10, 17, 2, 36, 0){
 
     ST_DAM = 0.0;
 
-	PAR_DOSE_THRES  = 6.0;
+    PAR_DOSE_THRES  = 6.0;
     PAR_ARREST_TIME = 18.0;
     ST_ARREST = 0.0;
 
@@ -161,7 +161,7 @@ Cell::Cell(const int i, const int j, const int l,
 
     ST_DAM = 0.0;
 
-	PAR_DOSE_THRES  = doseThres;
+    PAR_DOSE_THRES  = doseThres;
     PAR_ARREST_TIME = arrestTime;
     ST_ARREST = 0.0;
 
@@ -195,21 +195,14 @@ int Cell::calcModelOut(){
 
 
 int Cell::initModel(){
-    ST_FIB     = !IN_TUM && !IN_NORM_VES && !IN_TUM_VES &&
-            !IN_HYP_NEC && !IN_APOP && !IN_MIT_CAT;
-    ST_TUM     = IN_TUM && !IN_HYP_NEC && !IN_APOP &&
-            !IN_MIT_CAT;
-    ST_NORM_VES = IN_NORM_VES && !IN_HYP_NEC && !IN_APOP &&
-            !IN_MIT_CAT;
-    ST_TUM_VES  = IN_TUM_VES && !IN_HYP_NEC && !IN_APOP &&
-            !IN_MIT_CAT;
+    ST_FIB      = !IN_TUM && !IN_NORM_VES && !IN_TUM_VES;
+    ST_TUM      = IN_TUM;
+    ST_NORM_VES = IN_NORM_VES;
+    ST_TUM_VES  = IN_TUM_VES;
     ST_VES      = ST_NORM_VES || ST_TUM_VES;
-    ST_HYP_NEC  = IN_HYP_NEC && !ST_FIB && !ST_TUM &&
-            !ST_VES;
-    ST_MIT_CAT  = IN_MIT_CAT && !ST_FIB && !ST_TUM &&
-            !ST_VES;
-    ST_APOP     = IN_APOP && !ST_FIB && !ST_TUM &&
-            !ST_VES;
+    ST_HYP_NEC  = 0.0;
+    ST_MIT_CAT  = 0.0;
+    ST_APOP     = 0.0;
     ST_DEAD     = ST_HYP_NEC || ST_APOP || ST_MIT_CAT;
 
     setInFib(0.0);
@@ -328,30 +321,126 @@ int Cell::updateModel(const double currentTime,
         }
     }
 
-    ST_FIB      = (ST_FIB || IN_FIB) && !IN_TUM && !IN_NORM_VES &&
-            !IN_TUM_VES && !IN_HYP_NEC && !IN_MIT_CAT && !IN_APOP;
-    ST_TUM      = (ST_TUM || IN_TUM) && !IN_NORM_VES && !IN_TUM_VES &&
-            !IN_HYP_NEC && !IN_MIT_CAT && !IN_APOP;
-    ST_NORM_VES = (ST_NORM_VES || IN_NORM_VES) && !IN_HYP_NEC &&
-            !IN_MIT_CAT && !IN_APOP;
-    ST_TUM_VES  = (ST_TUM_VES || IN_TUM_VES) && !IN_HYP_NEC && !IN_MIT_CAT &&
-            !IN_APOP;
-    ST_VES      = ST_NORM_VES || ST_TUM_VES;
-    ST_MIT_CAT  = (ST_MIT_CAT || IN_MIT_CAT) && !IN_HYP_NEC && !ST_FIB &&
-            !ST_TUM && !ST_VES;
-    ST_APOP     = (ST_APOP || IN_APOP) && !IN_HYP_NEC && !ST_FIB && !ST_TUM &&
-            !ST_VES;
-    ST_HYP_NEC  = (ST_HYP_NEC || IN_HYP_NEC) && !ST_FIB &&
-            !ST_TUM && !ST_VES;
-    ST_DEAD     = ST_HYP_NEC || ST_APOP || ST_MIT_CAT;
+    if (IN_HYP_NEC){
+        ST_FIB      = 0.0;
+        ST_TUM      = 0.0;
+        ST_NORM_VES = 0.0;
+        ST_TUM_VES  = 0.0;
+        ST_VES      = 0.0;
+        ST_HYP_NEC  = 1.0;
+        ST_MIT_CAT  = 0.0;
+        ST_APOP     = 0.0;
+        ST_DEAD     = 1.0;
 
-    setInFib(0.0);
-    setInTum(0.0);
-    setInNormVes(0.0);
-    setInTumVes(0.0);
-    setInHypNec(0.0);
-    setInMitCat(0.0);
-    setInApop(0.0);
+        ST_DAM    = 0.0;
+        ST_TIMER  = 0.0;
+        ST_ARREST = 0.0;
+    }
+
+    else if (IN_MIT_CAT){
+        ST_FIB      = 0.0;
+        ST_TUM      = 0.0;
+        ST_NORM_VES = 0.0;
+        ST_TUM_VES  = 0.0;
+        ST_VES      = 0.0;
+        ST_HYP_NEC  = 0.0;
+        ST_MIT_CAT  = 1.0;
+        ST_APOP     = 0.0;
+        ST_DEAD     = 1.0;
+
+        ST_DAM    = 0.0;
+        ST_TIMER  = 0.0;
+        ST_ARREST = 0.0;
+    }
+
+    else if (IN_APOP){
+        ST_FIB      = 0.0;
+        ST_TUM      = 0.0;
+        ST_NORM_VES = 0.0;
+        ST_TUM_VES  = 0.0;
+        ST_VES      = 0.0;
+        ST_HYP_NEC  = 0.0;
+        ST_MIT_CAT  = 0.0;
+        ST_APOP     = 1.0;
+        ST_DEAD     = 1.0;
+
+        ST_DAM    = 0.0;
+        ST_TIMER  = 0.0;
+        ST_ARREST = 0.0;
+    }
+
+    else if (IN_NORM_VES){
+        ST_FIB      = 0.0;
+        ST_TUM      = 0.0;
+        ST_NORM_VES = 1.0;
+        ST_TUM_VES  = 0.0;
+        ST_VES      = 1.0;
+        ST_HYP_NEC  = 0.0;
+        ST_MIT_CAT  = 0.0;
+        ST_APOP     = 0.0;
+        ST_DEAD     = 0.0;
+
+        ST_DAM    = 0.0;
+        ST_TIMER  = 0.0;
+        ST_ARREST = 0.0;
+    }
+
+    else if (IN_TUM_VES){
+        ST_FIB      = 0.0;
+        ST_TUM      = 0.0;
+        ST_NORM_VES = 0.0;
+        ST_TUM_VES  = 1.0;
+        ST_VES      = 1.0;
+        ST_HYP_NEC  = 0.0;
+        ST_MIT_CAT  = 0.0;
+        ST_APOP     = 0.0;
+        ST_DEAD     = 0.0;
+
+        ST_DAM    = 0.0;
+        ST_TIMER  = 0.0;
+        ST_ARREST = 0.0;
+    }
+
+    else if(IN_FIB){
+        ST_FIB      = 1.0;
+        ST_TUM      = 0.0;
+        ST_NORM_VES = 0.0;
+        ST_TUM_VES  = 0.0;
+        ST_VES      = 0.0;
+        ST_HYP_NEC  = 0.0;
+        ST_MIT_CAT  = 0.0;
+        ST_APOP     = 0.0;
+        ST_DEAD     = 0.0;
+
+        ST_DAM    = 0.0;
+        ST_TIMER  = 0.0;
+        ST_ARREST = 0.0;
+    }
+
+    else if (IN_TUM){
+        ST_FIB      = 0.0;
+        ST_TUM      = 1.0;
+        ST_NORM_VES = 0.0;
+        ST_TUM_VES  = 0.0;
+        ST_VES      = 0.0;
+        ST_HYP_NEC  = 0.0;
+        ST_MIT_CAT  = 0.0;
+        ST_APOP     = 0.0;
+        ST_DEAD     = 0.0;
+
+        ST_DAM    = 0.0;
+        ST_TIMER  = 0.0;
+        ST_ARREST = 0.0;
+        ST_G1     = 1.0;
+    }
+
+    IN_FIB      = 0.0;
+    IN_TUM      = 0.0;
+    IN_NORM_VES = 0.0;
+    IN_TUM_VES  = 0.0;
+    IN_HYP_NEC  = 0.0;
+    IN_MIT_CAT  = 0.0;
+    IN_APOP     = 0.0;
 
     if(!ST_TUM){
         ST_G1 = 0.0;
@@ -414,8 +503,13 @@ void Cell::calcFibProlif(double DT){
         newFib = searchSpaceForFib();
         if(newFib){
             ST_TIMER = 0.0;
-            newFib->setInFib(1.0);
-            newFib->ST_TIMER = 0.0;
+            if(ST_DAM){
+                IN_MIT_CAT = 1.0;
+            }
+            else{
+                ST_TIMER = 0.0;
+                newFib->IN_FIB = 1.0;
+            }
         }
     }
 
@@ -441,7 +535,7 @@ double Cell::calcG2MF() const{
 
 void Cell::calcHypNec(){
     if(PAR_PO2 < PAR_HYP_NEC_THRES){
-        setInHypNec(1.0);
+        IN_HYP_NEC = 1.0;
     }
 }
 
@@ -452,9 +546,13 @@ void Cell::calcNormVesProlif(double DT){
             Cell *newVes(0);
             newVes = searchSpaceForTumVes();
             if(newVes){
-                ST_TIMER = 0.0;
-                newVes->setInTumVes(1.0);
-                newVes->ST_TIMER = 0.0;
+                if(ST_DAM){
+                    IN_MIT_CAT = 1.0;
+                }
+                else{
+                    ST_TIMER = 0.0;
+                    newVes->IN_TUM_VES = 1.0;
+                }
             }
         }
     }
@@ -480,11 +578,11 @@ void Cell::calcRespToIrr(){
                 ST_DAM = 1.0;
             }
             else{
-                setInApop(1.0);
+                IN_APOP = 1.0;
             }
         }
         else{
-            setInApop(1.0);
+            IN_APOP = 1.0;
         }
     }
 }
@@ -535,19 +633,15 @@ void Cell::calcTumGrowth(double DT){
         Cell *newTumCell(0);
         newTumCell = searchSpaceForTum();
         if(newTumCell){
-            ST_TIMER = 0.0;
             if(ST_DAM){
-                ST_DAM = 0.0;
-                setInMitCat(1.0);
+                IN_MIT_CAT = 1.0;
             }
             else{
+                ST_TIMER = 0.0;
+                ST_G1 = 1.0;
                 ST_M  = 0.0;
                 ST_G0 = 0.0;
-                ST_G1 = 1.0;
-                newTumCell->setInTum(1.0);
-                newTumCell->ST_TIMER = 0.0;
-                newTumCell->ST_G1 = 1.0;
-                newTumCell->ST_ARREST = ST_ARREST;
+                newTumCell->IN_TUM = 1.0;
             }
         }
         else{
@@ -568,9 +662,13 @@ void Cell::calcTumVesProlif(double DT){
             Cell *newVes(0);
             newVes = searchSpaceForTumVes();
             if(newVes){
-                ST_TIMER = 0.0;
-                newVes->setInTumVes(1.0);
-                newVes->ST_TIMER = 0.0;
+                if(ST_DAM){
+                    IN_MIT_CAT = 1.0;
+                }
+                else{
+                    ST_TIMER = 0.0;
+                    newVes->IN_TUM_VES = 1.0;
+                }
             }
         }
     }
