@@ -430,7 +430,7 @@ int Tissue::initModel(){
     ST_INT_TUM_DENS  = 0.0;
     ST_END_TREAT_TUM_DENS = 0.0;
     ST_3MON_TUM_DENS      = 0.0;
-    ST_REC_TUM_DENS = 0.0;
+    ST_REC_TUM_DENS = 100.0;
     ST_REC_TIME     = 0.0;
 
     for(int i(0); i < 6; i++){
@@ -505,7 +505,12 @@ int Tissue::updateModel(const double currentTime,
         if(currentTime <= m_treatment->getDuration()){
             ST_END_TREAT_TUM_DENS = ST_TUM_DENS;
         }
-
+        else{
+            if(ST_TUM_DENS <= ST_REC_TUM_DENS){
+                ST_REC_TUM_DENS = ST_TUM_DENS;
+                ST_REC_TIME = currentTime;
+            }
+        }
         if(currentTime <= m_treatment->getDuration() + 720.0){
             ST_3MON_TUM_DENS = ST_TUM_DENS;
         }
