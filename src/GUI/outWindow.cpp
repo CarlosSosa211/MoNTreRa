@@ -33,6 +33,47 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     m_selMap   = new QComboBox(m_selMapGroup);
 
     m_chartView = new QChartView;
+    m_sDash = new QLineSeries;
+    m_sDash->append(0.0, 0.0);
+    m_sDash->append(0.0, 100.0);
+    m_sDash->setPen(QPen(Qt::DashLine));
+
+    std::ifstream fEndTreatTime((nFOutData + "/endTreatTumDens.res").c_str());
+
+    if(!fEndTreatTime.is_open()){
+        QMessageBox::critical(this, "Error", "Problem while opening endTreatTumDens.res");
+    }
+
+    else{
+        fEndTreatTime >> m_endTreatTime;
+        fEndTreatTime.close();
+    }
+
+    std::ifstream fRecTime((nFOutData + "/rec.res").c_str());
+
+    if(!fRecTime.is_open()){
+        QMessageBox::critical(this, "Error", "Problem while opening rec.res");
+    }
+
+    else{
+        fRecTime >> m_recTime;
+        fRecTime.close();
+    }
+
+
+    m_endTreatDash = new QLineSeries;
+    m_endTreatDash->append(m_endTreatTime, 0.0);
+    m_endTreatDash->append(m_endTreatTime, 100.0);
+    QPen pen;
+    pen.setStyle(Qt::DashLine);
+    pen.setColor(m_green);
+    m_endTreatDash->setPen(pen);
+
+    m_recDash = new QLineSeries;
+    m_recDash->append(m_recTime, 0.0);
+    m_recDash->append(m_recTime, 100.0);
+    pen.setColor(m_red);
+    m_recDash->setPen(pen);
 
     double a, b, c, d, e, f;
 
@@ -74,13 +115,17 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_yTumDens->setMin(0.0);
         m_yTumDens->applyNiceNumbers();
 
-        m_sDash = new QLineSeries(m_cTumDens);
-        m_sDash->append(0.0, 0.0);
-        m_sDash->append(0.0, 100.0);
-        m_sDash->setPen(QPen(Qt::DashLine));
         m_cTumDens->addSeries(m_sDash);
         m_sDash->attachAxis(m_xTumDens);
         m_sDash->attachAxis(m_yTumDens);
+
+        m_cTumDens->addSeries(m_endTreatDash);
+        m_endTreatDash->attachAxis(m_xTumDens);
+        m_endTreatDash->attachAxis(m_yTumDens);
+
+        m_cTumDens->addSeries(m_recDash);
+        m_recDash->attachAxis(m_xTumDens);
+        m_recDash->attachAxis(m_yTumDens);
 
         m_selChart->addItem("Tumor density");
     }
@@ -122,14 +167,6 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         sTumVol->attachAxis(m_yTumVol);
         m_yTumVol->setMin(0.0);
         m_yTumVol->applyNiceNumbers();
-
-        m_sDash = new QLineSeries(m_cTumVol);
-        m_sDash->append(0.0, 0.0);
-        m_sDash->append(0.0, 100.0);
-        m_sDash->setPen(QPen(Qt::DashLine));
-        m_cTumVol->addSeries(m_sDash);
-        m_sDash->attachAxis(m_xTumVol);
-        m_sDash->attachAxis(m_yTumVol);
 
         m_selChart->addItem("Tumor volume");
     }
@@ -836,9 +873,6 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     layout->addLayout(hLayout);
     setLayout(layout);
 
-    setWindowTitle("Radiotherapy Simulator");
-    setWindowIcon(QIcon("../Figures/logo.png"));
-
     QObject::connect(m_selMap, SIGNAL(currentIndexChanged(int)), this, SLOT(changeNumMap(int)));
     QObject::connect(m_selChart, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChart(int)));
     QObject::connect(m_slider, SIGNAL(valueChanged(int)), m_timeS, SLOT(setValue(int)));
@@ -856,6 +890,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
     drawMap(m_selMap->currentIndex(), m_slider->value());
 
+    setWindowTitle("Radiotherapy Simulator");
+    setWindowIcon(QIcon("../Figures/logo.png"));
     showMaximized();
 }
 
@@ -870,77 +906,149 @@ void OutWindow::changeChart(const int numChart){
     switch(numChart){
     case 0:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cTumDens->addSeries(m_sDash);
+        m_cTumDens->addSeries(m_endTreatDash);
+        m_cTumDens->addSeries(m_recDash);
         m_sDash->attachAxis(m_xTumDens);
         m_sDash->attachAxis(m_yTumDens);
+        m_endTreatDash->attachAxis(m_xTumDens);
+        m_endTreatDash->attachAxis(m_yTumDens);
+        m_recDash->attachAxis(m_xTumDens);
+        m_recDash->attachAxis(m_yTumDens);
         m_chartView->setChart(m_cTumDens);
         break;
     }
 
     case 1:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cTumVol->addSeries(m_sDash);
+        m_cTumVol->addSeries(m_endTreatDash);
+        m_cTumVol->addSeries(m_recDash);
         m_sDash->attachAxis(m_xTumVol);
         m_sDash->attachAxis(m_yTumVol);
+        m_endTreatDash->attachAxis(m_xTumVol);
+        m_endTreatDash->attachAxis(m_yTumVol);
+        m_recDash->attachAxis(m_xTumVol);
+        m_recDash->attachAxis(m_yTumVol);
         m_chartView->setChart(m_cTumVol);
         break;
     }
 
     case 2:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cVascDens->addSeries(m_sDash);
+        m_cVascDens->addSeries(m_endTreatDash);
+        m_cVascDens->addSeries(m_recDash);
         m_sDash->attachAxis(m_xVascDens);
         m_sDash->attachAxis(m_yVascDens);
+        m_endTreatDash->attachAxis(m_xVascDens);
+        m_endTreatDash->attachAxis(m_yVascDens);
+        m_recDash->attachAxis(m_xVascDens);
+        m_recDash->attachAxis(m_yVascDens);
         m_chartView->setChart(m_cVascDens);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
         break;
     }
 
     case 3:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cKilledCells->addSeries(m_sDash);
+        m_cKilledCells->addSeries(m_endTreatDash);
+        m_cKilledCells->addSeries(m_recDash);
         m_sDash->attachAxis(m_xKilledCells);
         m_sDash->attachAxis(m_yKilledCells);
+        m_endTreatDash->attachAxis(m_xKilledCells);
+        m_endTreatDash->attachAxis(m_yKilledCells);
+        m_recDash->attachAxis(m_xKilledCells);
+        m_recDash->attachAxis(m_yKilledCells);
         m_chartView->setChart(m_cKilledCells);
         break;
     }
 
     case 4:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cCycle->addSeries(m_sDash);
+        m_cCycle->addSeries(m_endTreatDash);
+        m_cCycle->addSeries(m_recDash);
         m_sDash->attachAxis(m_xCycle);
         m_sDash->attachAxis(m_yCycle);
+        m_endTreatDash->attachAxis(m_xCycle);
+        m_endTreatDash->attachAxis(m_yCycle);
+        m_recDash->attachAxis(m_xCycle);
+        m_recDash->attachAxis(m_yCycle);
         m_chartView->setChart(m_cCycle);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
         break;
     }
 
     case 5:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cHypDens->addSeries(m_sDash);
+        m_cHypDens->addSeries(m_endTreatDash);
+        m_cHypDens->addSeries(m_recDash);
         m_sDash->attachAxis(m_xHypDens);
         m_sDash->attachAxis(m_yHypDens);
+        m_endTreatDash->attachAxis(m_xHypDens);
+        m_endTreatDash->attachAxis(m_yHypDens);
+        m_recDash->attachAxis(m_xHypDens);
+        m_recDash->attachAxis(m_yHypDens);
         m_chartView->setChart(m_cHypDens);
         break;
     }
 
     case 6:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cPO2Stat->addSeries(m_sDash);
+        m_cPO2Stat->addSeries(m_endTreatDash);
+        m_cPO2Stat->addSeries(m_recDash);
         m_sDash->attachAxis(m_xPO2Stat);
         m_sDash->attachAxis(m_yPO2Stat);
+        m_endTreatDash->attachAxis(m_xPO2Stat);
+        m_endTreatDash->attachAxis(m_yPO2Stat);
+        m_recDash->attachAxis(m_xPO2Stat);
+        m_recDash->attachAxis(m_yPO2Stat);
         m_chartView->setChart(m_cPO2Stat);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
         break;
     }
 
     case 7:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_chartView->chart()->removeSeries(m_recDash);
         m_cVegfStat->addSeries(m_sDash);
+        m_cVegfStat->addSeries(m_endTreatDash);
+        m_cVegfStat->addSeries(m_recDash);
         m_sDash->attachAxis(m_xVegfStat);
         m_sDash->attachAxis(m_yVegfStat);
+        m_endTreatDash->attachAxis(m_xVegfStat);
+        m_endTreatDash->attachAxis(m_yVegfStat);
+        m_recDash->attachAxis(m_xVegfStat);
+        m_recDash->attachAxis(m_yVegfStat);
         m_chartView->setChart(m_cVegfStat);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
         break;
     }
     }
@@ -984,7 +1092,7 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
             }
         }
         m_pixState->convertFromImage(*m_imState);
-        m_map->setPixmap(m_pixState->scaledToHeight(700));
+        m_map->setPixmap(m_pixState->scaledToHeight(500));
         m_legendSt->show();
         m_legendCyc->hide();
         m_legendPO2->hide();
@@ -1008,7 +1116,7 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
         }
 
         m_pixTimer->convertFromImage(*m_imTimer);
-        m_map->setPixmap(m_pixTimer->scaledToHeight(700));
+        m_map->setPixmap(m_pixTimer->scaledToHeight(500));
         m_legendSt->hide();
         m_legendCyc->show();
         m_legendPO2->hide();
@@ -1033,7 +1141,7 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
         }
 
         m_pixPO2->convertFromImage(*m_imPO2);
-        m_map->setPixmap(m_pixPO2->scaledToHeight(700));
+        m_map->setPixmap(m_pixPO2->scaledToHeight(500));
         m_legendCyc->hide();
         m_legendSt->hide();
         m_legendPO2->show();
@@ -1058,7 +1166,7 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
         }
 
         m_pixVegf->convertFromImage(*m_imVegf);
-        m_map->setPixmap(m_pixVegf->scaledToHeight(700));
+        m_map->setPixmap(m_pixVegf->scaledToHeight(500));
         m_legendCyc->hide();
         m_legendSt->hide();
         m_legendPO2->hide();
@@ -1166,10 +1274,17 @@ void OutWindow::saveChart(){
     QString fileName = QFileDialog::getSaveFileName(this, "Savem_chart", "../Figures",
                                                     "Images(*.png *.gif *.jpg *.jpeg)");
     if(!fileName.isEmpty()){
-        m_chartView->chart()->series().back()->hide();
+        int nSeries(m_chartView->chart()->series().size());
+        m_chartView->chart()->series().at(nSeries - 1)->hide();
+        m_chartView->chart()->series().at(nSeries - 2)->hide();
+        m_chartView->chart()->series().at(nSeries - 3)->hide();
         m_chartView->grab().save(fileName);
-        m_chartView->chart()->series().back()->show();
-        m_chartView->chart()->legend()->markers().back()->setVisible(false);
+        m_chartView->chart()->series().at(nSeries - 1)->show();
+        m_chartView->chart()->series().at(nSeries - 2)->show();
+        m_chartView->chart()->series().at(nSeries - 3)->show();
+        m_chartView->chart()->legend()->markers().at(nSeries - 1)->setVisible(false);
+        m_chartView->chart()->legend()->markers().at(nSeries - 2)->setVisible(false);
+        m_chartView->chart()->legend()->markers().at(nSeries - 3)->setVisible(false);
     }
 }
 

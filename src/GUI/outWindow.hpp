@@ -28,6 +28,7 @@ public:
 private:
     int m_mapNrow, m_mapNcol, m_mapSclFac;
     int m_simTime, m_simTimeStep;
+    double m_endTreatTime, m_recTime;
     std::vector<std::vector<int> > m_state, m_timer;
     std::vector<std::vector<double> > m_pO2, m_vegf;
     double m_maxpO2, m_maxvegf;
@@ -45,7 +46,7 @@ private:
     QValueAxis *m_xHypDens, *m_yHypDens;
     QValueAxis *m_xPO2Stat, *m_yPO2Stat;
     QValueAxis *m_xVegfStat, *m_yVegfStat;
-    QLineSeries *m_sDash;
+    QLineSeries *m_sDash, *m_endTreatDash, *m_recDash;
     QPushButton *m_sel, *m_change, *m_newSim;
     QPushButton *m_saveOutFiles;
     QPushButton *m_saveAllMaps, *m_saveChart, *m_saveMap;
