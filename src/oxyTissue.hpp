@@ -16,12 +16,16 @@
 #include "model.hpp"
 #include "oxyCell.hpp"
 
+//State variables
+#define ST_STABLE m_st->at(0)
+
 //Outputs
 #define OUT_HYP_DENS  m_out->at(0)
 #define OUT_PO2_MED   m_out->at(1)
 #define OUT_PO2_MEAN  m_out->at(2)
 #define OUT_VEGF_MED  m_out->at(3)
 #define OUT_VEGF_MEAN m_out->at(4)
+#define OUT_STABLE    m_out->at(5)
 
 //Internal parameters
 #define PAR_DO2	   m_param->at(0)
@@ -52,7 +56,7 @@ public:
 
 protected:
     int m_ncol, m_nlayer, m_nrow;
-    Model ****m_map;
+    OxyCell ****m_map;
 };
 
 #endif

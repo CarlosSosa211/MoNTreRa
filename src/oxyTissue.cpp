@@ -24,7 +24,7 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double pO2TumVes, const double hypThres,
                      const double VmaxVegf, const double KmVegf,
                      const double hypVegf) :
-    Model(0, 0, 5, 2, nrow * ncol * nlayer){
+    Model(0, 1, 6, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -88,7 +88,7 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double pO2TumVes, const double hypThres,
                      const double  VmaxVegf, const double KmVegf,
                      const double hypVegf) :
-    Model(0, 0, 5, 2, nrow * ncol * nlayer){
+    Model(0, 1, 6, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -147,10 +147,12 @@ OxyTissue::~OxyTissue(){
 
 
 int OxyTissue::initModel(){
+    ST_STABLE = -1.0;
+
     for (int i(0); i < m_numComp; i++){
         ((OxyCell *)(m_comp->at(i)))->initModel();
     }
-    return 1;
+    return 0;
 }
 
 
@@ -171,6 +173,8 @@ int OxyTissue::calcModelOut(){
 
     OUT_PO2_MEAN  = accumulate(pO2.begin(), pO2.end(), 0.0) / pO2.size();
     OUT_VEGF_MEAN = accumulate(vegf.begin(), vegf.end(), 0.0) / vegf.size();
+
+    OUT_STABLE = ST_STABLE;
 
     return 0;
 }
@@ -785,6 +789,9 @@ int OxyTissue::updateModel(double currentTime, const double DT){
         }
     }
     if(stable){
+        if(ST_STABLE < 0.0){
+            ST_STABLE = currentTime;
+        }
         return 1;
     }
     else{

@@ -9,6 +9,8 @@
 #include "outWindowOxy.hpp"
 
 OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
+    m_green = QColor(156, 204, 88);
+
     m_selChartGroup = new QGroupBox("Select a chart", this);
     m_selMapGroup = new QGroupBox("Select a map", this);
     m_mapGroup = new QGroupBox(this);
@@ -21,6 +23,25 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
     m_sDash->append(0.0, 0.0);
     m_sDash->append(0.0, 100.0);
     m_sDash->setPen(QPen(Qt::DashLine));
+
+    std::ifstream fStable((nFOutData + "/oxyStable.res").c_str());
+
+    if(!fStable.is_open()){
+        QMessageBox::critical(this, "Error", "Problem while opening oxyStable.res");
+    }
+
+    else{
+        fStable >> m_stableTime;
+        fStable.close();
+    }
+
+    m_stableDash = new QLineSeries;
+    m_stableDash->append(m_stableTime, 0.0);
+    m_stableDash->append(m_stableTime, 100.0);
+    QPen pen;
+    pen.setStyle(Qt::DashLine);
+    pen.setColor(m_green);
+    m_stableDash->setPen(pen);
 
     double a, b, c;
 
@@ -65,6 +86,10 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         m_cHypDens->addSeries(m_sDash);
         m_sDash->attachAxis(m_xHypDens);
         m_sDash->attachAxis(m_yHypDens);
+
+        m_cHypDens->addSeries(m_stableDash);
+        m_stableDash->attachAxis(m_xHypDens);
+        m_stableDash->attachAxis(m_yHypDens);
 
         m_selChart->addItem("Hypoxic density");
     }
@@ -407,29 +432,43 @@ void OutWindowOxy::changeChart(int numChart){
     switch(numChart){
     case 0:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_stableDash);
         m_cHypDens->addSeries(m_sDash);
+        m_cHypDens->addSeries(m_stableDash);
         m_sDash->attachAxis(m_xHypDens);
         m_sDash->attachAxis(m_yHypDens);
+        m_stableDash->attachAxis(m_xHypDens);
+        m_stableDash->attachAxis(m_yHypDens);
         m_chartView->setChart(m_cHypDens);
         break;
     }
     case 1:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_stableDash);
         m_cPO2Stat->addSeries(m_sDash);
+        m_cPO2Stat->addSeries(m_stableDash);
         m_sDash->attachAxis(m_xPO2Stat);
         m_sDash->attachAxis(m_yPO2Stat);
+        m_stableDash->attachAxis(m_xPO2Stat);
+        m_stableDash->attachAxis(m_yPO2Stat);
         m_chartView->setChart(m_cPO2Stat);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_stableDash).front()->setVisible(false);
         break;
     }
 
     case 2:{
         m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_stableDash);
         m_cVegfStat->addSeries(m_sDash);
+        m_cVegfStat->addSeries(m_stableDash);
         m_sDash->attachAxis(m_xVegfStat);
         m_sDash->attachAxis(m_yVegfStat);
+        m_stableDash->attachAxis(m_xVegfStat);
+        m_stableDash->attachAxis(m_yVegfStat);
         m_chartView->setChart(m_cVegfStat);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_stableDash).front()->setVisible(false);
         break;
     }
     }
@@ -552,10 +591,14 @@ void OutWindowOxy::saveChart(){
     QString fileName = QFileDialog::getSaveFileName(this, "Savem_chart", "../Figures",
                                                     "Images(*.png *.gif *.jpg *.jpeg)");
     if(!fileName.isEmpty()){
-        m_chartView->chart()->series().back()->hide();
+        int nSeries(m_chartView->chart()->series().size());
+        m_chartView->chart()->series().at(nSeries - 1)->hide();
+        m_chartView->chart()->series().at(nSeries - 2)->hide();
         m_chartView->grab().save(fileName);
-        m_chartView->chart()->series().back()->show();
-        m_chartView->chart()->legend()->markers().back()->setVisible(false);
+        m_chartView->chart()->series().at(nSeries - 1)->show();
+        m_chartView->chart()->series().at(nSeries - 2)->show();
+        m_chartView->chart()->legend()->markers().at(nSeries - 1)->setVisible(false);
+        m_chartView->chart()->legend()->markers().at(nSeries - 2)->setVisible(false);
     }
 }
 
