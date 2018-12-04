@@ -18,6 +18,7 @@ HEADERS += \
     ../tissue.hpp \
     ../treatment.hpp \
     simThread.hpp \
+    inAnWindow.hpp
 
 
 QT += \
@@ -45,7 +46,8 @@ SOURCES += \
     startWindow.cpp \
     ../tissue.cpp \
     ../treatment.cpp \
-    simThread.cpp
+    simThread.cpp \
+    inAnWindow.cpp
 
 DISTFILES += \
     ../InputFiles/in.dat \
