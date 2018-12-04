@@ -71,6 +71,7 @@ InWindow::InWindow() : QWidget(){
         m_beta.push_back(new QDoubleSpinBox(m_betaGroup));
     }
     m_arrestTime = new QDoubleSpinBox(m_paramRS);
+    m_doseThres  = new QDoubleSpinBox(m_paramRS);
 
     m_fraction  = new QDoubleSpinBox(m_paramTreat);
     m_totalDose = new QDoubleSpinBox(m_paramTreat);
@@ -284,6 +285,7 @@ InWindow::InWindow() : QWidget(){
     m_betaGroup->setLayout(betaLayout);
     formLayoutRS->addRow(m_betaGroup);
     formLayoutRS->addRow("Time of cycle arrest (h)", m_arrestTime);
+    formLayoutRS->addRow("Mitotic catastrophe \ndose threshold (Gy)", m_doseThres);
 
     m_paramRS->setLayout(formLayoutRS);
 
@@ -714,6 +716,7 @@ int InWindow::createInFiles(){
             fParam << m_beta.at(i)->value() << std::endl;
         }
         fParam << m_arrestTime->value() << std::endl;
+        fParam << m_doseThres->value() << std::endl;
         fParam << m_fraction->value() << std::endl;
         fParam << m_totalDose->value() << std::endl;
         fParam << m_interval->value() << std::endl;
@@ -866,7 +869,7 @@ int InWindow::loadInData(std::string nFInData){
     bool RT;
     int schedule(0);
     double fraction(0.0), interval(0.0), totalDose(0.0);
-    double arrestTime(0.0);
+    double arrestTime(0.0), doseThres(0.0);
     std::vector<double> alpha(8, 0.0);
     std::vector<double> beta(8, 0.0);
 
@@ -879,7 +882,7 @@ int InWindow::loadInData(std::string nFInData){
         for(int i(0); i < 8; i++){
             fInData >> beta.at(i);
         }
-        fInData >> arrestTime;
+        fInData >> arrestTime >> doseThres;
         fInData >> fraction >> totalDose >> interval >> schedule;
         m_simTimeL->show();
         m_oxySimTimeL->hide();
@@ -891,6 +894,7 @@ int InWindow::loadInData(std::string nFInData){
         m_beta.at(i)->setValue(beta.at(i));
     }
     m_arrestTime->setValue(arrestTime);
+    m_doseThres->setValue(doseThres);
     m_fraction->setValue(fraction);
     m_totalDose->setValue(totalDose);
     m_interval->setValue(interval);

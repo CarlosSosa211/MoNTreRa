@@ -60,7 +60,7 @@ private:
     QDoubleSpinBox *m_VmaxVegf, *m_KmVegf, *m_hypVegf;
     QGroupBox *m_alphaGroup, *m_betaGroup;
     std::vector<QDoubleSpinBox *> m_alpha, m_beta;
-    QDoubleSpinBox *m_arrestTime;
+    QDoubleSpinBox *m_arrestTime, *m_doseThres;
     QDoubleSpinBox *m_fraction, *m_totalDose, *m_interval;
     QGroupBox *m_schedule;
     QRadioButton *m_MonFri, *m_everyDay;
