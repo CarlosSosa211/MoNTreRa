@@ -1,4 +1,4 @@
-function plotParTumDens(path, par, tissueSet)
+function plotParEndTreatTumDens(path, par, tissueSet)
 global nPar;
 global allTissues;
 global densTissues nonDensTissues;
@@ -25,7 +25,7 @@ nTissues = length(tTissues);
 tumDens = zeros(nPar, 2, nTissues);
 
 for i = 1:length(tTissues)
-    tumDens(:, :, i) = load([path, '/morrisTumDens_', num2str(tTissues(i)), '.res']);
+    tumDens(:, :, i) = load([path, '/morrisEndTreatTumDens_', num2str(tTissues(i)), '.res']);
 end
 
 nfig = nfig + 1;
