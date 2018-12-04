@@ -98,7 +98,7 @@ void SimThread::run(){
     bool RT;
     int schedule;
     double fraction, interval, totalDose;
-    double doseThres(4.0), arrestTime;
+    double doseThres, arrestTime;
     std::vector<double> alpha(8);
     std::vector<double> beta(8);
     Treatment *treatment;
@@ -112,8 +112,7 @@ void SimThread::run(){
             fParam >> beta.at(i);
         }
 
-        fParam >> arrestTime;
-
+        fParam >> arrestTime >> doseThres;
         fParam >> fraction >> totalDose >> interval >> schedule;
 
         treatment = new Treatment(fraction, totalDose,
@@ -168,7 +167,7 @@ void SimThread::run(){
             model2 = new OxyTissue(nrow, ncol, nlayer, cellSize,
                                    inVes, Dvegf, DO2, Vmax, Km,
                                    pO2NormVes, pO2TumVes,
-                                   hypThres, VmaxVegf, KmVegf,
+                                   hypThres, ang, VmaxVegf, KmVegf,
                                    hypVegf);
             coupler = new Coupler(model1, model2);
             sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
@@ -350,7 +349,7 @@ void SimThread::run(){
         model1 = new OxyTissue(nrow, ncol, nlayer, cellSize,
                                inVes, Dvegf, DO2, Vmax,
                                Km, pO2NormVes, pO2TumVes,
-                               hypThres, VmaxVegf, KmVegf,
+                               hypThres, ang, VmaxVegf, KmVegf,
                                hypVegf);
 
         sim = new Simulator(model1, oxySimTimeStep);
@@ -415,6 +414,11 @@ void SimThread::run(){
         fVEGF.close();
 
         sim->stop();
+
+        std::ofstream fStable("../OutputFilesGUI/oxyStable.res");
+
+        fStable << model1->getOut()->at(5) << std::endl;
+        fStable.close();
 
         delete model1;
         delete sim;

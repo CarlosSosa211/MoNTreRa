@@ -17,11 +17,12 @@ OxyCell::OxyCell() : AbsOxyCell(){
 
 OxyCell::OxyCell(const double Vmax, const double Km,
                  const double pO2NormVes, const double pO2TumVes,
-                 const double hypThres, const double VmaxVegf,
-                 const double KmVegf, const double hypVegf,
-                 Model *const parent) : AbsOxyCell(){
+                 const double hypThres, const double ang,
+                 const double VmaxVegf, const double KmVegf,
+                 const double hypVegf, Model *const parent) :
+    AbsOxyCell(){
     m_in->resize(7);
-    m_param->resize(9);
+    m_param->resize(10);
 
     PAR_VMAX         = Vmax;
     PAR_KM           = Km;
@@ -29,6 +30,7 @@ OxyCell::OxyCell(const double Vmax, const double Km,
     PAR_PO2_NORM_VES = pO2NormVes;
     PAR_PO2_TUM_VES  = pO2TumVes;
     PAR_HYP_THRES    = hypThres;
+    PAR_OXYCELL_ANG  = ang;
     PAR_VMAX_VEGF    = VmaxVegf;
     PAR_KM_VEGF      = KmVegf;
     PAR_HYP_VEGF     = hypVegf;
@@ -57,12 +59,15 @@ int OxyCell::updateModel(const double currentTime,
         ST_PO2 += IN_DIFF_O2 - IN_CONS_O2;
     }
     ST_HYP = !ST_OXYDEAD * (ST_PO2 < PAR_HYP_THRES);
-    if(ST_HYP){
-        ST_VEGF = PAR_HYP_VEGF;
-    }
-    else{
-        calcConsVegf();
-        ST_VEGF += IN_DIFF_VEGF - IN_CONS_VEGF;
+
+    if(PAR_OXYCELL_ANG){
+        if(ST_HYP){
+            ST_VEGF = PAR_HYP_VEGF;
+        }
+        else{
+            calcConsVegf();
+            ST_VEGF += IN_DIFF_VEGF - IN_CONS_VEGF;
+        }
     }
 
     return 0;

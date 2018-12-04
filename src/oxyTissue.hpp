@@ -28,8 +28,9 @@
 #define OUT_STABLE    m_out->at(5)
 
 //Internal parameters
-#define PAR_DO2	   m_param->at(0)
-#define PAR_DVEGF  m_param->at(1)
+#define PAR_DO2	    m_param->at(0)
+#define PAR_OXY_ANG m_param->at(1)
+#define PAR_DVEGF   m_param->at(2)
 
 class OxyTissue : public Model{
 public:
@@ -38,15 +39,15 @@ public:
               const double Dvegf, const double D, const double Vmax,
               const double Km, const double pO2NormVes,
               const double pO2TumVes, const double hypThres,
-              const double  VmaxVegf, const double KmVegf,
-              const double hypVegf);
+              const double ang, const double  VmaxVegf,
+              const double KmVegf, const double hypVegf);
     OxyTissue(const int nrow, const int ncol, const int nlayer,
               const double cellSize, const std::vector<bool> &inVes,
               const double Dvegf, const double D, const double Vmax,
               const double Km, const double pO2NormVes,
               const double pO2TumVes, const double hypThres,
-              const double VmaxVegf, const double KmVegf,
-              const double hypVegf);
+              const double ang, const double VmaxVegf,
+              const double KmVegf, const double hypVegf);
     virtual ~OxyTissue();
     virtual int initModel();
     virtual int calcModelOut();

@@ -777,6 +777,10 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         }
         fVegf.close();
 
+        if(m_maxvegf == 0.0){
+            m_maxvegf = 20.0;
+        }
+
         m_pixVegf = new QPixmap;
 
         m_legendVegf = new QGroupBox(m_mapGroup);
