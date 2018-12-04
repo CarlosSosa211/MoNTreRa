@@ -26,8 +26,7 @@ StartWindow::StartWindow() : QWidget(){
 
     boxLayout->addWidget(m_fixedVal);
     boxLayout->addWidget(m_outFiles);
-    m_sensAn->hide();
-    //boxLayout->addWidget(m_sensAn);
+    boxLayout->addWidget(m_sensAn);
     m_sel->setLayout(boxLayout);
 
     mainLayout->addWidget(m_title, 0, 0, 1, 2, Qt::AlignHCenter);
@@ -94,7 +93,7 @@ void StartWindow::advance(){
     }
 
     else if(m_sensAn->isChecked()){
-        //new InAnWindow;
+        new InAnWindow;
         close();
     }
 }

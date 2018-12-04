@@ -11,6 +11,7 @@
 #include <QStyle>
 
 #include "inWindow.hpp"
+#include "inAnWindow.hpp"
 
 class StartWindow : public QWidget{
     Q_OBJECT
