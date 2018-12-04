@@ -37,7 +37,7 @@ InWindow::InWindow() : QWidget(){
     m_tumDens     = new QDoubleSpinBox(m_artifGroup);
     m_sigmaTum    = new QDoubleSpinBox(m_artifGroup);
     m_vascDens    = new QDoubleSpinBox(m_artifGroup);
-    m_sigmaVasc   = new QDoubleSpinBox(m_paramArch);
+    m_sigmaVasc   = new QDoubleSpinBox(m_artifGroup);
     m_distGroup   = new QGroupBox("Initial distribution of cells", m_paramArch);
     for(int i(0); i < 4; i++){
         m_dist.push_back(new QDoubleSpinBox(m_distGroup));
@@ -240,7 +240,7 @@ InWindow::InWindow() : QWidget(){
     m_paramArch->setLayout(formLayoutArch);
 
     formLayoutTG->addRow("Doubling time of tumor cells (h)", m_doubTime);
-    formLayoutTG->addRow("Edge size", m_edgeOrder);
+    formLayoutTG->addRow("Edge order", m_edgeOrder);
     QFormLayout *timeLayout = new QFormLayout;
     timeLayout->addRow("Phase G1", m_time.at(0));
     timeLayout->addRow("Phase S", m_time.at(1));
@@ -268,8 +268,8 @@ InWindow::InWindow() : QWidget(){
     alphaLayout->addRow("Tumor cells in phase G2", m_alpha.at(3));
     alphaLayout->addRow("Tumor cells in phase M", m_alpha.at(4));
     alphaLayout->addRow("Tumor cells in phase G0", m_alpha.at(5));
-    alphaLayout->addRow("Normal vessels", m_alpha.at(6));
-    alphaLayout->addRow("Tumor vessels", m_alpha.at(7));
+    alphaLayout->addRow("Pre-existing vessels", m_alpha.at(6));
+    alphaLayout->addRow("Neocreated vessels", m_alpha.at(7));
     m_alphaGroup->setLayout(alphaLayout);
     formLayoutRS->addRow(m_alphaGroup);
 
@@ -280,8 +280,8 @@ InWindow::InWindow() : QWidget(){
     betaLayout->addRow("Tumor cells in phase G2", m_beta.at(3));
     betaLayout->addRow("Tumor cells in phase M", m_beta.at(4));
     betaLayout->addRow("Tumor cells in phase G0", m_beta.at(5));
-    betaLayout->addRow("Normal vessels", m_beta.at(6));
-    betaLayout->addRow("Tumor vessels", m_beta.at(7));
+    betaLayout->addRow("Pre-existing vessels", m_beta.at(6));
+    betaLayout->addRow("Neocreated vessels", m_beta.at(7));
     m_betaGroup->setLayout(betaLayout);
     formLayoutRS->addRow(m_betaGroup);
     formLayoutRS->addRow("Time of cycle arrest (h)", m_arrestTime);
