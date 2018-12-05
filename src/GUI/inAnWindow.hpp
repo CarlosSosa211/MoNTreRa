@@ -12,12 +12,16 @@
 #include <QSpinBox>
 #include <QWidget>
 
+#include "outAnWindow.hpp"
+#include "simThread.hpp"
 #include "startWindow.hpp"
+#include "switch.hpp"
 
 class InAnWindow : public QWidget{
     Q_OBJECT
 public:
     InAnWindow();
+    int createInFiles();
     int loadInData(std::string nFInData);
 
 private:
@@ -36,6 +40,7 @@ private:
     QCheckBox *m_fraction;
     QCheckBox *m_D, *m_Vmax, *m_Km, *m_pO2NormVes, *m_pO2TumVes;
     QCheckBox *m_hypThres, *m_hypNecThres;
+    Switch *m_tumGrowthS, *m_resS, *m_angS, *m_treatS, *m_phaseRSS, *m_oxyS;
     QDoubleSpinBox *m_tumDensS, *m_sigmaTumS, *m_vascDensS, *m_sigmaVascS;
     QDoubleSpinBox *m_doubTimeS;
     QSpinBox *m_edgeOrderS;
@@ -55,6 +60,7 @@ private slots:
     void back();
     void start();
     void disable(int state);
+    void nextWindow();
     void selInDataFile();
 };
 
