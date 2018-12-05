@@ -29,7 +29,7 @@ b = {'$T_{tum}$', '$T_{heal}$', '$T_{end}$', '$\bar{v}$', '$\alpha_{heal}$'...
 color = linspace(0, 1, nTissues);
 shape = ['o', 's', 'v', 'd'];
 
-nfig = 1;
+nfig = 0;
 quit = 0;
 
 % path = uigetdir('../../Carlos/Results');

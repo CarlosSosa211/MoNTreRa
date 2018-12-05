@@ -42,8 +42,8 @@ cOut = [num2cell(endTreatTumDens(:, 3)), num2cell(threeMonTumDens(:, 3))...
     num2cell(timeTo99(:, 3)), num2cell(recTime(:, 3)),  b'];
 cOut = sortrows(cOut, 1);
 
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 bar(cell2mat(cOut(:, 1:8)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
