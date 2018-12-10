@@ -1,12 +1,15 @@
-clear all 
+clear all
 close all
 
 global nfig
 nfig = 0;
 
-path = '../../Carlos/Results/Var_TTum';
-p = 10;
+% path = '../../Carlos/Results/Var_TTum_2Gy_noHypNec';
+% path = '../../Carlos/Results/Var_d_noHypNec';
+path = '../../Carlos/Results/Var_ang';
+p = 2;
 
+%%
 nfig = nfig + 1;
 figure(nfig)
 hold on
@@ -24,6 +27,7 @@ ylabel('Tumor density')
 legend
 grid on
 
+%%
 nfig = nfig + 1;
 figure(nfig)
 hold on
@@ -41,19 +45,16 @@ ylabel('Tumor volume (mm³)')
 legend
 grid on
 
-
+%%
 nfig = nfig + 1;
 figure(nfig)
 hold on
 
 for i = 0:p-1
     vascDens = load([path, '/vascDens_', num2str(i), '.res']);
-    %     killedCells = load([path, '/killedCells_', num2str(i), '.res']);
-    %     cycle = load([path, '/cycle_', num2str(i), '.res']);
-    %     hypDens = load([path, '/hypDens_', num2str(i), '.res']);
-    %     pO2Stat = load([path, '/pO2Stat_', num2str(i), '.res']);
-    %     vegfStat = load([path, '/vegfStat_', num2str(i), '.res']);
     plot(vascDens(:, 1), vascDens(:, 2));
+    plot(vascDens(:, 1), vascDens(:, 3));
+    plot(vascDens(:, 1), vascDens(:, 4));
 end
 
 hold off
@@ -63,10 +64,72 @@ ylabel('Vascular density')
 legend
 grid on
 
+%%
+nfig = nfig + 1;
+figure(nfig)
+hold on
 
+for i = 0:p-1
+    cycle = load([path, '/cycle_', num2str(i), '.res']);
+    plot(cycle(:, 1), cycle(:, 2));
+end
 
+hold off
+title('Evolution of the distribution of tumor cells')
+xlabel('Time (h)')
+ylabel('Percentage of tumor cells in phase G1')
+legend
+grid on
 
+%%
+nfig = nfig + 1;
+figure(nfig)
+hold on
 
+for i = 0:p-1
+    cycle = load([path, '/cycle_', num2str(i), '.res']);
+    plot(cycle(:, 1), cycle(:, 3));
+end
 
+hold off
+title('Evolution of the distribution of tumor cells')
+xlabel('Time (h)')
+ylabel('Percentage of tumor cells in phase S')
+legend
+grid on
+
+%%
+nfig = nfig + 1;
+figure(nfig)
+hold on
+
+for i = 0:p-1
+    cycle = load([path, '/cycle_', num2str(i), '.res']);
+    plot(cycle(:, 1), cycle(:, 6));
+end
+
+hold off
+title('Evolution of the distribution of tumor cells')
+xlabel('Time (h)')
+ylabel('Percentage of tumor cells in phase G0')
+legend
+grid on
+
+%%
+nfig = nfig + 1;
+figure(nfig)
+hold on
+
+for i = 0:p-1
+    hypDens = load([path, '/hypDens_', num2str(i), '.res']);
+    plot(hypDens(:, 1), hypDens(:, 2));
+end
+
+hold off
+title('Hypoxic cells density')
+xlabel('Time (h)')
+ylabel('Hypoxic cells density')
+legend
+grid on
 
 
