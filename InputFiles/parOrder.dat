@@ -1,0 +1,41 @@
+0	tumGrowth
+1	TTum
+2	edgeOrder
+3	res
+4	THeal
+5	ang
+6	TEnd
+7	vBar
+8	alphaHeal
+9	alphaBetaHeal
+10      alphaTumG1
+11      alphaBetaTumG1
+12      alphaTumS
+13      alphaBetaTumS
+14      alphaTumG2
+15      alphaBetaTumG2
+16      alphaTumM
+17      alphaBetaTumM
+18      alphaTumG0
+19      alphaBetaTumG0
+20      alphaPreEnd
+21      alphaBetaPreEnd
+22      alphaNeoEnd
+23      alphaBetaNeoEnd
+24	dThres
+25	TArrest
+26	hypNecThres
+27	d
+28	DO2
+29	VMaxO2
+30	KMO2
+31	DVEGF
+32	VMaxVEGF
+33	KMVEGF
+34	pO2PreEnd
+35	pO2NeoEnd
+36	pO2Hyp
+37	vHyp
+
+
+
