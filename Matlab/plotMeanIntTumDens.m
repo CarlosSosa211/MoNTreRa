@@ -36,8 +36,8 @@ stdIntTumDens = std(intTumDens, [], 3);
 cIntTumDens = [num2cell(meanIntTumDens), num2cell(stdIntTumDens), b'];
 cIntTumDens = sortrows(cIntTumDens, 4);
 
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 hold on
 colormap(jet)
 for i = 1 : size(intTumDens, 1)
@@ -65,9 +65,8 @@ legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex', 'fontsize', 18)
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
 
-figure(nfig);
 nfig = nfig + 1;
-
+figure(nfig);
 hold on
 hBar = bar(cell2mat(cIntTumDens(:, 3:4)));
 ax = gca;

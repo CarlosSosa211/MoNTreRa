@@ -36,8 +36,8 @@ stdEndTreatTumDens = std(endTreatTumDens, [], 3);
 cEndTreatTumDens = [num2cell(meanEndTreatTumDens), num2cell(stdEndTreatTumDens), b'];
 cEndTreatTumDens = sortrows(cEndTreatTumDens, 4);
 
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 hold on
 colormap(jet)
 for i = 1 : size(endTreatTumDens, 1)
@@ -65,9 +65,8 @@ legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex', 'fontsize', 16)
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
 
-figure(nfig);
 nfig = nfig + 1;
-
+figure(nfig);
 hold on
 hBar = bar(cell2mat(cEndTreatTumDens(:, 3:4)));
 ax = gca;

@@ -36,8 +36,8 @@ stdTimeTo95 = std(timeTo95, [], 3);
 cTimeTo95 = [num2cell(meanTimeTo95), num2cell(stdTimeTo95), b'];
 cTimeTo95 = sortrows(cTimeTo95, 4);
 
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 hold on
 colormap(jet)
 for i = 1 : size(timeTo95, 1)
@@ -65,9 +65,8 @@ legend(b, 'fontsize', 18, 'location', 'bestoutside', 'interpreter', 'latex')
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
 
-figure(nfig);
 nfig = nfig + 1;
-
+figure(nfig);
 hold on
 hBar = bar(cell2mat(cTimeTo95(:, 3:4)));
 ax = gca;

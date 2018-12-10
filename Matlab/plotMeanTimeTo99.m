@@ -36,8 +36,8 @@ stdTimeTo99 = std(timeTo99, [], 3);
 cTimeTo99 = [num2cell(meanTimeTo99), num2cell(stdTimeTo99), b'];
 cTimeTo99 = sortrows(cTimeTo99, 3);
 
-figure(nfig);
 nfig = nfig + 1;
+figure(nfig);
 hold on
 colormap(jet)
 for i = 1 : size(timeTo99, 1)
@@ -65,9 +65,8 @@ legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex', 'fontsize', 18)
 xlabel('\mu*', 'fontsize', 20)
 ylabel('\sigma', 'fontsize', 20)
 
-figure(nfig);
 nfig = nfig + 1;
-
+figure(nfig);
 hold on
 hBar = bar(cell2mat(cTimeTo99(:, 3:4)));
 ax = gca;

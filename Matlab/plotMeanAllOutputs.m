@@ -54,9 +54,8 @@ cOut = [num2cell(meanTimeTo95(:, 3)), num2cell(meanTimeTo99(:, 3))...
 cOut = sortrows(cOut, 1);
 
 
-figure(nfig);
 nfig = nfig + 1;
-
+figure(nfig);
 hold on
 hBar = bar(cell2mat(cOut(:, 1:4)));
 ax = gca;
