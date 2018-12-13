@@ -19,6 +19,7 @@ project(RTsim)
 
 set(RTSIM_HEADER_FILES
 absOxyCell.hpp
+alloc.hpp
 cell.hpp
 constOxyCell.hpp
 constOxyTissue.hpp
@@ -27,6 +28,7 @@ model.hpp
 oxyCell.hpp
 oxyTissue.hpp
 rootSimulator.hpp
+sensAn.hpp
 simpcell.hpp
 simulator.hpp
 tissue.hpp
@@ -36,17 +38,22 @@ treatment.hpp
 # RTsim basic source files
 set(RTSIM_SOURCE_FILES
 absOxyCell.cpp
+alloc.cpp
 cell.cpp
 constOxyCell.cpp
 constOxyTissue.cpp
 coupler.cpp
 model.cpp
+morris.cpp
 oxyCell.cpp
 oxyTissue.cpp
 rootSimulator.cpp
+sensAnR.cpp
 simulator.cpp
+sobol.cpp
 tissue.cpp
 treatment.cpp
+var.cpp
 )
 
 set(TOOLS
