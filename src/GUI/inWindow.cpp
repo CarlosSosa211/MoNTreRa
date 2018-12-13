@@ -407,11 +407,11 @@ void InWindow::changeSimTime(double value){
     if(m_MonFri->isChecked()){
         m_simTime->setValue((int(m_totalDose->value() / m_fraction->value()) / 5 * 7.0 +
                              int(m_totalDose->value() / m_fraction->value()) % 5) *
-                            m_interval->value());
+                            m_interval->value() + 720.0);
     }
     if(m_everyDay->isChecked()){
         m_simTime->setValue((m_totalDose->value() / m_fraction->value()) *
-                            m_interval->value());
+                            m_interval->value() + 720.0);
     }
 }
 
