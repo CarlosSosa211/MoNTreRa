@@ -42,5 +42,7 @@ void sobolFromFiles(int K);
 void sobolRT(const int N, const std::string nFRefParInt);
 void sobolToy(const int N, const std::string nFRefParInt);
 void toyModel(double *x, double *y);
-void var1Par(const int kp, const int L, const std::string nRefParInt);
-void varErr(const int kp, const std::string nFMostRelPar, const std::string nfLeastPar);
+void var1ParRange(const int kp, const int L, const std::string nRefParInt);
+void varErr(const std::string nFVarPar, const std::string nFMostRelPar,
+            const std::string nFLeastPar);
+void varParFromFiles(const std::vector<std::string> nFPar);
