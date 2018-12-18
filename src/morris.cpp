@@ -4,7 +4,17 @@ using namespace std;
 
 void morris(const int K, const int L, const int N, const int nOut,
             const int p, const double *x0, const double *h,
-            double **mu, double **sigma){
+            double **mu, double **sigma, const string nFInTissueDim,
+            const string nFInTum, const string nFInVes){
+    int nrow, ncol, nlayer;
+    double cellSize;
+    vector<bool> inTum, inVes;
+
+    if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
+                    cellSize, inTum, inVes);
+    }
+
     vector<int> vP;
 
     for(int k(0); k < K; k++){
@@ -63,7 +73,7 @@ void morris(const int K, const int L, const int N, const int nOut,
 
         for(int m(0); m < M; m++){
             //toyModel(Bp[m], y[m]);
-            model(Bp[m], y[m]);
+            model(Bp[m], y[m], nrow, ncol, nlayer, cellSize, inTum, inVes);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
             cout << "---------------------------------------------" << endl;
@@ -105,7 +115,8 @@ void morris(const int K, const int L, const int N, const int nOut,
 }
 
 
-void morrisRT(const int N, const int p, const string nFRefParInt){
+void morrisRT(const int N, const int p, const string nFRefParInt, const string nFInTissueDim,
+              const string nFInTum, const string nFInVes){
     const int K(34), nOut(8);
     //const int K(20), nOut(8);
     double h[K], x0[K];
@@ -131,7 +142,7 @@ void morrisRT(const int N, const int p, const string nFRefParInt){
         }
     }
 
-    morris(K, 1, N, nOut, p, x0, h, mu, sigma);
+    morris(K, 1, N, nOut, p, x0, h, mu, sigma, nFInTissueDim, nFInTum, nFInVes);
 
     ofstream fMorrisEndTreatTumDens("../OutputFiles/morrisEndTreatTumDens.res");
     ofstream fMorris3MonTumDens("../OutputFiles/morris3MonTumDens.res");
@@ -207,10 +218,10 @@ void morrisToy(const int p, const int N, const string nFRefParInt){
 }
 
 
-void morrisVarRange(const int K, const int kp, const int L,
-                    const int N, const int nOut, const int p,
-                    const string nFRefParInt,
-                    double ***mu, double ***sigma){
+void morrisVarRange(const int K, const int kp, const int L, const int N,
+                    const int nOut, const int p, const string nFRefParInt,
+                    double ***mu, double ***sigma, const string nFInTissueDim,
+                    const string nFInTum, const string nFInVes){
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
@@ -230,7 +241,8 @@ void morrisVarRange(const int K, const int kp, const int L,
 
     for(int l(0); l < L; l++){
         fVarRange << h[kp] << endl;
-        morris(K, L, N, nOut, p, x0, h, mu[l], sigma[l]);
+        morris(K, L, N, nOut, p, x0, h, mu[l], sigma[l], nFInTissueDim,
+               nFInTum, nFInVes);
         h[kp] += h10;
     }
 
@@ -239,7 +251,8 @@ void morrisVarRange(const int K, const int kp, const int L,
 
 
 void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
-                      const string nFRefParInt){
+                      const string nFRefParInt, const string nFInTissueDim,
+                      const string nFInTum, const string nFInVes){
     const int K(34), nOut(8);
     double ***mu, ***sigma;
 
@@ -255,7 +268,8 @@ void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
         }
     }
 
-    morrisVarRange(K, kp, L, N, nOut, p, nFRefParInt, mu, sigma);
+    morrisVarRange(K, kp, L, N, nOut, p, nFRefParInt, mu, sigma, nFInTissueDim,
+                   nFInTum, nFInVes);
 
     for(int l(0); l < L; l++){
         ofstream fMorrisEndTreatTumDens("../OutputFiles/morrisEndTreatTumDens_" + to_string(l) + ".res");

@@ -5,7 +5,18 @@ using namespace std;
 void sobol(const int K, const int N, const int nOut,
            const double *x0, const double *h,
            double **SI, double **TSI,
-           double ***SIConv, double ***TSIConv){
+           double ***SIConv, double ***TSIConv,
+           const string nFInTissueDim,
+           const string nFInTum, const string nFInVes){
+    int nrow, ncol, nlayer;
+    double cellSize;
+    vector<bool> inTum, inVes;
+
+    if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
+                    cellSize, inTum, inVes);
+    }
+
     int nEv(0), nEvTot((K + 2) * N);
     double **Xa, **Xb, **Xc;
     double **Ya, **Yb, **Yc;
@@ -19,11 +30,6 @@ void sobol(const int K, const int N, const int nOut,
     Yc = alloc2D(N, nOut);
 
     for(int i(0); i < N; i++){
-        //Matrices for a model considering the Legendre polynomial of degree d
-        //Xa[i][0] = rand() % 5 + 1;
-        //Xa[i][1] = -1.0 + 2.0 * (double)(rand()) / (double)(RAND_MAX);
-        //Xb[i][0] = rand() % 5 + 1;
-        //Xb[i][1] = -1.0 + 2.0 * (double)(rand()) / (double)(RAND_MAX);
         for(int k(0); k < K; k++){
             Xa[i][k] = x0[k] + (double)(rand()) / (double)(RAND_MAX) * h[k];
             Xb[i][k] = x0[k] + (double)(rand()) / (double)(RAND_MAX) * h[k];
@@ -31,16 +37,16 @@ void sobol(const int K, const int N, const int nOut,
     }
 
     for(int i(0); i < N; i++){
-        toyModel(Xa[i], Ya[i]);
-        //model(Xa[i], Ya[i]);
+        //toyModel(Xa[i], Ya[i]);
+        model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
-        //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-        //cout << "---------------------------------------------" << endl;
-        toyModel(Xb[i], Yb[i]);
-        //model(Xb[i], Yb[i]);
+        cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+        cout << "---------------------------------------------" << endl;
+        //toyModel(Xb[i], Yb[i]);
+        model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
-        //cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-        //cout << "---------------------------------------------" << endl;
+        cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+        cout << "---------------------------------------------" << endl;
     }
 
     int iConv(0), nConv;
@@ -67,11 +73,11 @@ void sobol(const int K, const int N, const int nOut,
     for(int i(0); i < N; i++){
         Xc[i][0] = Xb[i][0];
 
-        toyModel(Xc[i], Yc[i]);
-        //model(Xc[i], Yc[i]);
+        //toyModel(Xc[i], Yc[i]);
+        model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
-        //cout << nEv << " out of " << nEvTot << " evaluations of the model";
-        //cout << "---------------------------------------------" << endl;
+        cout << nEv << " out of " << nEvTot << " evaluations of the model";
+        cout << "---------------------------------------------" << endl;
 
         for(int j(0); j < nOut; j++){
             alpha[j]  += Yb[i][j] * Yc[i][j];
@@ -114,11 +120,11 @@ void sobol(const int K, const int N, const int nOut,
             Xc[i][k - 1] = Xa[i][k - 1];
             Xc[i][k] = Xb[i][k];
 
-            toyModel(Xc[i], Yc[i]);
-            //model(Xc[i], Yc[i]);
+            //toyModel(Xc[i], Yc[i]);
+            model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
             nEv++;
-            //cout << nEv << " out of " << nEvTot << " evaluations of the model";
-            //cout << "---------------------------------------------" << endl;
+            cout << nEv << " out of " << nEvTot << " evaluations of the model";
+            cout << "---------------------------------------------" << endl;
 
             for(int j(0); j < nOut; j++){
                 alpha[j]  += Yb[i][j] * Yc[i][j];
@@ -213,7 +219,8 @@ void sobolFromFiles(int K){
     fSens.close();
 }
 
-void sobolRT(const int N, const string nFRefParInt){
+void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
+             const string nFInTum, const string nFInVes){
     const int K(34), NConv(log(N) / log(2.0)), nOut(6);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
@@ -234,7 +241,7 @@ void sobolRT(const int N, const string nFRefParInt){
     SIConv  = alloc3D(NConv, nOut, K);
     TSIConv = alloc3D(NConv, nOut, K);
 
-    sobol(K, N, nOut, x0, h, SI, TSI, SIConv, TSIConv);
+    sobol(K, N, nOut, x0, h, SI, TSI, SIConv, TSIConv, nFInTissueDim, nFInTum, nFInVes);
 
     ofstream fSobolEndTreatTumDens("../OutputFiles/sobolEndTreatTumDens.res");
     ofstream fSobol3MonTumDens("../OutputFiles/sobol3MonTumDens.res");

@@ -26,22 +26,26 @@ int main(){
     //string nFMostRelPar("../InputFiles/mostRelParAng.dat");
     //string nFLeastRelPar("../InputFiles/leastRelParAng.dat");
     //string nFVarPar("../InputFiles/varParAng.dat");
-    string nFMostRelPar("../InputFiles/mostRelParAlphaBeta.dat");
-    string nFLeastRelPar("../InputFiles/leastRelParAlphaBeta.dat");
-    string nFVarPar("../InputFiles/varParAlphaBeta.dat");
+    string nFMostRelPar("../InputFiles/mostRelParAngAlphaBeta.dat");
+    string nFLeastRelPar("../InputFiles/leastRelParAngAlphaBeta.dat");
+    string nFVarPar("../InputFiles/varParAngAlphaBeta.dat");
+    string nFInTissueDim("../InputFiles/tissueDim.dat");
+    string nFInTum("../InputFiles/inTum.dat");
+    string nFInVes("../InputFiles/inVes.dat");
     //srand(time(NULL));
-    //var1ParRange(kp, L, nFRefParInt);
-    varErr(nFVarPar, nFMostRelPar, nFLeastRelPar);
+    //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
+    varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim,
+           nFInTum, nFInVes);
     //vector<string> nFPar;
     //nFPar.push_back("../InputFiles/parDiffAlphaBeta.dat");
     //nFPar.push_back("../InputFiles/parOneAlphaBeta.dat");
-    //varParFromFiles(nFPar);
+    //varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes);
     //evalR(nMethod, nModel);
-    //morrisRT(N, p, nFRefParInt);
+    //morrisRT(N, p, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
     //morrisToy(N, p, nFRefParInt);
-    //morrisVarRangeRT(kp, L, N, p, nFRefParInt);
+    //morrisVarRangeRT(kp, L, N, p, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
     //morrisVarRangeToy(kp, L, N, p, nFRefParInt);
-    //sobolRT(N, nFRefParInt);
+    //sobolRT(N, nFRefParInt, nFInTissueDim, nFInTum, nFInVes));
     //sobolToy(N, nFRefParInt);
     //sobolFromFiles(2);
 
@@ -252,7 +256,39 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 }
 
 
-void model(const double *x, double *y){
+void readInFiles(const string nFInTissueDim, const string nFInTum,
+                 const string nFInVes, int &nrow, int &ncol, int &nlayer,
+                 double &cellSize, vector<bool> &inTum, vector<bool> &inVes){
+    ifstream fInTissueDim(nFInTissueDim.c_str());
+
+    fInTissueDim >> nrow >> ncol >> nlayer;
+    fInTissueDim >> cellSize;
+    fInTissueDim.close();
+
+    ifstream fInTum(nFInTum.c_str());
+    bool temp;
+
+    fInTum >> temp;
+    while(!fInTum.eof()){
+        inTum.push_back(temp);
+        fInTum >> temp;
+    }
+    fInTum.close();
+
+    ifstream fInVes(nFInVes.c_str());
+
+    fInVes >> temp;
+    while(!fInVes.eof()){
+        inVes.push_back(temp);
+        fInVes >> temp;
+    }
+    fInVes.close();
+}
+
+
+void model(const double *x, double *y, const int nrow,
+           const int ncol, const int nlayer, const double cellSize,
+           const vector<bool> &inTum, const vector<bool> & inVes){
     //int k(0);
     /*int nrow(90), ncol(90), nlayer(1);
     cout << "Creating tissue with: "  << endl;
@@ -286,36 +322,6 @@ void model(const double *x, double *y){
     cout << "sigmaTum: " << sigmaTum << endl;
     cout << "vascDens: " << vascDens << endl;
     cout << "sigmaVasc: " << sigmaVasc << endl;*/
-
-    /*int nrow, ncol, nlayer;
-    double cellSize;
-
-    std::ifstream fInTissueDim("../InputFiles/tissueDim.dat");
-
-    fInTissueDim >> nrow >> ncol >> nlayer;
-    fInTissueDim >> cellSize;
-    fInTissueDim.close();
-
-    vector<bool> inTum;
-    std::ifstream fInTum("../InputFiles/inTum.dat");
-    bool temp;
-
-    fInTum >> temp;
-    while(!fInTum.eof()){
-        inTum.push_back(temp);
-        fInTum >> temp;
-    }
-    fInTum.close();
-
-    vector<bool> inVes;
-    std::ifstream fInVes("../InputFiles/inVes.dat");
-
-    fInVes >> temp;
-    while(!fInVes.eof()){
-        inVes.push_back(temp);
-        fInVes >> temp;
-    }
-    fInVes.close();*/
 
     /*createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
     vascDens, sigmaVasc, inTum, inVes);*/
@@ -404,35 +410,6 @@ void model(const double *x, double *y){
     cout << "pO2TumVes: "   << pO2TumVes   << " mmHg" << endl;
     cout << "hypThres: "    << hypThres    << " mmHg" << endl;
     cout << "hypVegf: "     << hypVegf     << " mol/um^3" << endl;*/
-
-    int nrow, ncol, nlayer;
-    double cellSize;
-    std::ifstream fInTissueDim("../InputFiles/tissueDim.dat");
-
-    fInTissueDim >> nrow >> ncol >> nlayer;
-    fInTissueDim >> cellSize;
-    fInTissueDim.close();
-
-    vector<bool> inTum;
-    std::ifstream fInTum("../InputFiles/inTum.dat");
-    bool temp;
-
-    fInTum >> temp;
-    while(!fInTum.eof()){
-        inTum.push_back(temp);
-        fInTum >> temp;
-    }
-    fInTum.close();
-
-    vector<bool> inVes;
-    std::ifstream fInVes("../InputFiles/inVes.dat");
-
-    fInVes >> temp;
-    while(!fInVes.eof()){
-        inVes.push_back(temp);
-        fInVes >> temp;
-    }
-    fInVes.close();
 
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
@@ -597,40 +574,13 @@ void model(const double *x, double *y){
 }
 
 
-void model(const double *x, double *y, const std::string nFTumDens,
-           const std::string nFTumVol, const std::string nFVascDens,
-           const std::string nFKilledCells, const std::string nFCycle,
-           const std::string nFHypDens, const std::string nFPO2Stat,
-           const std::string nFVegfStat){
-    int nrow, ncol, nlayer;
-    double cellSize;
-    std::ifstream fInTissueDim("../InputFiles/tissueDim.dat");
-
-    fInTissueDim >> nrow >> ncol >> nlayer;
-    fInTissueDim >> cellSize;
-    fInTissueDim.close();
-
-    vector<bool> inTum;
-    std::ifstream fInTum("../InputFiles/inTum.dat");
-    bool temp;
-
-    fInTum >> temp;
-    while(!fInTum.eof()){
-        inTum.push_back(temp);
-        fInTum >> temp;
-    }
-    fInTum.close();
-
-    vector<bool> inVes;
-    std::ifstream fInVes("../InputFiles/inVes.dat");
-
-    fInVes >> temp;
-    while(!fInVes.eof()){
-        inVes.push_back(temp);
-        fInVes >> temp;
-    }
-    fInVes.close();
-
+void model(const double *x, double *y, const int nrow,
+           const int ncol, const int nlayer, const double cellSize,
+           const vector<bool> &inTum, const vector<bool> & inVes,
+           const string nFTumDens, const string nFTumVol,
+           const string nFVascDens, const string nFKilledCells,
+           const string nFCycle, const string nFHypDens,
+           const string nFPO2Stat, const string nFVegfStat){
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
@@ -754,65 +704,65 @@ void model(const double *x, double *y, const std::string nFTumDens,
 
     int numIter(simTime / simTimeStep);
     double currentTime(0.0);
-    std::ofstream fTumDens(nFTumDens), fTumVol(nFTumVol), fKilledCells(nFKilledCells);
-    std::ofstream fVascDens(nFVascDens), fCycle(nFCycle), fHypDens(nFHypDens);
-    std::ofstream fPO2Stat(nFPO2Stat), fVEGFStat(nFVegfStat);
+    ofstream fTumDens(nFTumDens), fTumVol(nFTumVol), fKilledCells(nFKilledCells);
+    ofstream fVascDens(nFVascDens), fCycle(nFCycle), fHypDens(nFHypDens);
+    ofstream fPO2Stat(nFPO2Stat), fVEGFStat(nFVegfStat);
 
     sim->initSim();
 
     fTumDens     << currentTime << " " <<
-                    model1->getOut()->at(0) << std::endl;
+                    model1->getOut()->at(0) << endl;
     fTumVol      << currentTime << " " <<
-                    model1->getOut()->at(23) << std::endl;
+                    model1->getOut()->at(23) << endl;
     fVascDens    << currentTime << " " <<
                     model1->getOut()->at(6) << " " <<
                     model1->getOut()->at(7) << " " <<
-                    model1->getOut()->at(8) << std::endl;
+                    model1->getOut()->at(8) << endl;
     fKilledCells << currentTime << " " <<
-                    model1->getOut()->at(21) << std::endl;
+                    model1->getOut()->at(21) << endl;
     fHypDens     << currentTime << " " <<
-                    coupler->getModel2()->getOut()->at(0) << std::endl;
+                    coupler->getModel2()->getOut()->at(0) << endl;
     fPO2Stat     << currentTime << " " <<
                     coupler->getModel2()->getOut()->at(1) << " " <<
-                    coupler->getModel2()->getOut()->at(2) << std::endl;
+                    coupler->getModel2()->getOut()->at(2) << endl;
     fVEGFStat    << currentTime << " " <<
                     coupler->getModel2()->getOut()->at(3) << " " <<
-                    coupler->getModel2()->getOut()->at(4) << std::endl;
+                    coupler->getModel2()->getOut()->at(4) << endl;
     fCycle       << currentTime << " " <<
                     model1->getOut()->at(1) << " " <<
                     model1->getOut()->at(2) << " " <<
                     model1->getOut()->at(3) << " " <<
                     model1->getOut()->at(4) << " " <<
-                    model1->getOut()->at(5) << std::endl;
+                    model1->getOut()->at(5) << endl;
 
     for(int j(0); j < numIter; j++){
         currentTime += simTimeStep;
         sim->simulate(currentTime, simTimeStep);
 
         fTumDens     << currentTime << " " <<
-                        model1->getOut()->at(0) << std::endl;
+                        model1->getOut()->at(0) << endl;
         fTumVol      << currentTime << " " <<
-                        model1->getOut()->at(23) << std::endl;
+                        model1->getOut()->at(23) << endl;
         fVascDens    << currentTime << " " <<
                         model1->getOut()->at(6) << " " <<
                         model1->getOut()->at(7) << " " <<
-                        model1->getOut()->at(8) << std::endl;
+                        model1->getOut()->at(8) << endl;
         fKilledCells << currentTime << " " <<
-                        model1->getOut()->at(21) << std::endl;
+                        model1->getOut()->at(21) << endl;
         fHypDens     << currentTime << " " <<
-                        coupler->getModel2()->getOut()->at(0) << std::endl;
+                        coupler->getModel2()->getOut()->at(0) << endl;
         fPO2Stat     << currentTime << " " <<
                         coupler->getModel2()->getOut()->at(1) << " " <<
-                        coupler->getModel2()->getOut()->at(2) << std::endl;
+                        coupler->getModel2()->getOut()->at(2) << endl;
         fVEGFStat    << currentTime << " " <<
                         coupler->getModel2()->getOut()->at(3) << " " <<
-                        coupler->getModel2()->getOut()->at(4) << std::endl;
+                        coupler->getModel2()->getOut()->at(4) << endl;
         fCycle       << currentTime << " " <<
                         model1->getOut()->at(1) << " " <<
                         model1->getOut()->at(2) << " " <<
                         model1->getOut()->at(3) << " " <<
                         model1->getOut()->at(4) << " " <<
-                        model1->getOut()->at(5) << std::endl;
+                        model1->getOut()->at(5) << endl;
     }
 
     fTumDens.close();
