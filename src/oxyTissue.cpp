@@ -67,6 +67,33 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
         }
     }
 
+    int ii, jj, ll;
+    const int tii[6] = {0, 0, 0, -1, 1, 0};
+    const int tjj[6] = {0, -1, 1, 0, 0, 0};
+    const int tll[6] = {-1, 0, 0, 0, 0, 1};
+
+    int incol, lnrowNcol, m, mm;
+
+    for(int l(0); l < m_nlayer; l++){
+        lnrowNcol = l * m_nrow * m_ncol;
+        for(int i(0); i < m_nrow; i++){
+            incol = i * m_ncol;
+            for(int j(0); j < m_ncol; j++){
+                m = lnrowNcol + incol + j;
+                for(int n(0); n < 6; n++){
+                    ii = tii[n];
+                    jj = tjj[n];
+                    ll = tll[n];
+                    mm = lnrowNcol + ll * m_nrow * m_ncol + incol + ii * m_ncol + j + jj;
+                    if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0 && i + ii < m_nrow &&
+                            j + jj >= 0 && j + jj < m_ncol){
+                        ((OxyCell *)m_comp->at(m))->addToEdge((OxyCell *)m_comp->at(mm));
+                    }
+                }
+            }
+        }
+    }
+
     ifstream fInVes(nFInVes.c_str());
     double inputVes;
 
@@ -132,6 +159,32 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
             }
         }
     }
+
+    int ii, jj, ll;
+    int incol, lnrowNcol, m, mm;
+    const int tii[6] = {0, 0, 0, -1, 1, 0};
+    const int tjj[6] = {0, -1, 1, 0, 0, 0};
+    const int tll[6] = {-1, 0, 0, 0, 0, 1};
+
+    for(int l(0); l < m_nlayer; l++){
+        lnrowNcol = l * m_nrow * m_ncol;
+        for(int i(0); i < m_nrow; i++){
+            incol = i * m_ncol;
+            for(int j(0); j < m_ncol; j++){
+                m = lnrowNcol + incol + j;
+                for(int n(0); n < 6; n++){
+                    ii = tii[n];
+                    jj = tjj[n];
+                    ll = tll[n];
+                    mm = lnrowNcol + ll * m_nrow * m_ncol + incol + ii * m_ncol + j + jj;
+                    if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0 && i + ii < m_nrow &&
+                            j + jj >= 0 && j + jj < m_ncol){
+                        ((OxyCell *)m_comp->at(m))->addToEdge(((OxyCell *)m_comp->at(mm)));
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -153,8 +206,8 @@ OxyTissue::~OxyTissue(){
 int OxyTissue::initModel(){
     ST_STABLE = -1.0;
 
-    for (int i(0); i < m_numComp; i++){
-        ((OxyCell *)(m_comp->at(i)))->initModel();
+    for (int k(0); k < m_numComp; k++){
+        ((OxyCell *)(m_comp->at(k)))->initModel();
     }
     return 0;
 }
@@ -165,7 +218,7 @@ int OxyTissue::calcModelOut(){
 
     vector<double> pO2, vegf;
     for(int k(0); k < m_numComp; k++){
-        (m_comp->at(k))->calcModelOut();
+        m_comp->at(k)->calcModelOut();
         pO2.push_back(m_comp->at(k)->getOut()->at(0));
         vegf.push_back(m_comp->at(k)->getOut()->at(1));
     }
@@ -185,717 +238,58 @@ int OxyTissue::calcModelOut(){
 
 
 int OxyTissue::updateModel(double currentTime, const double DT){
-    if(m_nlayer == 1){
-        //First row, first column
-        m_map[0][0][0]->
-                setInDiffO2(PAR_DO2 * (m_map[0][0][1]->getOutPO2() +
-                m_map[0][1][0]->getOutPO2() -
-                2.0 * m_map[0][0][0]->getOutPO2()));
+    int edgeSize;
+    double diffO2, diffVegf;
+    std::vector<OxyCell *> *edge;
 
-        //First row, last column
-        m_map[0][0][m_ncol - 1]->
-                setInDiffO2(PAR_DO2 * (m_map[0][0][m_ncol - 2]->getOutPO2() +
-                m_map[0][1][m_ncol - 1]->getOutPO2() -
-                2.0 * m_map[0][0][m_ncol - 1]->getOutPO2()));
-
-        //Last row, first column
-        m_map[0][m_nrow - 1][0]->
-                setInDiffO2(PAR_DO2 * (m_map[0][m_nrow - 2][0]->getOutPO2() +
-                m_map[0][m_nrow - 1][1]->getOutPO2() -
-                2.0 * m_map[0][m_nrow - 1][0]->getOutPO2()));
-
-        //Last row, last column
-        m_map[0][m_nrow - 1][m_ncol - 1]->
-                setInDiffO2(PAR_DO2 * (m_map[0][m_nrow - 2][m_ncol - 1]->getOutPO2() +
-                m_map[0][m_nrow - 1][m_ncol - 2]->getOutPO2() -
-                2.0 * m_map[0][m_nrow - 1][m_ncol - 1]->getOutPO2()));
-
-        //First row, middle columns
-        for(int j(1); j < m_ncol - 1; j++){
-            m_map[0][0][j]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][0][j - 1]->getOutPO2() +
-                    m_map[0][0][j + 1]->getOutPO2() +
-                    m_map[0][1][j]->getOutPO2() -
-                    3.0 * m_map[0][0][j]->getOutPO2()));
+    /*for(int k(0); k < m_numComp; k++){
+        edge = ((OxyCell *)m_comp->at(k))->getEdge();
+        edgeSize = edge->size();
+        diffO2   = 0.0;
+        diffVegf = 0.0;
+        for(int n(0); n < edgeSize; n++){
+            diffO2   += edge->at(n)->getOutPO2();
+            diffVegf += edge->at(n)->getOutVEGF();
         }
+        diffO2   -= edgeSize * ((OxyCell *)m_comp->at(k))->getOutPO2();
+        diffVegf -= edgeSize * ((OxyCell *)m_comp->at(k))->getOutVEGF();
+        ((OxyCell *)m_comp->at(k))->setInDiffO2(PAR_DO2 * diffO2);
+        ((OxyCell *)m_comp->at(k))->setInDiffVEGF(PAR_DVEGF * diffVegf);
+    }*/
 
-        //Last row, middle columns
-        for(int j(1); j < m_ncol - 1; j++){
-            m_map[0][m_nrow - 1][j]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][m_nrow - 1][j - 1]->getOutPO2() +
-                    m_map[0][m_nrow - 1][j + 1]->getOutPO2() +
-                    m_map[0][m_nrow - 2][j]->getOutPO2() -
-                    3.0 * m_map[0][m_nrow - 1][j]->getOutPO2()));
-        }
-
-        //First column, middle rows
-        for(int i(1); i < m_nrow - 1; i++){
-            m_map[0][i][0]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][i - 1][0]->getOutPO2() +
-                    m_map[0][i][1]->getOutPO2() +
-                    m_map[0][i + 1][0]->getOutPO2() -
-                    3.0 * m_map[0][i][0]->getOutPO2()));
-        }
-
-        //Last column, middle rows
-        for(int i(1); i < m_nrow - 1; i++){
-            m_map[0][i][m_ncol - 1]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][i - 1][m_ncol - 1]->getOutPO2() +
-                    m_map[0][i][m_ncol - 2]->getOutPO2() +
-                    m_map[0][i + 1][m_ncol - 1]->getOutPO2() -
-                    3.0 * m_map[0][i][m_ncol - 1]->getOutPO2()));
-        }
-
-        //Middle rows, middle columns
-        for(int i(1); i < m_nrow - 1; i++){
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[0][i][j]->
-                        setInDiffO2(PAR_DO2 * (m_map[0][i - 1][j]->getOutPO2() +
-                        m_map[0][i][j - 1]->getOutPO2() +
-                        m_map[0][i][j + 1]->getOutPO2() +
-                        m_map[0][i + 1][j]->getOutPO2() -
-                        4.0 * m_map[0][i][j]->getOutPO2()));
-            }
-        }
-
-        if(PAR_OXY_ANG){
-            //First row, first column
-            m_map[0][0][0]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][0][1]->getOutVEGF() +
-                    m_map[0][1][0]->getOutVEGF() -
-                    2.0 * m_map[0][0][0]->getOutVEGF()));
-
-            //First row, last column
-            m_map[0][0][m_ncol - 1]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][0][m_ncol - 2]->getOutVEGF() +
-                    m_map[0][1][m_ncol - 1]->getOutVEGF() -
-                    2.0 * m_map[0][0][m_ncol - 1]->getOutVEGF()));
-
-            //Last row, first column
-            m_map[0][m_nrow - 1][0]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][m_nrow - 2][0]->getOutVEGF() +
-                    m_map[0][m_nrow - 1][1]->getOutVEGF() -
-                    2.0 * m_map[0][m_nrow - 1][0]->getOutVEGF()));
-
-            //Last row, last column
-            m_map[0][m_nrow - 1][m_ncol - 1]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][m_nrow - 2][m_ncol - 1]->getOutVEGF() +
-                    m_map[0][m_nrow - 1][m_ncol - 2]->getOutVEGF() -
-                    2.0 * m_map[0][m_nrow - 1][m_ncol - 1]->getOutVEGF()));
-
-            //First row, middle columns
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[0][0][j]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][0][j - 1]->getOutVEGF() +
-                        m_map[0][0][j + 1]->getOutVEGF() +
-                        m_map[0][1][j]->getOutVEGF() -
-                        3.0 * m_map[0][0][j]->getOutVEGF()));
-            }
-
-            //Last row, middle columns
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[0][m_nrow - 1][j]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][m_nrow - 1][j - 1]->getOutVEGF() +
-                        m_map[0][m_nrow - 1][j + 1]->getOutVEGF() +
-                        m_map[0][m_nrow - 2][j]->getOutVEGF() -
-                        3.0 * m_map[0][m_nrow - 1][j]->getOutVEGF()));
-            }
-
-            //First column, middle rows
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[0][i][0]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][i - 1][0]->getOutVEGF() +
-                        m_map[0][i][1]->getOutVEGF() +
-                        m_map[0][i + 1][0]->getOutVEGF() -
-                        3.0 * m_map[0][i][0]->getOutVEGF()));
-            }
-
-            //Last column, middle rows
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[0][i][m_ncol - 1]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][i - 1][m_ncol - 1]->getOutVEGF() +
-                        m_map[0][i][m_ncol - 2]->getOutVEGF() +
-                        m_map[0][i + 1][m_ncol - 1]->getOutVEGF() -
-                        3.0 * m_map[0][i][m_ncol - 1]->getOutVEGF()));
-            }
-
-            //Middle rows, middle columns
-            for(int i(1); i < m_nrow - 1; i++){
-                for(int j(1); j < m_ncol - 1; j++){
-                    m_map[0][i][j]->
-                            setInDiffVEGF(PAR_DVEGF * (m_map[0][i - 1][j]->getOutVEGF() +
-                            m_map[0][i][j - 1]->getOutVEGF() +
-                            m_map[0][i][j + 1]->getOutVEGF() +
-                            m_map[0][i + 1][j]->getOutVEGF() -
-                            4.0 * m_map[0][i][j]->getOutVEGF()));
-                }
-            }
-        }
-    }
-
-    else{
-        //First layer, first row, first column
-        m_map[0][0][0]->
-                setInDiffO2(PAR_DO2 * (m_map[0][0][1]->getOutPO2() +
-                m_map[0][1][0]->getOutPO2() +
-                m_map[1][0][0]->getOutPO2() -
-                3.0 * m_map[0][0][0]->getOutPO2()));
-
-        //First layer, first row, last column
-        m_map[0][0][m_ncol - 1]->
-                setInDiffO2(PAR_DO2 * (m_map[0][0][m_ncol - 2]->getOutPO2() +
-                m_map[0][1][m_ncol - 1]->getOutPO2() +
-                m_map[1][0][m_ncol - 1]->getOutPO2() -
-                3.0 * m_map[0][0][m_ncol - 1]->getOutPO2()));
-
-        //First layer, Last row, first column
-        m_map[0][m_nrow - 1][0]->
-                setInDiffO2(PAR_DO2 * (m_map[0][m_nrow - 2][0]->getOutPO2() +
-                m_map[0][m_nrow - 1][1]->getOutPO2() +
-                m_map[1][m_nrow - 1][0]->getOutPO2() -
-                3.0 * m_map[0][m_nrow - 1][0]->getOutPO2()));
-
-        //First layer, last row, last column
-        m_map[0][m_nrow - 1][m_ncol - 1]->
-                setInDiffO2(PAR_DO2 * (m_map[0][m_nrow - 2][m_ncol - 1]->getOutPO2() +
-                m_map[0][m_nrow - 1][m_ncol - 2]->getOutPO2() +
-                m_map[1][m_nrow - 1][m_ncol - 1]->getOutPO2() -
-                3.0 * m_map[0][m_nrow - 1][m_ncol - 1]->getOutPO2()));
-
-        //Last layer, first row, first column
-        m_map[m_nlayer - 1][0][0]->
-                setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][0][1]->getOutPO2() +
-                m_map[m_nlayer - 1][1][0]->getOutPO2() +
-                m_map[m_nlayer - 2][0][0]->getOutPO2() -
-                3.0 * m_map[m_nlayer - 1][0][0]->getOutPO2()));
-
-        //Last layer, first row, last column
-        m_map[m_nlayer - 1][0][m_ncol - 1]->
-                setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][0][m_ncol - 2]->getOutPO2() +
-                m_map[m_nlayer - 1][1][m_ncol - 1]->getOutPO2() +
-                m_map[m_nlayer - 2][0][m_ncol - 1]->getOutPO2() -
-                3.0 * m_map[m_nlayer - 1][0][m_ncol - 1]->getOutPO2()));
-
-        //Last layer, Last row, first column
-        m_map[m_nlayer - 1][m_nrow - 1][0]->
-                setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][m_nrow - 2][0]->getOutPO2() +
-                m_map[m_nlayer - 1][m_nrow - 1][1]->getOutPO2() +
-                m_map[m_nlayer - 2][m_nrow - 1][0]->getOutPO2() -
-                3.0 * m_map[m_nlayer - 1][m_nrow - 1][0]->getOutPO2()));
-
-        //Last layer, last row, last column
-        m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 1]->
-                setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][m_nrow - 2][m_ncol - 1]->getOutPO2() +
-                m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 2]->getOutPO2() +
-                m_map[m_nrow - 2][m_nrow - 1][m_ncol - 1]->getOutPO2() -
-                3.0 * m_map[m_nrow - 1][m_nrow - 1][m_ncol - 1]->getOutPO2()));
-
-        //First layer, first row, middle columns
-        for(int j(1); j < m_ncol - 1; j++){
-            m_map[0][0][j]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][0][j - 1]->getOutPO2() +
-                    m_map[0][0][j + 1]->getOutPO2() +
-                    m_map[0][1][j]->getOutPO2() +
-                    m_map[1][0][j]->getOutPO2() -
-                    4.0 * m_map[0][0][j]->getOutPO2()));
-        }
-
-        //First layer, last row, middle columns
-        for(int j(1); j < m_ncol - 1; j++){
-            m_map[0][m_nrow - 1][j]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][m_nrow - 1][j - 1]->getOutPO2() +
-                    m_map[0][m_nrow - 1][j + 1]->getOutPO2() +
-                    m_map[0][m_nrow - 2][j]->getOutPO2() +
-                    m_map[1][m_nrow - 1][j]->getOutPO2() -
-                    4.0 * m_map[0][m_nrow - 1][j]->getOutPO2()));
-        }
-
-        //First layer, first column, middle rows
-        for(int i(1); i < m_nrow - 1; i++){
-            m_map[0][i][0]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][i - 1][0]->getOutPO2() +
-                    m_map[0][i][1]->getOutPO2() +
-                    m_map[0][i + 1][0]->getOutPO2() +
-                    m_map[1][i][0]->getOutPO2() -
-                    4.0 * m_map[0][i][0]->getOutPO2()));
-        }
-
-        //First layer, last column, middle rows
-        for(int i(1); i < m_nrow - 1; i++){
-            m_map[0][i][m_ncol - 1]->
-                    setInDiffO2(PAR_DO2 * (m_map[0][i - 1][m_ncol - 1]->getOutPO2() +
-                    m_map[0][i][m_ncol - 2]->getOutPO2() +
-                    m_map[0][i + 1][m_ncol - 1]->getOutPO2() +
-                    m_map[1][i][m_ncol - 1]->getOutPO2() -
-                    4.0 * m_map[0][i][m_ncol - 1]->getOutPO2()));
-        }
-
-        //Last layer, first row, middle columns
-        for(int j(1); j < m_ncol - 1; j++){
-            m_map[m_nlayer - 1][0][j]->
-                    setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][0][j - 1]->getOutPO2() +
-                    m_map[m_nlayer - 1][0][j + 1]->getOutPO2() +
-                    m_map[m_nlayer - 1][1][j]->getOutPO2() +
-                    m_map[m_nlayer - 2][0][j]->getOutPO2() -
-                    4.0 * m_map[m_nlayer - 1][0][j]->getOutPO2()));
-        }
-
-        //Last layer, last row, middle columns
-        for(int j(1); j < m_ncol - 1; j++){
-            m_map[m_nlayer - 1][m_nrow - 1][j]->
-                    setInDiffO2(PAR_DO2 *  (m_map[m_nlayer - 1][m_nrow - 1][j - 1]->getOutPO2() +
-                    m_map[m_nlayer - 1][m_nrow - 1][j + 1]->getOutPO2() +
-                    m_map[m_nlayer - 1][m_nrow - 2][j]->getOutPO2() +
-                    m_map[m_nlayer - 2][m_nrow - 1][j]->getOutPO2() -
-                    4.0 * m_map[m_nlayer - 1][m_nrow - 1][j]->getOutPO2()));
-        }
-
-        //Last layer, first column, middle rows
-        for(int i(1); i < m_nrow - 1; i++){
-            m_map[m_nlayer - 1][i][0]->
-                    setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][i - 1][0]->getOutPO2() +
-                    m_map[m_nlayer - 1][i][1]->getOutPO2() +
-                    m_map[m_nlayer - 1][i + 1][0]->getOutPO2() +
-                    m_map[m_nlayer - 2][i][0]->getOutPO2() -
-                    4.0 * m_map[m_nlayer - 1][i][0]->getOutPO2()));
-        }
-
-        //Last layer, last column, middle rows
-        for(int i(1); i < m_nrow - 1; i++){
-            m_map[m_nlayer - 1][i][m_ncol - 1]->
-                    setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][i - 1][m_ncol - 1]->getOutPO2() +
-                    m_map[m_nlayer - 1][i][m_ncol - 2]->getOutPO2() +
-                    m_map[m_nlayer - 1][i + 1][m_ncol - 1]->getOutPO2() +
-                    m_map[m_nlayer - 2][i][m_ncol - 1]->getOutPO2() -
-                    4.0 * m_map[m_nlayer - 1][i][m_ncol - 1]->getOutPO2()));
-        }
-
-        //Middle layers, first row, first column
-        for(int l(1); l < m_nlayer- 1; l++){
-            m_map[l][0][0]->
-                    setInDiffO2(PAR_DO2 * (m_map[l][0][1]->getOutPO2() +
-                    m_map[l][1][0]->getOutPO2() +
-                    m_map[l + 1][0][0]->getOutPO2() +
-                    m_map[l - 1][0][0]->getOutPO2() -
-                    4.0 * m_map[l][0][0]->getOutPO2()));
-        }
-
-        //Middle layers, first row, last column
-        for(int l(1); l < m_nlayer - 1; l++){
-            m_map[l][0][m_ncol - 1]->
-                    setInDiffO2(PAR_DO2 * (m_map[l][0][m_ncol - 2]->getOutPO2() +
-                    m_map[l][1][m_ncol - 1]->getOutPO2() +
-                    m_map[l + 1][0][m_ncol - 1]->getOutPO2() +
-                    m_map[l - 1][0][m_ncol - 1]->getOutPO2() -
-                    4.0 * m_map[l][0][m_ncol - 1]->getOutPO2()));
-        }
-
-        //Middle layers, last row, first column
-        for(int l(1); l < m_nlayer - 1; l++){
-            m_map[l][m_nrow - 1][0]->
-                    setInDiffO2(PAR_DO2 * (m_map[l][m_nrow - 1][1]->getOutPO2() +
-                    m_map[l][m_nrow - 2][0]->getOutPO2() +
-                    m_map[l + 1][m_nrow - 1][0]->getOutPO2() +
-                    m_map[l - 1][m_nrow - 1][0]->getOutPO2() -
-                    4.0 * m_map[l][m_nrow - 1][0]->getOutPO2()));
-        }
-
-        //Middle layers, last row, last column
-        for(int l(1); l < m_nlayer - 1; l++){
-            m_map[l][m_nrow - 1][m_ncol - 1]->
-                    setInDiffO2(PAR_DO2 * (m_map[l][m_nrow - 1][m_ncol - 2]->getOutPO2() +
-                    m_map[l][m_nrow - 2][m_ncol - 1]->getOutPO2() +
-                    m_map[l + 1][m_nrow - 1][m_ncol - 1]->getOutPO2() +
-                    m_map[l - 1][m_nrow - 1][m_ncol - 1]->getOutPO2() -
-                    4.0 * m_map[l][m_nrow - 1][m_ncol - 1]->getOutPO2()));
-        }
-
-        //First layer, middle rows, middle columns
-        for(int i(1); i < m_nrow - 1; i++){
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[0][i][j]->
-                        setInDiffO2(PAR_DO2 * (m_map[0][i - 1][j]->getOutPO2() +
-                        m_map[0][i][j - 1]->getOutPO2() +
-                        m_map[0][i][j + 1]->getOutPO2() +
-                        m_map[0][i + 1][j]->getOutPO2() +
-                        m_map[1][i][j]->getOutPO2() -
-                        5.0 * m_map[0][i][j]->getOutPO2()));
-            }
-        }
-
-        //Last layer, middle rows, middle columns
-        for(int i(1); i < m_nrow - 1; i++){
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[m_nlayer - 1][i][j]->
-                        setInDiffO2(PAR_DO2 * (m_map[m_nlayer - 1][i - 1][j]->getOutPO2() +
-                        m_map[m_nlayer - 1][i][j - 1]->getOutPO2() +
-                        m_map[m_nlayer - 1][i][j + 1]->getOutPO2() +
-                        m_map[m_nlayer - 1][i + 1][j]->getOutPO2() +
-                        m_map[m_nlayer - 2][i][j]->getOutPO2() -
-                        5.0 * m_map[m_nlayer - 1][i][j]->getOutPO2()));
-            }
-        }
-
-        //Middle layers, middle rows, first column
-        for(int l(1); l < m_nlayer - 1; l++){
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[l][i][0]->
-                        setInDiffO2(PAR_DO2 * (m_map[l + 1][i][0]->getOutPO2() +
-                        m_map[l - 1][i][0]->getOutPO2() +
-                        m_map[l][i + 1][0]->getOutPO2() +
-                        m_map[l][i - 1][0]->getOutPO2() +
-                        m_map[l][i][1]->getOutPO2() -
-                        5.0 * m_map[l][i][0]->getOutPO2()));
-            }
-        }
-
-        //Middle layers, middle rows, last column
-        for(int l(1); l < m_nlayer - 1; l++){
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[l][i][m_ncol - 1]->
-                        setInDiffO2(PAR_DO2 * (m_map[l + 1][i][m_ncol - 1]->getOutPO2() +
-                        m_map[l - 1][i][m_ncol - 1]->getOutPO2() +
-                        m_map[l][i + 1][m_ncol - 1]->getOutPO2() +
-                        m_map[l][i - 1][m_ncol - 1]->getOutPO2() +
-                        m_map[l][i][m_ncol - 2]->getOutPO2() -
-                        5.0 * m_map[l][i][m_ncol - 1]->getOutPO2()));
-            }
-        }
-
-        //Middle layers, first rows, middle columns
-        for(int l(1); l < m_nlayer - 1; l++){
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[l][0][j]->
-                        setInDiffO2(PAR_DO2 * (m_map[l + 1][0][j]->getOutPO2() +
-                        m_map[l - 1][0][j]->getOutPO2() +
-                        m_map[l][0][j + 1]->getOutPO2() +
-                        m_map[l][0][j - 1]->getOutPO2() +
-                        m_map[l][1][j]->getOutPO2() -
-                        5.0 * m_map[l][0][j]->getOutPO2()));
-            }
-        }
-
-        //Middle layers, last rows, middle columns
-        for(int l(1); l < m_nlayer - 1; l++){
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[l][m_nrow - 1][j]->
-                        setInDiffO2(PAR_DO2 * (m_map[l + 1][m_nrow - 1][j]->getOutPO2() +
-                        m_map[l - 1][m_nrow - 1][j]->getOutPO2() +
-                        m_map[l][m_nrow - 1][j + 1]->getOutPO2() +
-                        m_map[l][m_nrow - 1][j - 1]->getOutPO2() +
-                        m_map[l][m_nrow - 2][j]->getOutPO2() -
-                        5.0 * m_map[l][m_nrow - 1][j]->getOutPO2()));
-            }
-        }
-
-        //Middle layers, middle rows, middle columns
-        for(int l(1); l < m_nlayer - 1; l++){
-            for(int i(1); i < m_nrow - 1; i++){
-                for(int j(1); j < m_ncol - 1; j++){
-                    m_map[l][i][j]->
-                            setInDiffO2(PAR_DO2 * (m_map[l + 1][i][j]->getOutPO2() +
-                                        m_map[l - 1][i][j]->getOutPO2() +
-                            m_map[l][i + 1][j]->getOutPO2() +
-                            m_map[l][i - 1][j]->getOutPO2() +
-                            m_map[l][i][j + 1]->getOutPO2() +
-                            m_map[l][i][j - 1]->getOutPO2() -
-                            6.0 * m_map[l][i][j]->getOutPO2()));
-                }
-            }
-        }
-
-        if(PAR_OXY_ANG){
-            //First layer, first row, first column
-            m_map[0][0][0]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][0][1]->getOutVEGF() +
-                    m_map[0][1][0]->getOutVEGF() +
-                    m_map[1][0][0]->getOutVEGF() -
-                    3.0 * m_map[0][0][0]->getOutVEGF()));
-
-            //First layer, first row, last column
-            m_map[0][0][m_ncol - 1]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][0][m_ncol - 2]->getOutVEGF() +
-                    m_map[0][1][m_ncol - 1]->getOutVEGF() +
-                    m_map[1][0][m_ncol - 1]->getOutVEGF() -
-                    3.0 * m_map[0][0][m_ncol - 1]->getOutVEGF()));
-
-            //First layer, Last row, first column
-            m_map[0][m_nrow - 1][0]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][m_nrow - 2][0]->getOutVEGF() +
-                    m_map[0][m_nrow - 1][1]->getOutVEGF() +
-                    m_map[1][m_nrow - 1][0]->getOutVEGF() -
-                    3.0 * m_map[0][m_nrow - 1][0]->getOutVEGF()));
-
-            //First layer, last row, last column
-            m_map[0][m_nrow - 1][m_ncol - 1]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[0][m_nrow - 2][m_ncol - 1]->getOutVEGF() +
-                    m_map[0][m_nrow - 1][m_ncol - 2]->getOutVEGF() +
-                    m_map[1][m_nrow - 1][m_ncol - 1]->getOutVEGF() -
-                    3.0 * m_map[0][m_nrow - 1][m_ncol - 1]->getOutVEGF()));
-
-            //Last layer, first row, first column
-            m_map[m_nlayer - 1][0][0]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][0][1]->getOutVEGF() +
-                    m_map[m_nlayer - 1][1][0]->getOutVEGF() +
-                    m_map[m_nlayer - 2][0][0]->getOutVEGF() -
-                    3.0 * m_map[m_nlayer - 1][0][0]->getOutVEGF()));
-
-            //Last layer, first row, last column
-            m_map[m_nlayer - 1][0][m_ncol - 1]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][0][m_ncol - 2]->getOutVEGF() +
-                    m_map[m_nlayer - 1][1][m_ncol - 1]->getOutVEGF() +
-                    m_map[m_nlayer - 2][0][m_ncol - 1]->getOutVEGF() -
-                    3.0 * m_map[m_nlayer - 1][0][m_ncol - 1]->getOutVEGF()));
-
-            //Last layer, Last row, first column
-            m_map[m_nlayer - 1][m_nrow - 1][0]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][m_nrow - 2][0]->getOutVEGF() +
-                    m_map[m_nlayer - 1][m_nrow - 1][1]->getOutVEGF() +
-                    m_map[m_nlayer - 2][m_nrow - 1][0]->getOutVEGF() -
-                    3.0 * m_map[m_nlayer - 1][m_nrow - 1][0]->getOutVEGF()));
-
-            //Last layer, last row, last column
-            m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 1]->
-                    setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][m_nrow - 2][m_ncol - 1]->getOutVEGF() +
-                    m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 2]->getOutVEGF() +
-                    m_map[m_nlayer - 2][m_nrow - 1][m_ncol - 1]->getOutVEGF() -
-                    3.0 * m_map[m_nlayer - 1][m_nrow - 1][m_ncol - 1]->getOutVEGF()));
-
-            //First layer, first row, middle columns
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[0][0][j]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][0][j - 1]->getOutVEGF() +
-                        m_map[0][0][j + 1]->getOutVEGF() +
-                        m_map[0][1][j]->getOutVEGF() +
-                        m_map[1][0][j]->getOutVEGF() -
-                        4.0 * m_map[0][0][j]->getOutVEGF()));
-            }
-
-            //First layer, last row, middle columns
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[0][m_nrow - 1][j]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][m_nrow - 1][j - 1]->getOutVEGF() +
-                        m_map[0][m_nrow - 1][j + 1]->getOutVEGF() +
-                        m_map[0][m_nrow - 2][j]->getOutVEGF() +
-                        m_map[1][m_nrow - 1][j]->getOutVEGF() -
-                        4.0 * m_map[0][m_nrow - 1][j]->getOutVEGF()));
-            }
-
-            //First layer, first column, middle rows
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[0][i][0]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][i - 1][0]->getOutVEGF() +
-                        m_map[0][i][1]->getOutVEGF() +
-                        m_map[0][i + 1][0]->getOutVEGF() +
-                        m_map[1][i][0]->getOutVEGF() -
-                        4.0 * m_map[0][i][0]->getOutVEGF()));
-            }
-
-            //First layer, last column, middle rows
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[0][i][m_ncol - 1]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[0][i - 1][m_ncol - 1]->getOutVEGF() +
-                        m_map[0][i][m_ncol - 2]->getOutVEGF() +
-                        m_map[0][i + 1][m_ncol - 1]->getOutVEGF() +
-                        m_map[1][i][m_ncol - 1]->getOutVEGF() -
-                        4.0 * m_map[0][i][m_ncol - 1]->getOutVEGF()));
-            }
-
-            //Last layer, first row, middle columns
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[m_nlayer - 1][0][j]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][0][j - 1]->getOutVEGF() +
-                        m_map[m_nlayer - 1][0][j + 1]->getOutVEGF() +
-                        m_map[m_nlayer - 1][1][j]->getOutVEGF() +
-                        m_map[m_nlayer - 2][0][j]->getOutVEGF() -
-                        4.0 * m_map[m_nlayer - 1][0][j]->getOutVEGF()));
-            }
-
-            //Last layer, last row, middle columns
-            for(int j(1); j < m_ncol - 1; j++){
-                m_map[m_nlayer - 1][m_nrow - 1][j]->
-                        setInDiffVEGF(PAR_DVEGF *  (m_map[m_nlayer - 1][m_nrow - 1][j - 1]->getOutVEGF() +
-                        m_map[m_nlayer - 1][m_nrow - 1][j + 1]->getOutVEGF() +
-                        m_map[m_nlayer - 1][m_nrow - 2][j]->getOutVEGF() +
-                        m_map[m_nlayer - 2][m_nrow - 1][j]->getOutVEGF() -
-                        4.0 * m_map[m_nlayer - 1][m_nrow - 1][j]->getOutVEGF()));
-            }
-
-            //Last layer, first column, middle rows
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[m_nlayer - 1][i][0]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][i - 1][0]->getOutVEGF() +
-                        m_map[m_nlayer - 1][i][1]->getOutVEGF() +
-                        m_map[m_nlayer - 1][i + 1][0]->getOutVEGF() +
-                        m_map[m_nlayer - 2][i][0]->getOutVEGF() -
-                        4.0 * m_map[m_nlayer - 1][i][0]->getOutVEGF()));
-            }
-
-            //Last layer, last column, middle rows
-            for(int i(1); i < m_nrow - 1; i++){
-                m_map[m_nlayer - 1][i][m_ncol - 1]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][i - 1][m_ncol - 1]->getOutVEGF() +
-                        m_map[m_nlayer - 1][i][m_ncol - 2]->getOutVEGF() +
-                        m_map[m_nlayer - 1][i + 1][m_ncol - 1]->getOutVEGF() +
-                        m_map[m_nlayer - 2][i][m_ncol - 1]->getOutVEGF() -
-                        4.0 * m_map[m_nlayer - 1][i][m_ncol - 1]->getOutVEGF()));
-            }
-
-            //Middle layers, first row, first column
-            for(int l(1); l < m_nlayer- 1; l++){
-                m_map[l][0][0]->
-                        setInDiffVEGF(PAR_DVEGF *  (m_map[l][0][1]->getOutVEGF() +
-                        m_map[l][1][0]->getOutVEGF() +
-                        m_map[l + 1][0][0]->getOutVEGF() +
-                        m_map[l - 1][0][0]->getOutVEGF() -
-                        4.0 * m_map[l][0][0]->getOutVEGF()));
-            }
-
-            //Middle layers, first row, last column
-            for(int l(1); l < m_nlayer - 1; l++){
-                m_map[l][0][m_ncol - 1]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[l][0][m_ncol - 2]->getOutVEGF() +
-                        m_map[l][1][m_ncol - 1]->getOutVEGF() +
-                        m_map[l + 1][0][m_ncol - 1]->getOutVEGF() +
-                        m_map[l - 1][0][m_ncol - 1]->getOutVEGF() -
-                        4.0 * m_map[l][0][m_ncol - 1]->getOutVEGF()));
-            }
-
-            //Middle layers, last row, first column
-            for(int l(1); l < m_nlayer - 1; l++){
-                m_map[l][m_nrow - 1][0]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[l][m_nrow - 1][1]->getOutVEGF() +
-                        m_map[l][m_nrow - 2][0]->getOutVEGF() +
-                        m_map[l + 1][m_nrow - 1][0]->getOutVEGF() +
-                        m_map[l - 1][m_nrow - 1][0]->getOutVEGF() -
-                        4.0 * m_map[l][m_nrow - 1][0]->getOutVEGF()));
-            }
-
-            //Middle layers, last row, last column
-            for(int l(1); l < m_nlayer - 1; l++){
-                m_map[l][m_nrow - 1][m_ncol - 1]->
-                        setInDiffVEGF(PAR_DVEGF * (m_map[l][m_nrow - 1][m_ncol - 2]->getOutVEGF() +
-                        m_map[l][m_nrow - 2][m_ncol - 1]->getOutVEGF() +
-                        m_map[l + 1][m_nrow - 1][m_ncol - 1]->getOutVEGF() +
-                        m_map[l - 1][m_nrow - 1][m_ncol - 1]->getOutVEGF() -
-                        4.0 * m_map[l][m_nrow - 1][m_ncol - 1]->getOutVEGF()));
-            }
-
-            //First layer, middle rows, middle columns
-            for(int i(1); i < m_nrow - 1; i++){
-                for(int j(1); j < m_ncol - 1; j++){
-                    m_map[0][i][j]->
-                            setInDiffVEGF(PAR_DVEGF * (m_map[0][i - 1][j]->getOutVEGF() +
-                            m_map[0][i][j - 1]->getOutVEGF() +
-                            m_map[0][i][j + 1]->getOutVEGF() +
-                            m_map[0][i + 1][j]->getOutVEGF() +
-                            m_map[1][i][j]->getOutVEGF() -
-                            5.0 * m_map[0][i][j]->getOutVEGF()));
-                }
-            }
-
-            //Last layer, middle rows, middle columns
-            for(int i(1); i < m_nrow - 1; i++){
-                for(int j(1); j < m_ncol - 1; j++){
-                    m_map[m_nlayer - 1][i][j]->
-                            setInDiffVEGF(PAR_DVEGF * (m_map[m_nlayer - 1][i - 1][j]->getOutVEGF() +
-                            m_map[m_nlayer - 1][i][j - 1]->getOutVEGF() +
-                            m_map[m_nlayer - 1][i][j + 1]->getOutVEGF() +
-                            m_map[m_nlayer - 1][i + 1][j]->getOutVEGF() +
-                            m_map[m_nlayer - 2][i][j]->getOutVEGF() -
-                            5.0 * m_map[m_nlayer - 1][i][j]->getOutVEGF()));
-                }
-            }
-
-            //Middle layers, middle rows, first column
-            for(int l(1); l < m_nlayer - 1; l++){
-                for(int i(1); i < m_nrow - 1; i++){
-                    m_map[l][i][0]->
-                            setInDiffVEGF(PAR_DVEGF * (m_map[l + 1][i][0]->getOutVEGF() +
-                            m_map[l - 1][i][0]->getOutVEGF() +
-                            m_map[l][i + 1][0]->getOutVEGF() +
-                            m_map[l][i - 1][0]->getOutVEGF() +
-                            m_map[l][i][1]->getOutVEGF() -
-                            5.0 * m_map[l][i][0]->getOutVEGF()));
-                }
-            }
-
-            //Middle layers, middle rows, last column
-            for(int l(1); l < m_nlayer - 1; l++){
-                for(int i(1); i < m_nrow - 1; i++){
-                    m_map[l][i][m_ncol - 1]->
-                            setInDiffVEGF(PAR_DVEGF * (m_map[l + 1][i][m_ncol - 1]->getOutVEGF() +
-                            m_map[l - 1][i][m_ncol - 1]->getOutVEGF() +
-                            m_map[l][i + 1][m_ncol - 1]->getOutVEGF() +
-                            m_map[l][i - 1][m_ncol - 1]->getOutVEGF() +
-                            m_map[l][i][m_ncol - 2]->getOutVEGF() -
-                            5.0 * m_map[l][i][m_ncol - 1]->getOutVEGF()));
-                }
-            }
-
-            //Middle layers, first rows, middle columns
-            for(int l(1); l < m_nlayer - 1; l++){
-                for(int j(1); j < m_ncol - 1; j++){
-                    m_map[l][0][j]->
-                            setInDiffVEGF(PAR_DVEGF * (m_map[l + 1][0][j]->getOutVEGF() +
-                            m_map[l - 1][0][j]->getOutVEGF() +
-                            m_map[l][0][j + 1]->getOutVEGF() +
-                            m_map[l][0][j - 1]->getOutVEGF() +
-                            m_map[l][1][j]->getOutVEGF() -
-                            5.0 * m_map[l][0][j]->getOutVEGF()));
-                }
-            }
-
-            //Middle layers, last rows, middle columns
-            for(int l(1); l < m_nlayer - 1; l++){
-                for(int j(1); j < m_ncol - 1; j++){
-                    m_map[l][m_nrow - 1][j]->
-                            setInDiffVEGF(PAR_DVEGF * (m_map[l + 1][m_nrow - 1][j]->getOutVEGF() +
-                            m_map[l - 1][m_nrow - 1][j]->getOutVEGF() +
-                            m_map[l][m_nrow - 1][j + 1]->getOutVEGF() +
-                            m_map[l][m_nrow - 1][j - 1]->getOutVEGF() +
-                            m_map[l][m_nrow - 2][j]->getOutVEGF() -
-                            5.0 * m_map[l][m_nrow - 1][j]->getOutVEGF()));
-                }
-            }
-
-            //Middle layers, middle rows, middle columns
-            for(int l(1); l < m_nlayer - 1; l++){
-                for(int i(1); i < m_nrow - 1; i++){
-                    for(int j(1); j < m_ncol - 1; j++){
-                        m_map[l][i][j]->
-                                setInDiffVEGF(PAR_DVEGF * (m_map[l + 1][i][j]->getOutVEGF() +
-                                              m_map[l - 1][i][j]->getOutVEGF() +
-                                m_map[l][i + 1][j]->getOutVEGF() +
-                                m_map[l][i - 1][j]->getOutVEGF() +
-                                m_map[l][i][j + 1]->getOutVEGF() +
-                                m_map[l][i][j - 1]->getOutVEGF() -
-                                6.0 * m_map[l][i][j]->getOutVEGF()));
-                    }
-                }
-            }
-        }
-    }
-
-    for(int i(0); i < m_numComp; i++){
-        (m_comp->at(i))->updateModel(currentTime, DT);
-    }
-
-
-    /*Not sure that this is working. Members in if may be equal.*/
-    bool stable(true);
     for(int l(0); l < m_nlayer; l++){
         for(int i(0); i < m_nrow; i++){
             for(int j(0); j < m_ncol; j++){
-                if(fabs(m_map[l][i][j]->getOutPO2() -
-                        m_map[l][i][j]->getPO2()) >
-                        1e-2 * m_map[l][i][j]->getOutPO2() ||
-                        fabs(m_map[l][i][j]->getOutVEGF() -
-                             m_map[l][i][j]->getVEGF()) >
-                        1e-2 * m_map[l][i][j]->getOutVEGF()){
-                    stable = false;
+                edge = m_map[l][i][j]->getEdge();
+                edgeSize = edge->size();
+                diffO2   = 0.0;
+                diffVegf = 0.0;
+                for(int n(0); n < edgeSize; n++){
+                    diffO2   += edge->at(n)->getOutPO2();
+                    diffVegf += edge->at(n)->getOutVEGF();
                 }
+                diffO2   -= edgeSize * m_map[l][i][j]->getOutPO2();
+                diffVegf -= edgeSize * m_map[l][i][j]->getOutVEGF();
+                m_map[l][i][j]->setInDiffO2(PAR_DO2 * diffO2);
+                m_map[l][i][j]->setInDiffVEGF(PAR_DVEGF * diffVegf);
             }
+        }
+    }
+
+    for(int k(0); k < m_numComp; k++){
+        m_comp->at(k)->updateModel(currentTime, DT);
+    }
+
+    /*Not sure that this is working. Members in if may be equal.*/
+    bool stable(true);
+    for(int k(0); k < m_numComp; k++){
+        if(fabs(((OxyCell *)m_comp->at(k))->getOutPO2() -
+                ((OxyCell *)m_comp->at(k))->getPO2()) >
+                1e-2 * ((OxyCell *)m_comp->at(k))->getOutPO2() ||
+                fabs(((OxyCell *)m_comp->at(k))->getOutVEGF() -
+                     ((OxyCell *)m_comp->at(k))->getVEGF()) >
+                1e-2 * ((OxyCell *)m_comp->at(k))->getOutVEGF()){
+            stable = false;
         }
     }
     if(stable){

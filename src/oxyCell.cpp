@@ -7,6 +7,8 @@
  * @date 05.19.17
  */
 
+#include <iostream>
+
 #include "oxyCell.hpp"
 
 using namespace std;
@@ -35,6 +37,8 @@ OxyCell::OxyCell(const double Vmax, const double Km,
     PAR_KM_VEGF      = KmVegf;
     PAR_HYP_VEGF     = hypVegf;
     m_parent = parent;
+
+    m_edge = new vector<OxyCell *>((unsigned int)0, 0);
 }
 
 
@@ -74,6 +78,11 @@ int OxyCell::updateModel(const double currentTime,
 }
 
 
+void OxyCell::addToEdge(OxyCell *const cell){
+    m_edge->push_back(cell);
+}
+
+
 void OxyCell::calcConsO2(){
     if(ST_OXYDEAD){
         IN_CONS_O2 = 0.0;
@@ -93,6 +102,11 @@ void OxyCell::calcConsVegf(){
     else{
         IN_CONS_VEGF = 0.0;
     }
+}
+
+
+vector<OxyCell *> *OxyCell::getEdge() const{
+    return m_edge;
 }
 
 

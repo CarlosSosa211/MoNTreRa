@@ -36,10 +36,15 @@ public :
             const double hypVegf, Model *const parent);
     virtual ~OxyCell();
     virtual int updateModel(const double currentTime, const double DT);
+    void addToEdge(OxyCell *const cell);
     void calcConsO2();
     void calcConsVegf();
+    std::vector<OxyCell *> *getEdge() const;
     void setInDiffO2(const double input);
     void setInDiffVEGF(const double input);
+
+protected:
+    std::vector<OxyCell *> *m_edge;
 };
 
 #endif
