@@ -10,7 +10,7 @@ nfig = nfig + 1;
 figure(nfig);
 hold on
 colormap(jet)
-for i = 1 : size(endTreatTumDens, 1)
+for i = 1 : nPar
     scatter(endTreatTumDens(i,1), endTreatTumDens(i,2), 200, color(i), 'filled', shape(mod(i, length(shape)) + 1))
 end
 plot([0, 1.1 * max([endTreatTumDens(:, 1); endTreatTumDens(:, 2)])], [0, 1.1 * max([endTreatTumDens(:, 1); endTreatTumDens(:, 2)])], '--k')

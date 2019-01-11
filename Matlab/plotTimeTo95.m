@@ -10,7 +10,7 @@ nfig = nfig + 1;
 figure(nfig);
 hold on
 colormap(jet)
-for i = 1 : size(timeTo95, 1)
+for i = 1 : nPar
     scatter(timeTo95(i,1), timeTo95(i,2), 200, color(i), 'filled', shape(mod(i, length(shape)) + 1))
 end
 plot([0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])], [0, 1.1 * max([timeTo95(:, 1); timeTo95(:, 2)])], '--k')
