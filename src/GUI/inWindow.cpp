@@ -114,7 +114,8 @@ InWindow::InWindow() : QWidget(){
 
     m_histSpec->setChecked(true);
 
-    QStringList histSpecList = {"Tissue P14 01685 6-1-cd31 101x62",
+    QStringList histSpecList = {"Test",
+                                "Tissue P14 01685 6-1-cd31 101x62",
                                 "Tissue P14 01685 7-5-cd31 97x57",
                                 "Tissue P14 01685 8-5-cd31 111x75",
                                 "Tissue P14 08021 7-2-cd31 125x73",
@@ -439,21 +440,21 @@ int InWindow::createInFiles(){
     QDir().mkdir("../OutputFilesGUI");
     if(m_histSpec->isChecked()){
         QFile::copy(QString::fromStdString("../HistSpec/tissueDim" +
-                                           std::to_string(m_selHistSpec->currentIndex() + 1) +
+                                           std::to_string(m_selHistSpec->currentIndex()) +
                                            ".dat"), QString::fromStdString("../OutputFilesGUI/tissueDim.dat"));
 
         if (QFile::exists(QString::fromStdString("inTum.dat"))){
             QFile::remove(QString::fromStdString("inTum.dat"));
         }
         QFile::copy(QString::fromStdString("../HistSpec/inTum" +
-                                           std::to_string(m_selHistSpec->currentIndex() + 1) +
+                                           std::to_string(m_selHistSpec->currentIndex()) +
                                            ".dat"), QString::fromStdString("inTum.dat"));
 
         if (QFile::exists(QString::fromStdString("inVes.dat"))){
             QFile::remove(QString::fromStdString("inVes.dat"));
         }
         QFile::copy(QString::fromStdString("../HistSpec/inVes" +
-                                           std::to_string(m_selHistSpec->currentIndex() + 1) +
+                                           std::to_string(m_selHistSpec->currentIndex()) +
                                            ".dat"), QString::fromStdString("inVes.dat"));
     }
 
@@ -783,7 +784,7 @@ int InWindow::loadInData(std::string nFInData){
     m_histSpec->setChecked(histSpec);
     m_artif->setChecked(!histSpec);
     if(histSpec){
-        m_selHistSpec->setCurrentIndex(histSpec - 1);
+        m_selHistSpec->setCurrentIndex(histSpec);
     }
     else{
         fInData >> nrow >> ncol >> nlayer;
