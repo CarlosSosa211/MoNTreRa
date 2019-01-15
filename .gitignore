@@ -1,5 +1,5 @@
-build*
-OutputFiles*
+build/*
+OutputFiles/*
 *~
 src/GUI/RT.pro.user
 InputFiles/X.dat
