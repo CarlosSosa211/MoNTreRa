@@ -16,7 +16,7 @@ colDThres = 2;
 % colTArrest = 3;
 colDose = 3;
 
-par = load([path, '/par.dat']);
+par = load([path, '/combPar.res']);
 
 tTTum = unique(par(:, colTTum));
 tDThres = unique(par(:, colDThres));
