@@ -1,4 +1,4 @@
-build/*
+build*/*
 OutputFiles/*
 *~
 src/GUI/RT.pro.user
