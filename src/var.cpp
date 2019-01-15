@@ -138,14 +138,15 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
     double err[nOut], errRel[nOut], maxy[nOut], y0[nOut], y1[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fErrEndTreatTumDens("../OutputFiles/errEndTreatTumDens.res");
-    ofstream fErr3MonTumDens("../OutputFiles/err3MonTumDens.res");
-    ofstream fErrRecTumDens("../OutputFiles/errRecTumDens.res");
-    ofstream fErrFinTumVol("../OutputFiles/errFinTumVol.res");
-    ofstream fErrIntTumDens("../OutputFiles/errIntTumDens.res");
-    ofstream fErrTimeTo95("../OutputFiles/errTimeTo95.res");
-    ofstream fErrTimeTo99("../OutputFiles/errTimeTo99.res");
-    ofstream fErrRecTime("../OutputFiles/errRecTime.res");
+    ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
+    ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
+    ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fFinTumVol("../OutputFiles/finTumVol.res");
+    ofstream fIntTumDens("../OutputFiles/intTumDens.res");
+    ofstream fTimeTo95("../OutputFiles/timeTo95.res");
+    ofstream fTimeTo99("../OutputFiles/timeTo99.res");
+    ofstream fRecTime("../OutputFiles/recTime.res");
+    ofstream fCombPar("../OutputFiles/combPar.res");
 
     for(int i1(0); i1 < p; i1++){
         x[Xi[0]] = X[0][i1];
@@ -153,102 +154,86 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
             x[Xi[1]] = X[1][i2];
             for(int i3(0); i3 < p; i3++){
                 x[Xi[2]] = X[2][i3];
-                for(int i4(0); i4 < p; i4++){
-                    x[Xi[3]] = X[3][i4];
-                    for(int k(0); k < nVarPar; k++){
-                        x[XVari[k]] = XVar[k][0];
-                    }
-
-                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(nEv) + ".res";
-                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(nEv) + ".res";
-                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(nEv) + ".res";
-                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(nEv) + ".res";
-                    nFCycle       = "../OutputFiles/cycle_" + to_string(nEv) + ".res";
-                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(nEv) + ".res";
-                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(nEv) + ".res";
-                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(nEv) + ".res";
-
-                    model(x, y0,  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
-                          nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
-                          nFPO2Stat, nFVegfStat);
-                    nEv++;
-
-                    cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-                    cout << "---------------------------------------------" << endl;
-
-                    for(int k(0); k < nVarPar; k++){
-                        x[XVari[k]] = XVar[k][1];
-                    }
-
-                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(nEv) + ".res";
-                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(nEv) + ".res";
-                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(nEv) + ".res";
-                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(nEv) + ".res";
-                    nFCycle       = "../OutputFiles/cycle_" + to_string(nEv) + ".res";
-                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(nEv) + ".res";
-                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(nEv) + ".res";
-                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(nEv) + ".res";
-
-                    model(x, y1,  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
-                          nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
-                          nFPO2Stat, nFVegfStat);
-                    nEv++;
-
-                    cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-                    cout << "---------------------------------------------" << endl;
-
-                    for(int j(0); j < nOut; j++){
-                        err[j] = fabs(y0[j] - y1[j]);
-                        maxy[j] = max(y0[j], y1[j]);
-                        if(maxy[j]){
-                            errRel[j] = err[j] / maxy[j];
-                        }
-                        else{
-                            errRel[j] = 0.0;
-                        }
-                    }
-
-                    fErrEndTreatTumDens << err[0] << " " << errRel[0] << " ";
-                    fErr3MonTumDens     << err[1] << " " << errRel[1] << " ";
-                    fErrRecTumDens      << err[2] << " " << errRel[2] << " ";
-                    fErrFinTumVol       << err[3] << " " << errRel[3] << " ";
-                    fErrIntTumDens      << err[4] << " " << errRel[4] << " ";
-                    fErrTimeTo95        << err[5] << " " << errRel[5] << " ";
-                    fErrTimeTo99        << err[6] << " " << errRel[6] << " ";
-                    fErrRecTime         << err[7] << " " << errRel[7] << " ";
-
-                    for (int j(0); j < nMostRelPar; j ++){
-                        fErrEndTreatTumDens << x[Xi[j]] << " ";
-                        fErr3MonTumDens     << x[Xi[j]] << " ";
-                        fErrRecTumDens      << x[Xi[j]] << " ";
-                        fErrFinTumVol       << x[Xi[j]] << " ";
-                        fErrIntTumDens      << x[Xi[j]] << " ";
-                        fErrTimeTo95        << x[Xi[j]] << " ";
-                        fErrTimeTo99        << x[Xi[j]] << " ";
-                        fErrRecTime         << x[Xi[j]] << " ";
-                    }
-                    fErrEndTreatTumDens << endl;
-                    fErr3MonTumDens     << endl;
-                    fErrRecTumDens      << endl;
-                    fErrFinTumVol       << endl;
-                    fErrIntTumDens      << endl;
-                    fErrTimeTo95        << endl;
-                    fErrTimeTo99        << endl;
-                    fErrRecTime         << endl;
-
+                for(int k(0); k < nVarPar; k++){
+                    x[XVari[k]] = XVar[k][0];
                 }
+
+                nFTumDens     = "../OutputFiles/tumDens_" + to_string(nEv) + ".res";
+                nFTumVol      = "../OutputFiles/tumVol_" + to_string(nEv) + ".res";
+                nFVascDens    = "../OutputFiles/vascDens_" + to_string(nEv) + ".res";
+                nFKilledCells = "../OutputFiles/killedCells_" + to_string(nEv) + ".res";
+                nFCycle       = "../OutputFiles/cycle_" + to_string(nEv) + ".res";
+                nFHypDens     = "../OutputFiles/hypDens_" + to_string(nEv) + ".res";
+                nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(nEv) + ".res";
+                nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(nEv) + ".res";
+
+                model(x, y0,  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
+                      nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
+                      nFPO2Stat, nFVegfStat);
+                nEv++;
+
+                cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+                cout << "---------------------------------------------" << endl;
+
+                for(int k(0); k < nVarPar; k++){
+                    x[XVari[k]] = XVar[k][1];
+                }
+
+                nFTumDens     = "../OutputFiles/tumDens_" + to_string(nEv) + ".res";
+                nFTumVol      = "../OutputFiles/tumVol_" + to_string(nEv) + ".res";
+                nFVascDens    = "../OutputFiles/vascDens_" + to_string(nEv) + ".res";
+                nFKilledCells = "../OutputFiles/killedCells_" + to_string(nEv) + ".res";
+                nFCycle       = "../OutputFiles/cycle_" + to_string(nEv) + ".res";
+                nFHypDens     = "../OutputFiles/hypDens_" + to_string(nEv) + ".res";
+                nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(nEv) + ".res";
+                nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(nEv) + ".res";
+
+                model(x, y1,  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
+                      nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
+                      nFPO2Stat, nFVegfStat);
+                nEv++;
+
+                cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+                cout << "---------------------------------------------" << endl;
+
+                for(int j(0); j < nOut; j++){
+                    err[j] = fabs(y0[j] - y1[j]);
+                    maxy[j] = max(y0[j], y1[j]);
+                    if(maxy[j]){
+                        errRel[j] = err[j] / maxy[j];
+                    }
+                    else{
+                        errRel[j] = 0.0;
+                    }
+                }
+
+                fEndTreatTumDens << y0[0] << " " << y1[0] << endl;
+                f3MonTumDens     << y0[1] << " " << y1[1] << endl;
+                fRecTumDens      << y0[2] << " " << y1[2] << endl;
+                fFinTumVol       << y0[3] << " " << y1[3] << endl;
+                fIntTumDens      << y0[4] << " " << y1[4] << endl;
+                fTimeTo95        << y0[5] << " " << y1[5] << endl;
+                fTimeTo99        << y0[6] << " " << y1[6] << endl;
+                fRecTime         << y0[7] << " " << y1[7] << endl;
+
+                for (int j(0); j < nMostRelPar; j ++){
+                    fCombPar << x[Xi[j]] << " ";
+                }
+                fCombPar << endl;
+
             }
         }
     }
 
-    fErrEndTreatTumDens.close();
-    fErr3MonTumDens.close();
-    fErrRecTumDens.close();
-    fErrFinTumVol.close();
-    fErrIntTumDens.close();
-    fErrTimeTo95.close();
-    fErrTimeTo99.close();
-    fErrRecTime.close();
+    fEndTreatTumDens.close();
+    f3MonTumDens.close();
+    fRecTumDens.close();
+    fFinTumVol.close();
+    fIntTumDens.close();
+    fTimeTo95.close();
+    fTimeTo99.close();
+    fRecTime.close();
+    fCombPar.close();
 }
 
 
