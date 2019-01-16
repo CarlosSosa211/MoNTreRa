@@ -19,7 +19,7 @@ using namespace std;
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                Treatment *const treatment) :
-    Model(0, 7, 28, 2, nrow * ncol * nlayer){
+    Model(0, 26, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -44,7 +44,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, const double doseThres,
                const double arrestTime, Treatment *const treatment,
                const double hypNecThres) :
-    Model(0, 7, 28, 2, nrow * ncol * nlayer){
+    Model(0, 26, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -209,7 +209,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, const double doseThres,
                const double arrestTime, Treatment *const treatment,
                const double hypNecThres) :
-    Model(0, 7, 28, 2, nrow * ncol * nlayer){
+    Model(0, 26, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -365,11 +365,15 @@ int Tissue::calcModelOut(){
     OUT_END_TREAT_TUM_DENS = ST_END_TREAT_TUM_DENS;
     OUT_3MON_TUM_DENS      = ST_3MON_TUM_DENS;
     OUT_INT_TUM_DENS       = ST_INT_TUM_DENS;
+
+    OUT_REC                = ST_REC;
     OUT_REC_TUM_DENS       = ST_REC_TUM_DENS;
     OUT_REC_TIME           = ST_REC_TIME;
+
     if(PAR_INIT_TUM_DENS){
         OUT_KILLED_CELLS = (PAR_INIT_TUM_DENS - ST_TUM_DENS) / PAR_INIT_TUM_DENS * 100.0;
     }
+
     OUT_VES_DENS      = double(getNumVes()) / double(m_numComp) * 100.0;
     OUT_NORM_VES_DENS = double(getNumNormVes()) / double(m_numComp) * 100.0;
     OUT_TUM_VES_DENS  = double(getNumTumVes()) / double(m_numComp) * 100.0;
@@ -392,19 +396,26 @@ int Tissue::calcModelOut(){
         OUT_G0_DENS = 0.0;
     }
 
-    OUT_TIME_TO_50  = m_timeNeeded[0];
-    OUT_TIME_TO_80  = m_timeNeeded[1];
-    OUT_TIME_TO_90  = m_timeNeeded[2];
-    OUT_TIME_TO_95  = m_timeNeeded[3];
-    OUT_TIME_TO_99  = m_timeNeeded[4];
-    OUT_TIME_TO_999 = m_timeNeeded[5];
+    OUT_50_KILLED  = ST_50_KILLED;
+    OUT_80_KILLED  = ST_80_KILLED;;
+    OUT_90_KILLED  = ST_90_KILLED;;
+    OUT_95_KILLED  = ST_95_KILLED;;
+    OUT_99_KILLED  = ST_99_KILLED;;
+    OUT_999_KILLED = ST_999_KILLED;;
 
-    OUT_DOSE_TO_50  = m_doseNeeded[0];
-    OUT_DOSE_TO_80  = m_doseNeeded[1];
-    OUT_DOSE_TO_90  = m_doseNeeded[2];
-    OUT_DOSE_TO_95  = m_doseNeeded[3];
-    OUT_DOSE_TO_99  = m_doseNeeded[4];
-    OUT_DOSE_TO_999 = m_doseNeeded[5];
+    OUT_TIME_TO_50  = ST_TIME_TO_50;
+    OUT_TIME_TO_80  = ST_TIME_TO_80;
+    OUT_TIME_TO_90  = ST_TIME_TO_90;
+    OUT_TIME_TO_95  = ST_TIME_TO_95;
+    OUT_TIME_TO_99  = ST_TIME_TO_99;
+    OUT_TIME_TO_999 = ST_TIME_TO_999;
+
+    OUT_DOSE_TO_50  = ST_DOSE_TO_50;
+    OUT_DOSE_TO_80  = ST_DOSE_TO_80;
+    OUT_DOSE_TO_90  = ST_DOSE_TO_90;
+    OUT_DOSE_TO_95  = ST_DOSE_TO_95;
+    OUT_DOSE_TO_99  = ST_DOSE_TO_99;
+    OUT_DOSE_TO_999 = ST_DOSE_TO_999;
 
     if(m_nlayer == 1){
         OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize * m_cellSize, 1.5);
@@ -430,13 +441,31 @@ int Tissue::initModel(){
     ST_INT_TUM_DENS  = 0.0;
     ST_END_TREAT_TUM_DENS = 0.0;
     ST_3MON_TUM_DENS      = 0.0;
+
+    ST_REC          = 0.0;
     ST_REC_TUM_DENS = 100.0;
     ST_REC_TIME     = 0.0;
 
-    for(int i(0); i < 6; i++){
-        m_doseNeeded[i] = -1.0;
-        m_timeNeeded[i] = -1.0;
-    }
+    ST_50_KILLED  = 0.0;
+    ST_80_KILLED  = 0.0;
+    ST_90_KILLED  = 0.0;
+    ST_95_KILLED  = 0.0;
+    ST_99_KILLED  = 0.0;
+    ST_999_KILLED = 0.0;
+
+    ST_TIME_TO_50  = 0.0;
+    ST_TIME_TO_80  = 0.0;
+    ST_TIME_TO_90  = 0.0;
+    ST_TIME_TO_95  = 0.0;
+    ST_TIME_TO_99  = 0.0;
+    ST_TIME_TO_999 = 0.0;
+
+    ST_DOSE_TO_50  = 0.0;
+    ST_DOSE_TO_80  = 0.0;
+    ST_DOSE_TO_90  = 0.0;
+    ST_DOSE_TO_95  = 0.0;
+    ST_DOSE_TO_99  = 0.0;
+    ST_DOSE_TO_999 = 0.0;
 
     /*cout << "Total number of cells = " << m_numComp << endl*/;
     /*cout << "Initial number of cells at G1 = " << getNumG1() << endl*/;
@@ -463,14 +492,7 @@ int Tissue::terminateModel(){
     for(int k(0); k < m_numComp; k++){
         (m_comp->at(k))->terminateModel();
     }
-    if(m_treatment){
-        for(int i(0); i < 6; i++){
-            if(m_doseNeeded[i] < 0){
-                m_doseNeeded[i] = m_treatment->getTotalDose() + m_treatment->getFraction();
-                m_timeNeeded[i] = m_treatment->getDuration() + 720.0 + m_treatment->getInterval();
-            }
-        }
-    }
+
     /*cout << "---------------------------------------------" << endl*/;
     /*cout << "Final number of cells at G1 = " << getNumG1() << endl*/;
     /*cout << "Final number of cells at S = " << getNumS() << endl*/;
@@ -517,35 +539,35 @@ int Tissue::updateModel(const double currentTime,
 
         double tumSurv;
         tumSurv = ST_TUM_DENS / PAR_INIT_TUM_DENS;
-        if(tumSurv < 0.5 && m_doseNeeded[0] < 0.0){
-            m_doseNeeded[0] = ((Cell*)m_comp->at(0))->getAccDose();
-            m_timeNeeded[0] = currentTime;
-            printNeededDoseAndTime(0);
+        if(tumSurv < 0.5 && !ST_50_KILLED){
+            ST_50_KILLED = 1.0;
+            ST_TIME_TO_50 = currentTime;
+            ST_DOSE_TO_50 = ((Cell*)m_comp->at(0))->getAccDose();
         }
-        if(tumSurv < 0.2 && m_doseNeeded[1] < 0.0){
-            m_doseNeeded[1] = ((Cell*)m_comp->at(0))->getAccDose();
-            m_timeNeeded[1] = currentTime;
-            printNeededDoseAndTime(1);
+        if(tumSurv < 0.2 && !ST_80_KILLED){
+            ST_80_KILLED = 1.0;
+            ST_TIME_TO_80 = currentTime;
+            ST_DOSE_TO_80 = ((Cell*)m_comp->at(0))->getAccDose();
         }
-        if(tumSurv < 0.1 && m_doseNeeded[2] < 0.0){
-            m_doseNeeded[2] = ((Cell*)m_comp->at(0))->getAccDose();
-            m_timeNeeded[2] = currentTime;
-            printNeededDoseAndTime(2);
+        if(tumSurv < 0.1 && !ST_90_KILLED){
+            ST_90_KILLED = 1.0;
+            ST_TIME_TO_90 = currentTime;
+            ST_DOSE_TO_90 = ((Cell*)m_comp->at(0))->getAccDose();
         }
-        if(tumSurv < 0.05 && m_doseNeeded[3] < 0.0){
-            m_doseNeeded[3] = ((Cell*)m_comp->at(0))->getAccDose();
-            m_timeNeeded[3] = currentTime;
-            printNeededDoseAndTime(3);
+        if(tumSurv < 0.05 && !ST_95_KILLED){
+            ST_95_KILLED = 1.0;
+            ST_TIME_TO_95 = currentTime;
+            ST_DOSE_TO_95 = ((Cell*)m_comp->at(0))->getAccDose();
         }
-        if(tumSurv < 0.01 && m_doseNeeded[4] < 0.0){
-            m_doseNeeded[4] = ((Cell*)m_comp->at(0))->getAccDose();
-            m_timeNeeded[4] = currentTime;
-            printNeededDoseAndTime(4);
+        if(tumSurv < 0.01 && !ST_99_KILLED){
+            ST_99_KILLED = 1.0;
+            ST_TIME_TO_99 = currentTime;
+            ST_DOSE_TO_99 = ((Cell*)m_comp->at(0))->getAccDose();
         }
-        if(tumSurv < 0.001 && m_doseNeeded[5] < 0.0){
-            m_doseNeeded[5] = ((Cell*)m_comp->at(0))->getAccDose();
-            m_timeNeeded[5] = currentTime;
-            printNeededDoseAndTime(5);
+        if(tumSurv < 0.001 && !ST_999_KILLED){
+            ST_999_KILLED = 1.0;
+            ST_TIME_TO_999 = currentTime;
+            ST_DOSE_TO_999 = ((Cell*)m_comp->at(0))->getAccDose();
         }
     }
     return 0;
@@ -677,15 +699,4 @@ Treatment *Tissue::getTreatment() const{
     return m_treatment;
 }
 
-
-void Tissue::printNeededDoseAndTime(int sel) const{
-    vector<string> perc = {"50", "80", "90", "95", "99", "99.9"};
-
-    /*/*cout << "Total dose needed to kill " << perc[sel] <<
-            "% of tumor cells = " << m_doseNeeded[sel] <<
-            " Gy" << endl*/;
-    /*cout << "Time needed to kill " << perc[sel] <<
-            "% of tumor cells = " << m_timeNeeded[sel] <<
-            " h" << endl*/;
-}
 

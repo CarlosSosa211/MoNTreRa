@@ -308,17 +308,18 @@ void SimThread::run(){
                        model1->getOut()->at(22) << std::endl;
         fIntTumDens.close();
 
-        std::ofstream fDoseAndTime("../OutputFilesGUI/doseAndTime.res");
+        std::ofstream fPercKilled("../OutputFilesGUI/percKilled.res");
 
         double perc[6] = {50.0, 80.0, 90.0, 95.0, 99.0, 99.9};
 
         for(int i(0); i < 6; i++){
-            fDoseAndTime << perc[i] << " " << model1->getOut()->at(9 + i)
-                         << " " << model1->getOut()->at(15 + i)
-                         << std::endl;
+            fPercKilled << perc[i] << " " << model1->getOut()->at(28 + i)
+                        << " " << model1->getOut()->at(9 + i)
+                        << " " << model1->getOut()->at(15 + i)
+                        << std::endl;
         }
 
-        fDoseAndTime.close();
+        fPercKilled.close();
 
         std::ofstream fEndTreatTumDens("../OutputFilesGUI/endTreatTumDens.res");
         fEndTreatTumDens << treatment->getDuration() << " " <<

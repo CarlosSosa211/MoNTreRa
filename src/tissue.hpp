@@ -23,8 +23,27 @@
 #define ST_INT_TUM_DENS       m_st->at(2)
 #define ST_END_TREAT_TUM_DENS m_st->at(3)
 #define ST_3MON_TUM_DENS      m_st->at(4)
-#define ST_REC_TUM_DENS       m_st->at(5)
-#define ST_REC_TIME           m_st->at(6)
+#define ST_REC                m_st->at(5)
+#define ST_REC_TUM_DENS       m_st->at(6)
+#define ST_REC_TIME           m_st->at(7)
+#define ST_50_KILLED          m_st->at(8)
+#define ST_80_KILLED          m_st->at(9)
+#define ST_90_KILLED          m_st->at(10)
+#define ST_95_KILLED          m_st->at(11)
+#define ST_99_KILLED          m_st->at(12)
+#define ST_999_KILLED         m_st->at(13)
+#define ST_TIME_TO_50         m_st->at(14)
+#define ST_TIME_TO_80         m_st->at(15)
+#define ST_TIME_TO_90         m_st->at(16)
+#define ST_TIME_TO_95         m_st->at(17)
+#define ST_TIME_TO_99         m_st->at(18)
+#define ST_TIME_TO_999        m_st->at(19)
+#define ST_DOSE_TO_50         m_st->at(20)
+#define ST_DOSE_TO_80         m_st->at(21)
+#define ST_DOSE_TO_90         m_st->at(22)
+#define ST_DOSE_TO_95         m_st->at(23)
+#define ST_DOSE_TO_99         m_st->at(24)
+#define ST_DOSE_TO_999        m_st->at(25)
 
 //Outputs
 #define OUT_TUM_DENS           m_out->at(0)
@@ -55,6 +74,14 @@
 #define OUT_3MON_TUM_DENS      m_out->at(25)
 #define OUT_REC_TUM_DENS       m_out->at(26)
 #define OUT_REC_TIME           m_out->at(27)
+#define OUT_50_KILLED          m_out->at(28)
+#define OUT_80_KILLED          m_out->at(29)
+#define OUT_90_KILLED          m_out->at(30)
+#define OUT_95_KILLED          m_out->at(31)
+#define OUT_99_KILLED          m_out->at(32)
+#define OUT_999_KILLED         m_out->at(33)
+#define OUT_REC                m_out->at(34)
+
 
 //Internal parameters
 #define PAR_INIT_TUM_DENS m_param->at(0)
@@ -103,12 +130,10 @@ public:
     int getNumTumVes() const;
     int getNumVes() const;
     Treatment *getTreatment() const;
-    void printNeededDoseAndTime(int sel) const;
 
 protected:
     int m_ncol, m_nlayer, m_nrow;
     double m_cellSize;
-    double m_doseNeeded[6], m_timeNeeded[6];
     Treatment *m_treatment;
 };
 
