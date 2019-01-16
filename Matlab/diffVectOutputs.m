@@ -3,13 +3,8 @@ close all
 
 nfig = 0;
 
-% path = '../../Carlos/Results/Err_Ang_250Sim_Tissue8';
-% path = '../../Carlos/Results/Err_AlphaBeta_432Sim';
-% path = '../../Carlos/Results/Err_AlphaBeta_2592Sim';
-% path = '../../Carlos/Results/Err_AngAlphaBeta_2592Sim';
-% path = '../../Carlos/Results/Err_Ang_432Sim';
 nTissue = 4;
-path = ['../../Carlos/Results/Err_Ang_432Sim_AllTissues/Tissue', num2str(nTissue)];
+path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue', num2str(nTissue)];
 
 colTTum = 1;
 colDThres = 2;
