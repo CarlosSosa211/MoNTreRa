@@ -3,6 +3,7 @@ close all
 global nPar
 global varRange;
 global b color nfig shape;
+global fileNames outputNames;
 
 nPar = 34;
 b = {'$T_{tum}$', '$T_{heal}$', '$T_{end}$', '$\bar{v}$', '$\alpha_{heal}$'...
@@ -22,6 +23,14 @@ quit = 0;
 % path = '../../Carlos/Results/MorrisVarToyModel_Par2/';
 path = '../../Carlos/Results/MorrisVarRangeCluster/';
 
+fileNames = {'EndTreatTumDens', '3MonTumDens', 'RecTumDens',...
+    'FinTumVol', 'IntTumDens', 'TimeTo95', 'TimeTo99'...
+    'RecTime'};
+outputNames = {'Tumour density at the end of treat.', 'Tumour density 3 months after the end of treat.'...
+    'Tumour density at recurrence', 'Final tumour volume', 'Integral of tumour density'...
+    'Time to kill 95\% of tumour cells', 'Time to kill 99\% of tumour cells', 'Recurrence time'};
+nOut = 8;
+
 varRange = load([path, 'morrisVarRange.res']);
 par = varRange(1) + 1;
 varRange = varRange(2 : length(varRange));
@@ -31,65 +40,33 @@ varRange = varRange(2 : length(varRange));
 shape = ['o', 's', 'v', 'd'];
 
 while(~quit)
-    output = input('Select an output [timeTo95 (1), timeTo99 (2), endTreatTumDens (3) or intTumDens (4)] or quit (0): ');
-    sel = input('Select the studied parameter (1) or all of them (2) or: ');
-    switch output
-        case 1
-            if(sel == 2)
-                for i = 1 : length(varRange)
-                    color = linspace(0, 1, nPar);
-                    plotTimeTo95(path, varRange(i))
-                end
-            elseif(sel == 1)
-                color = linspace(0, 1, length(varRange));
-                plotParTimeTo95(path, par, 6)
+    selOut = input(['Select an output [endTreaTumDens (1), 3MonTumDens (2), recTumDens (3), tumVol (4),\n'...
+        'intTumDens (5), timeTo95 (6), timeTo99 (7) or recTime (8)] or quit (0): ']);
+    
+    if(selOut >= 1 && selOut <= 8)
+        sel = input('Select the studied parameter (1) or all of them (2) or: ');
+        if(sel == 1)
+            color = linspace(0, 1, length(varRange));
+            plotParOutput(path, par, 6, selOut)
+        elseif(sel == 2)
+            for i = 1 : length(varRange)
+                color = linspace(0, 1, nPar);
+                plotOutput(path, varRange(i), selOut)
             end
-            
-        case 2
-            if(sel == 2)
-                for i = 1 : length(varRange)
-                    color = linspace(0, 1, nPar);
-                    plotTimeTo99(path, varRange(i))
-                end
-            elseif(sel == 1)
-                color = linspace(0, 1, length(varRange));
-                plotParTimeTo99(path, par, 6)
+        end
+        
+    elseif (selOut == -2)
+        if(sel == 1)
+            color = linspace(0, 1, length(varRange));
+            plotParY(path, par)
+        elseif(sel == 2)
+            for i = 1 : length(varRange)
+                color = linspace(0, 1, nPar);
+                plotY(path, i - 1)
             end
-            
-        case 3
-            if(sel == 2)
-                for i = 1 : length(varRange)
-                    color = linspace(0, 1, nPar);
-                    plotEndTreatTumDens(path, varRange(i))
-                end
-            elseif(sel == 1)
-                color = linspace(0, 1, length(varRange));
-                plotParEndTreatTumDens(path, par, 6)
-            end
-            
-        case 4
-            if(sel == 2)
-                for i = 1 : length(varRange)
-                    color = linspace(0, 1, nPar);
-                    plotIntTumDens(path, varRange(i))
-                end
-            elseif(sel == 1)
-                color = linspace(0, 1, length(varRange));
-                plotParIntTumDens(path, par, 6)
-            end
-            
-        case -1
-            if(sel == 2)
-                for i = 1 : length(varRange)
-                    color = linspace(0, 1, nPar);
-                    plotY(path, i - 1)
-                end
-            elseif(sel == 1)
-                color = linspace(0, 1, length(varRange));
-                plotParY(path, par)
-            end
-            
-        case 0
-            quit = 1;
+        end
+        
+    elseif(selOut == 0)
+        quit = 1;
     end
 end

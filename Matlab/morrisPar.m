@@ -5,6 +5,7 @@ global allTissues
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
 global b color nfig shape;
+global fileNames outputNames;
 
 densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
 nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
@@ -34,63 +35,33 @@ quit = 0;
 
 % path = uigetdir('../../Carlos/Results');
 path = '../../Carlos/Results/Morris100_34Par_Cluster';
+
+fileNames = {'EndTreatTumDens', '3MonTumDens', 'RecTumDens',...
+    'FinTumVol', 'IntTumDens', 'TimeTo95', 'TimeTo99'...
+    'RecTime'};
+outputNames = {'Tumour density at the end of treat.', 'Tumour density 3 months after the end of treat.'...
+    'Tumour density at recurrence', 'Final tumour volume', 'Integral of tumour density'...
+    'Time to kill 95\% of tumour cells', 'Time to kill 99\% of tumour cells', 'Recurrence time'};
+nOut = 8;
+
 while(~quit)
-    output = input(['Select an output [timeTo95 (1), timeTo99 (2), endTreatTumDens (3), intTumDens (4)] '...
-        'or quit (0): ']);
-    switch output
-        case 1
+    selOut = input(['Select an output [endTreaTumDens (1), 3MonTumDens (2), recTumDens (3), tumVol (4),\n'...
+    'intTumDens (5), timeTo95 (6), timeTo99 (7), recTime (8) or all of them (-1)] or quit (0): ']);
+
+    if(selOut >= 1 && selOut <= 8)
             par = input(['Select one parameter (from 1 to ', num2str(nPar)...
                 ') or all of them (0): ']);
             tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
                 'vascularized (4) or non-vascularized (5) tissues: ']);
             if(par >= 1 && par <= nPar)
-                plotParTimeTo95(path, par, tissueSet)
+                plotParOutput(path, par, tissueSet, selOut)
             elseif(par == 0)
                 for i = 1:nPar
-                    plotParTimeTo95(path, i, tissueSet)
+                    plotParOutput(path, i, tissueSet, selOut)
                 end
             end
-            
-        case 2
-            par = input(['Select one parameter (from 1 to ', num2str(nPar)...
-                ') or all of them (0): ']);
-            tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
-                'vascularized (4) or non-vascularized (5) tissues: ']);
-            if(par >= 1 && par <= nPar)
-                plotParTimeTo99(path, par, tissueSet)
-            elseif(par == 0)
-                for i = 1:nPar
-                    plotParTimeTo99(path, i, tissueSet)
-                end
-            end
-            
-        case 3
-            par = input(['Select one parameter (from 1 to ', num2str(nPar)...
-                ') or all of them (0): ']);
-            tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
-                'vascularized (4) or non-vascularized (5) tissues: ']);
-            if(par >= 1 && par <= nPar)
-                plotParEndTreatTumDens(path, par, tissueSet)
-            elseif(par == 0)
-                for i = 1:nPar
-                    plotParEndTreatTumDens(path, i, tissueSet)
-                end
-            end
-            
-        case 4
-            par = input(['Select one parameter (from 1 to ', num2str(nPar)...
-                ') or all of them (0): ']);
-            tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), ' ...
-                'vascularized (4) or non-vascularized (5) tissues: ']);
-            if(par >= 1 && par <= nPar)
-                plotParIntTumDens(path, par, tissueSet)
-            elseif(par == 0)
-                for i = 1:nPar
-                    plotParIntTumDens(path, i, tissueSet)
-                end
-            end
-            
-        otherwise
+                
+    elseif(selOut == 0)
             quit = 1;
     end
 end

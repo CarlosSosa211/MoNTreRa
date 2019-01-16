@@ -5,6 +5,7 @@ global allTissues
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
 global b color nfig shape;
+global fileNames outputNames;
 
 densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
 nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
@@ -57,64 +58,35 @@ nfig = 0;
 quit = 0;
 
 % path = uigetdir('../../Carlos/Results');
-% path = '../../Carlos/Results/Morris100_34Par_Cluster';
+path = '../../Carlos/Results/Morris100_34Par_Cluster';
 % path = '../../Carlos/Results/Morris100_OneAlphaBeta_Tissue4';
-path = '../../Carlos/Results/Morris100_8Outputs_OneAlphaBeta_Tissue4';
 % path = '../../Carlos/Results/Morris100_8OutputsTest';
 
+fileNames = {'EndTreatTumDens', '3MonTumDens', 'RecTumDens',...
+    'FinTumVol', 'IntTumDens', 'TimeTo95', 'TimeTo99'...
+    'RecTime'};
+outputNames = {'Tumour density at the end of treat.', 'Tumour density 3 months after the end of treat.'...
+    'Tumour density at recurrence', 'Final tumour volume', 'Integral of tumour density'...
+    'Time to kill 95% of tumour cells', 'Time to kill 99% of tumour cells', 'Recurrence time'};
+nOut = 8;
+
 while(~quit)
-    output = input(['Select an output [timeTo95 (1), timeTo99 (2), endTreatTumDens (3), intTumDens (4) '...
-        'or all of them (-1)] or quit (0): ']);
-    switch output
-        case 1
+    selOut = input(['Select an output [endTreaTumDens (1), 3MonTumDens (2), recTumDens (3), tumVol (4),\n'...
+    'intTumDens (5), timeTo95 (6), timeTo99 (7), recTime (8) or all of them (-1)] or quit (0): ']);
+
+    if(selOut >= 1 && selOut <= 8)
             tissue = input('Select one tissue (from 1 to 21) or all of them (0) or a mean over them (-1): ');
             if(tissue >= 1 && tissue <= 21)
-                plotTimeTo95(path, tissue)
+                plotOutput(path, tissue, selOut)
             elseif(tissue == 0)
                 for i = 1 : 21
-                    plotTimeTo95(path, i)
+                    plotOutput(path, i, selOut)
                 end
             elseif(tissue == -1)
-                plotMeanTimeTo95(path)
+                plotMeanOutput(path, selOut)
             end
             
-        case 2
-            tissue = input('Select one tissue (from 1 to 21) or all of them (0) or a mean over them (-1): ');
-            if(tissue >= 1 && tissue <= 21)
-                plotTimeTo99(path, tissue)
-            elseif(tissue == 0)
-                for i = 1 : 21
-                    plotTimeTo99(path, i)
-                end
-            elseif(tissue == -1)
-                plotMeanTimeTo99(path)
-            end
-            
-        case 3
-            tissue = input('Select one tissue (from 1 to 21) or all of them (0) or a mean over them (-1): ');
-            if(tissue >= 1 && tissue <= 21)
-                plotEndTreatTumDens(path, tissue)
-            elseif(tissue == 0)
-                for i = 1 : 21
-                    plotEndTreatTumDens(path, i)
-                end
-            elseif(tissue == -1)
-                plotMeanEndTreatTumDens(path)
-            end
-            
-        case 4
-            tissue = input('Select one tissue (from 1 to 21) or all of them (0) or a mean over them (-1): ');
-            if(tissue >= 1 && tissue <= 21)
-                plotIntTumDens(path, tissue)
-            elseif(tissue == 0)
-                for i = 1 : 21
-                    plotIntTumDens(path, i)
-                end
-            elseif(tissue == -1)
-                plotMeanIntTumDens(path)
-            end
-            
-        case -1
+    elseif(selOut == -1)
             tissue = input('Select one tissue (from 1 to 21) or all of them (0) or a mean over them (-1): ');
             if(tissue >= 1 && tissue <= 21)
                 plotAllOutputs(path, tissue)
@@ -126,7 +98,7 @@ while(~quit)
                 plotMeanAllOutputs(path)
             end
             
-        case 0
+    elseif(selOut == 0)
             quit = 1;
     end
 end
