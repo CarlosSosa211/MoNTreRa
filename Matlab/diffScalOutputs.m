@@ -21,7 +21,7 @@ tDose = unique(par(:, colDose));
 selOut = input(['Select an output [endTreaTumDens (1), 3MonTumDens (2), recTumDens (3), tumVol (4),\n'...
     'intTumDens (5), timeTo95 (6), timeTo99 (7), recTime (8) or all of them (-1)]: ']);
 
-fileNames = {'/endTreatTumDens.res', '/err3MonTumDens.res', '/recTumDens.res',...
+fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res', '/recTumDens.res',...
     '/finTumVol.res', '/intTumDens.res', '/timeTo95.res', '/timeTo99.res'...
     '/recTime.res'};
 outputNames = {'tumour density at the end of treat.', 'tumour density 3 months after the end of treat.'...
@@ -56,7 +56,7 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, diffMeanTTum, diffStdTTum,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 grid on
 xlabel('TTum (h)')
 ylabel('Difference')
@@ -75,7 +75,7 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tDThres, diffMeanDThres, diffStdDThres,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 grid on
 xlabel('Dose threshold(Gy)')
 ylabel('Difference')
@@ -94,7 +94,7 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tTArrest, diffMeanTArrest, diffStdTArrest,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 grid on
 xlabel('TArrest (h)')
 ylabel('Difference')
@@ -113,7 +113,7 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, diffMeanDose, diffStdDose,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 grid on
 xlabel('Dose (Gy)')
 ylabel('Difference')
@@ -132,7 +132,7 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffTTumDose, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 xlabel('Dose (Gy)')
 ylabel('TTum (h)')
 xticks(1:length(tDose))
@@ -154,7 +154,7 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffDThresDose, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 xlabel('Dose (Gy)')
 ylabel('Dthres (Gy)')
 xticks(1:length(tDose))
@@ -176,7 +176,7 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffTTumDThres, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 xlabel('DThres (Gy)')
 ylabel('TTum (h)')
 xticks(1:length(tDThres))
@@ -198,7 +198,7 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffTTumDThres, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Abs. diff. in ', char(outputNames(selOut))])
 xlabel('DThres (Gy)')
 ylabel('TTum (h)')
 xticks(1:length(tDThres))
@@ -213,7 +213,7 @@ hold on
 histogram(output(:, 1), 25);
 histogram(output(:, 2), 25);
 hold off
-title(['Tissue ', num2str(nTissue), ' - Histogram of ', outputNames]);
+title(['Tissue ', num2str(nTissue), ' - Histogram of ', char(outputNames(selOut))]);
 legend('No angiogenesis', 'Angiogenesis')
 
 % binSize = 1/16;
@@ -225,7 +225,7 @@ nfig = nfig + 1;
 figure(nfig)
 % histogram(outputDiff, edges);
 histogram(outputDiff, 25);
-title(['Tissue ', num2str(nTissue), ' - Histogram of difference in ', outputNames])
+title(['Tissue ', num2str(nTissue), ' - Histogram of difference in ', char(outputNames(selOut))])
 
 
 %%
