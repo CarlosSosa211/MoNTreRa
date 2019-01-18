@@ -28,7 +28,7 @@ public:
 private:
     int m_mapNrow, m_mapNcol, m_mapSclFac;
     int m_simTime, m_simTimeStep;
-    double m_endTreatTime, m_recTime;
+    double m_endTreatTime, m_rec, m_recTime;
     std::vector<std::vector<int> > m_state, m_timer;
     std::vector<std::vector<double> > m_pO2, m_vegf;
     double m_maxpO2, m_maxvegf;

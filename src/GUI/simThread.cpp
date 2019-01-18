@@ -332,7 +332,8 @@ void SimThread::run(){
         f3MonTumDens.close();
 
         std::ofstream fRec("../OutputFilesGUI/rec.res");
-        fRec << model1->getOut()->at(27) << " " <<
+        fRec << model1->getOut()->at(34) << " " <<
+                model1->getOut()->at(27) << " " <<
                 model1->getOut()->at(26);
         fRec.close();
 

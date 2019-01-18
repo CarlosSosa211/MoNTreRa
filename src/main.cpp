@@ -17,28 +17,27 @@ using namespace std;
 
 int main(){
     //const int N(1e5);
-    const int kp(5), L(2), p(20), N(100);
+    //const int kp(5), L(2), p(20), N(100);
     //const int nMethod(1), nModel(0);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRTAll.dat");
     //string nFRefParInt("../InputFiles/refParIntToy.dat");
     //string nRefParMean("../InputFiles/refParMeanRT.dat");
+    string nFMostRelPar("../InputFiles/mostRelParAng.dat");
+    string nFLeastRelPar("../InputFiles/leastRelParAng.dat");
+    string nFVarPar("../InputFiles/varParAng.dat");
     //string nFMostRelPar("../InputFiles/mostRelParAng.dat");
     //string nFLeastRelPar("../InputFiles/leastRelParAng.dat");
     //string nFVarPar("../InputFiles/varParAng.dat");
-    string nFMostRelPar("../InputFiles/mostRelParAngAlphaBeta.dat");
-    string nFLeastRelPar("../InputFiles/leastRelParAngAlphaBeta.dat");
-    string nFVarPar("../InputFiles/varParAngAlphaBeta.dat");
     string nFInTissueDim("../InputFiles/tissueDim.dat");
     string nFInTum("../InputFiles/inTum.dat");
     string nFInVes("../InputFiles/inVes.dat");
     //srand(time(NULL));
     //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
-    varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim,
-           nFInTum, nFInVes);
+    varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum, nFInVes);
     //vector<string> nFPar;
-    //nFPar.push_back("../InputFiles/parDiffAlphaBeta.dat");
-    //nFPar.push_back("../InputFiles/parOneAlphaBeta.dat");
+    //nFPar.push_back("../InputFiles/par37_2.dat");
+    //nFPar.push_back("../InputFiles/par20_3.dat");
     //varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes);
     //evalR(nMethod, nModel);
     //morrisRT(N, p, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
@@ -48,8 +47,6 @@ int main(){
     //sobolRT(N, nFRefParInt, nFInTissueDim, nFInTum, nFInVes));
     //sobolToy(N, nFRefParInt);
     //sobolFromFiles(2);
-
-    return 0;
 }
 
 
@@ -541,11 +538,18 @@ void model(const double *x, double *y, const int nrow,
 
     double endTreatTumDens(model1->getOut()->at(24));
     double threeMonTumDens(model1->getOut()->at(25));
-    double recTumDens(model1->getOut()->at(26));
     double tumVol(model1->getOut()->at(23));
     double intTumDens(model1->getOut()->at(22));
+    double killed50(model1->getOut()->at(28));
+    double killed80(model1->getOut()->at(29));
+    double killed90(model1->getOut()->at(30));
+    double killed95(model1->getOut()->at(31));
     double timeTo95(model1->getOut()->at(12));
+    double killed99(model1->getOut()->at(32));
     double timeTo99(model1->getOut()->at(13));
+    double killed999(model1->getOut()->at(33));
+    double rec(model1->getOut()->at(34));
+    double recTumDens(model1->getOut()->at(26));
     double recTime(model1->getOut()->at(27));
 
     delete treatment;
@@ -556,21 +560,35 @@ void model(const double *x, double *y, const int nrow,
 
     cout << "endTreatTumDens: " << endTreatTumDens << endl;
     cout << "3MonTumDens: "     << threeMonTumDens << endl;
-    cout << "recTumDens: "      << recTumDens << endl;
     cout << "tumVol: "          << tumVol << " mm3" << endl;
     cout << "intTumDens: "      << intTumDens << endl;
+    cout << "killed50: "        << killed50 << endl;
+    cout << "killed80: "        << killed80 << endl;
+    cout << "killed90: "        << killed90 << endl;
+    cout << "killed95: "        << killed95 << endl;
     cout << "timeTo95: "        << timeTo95 << " h" << endl;
+    cout << "killed99: "        << killed99 << endl;
     cout << "timeTo99: "        << timeTo99 << " h" << endl;
+    cout << "killed999: "       << killed999 << endl;
+    cout << "rec: "             << rec << endl;
+    cout << "recTumDens: "      << recTumDens << endl;
     cout << "recTime: "         << recTime << " h" << endl;
 
-    y[0] = endTreatTumDens;
-    y[1] = threeMonTumDens;
-    y[2] = recTumDens;
-    y[3] = tumVol;
-    y[4] = intTumDens;
-    y[5] = timeTo95;
-    y[6] = timeTo99;
-    y[7] = recTime;
+    y[0]   = endTreatTumDens;
+    y[1]   = threeMonTumDens;
+    y[2]   = tumVol;
+    y[3]   = intTumDens;
+    y[4]   = killed50;
+    y[5]   = killed80;
+    y[6]   = killed90;
+    y[7]   = killed95;
+    y[8]   = timeTo95;
+    y[9]   = killed99;
+    y[10]  = timeTo99;
+    y[11]  = killed999;
+    y[12]  = rec;
+    y[13]  = recTumDens;
+    y[14]  = recTime;
 }
 
 
@@ -777,11 +795,18 @@ void model(const double *x, double *y, const int nrow,
 
     double endTreatTumDens(model1->getOut()->at(24));
     double threeMonTumDens(model1->getOut()->at(25));
-    double recTumDens(model1->getOut()->at(26));
     double tumVol(model1->getOut()->at(23));
     double intTumDens(model1->getOut()->at(22));
+    double killed50(model1->getOut()->at(28));
+    double killed80(model1->getOut()->at(29));
+    double killed90(model1->getOut()->at(30));
+    double killed95(model1->getOut()->at(31));
     double timeTo95(model1->getOut()->at(12));
+    double killed99(model1->getOut()->at(32));
     double timeTo99(model1->getOut()->at(13));
+    double killed999(model1->getOut()->at(33));
+    double rec(model1->getOut()->at(34));
+    double recTumDens(model1->getOut()->at(26));
     double recTime(model1->getOut()->at(27));
 
     delete treatment;
@@ -792,21 +817,35 @@ void model(const double *x, double *y, const int nrow,
 
     cout << "endTreatTumDens: " << endTreatTumDens << endl;
     cout << "3MonTumDens: "     << threeMonTumDens << endl;
-    cout << "recTumDens: "      << recTumDens      << endl;
-    cout << "tumVol: "          << tumVol          << " mm3" << endl;
-    cout << "intTumDens: "      << intTumDens      << endl;
-    cout << "timeTo95: "        << timeTo95        << " h" << endl;
-    cout << "timeTo99: "        << timeTo99        << " h" << endl;
-    cout << "recTime: "         << recTime         << " h" << endl;
+    cout << "tumVol: "          << tumVol << " mm3" << endl;
+    cout << "intTumDens: "      << intTumDens << endl;
+    cout << "killed50: "        << killed50 << endl;
+    cout << "killed80: "        << killed80 << endl;
+    cout << "killed90: "        << killed90 << endl;
+    cout << "killed95: "        << killed95 << endl;
+    cout << "timeTo95: "        << timeTo95 << " h" << endl;
+    cout << "killed99: "        << killed99 << endl;
+    cout << "timeTo99: "        << timeTo99 << " h" << endl;
+    cout << "killed999: "       << killed999 << endl;
+    cout << "rec: "             << rec << endl;
+    cout << "recTumDens: "      << recTumDens << endl;
+    cout << "recTime: "         << recTime << " h" << endl;
 
-    y[0] = endTreatTumDens;
-    y[1] = threeMonTumDens;
-    y[2] = recTumDens;
-    y[3] = tumVol;
-    y[4] = intTumDens;
-    y[5] = timeTo95;
-    y[6] = timeTo99;
-    y[7] = recTime;
+    y[0]   = endTreatTumDens;
+    y[1]   = threeMonTumDens;
+    y[2]   = tumVol;
+    y[3]   = intTumDens;
+    y[4]   = killed50;
+    y[5]   = killed80;
+    y[6]   = killed90;
+    y[7]   = killed95;
+    y[8]   = timeTo95;
+    y[9]   = killed99;
+    y[10]  = timeTo99;
+    y[11]  = killed999;
+    y[12]  = rec;
+    y[13]  = recTumDens;
+    y[14]  = recTime;
 }
 
 

@@ -49,17 +49,19 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         fEndTreatTime.close();
     }
 
-    std::ifstream fRecTime((nFOutData + "/rec.res").c_str());
+    std::ifstream fRec((nFOutData + "/rec.res").c_str());
 
-    if(!fRecTime.is_open()){
+    if(!fRec.is_open()){
         QMessageBox::critical(this, "Error", "Problem while opening rec.res");
     }
 
     else{
-        fRecTime >> m_recTime;
-        fRecTime.close();
+        fRec >> m_rec;
+        if (m_rec){
+            fRec >> m_recTime;
+            fRec.close();
+        }
     }
-
 
     m_endTreatDash = new QLineSeries;
     m_endTreatDash->append(m_endTreatTime, 0.0);
@@ -68,12 +70,13 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     pen.setStyle(Qt::DashLine);
     pen.setColor(m_green);
     m_endTreatDash->setPen(pen);
-
-    m_recDash = new QLineSeries;
-    m_recDash->append(m_recTime, 0.0);
-    m_recDash->append(m_recTime, 100.0);
-    pen.setColor(m_red);
-    m_recDash->setPen(pen);
+    if (m_rec){
+        m_recDash = new QLineSeries;
+        m_recDash->append(m_recTime, 0.0);
+        m_recDash->append(m_recTime, 100.0);
+        pen.setColor(m_red);
+        m_recDash->setPen(pen);
+    }
 
     double a, b, c, d, e, f;
 

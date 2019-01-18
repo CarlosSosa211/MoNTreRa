@@ -19,7 +19,7 @@ using namespace std;
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                Treatment *const treatment) :
-    Model(0, 26, 35, 2, nrow * ncol * nlayer){
+    Model(0, 27, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -44,7 +44,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, const double doseThres,
                const double arrestTime, Treatment *const treatment,
                const double hypNecThres) :
-    Model(0, 26, 35, 2, nrow * ncol * nlayer){
+    Model(0, 27, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -209,7 +209,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, const double doseThres,
                const double arrestTime, Treatment *const treatment,
                const double hypNecThres) :
-    Model(0, 26, 35, 2, nrow * ncol * nlayer){
+    Model(0, 27, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -443,7 +443,8 @@ int Tissue::initModel(){
     ST_3MON_TUM_DENS      = 0.0;
 
     ST_REC          = 0.0;
-    ST_REC_TUM_DENS = 100.0;
+    ST_COUNT_REC    = 0.0;
+    ST_REC_TUM_DENS = 0.0;
     ST_REC_TIME     = 0.0;
 
     ST_50_KILLED  = 0.0;
@@ -527,11 +528,18 @@ int Tissue::updateModel(const double currentTime,
         if(currentTime <= m_treatment->getDuration()){
             ST_END_TREAT_TUM_DENS = ST_TUM_DENS;
         }
-        else{
-            if(ST_TUM_DENS <= ST_REC_TUM_DENS){
+        else if(!ST_REC && ST_TUM_DENS > ST_PREV_TUM_DENS){
+            if(!ST_COUNT_REC){
                 ST_REC_TUM_DENS = ST_TUM_DENS;
                 ST_REC_TIME = currentTime;
             }
+            ST_COUNT_REC += 1.0;
+            if(ST_COUNT_REC == 10.0){
+                ST_REC = 1.0;
+            }
+        }
+        else{
+            ST_COUNT_REC = 0.0;
         }
         if(currentTime <= m_treatment->getDuration() + 720.0){
             ST_3MON_TUM_DENS = ST_TUM_DENS;
