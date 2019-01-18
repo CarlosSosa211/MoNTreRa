@@ -117,8 +117,8 @@ void morris(const int K, const int L, const int N, const int nOut,
 
 void morrisRT(const int N, const int p, const string nFRefParInt, const string nFInTissueDim,
               const string nFInTum, const string nFInVes){
-    const int K(34), nOut(8);
-    //const int K(20), nOut(8);
+    const int K(34), nOut(15);
+    //const int K(20), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
@@ -146,31 +146,52 @@ void morrisRT(const int N, const int p, const string nFRefParInt, const string n
 
     ofstream fMorrisEndTreatTumDens("../OutputFiles/morrisEndTreatTumDens.res");
     ofstream fMorris3MonTumDens("../OutputFiles/morris3MonTumDens.res");
-    ofstream fMorrisRecTumDens("../OutputFiles/morrisRecTumDens.res");
     ofstream fMorrisTumVol("../OutputFiles/morrisTumVol.res");
     ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens.res");
+    ofstream fMorrisKilled50("../OutputFiles/morrisKilled50.res");
+    ofstream fMorrisKilled80("../OutputFiles/morrisKilled80.res");
+    ofstream fMorrisKilled90("../OutputFiles/morrisKilled90.res");
+    ofstream fMorrisKilled95("../OutputFiles/morrisKilled95.res");
     ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95.res");
+    ofstream fMorrisKilled99("../OutputFiles/morrisKilled99.res");
     ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99.res");
+    ofstream fMorrisKilled999("../OutputFiles/morrisKilled999.res");
+    ofstream fMorrisRec("../OutputFiles/morrisRec.res");
+    ofstream fMorrisRecTumDens("../OutputFiles/morrisRecTumDens.res");
     ofstream fMorrisRecTime("../OutputFiles/morrisRecTime.res");
 
     for(int k(0); k < K; k++){
-        fMorrisEndTreatTumDens << mu[0][k] << " " << sigma[0][k] << endl;
-        fMorris3MonTumDens     << mu[1][k] << " " << sigma[1][k] << endl;
-        fMorrisRecTumDens      << mu[2][k] << " " << sigma[2][k] << endl;
-        fMorrisTumVol          << mu[3][k] << " " << sigma[3][k] << endl;
-        fMorrisIntTumDens      << mu[4][k] << " " << sigma[4][k] << endl;
-        fMorrisTimeTo95        << mu[5][k] << " " << sigma[5][k] << endl;
-        fMorrisTimeTo99        << mu[6][k] << " " << sigma[6][k] << endl;
-        fMorrisRecTime         << mu[7][k] << " " << sigma[7][k] << endl;
+        fMorrisEndTreatTumDens << mu[0][k]  << " " << sigma[0][k]  << endl;
+        fMorris3MonTumDens     << mu[1][k]  << " " << sigma[1][k]  << endl;
+        fMorrisTumVol          << mu[2][k]  << " " << sigma[2][k]  << endl;
+        fMorrisIntTumDens      << mu[3][k]  << " " << sigma[3][k]  << endl;
+        fMorrisKilled50        << mu[4][k]  << " " << sigma[4][k]  << endl;
+        fMorrisKilled80        << mu[5][k]  << " " << sigma[5][k]  << endl;
+        fMorrisKilled90        << mu[6][k]  << " " << sigma[6][k]  << endl;
+        fMorrisKilled95        << mu[7][k]  << " " << sigma[7][k]  << endl;
+        fMorrisTimeTo95        << mu[8][k]  << " " << sigma[8][k]  << endl;
+        fMorrisKilled99        << mu[9][k]  << " " << sigma[9][k]  << endl;
+        fMorrisTimeTo99        << mu[10][k] << " " << sigma[10][k] << endl;
+        fMorrisKilled999       << mu[11][k] << " " << sigma[11][k] << endl;
+        fMorrisRec             << mu[12][k] << " " << sigma[12][k] << endl;
+        fMorrisRecTumDens      << mu[13][k] << " " << sigma[13][k] << endl;
+        fMorrisRecTime         << mu[14][k] << " " << sigma[14][k] << endl;
     }
 
     fMorrisEndTreatTumDens.close();
     fMorris3MonTumDens.close();
-    fMorrisRecTumDens.close();
     fMorrisTumVol.close();
     fMorrisIntTumDens.close();
+    fMorrisKilled50.close();
+    fMorrisKilled80.close();
+    fMorrisKilled90.close();
+    fMorrisKilled95.close();
     fMorrisTimeTo95.close();
+    fMorrisKilled99.close();
     fMorrisTimeTo99.close();
+    fMorrisKilled999.close();
+    fMorrisRec.close();
+    fMorrisRecTumDens.close();
     fMorrisRecTime.close();
 
     free2D(mu, nOut);
@@ -253,7 +274,7 @@ void morrisVarRange(const int K, const int kp, const int L, const int N,
 void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
                       const string nFRefParInt, const string nFInTissueDim,
                       const string nFInTum, const string nFInVes){
-    const int K(34), nOut(8);
+    const int K(34), nOut(15);
     double ***mu, ***sigma;
 
     mu    = alloc3D(L, nOut, K);
@@ -274,30 +295,52 @@ void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
     for(int l(0); l < L; l++){
         ofstream fMorrisEndTreatTumDens("../OutputFiles/morrisEndTreatTumDens_" + to_string(l) + ".res");
         ofstream fMorris3MonTumDens("../OutputFiles/morris3MonTumDens_" + to_string(l) + ".res");
-        ofstream fMorrisRecTumDens("../OutputFiles/morrisRecTumDens_" + to_string(l) + ".res");
         ofstream fMorrisTumVol("../OutputFiles/morrisTumVol_" + to_string(l) + ".res");
         ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens_" + to_string(l) + ".res");
+        ofstream fMorrisKilled50("../OutputFiles/morrisKilled50_" + to_string(l) + ".res");
+        ofstream fMorrisKilled80("../OutputFiles/morrisKilled80_" + to_string(l) + ".res");
+        ofstream fMorrisKilled90("../OutputFiles/morrisKilled90_" + to_string(l) + ".res");
+        ofstream fMorrisKilled95("../OutputFiles/morrisKilled95_" + to_string(l) + ".res");
         ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95_" + to_string(l) + ".res");
+        ofstream fMorrisKilled99("../OutputFiles/morrisKilled99_" + to_string(l) + ".res");
         ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99_" + to_string(l) + ".res");
+        ofstream fMorrisKilled999("../OutputFiles/morrisKilled999_" + to_string(l) + ".res");
+        ofstream fMorrisRec("../OutputFiles/morrisRec_" + to_string(l) + ".res");
+        ofstream fMorrisRecTumDens("../OutputFiles/morrisRecTumDens_" + to_string(l) + ".res");
         ofstream fMorrisRecTime("../OutputFiles/morrisRecTime_" + to_string(l) + ".res");
 
         for(int k(0); k < K; k++){
-            fMorrisEndTreatTumDens << mu[l][0][k] << " " << sigma[l][0][k] << endl;
-            fMorris3MonTumDens     << mu[l][1][k] << " " << sigma[l][1][k] << endl;
-            fMorrisRecTumDens      << mu[l][2][k] << " " << sigma[l][2][k] << endl;
-            fMorrisTumVol          << mu[l][3][k] << " " << sigma[l][3][k] << endl;
-            fMorrisIntTumDens      << mu[l][4][k] << " " << sigma[l][4][k] << endl;
-            fMorrisTimeTo95        << mu[l][5][k] << " " << sigma[l][5][k] << endl;
-            fMorrisTimeTo99        << mu[l][6][k] << " " << sigma[l][6][k] << endl;
-            fMorrisRecTime         << mu[l][7][k] << " " << sigma[l][7][k] << endl;
+            fMorrisEndTreatTumDens << mu[l][0][k]  << " " << sigma[l][0][k]  << endl;
+            fMorris3MonTumDens     << mu[l][1][k]  << " " << sigma[l][1][k]  << endl;
+            fMorrisTumVol          << mu[l][2][k]  << " " << sigma[l][2][k]  << endl;
+            fMorrisIntTumDens      << mu[l][3][k]  << " " << sigma[l][3][k]  << endl;
+            fMorrisKilled50        << mu[l][4][k]  << " " << sigma[l][4][k]  << endl;
+            fMorrisKilled80        << mu[l][5][k]  << " " << sigma[l][5][k]  << endl;
+            fMorrisKilled90        << mu[l][6][k]  << " " << sigma[l][6][k]  << endl;
+            fMorrisKilled95        << mu[l][7][k]  << " " << sigma[l][7][k]  << endl;
+            fMorrisTimeTo95        << mu[l][8][k]  << " " << sigma[l][8][k]  << endl;
+            fMorrisKilled99        << mu[l][9][k]  << " " << sigma[l][9][k]  << endl;
+            fMorrisTimeTo99        << mu[l][10][k] << " " << sigma[l][10][k] << endl;
+            fMorrisKilled999       << mu[l][11][k] << " " << sigma[l][11][k] << endl;
+            fMorrisRec             << mu[l][12][k] << " " << sigma[l][12][k] << endl;
+            fMorrisRecTumDens      << mu[l][13][k] << " " << sigma[l][13][k] << endl;
+            fMorrisRecTime         << mu[l][14][k] << " " << sigma[l][14][k] << endl;
         }
+
         fMorrisEndTreatTumDens.close();
         fMorris3MonTumDens.close();
-        fMorrisRecTumDens.close();
         fMorrisTumVol.close();
         fMorrisIntTumDens.close();
+        fMorrisKilled50.close();
+        fMorrisKilled80.close();
+        fMorrisKilled90.close();
+        fMorrisKilled95.close();
         fMorrisTimeTo95.close();
+        fMorrisKilled99.close();
         fMorrisTimeTo99.close();
+        fMorrisKilled999.close();
+        fMorrisRec.close();
+        fMorrisRecTumDens.close();
         fMorrisRecTime.close();
     }
 
