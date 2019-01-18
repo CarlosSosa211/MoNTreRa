@@ -13,14 +13,20 @@ endTreatTumDens = zeros(nPar, 2, nTissues);
 intTumDens = zeros(nPar, 2, nTissues);
 
 for i = 1:length(tTissues)
-    timeTo95(:, 1:2, i) = load([path, '/morrisTimeTo95_', num2str(tTissues(i)), '.res']);
+    timeTo95(:, 1:2, i) = load([path, '/morrisTimeTo95_'...
+        num2str(tTissues(i)), '.res']);
     timeTo95(:, 3, i) = sqrt(timeTo95(:, 1, i).^2 + timeTo95(:, 2, i).^2);
-    timeTo99(:, 1:2, i) = load([path, '/morrisTimeTo99_', num2str(tTissues(i)), '.res']);
+    timeTo99(:, 1:2, i) = load([path, '/morrisTimeTo99_'...
+        num2str(tTissues(i)), '.res']);
     timeTo99(:, 3, i) = sqrt(timeTo99(:, 1, i).^2 + timeTo99(:, 2, i).^2);
-    endTreatTumDens(:, 1:2, i) = load([path, '/morrisEndTreatTumDens_', num2str(tTissues(i)), '.res']);
-    endTreatTumDens(:, 3, i) = sqrt(endTreatTumDens(:, 1, i).^2 + endTreatTumDens(:, 2, i).^2);
-    intTumDens(:, 1:2, i) = load([path, '/morrisIntTumDens_', num2str(tTissues(i)), '.res']);
-    intTumDens(:, 3, i) = sqrt(intTumDens(:, 1, i).^2 + intTumDens(:, 2, i).^2);
+    endTreatTumDens(:, 1:2, i) = load([path, '/morrisEndTreatTumDens_'...
+        num2str(tTissues(i)), '.res']);
+    endTreatTumDens(:, 3, i) = sqrt(endTreatTumDens(:, 1, i).^2 +...
+        endTreatTumDens(:, 2, i).^2);
+    intTumDens(:, 1:2, i) = load([path, '/morrisIntTumDens_'...
+        num2str(tTissues(i)), '.res']);
+    intTumDens(:, 3, i) = sqrt(intTumDens(:, 1, i).^2 +...
+        intTumDens(:, 2, i).^2);
 end
 
 meanTimeTo95 = mean(timeTo95, 3);
@@ -76,6 +82,7 @@ end
 errorbar(ctr, ydt, cell2mat(cOut(:, 5:8)), '.k')
 hold off
 ylim([0, inf])
-legend({'Time to kill 95%', 'Time to kill 99%', 'Tumor density at the end of treat.', 'Integral of tumor density'},...
+legend({'Time to kill 95%', 'Time to kill 99%'...
+    'Tumor density at the end of treat.', 'Integral of tumor density'},...
     'location', 'northwest', 'fontsize', 20)
 end
