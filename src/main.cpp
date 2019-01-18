@@ -17,24 +17,24 @@ using namespace std;
 
 int main(){
     //const int N(1e5);
-    //const int kp(5), L(2), p(20), N(100);
-    //const int nMethod(1), nModel(0);
+    const int kp(5), L(6), p(20), P(5), N(100);
+    //const int nMethod(0), nModel(0);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
-    //string nFRefParInt("../InputFiles/refParIntRTAll.dat");
+    //string nFRefParInt("../InputFiles/refParIntRT.dat");
     //string nFRefParInt("../InputFiles/refParIntToy.dat");
     //string nRefParMean("../InputFiles/refParMeanRT.dat");
     string nFMostRelPar("../InputFiles/mostRelParAng.dat");
     string nFLeastRelPar("../InputFiles/leastRelParAng.dat");
     string nFVarPar("../InputFiles/varParAng.dat");
-    //string nFMostRelPar("../InputFiles/mostRelParAng.dat");
-    //string nFLeastRelPar("../InputFiles/leastRelParAng.dat");
-    //string nFVarPar("../InputFiles/varParAng.dat");
     string nFInTissueDim("../InputFiles/tissueDim.dat");
     string nFInTum("../InputFiles/inTum.dat");
     string nFInVes("../InputFiles/inVes.dat");
-    //srand(time(NULL));
+
+    srand(time(NULL));
     //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
-    varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum, nFInVes);
+    varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
+           nFInVes, L, P);
+    //varStoch(N, p, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
     //vector<string> nFPar;
     //nFPar.push_back("../InputFiles/par37_2.dat");
     //nFPar.push_back("../InputFiles/par20_3.dat");
@@ -412,17 +412,17 @@ void model(const double *x, double *y, const int nrow,
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
     int k(0);
-    const double tumGrowth(x[k]);
+    const double tumGrowth(x[k] > 0.1);
     k++;
     const double tumTime(x[k]);
     k++;
     const int edgeOrder(x[k]);
     k++;
-    const double res(x[k]);
+    const double res(x[k] > 0.1);
     k++;
     const double fibTime(x[k]);
     k++;
-    const double ang(x[k]);
+    const double ang(x[k] > 0.5);
     k++;
     const double vascTumTime(x[k]);
     k++;
