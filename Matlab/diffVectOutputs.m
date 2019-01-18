@@ -4,7 +4,8 @@ close all
 nfig = 0;
 
 nTissue = 4;
-path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue', num2str(nTissue)];
+path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
+    num2str(nTissue)];
 
 colTTum = 1;
 colDThres = 2;
@@ -18,8 +19,10 @@ tDThres = unique(par(:, colDThres));
 % tTArrest = unique(par(:, colTArrest));
 tDose = unique(par(:, colDose));
 
-selOut = input(['Select an output [tumDens (1), tumVol (2), vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
-    'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), vegfMed (10), vegfMean (11), distG1 (12),\n'...
+selOut = input(['Select an output [tumDens (1), tumVol (2)'
+    'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
+    'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9)'...
+    'vegfMed (10), vegfMean (11), distG1 (12),\n'...
     'distS (13),  distG2 (14), distM (15) or distG0 (16)] or quit (0): ']);
 
 switch selOut
@@ -180,7 +183,8 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, normInfMeanTTum, normInfStdTTum,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in ', outputName])
+title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in '...
+    outputName])
 grid on
 xlabel('TTum (h)')
 ylabel('||diff.||_\infty')
@@ -264,7 +268,8 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, normInfMeanDose, normInfStdDose,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in ', outputName])
+title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in '...
+    outputName])
 grid on
 xlabel('Dose (Gy)')
 ylabel('||diff.||_\infty')
@@ -367,7 +372,8 @@ nfig = nfig + 1;
 figure(nfig)
 image(normInfTTumDose, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in ', outputName])
+title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in '...
+    outputName])
 xlabel('Dose (Gy)')
 ylabel('TTum (h)')
 xticks(1:length(tDose))
