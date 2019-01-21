@@ -179,6 +179,8 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
     ofstream fRecTime("../OutputFiles/recTime.res");
     ofstream fCombPar("../OutputFiles/combPar.res");
 
+    int count(0);
+
     for(int i1(0); i1 < L; i1++){
         x[Xi[0]] = X[0][i1];
         for(int i2(0); i2 < L; i2++){
@@ -197,22 +199,22 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
                 }
 
                 for(int p(0); p < P; p++){
-                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFCycle       = "../OutputFiles/cycle_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
+                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
+                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
+                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
+                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
+                    nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
+                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
+                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
+                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(count) + "_" +
+                            "0_" + to_string(p) + ".res";
 
                     model(x, y0[p],  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
                           nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
@@ -236,22 +238,22 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
                 }
 
                 for(int p(0); p < P; p++){
-                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFCycle       = "../OutputFiles/cycle_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
-                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(nEv) + "_" +
-                            to_string(p) + ".res";
+                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
+                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
+                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
+                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
+                    nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
+                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
+                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
+                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(count) + "_" +
+                            "1_" + to_string(p) + ".res";
 
                     model(x, y1[p],  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
                           nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
@@ -265,6 +267,7 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
                         y1mean[j] += y1[p][j];
                     }
                 }
+                count++;
 
                 for(int j(0); j < nOut; j++){
                     y1mean[j] /= P;
@@ -448,7 +451,7 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
 }
 
 
-void varStoch(const int N, const int p, const std::string nFRefParInt,
+void varStoch(const int N, const int P, const std::string nFRefParInt,
               const std::string nFInTissueDim, const std::string nFInTum,
               const std::string nFInVes){
     int nrow, ncol, nlayer;
@@ -473,7 +476,7 @@ void varStoch(const int N, const int p, const std::string nFRefParInt,
     double **X, ***Y;
 
     X = alloc2D(N, K);
-    Y = alloc3D(p, N, nOut);
+    Y = alloc3D(P, N, nOut);
 
     for(int i(0); i < N; i++){
         for(int k(0); k < K; k++){
@@ -491,7 +494,7 @@ void varStoch(const int N, const int p, const std::string nFRefParInt,
     }
 
     int nEv(0);
-    const int nEvTot(N * p);
+    const int nEvTot(N * P);
 
     ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
     ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
@@ -510,7 +513,7 @@ void varStoch(const int N, const int p, const std::string nFRefParInt,
     ofstream fRecTime("../OutputFiles/recTime.res");
 
     for(int i(0); i < N; i++){
-        for(int l(0); l < p; l++){
+        for(int l(0); l < P; l++){
             model(X[i], Y[l][i], nrow, ncol, nlayer, cellSize, inTum, inVes);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
@@ -567,6 +570,6 @@ void varStoch(const int N, const int p, const std::string nFRefParInt,
     fRecTime.close();
 
     free2D(X, N);
-    free3D(Y, p, N);
+    free3D(Y, P, N);
 }
 
