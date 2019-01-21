@@ -65,6 +65,6 @@ void varErr(const std::string nFVarPar, const std::string nFMostRelPar,
             const int P);
 void varParFromFiles(const std::vector<std::string> nFPar, const std::string nFInTissueDim,
                      const std::string nFInTum, const std::string nFInVes);
-void varStoch(const int N, const int p, const std::string nFRefParInt,
+void varStoch(const int N, const int P, const std::string nFRefParInt,
              const std::string nFInTissueDim, const std::string nFInTum,
              const std::string nFInVes);
