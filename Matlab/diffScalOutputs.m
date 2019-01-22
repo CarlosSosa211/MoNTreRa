@@ -5,7 +5,8 @@ nfig = 0;
 nTissue = 4;
 % path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
 %     num2str(nTissue)];
-path = '../../Carlos/Results/Diff_Ang_432Sim_Tissue4_15Out';
+% path = '../../Carlos/Results/Diff_Ang_432Sim_Tissue4_15Out';
+path = '../../Carlos/Results/Diff_Ang_432x5Sim_Tissue4';
 
 colTTum = 1;
 colDThres = 2;
@@ -19,7 +20,7 @@ tDThres = unique(par(:, colDThres));
 % tTArrest = unique(par(:, colTArrest));
 tDose = unique(par(:, colDose));
 
-fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'... 
+fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/finTumVol.res', '/intTumDens.res', '/killed50.res'...
     '/killed80.res''/killed90.res', '/killed95.res', '/killed99.res'...
     '/killed999.res', '/timeTo95.res', '/timeTo99.res', '/rec.res'...
@@ -54,6 +55,37 @@ outputDiff = output(:, 1)' - output(:, 2)';
 outputAbsDiff = abs(outputDiff);
 
 %%
+noAngMeanTTum = [];
+noAngStdTTum = [];
+angMeanTTum = [];
+angStdTTum = [];
+for i = 1:length(tTTum)
+    noAngMeanTTum = [noAngMeanTTum...
+        mean(output(par(:, colTTum) == tTTum(i), 1))];
+    noAngStdTTum = [noAngStdTTum...
+        mean(output(par(:, colTTum) == tTTum(i), 3))];
+    angMeanTTum = [angMeanTTum...
+        mean(output(par(:, colTTum) == tTTum(i), 2))];
+    angStdTTum = [angStdTTum...
+        mean(output(par(:, colTTum) == tTTum(i), 4))];
+end
+
+nfig = nfig + 1;
+figure(nfig)
+hold on
+errorbar(tTTum, noAngMeanTTum, noAngStdTTum,...
+    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+errorbar(tTTum, angMeanTTum, angStdTTum,...
+    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+hold off
+title(['Tissue ', num2str(nTissue), ' - '...
+    char(outputNames(selOut))])
+legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
+grid on
+xlabel('TTum (h)')
+ylabel(outputNames(selOut))
+
+%%
 diffMeanTTum = [];
 diffStdTTum = [];
 for i = 1:length(tTTum)
@@ -72,6 +104,37 @@ title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
 grid on
 xlabel('TTum (h)')
 ylabel('Difference')
+
+%%
+noAngMeanDThres = [];
+noAngStdDThres = [];
+angMeanDThres = [];
+angStdDThres = [];
+for i = 1:length(tDThres)
+    noAngMeanDThres = [noAngMeanDThres...
+        mean(output(par(:, colDThres) == tDThres(i), 1))];
+    noAngStdDThres = [noAngStdDThres...
+        mean(output(par(:, colDThres) == tDThres(i), 3))];
+    angMeanDThres = [angMeanDThres...
+        mean(output(par(:, colDThres) == tDThres(i), 2))];
+    angStdDThres = [angStdDThres...
+        mean(output(par(:, colDThres) == tDThres(i), 4))];
+end
+
+nfig = nfig + 1;
+figure(nfig)
+hold on
+errorbar(tDThres, noAngMeanDThres, noAngStdDThres,...
+    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+errorbar(tDThres, angMeanDThres, angStdDThres,...
+    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+hold off
+title(['Tissue ', num2str(nTissue), ' - '...
+    char(outputNames(selOut))])
+legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
+grid on
+xlabel('Dose threshold (Gy)')
+ylabel(outputNames(selOut))
 
 %%
 diffMeanDThres = [];
@@ -112,6 +175,37 @@ title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
 grid on
 xlabel('TArrest (h)')
 ylabel('Difference')
+
+%%
+noAngMeanDose = [];
+noAngStdDose = [];
+angMeanDose = [];
+angStdDose = [];
+for i = 1:length(tDose)
+    noAngMeanDose = [noAngMeanDose...
+        mean(output(par(:, colDose) == tDose(i), 1))];
+    noAngStdDose = [noAngStdDose...
+        mean(output(par(:, colDose) == tDose(i), 3))];
+    angMeanDose = [angMeanDose...
+        mean(output(par(:, colDose) == tDose(i), 2))];
+    angStdDose = [angStdDose...
+        mean(output(par(:, colDose) == tDose(i), 4))];
+end
+
+nfig = nfig + 1;
+figure(nfig)
+hold on
+errorbar(tDose, noAngMeanDose, noAngStdDose,...
+    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+errorbar(tDose, angMeanDose, angStdDose,...
+    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+hold off
+title(['Tissue ', num2str(nTissue), ' - '...
+    char(outputNames(selOut))])
+legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
+grid on
+xlabel('Dose (Gy)')
+ylabel(outputNames(selOut))
 
 %%
 diffMeanDose = [];
