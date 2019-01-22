@@ -4,8 +4,9 @@ close all
 nfig = 0;
 
 nTissue = 4;
-path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
-    num2str(nTissue)];
+% path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
+%     num2str(nTissue)];
+path = '../../Carlos/Results/Diff_Ang_432x5Sim_Tissue4';
 
 colTTum = 1;
 colDThres = 2;
@@ -19,9 +20,9 @@ tDThres = unique(par(:, colDThres));
 % tTArrest = unique(par(:, colTArrest));
 tDose = unique(par(:, colDose));
 
-selOut = input(['Select an output [tumDens (1), tumVol (2)'
+selOut = input(['Select an output [tumDens (1), tumVol (2)'...
     'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
-    'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9)'...
+    'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), '...
     'vegfMed (10), vegfMean (11), distG1 (12),\n'...
     'distS (13),  distG2 (14), distM (15) or distG0 (16)] or quit (0): ']);
 
@@ -93,23 +94,41 @@ switch selOut
 end
 
 %%
+meanOutput0 = {};
+meanOutput1 = {};
+stdOutput0 = {};
+stdOutput1 = {};
+P = 5;
 for i = 1:size(par, 1)
-    clear output
-    temp1 = load([path, num2str(2 * (i - 1)), '.res']);
-    temp2 = load([path, num2str(2 * i - 1), '.res']);
-    output(:, :, 1) = temp1(:, [1, outputCol]);
-    output(:, :, 2) = temp2(:, [1, outputCol]);
+    clear output0 output1
+    for j = 1:P
+        temp0 = load([path, num2str(i - 1), '_0_', num2str(j - 1)...
+            '.res']);
+        temp1 = load([path, num2str(i - 1), '_1_', num2str(j - 1)...
+            '.res']);
+        output0(:, :, j) = temp0(:, [1, outputCol]);
+        output1(:, :, j) = temp1(:, [1, outputCol]);
+    end
     
-    sim(i) = output(:, 2, 1)' * output(:, 2, 2) /...
-        (norm(output(:, 2, 1)) * norm(output(:, 2, 2)));
+    meanOutput0i = mean(output0, 3);
+    meanOutput1i = mean(output1, 3);
+    meanOutput0(i) = {meanOutput0i};
+    meanOutput1(i) = {meanOutput1i};
     
-    lsd(i) = sum((output(:, 2, 1) - output(:, 2, 2)).^2);
+    stdOutput0(i) = {std(output0, 0, 3)};
+    stdOutput1(i) = {std(output1, 0, 3)};
     
-    R(:, :, i) = corrcoef(output(:, 2, 1), output(:, 2, 2));
+    sim(i) = meanOutput0i(:, 2)' * meanOutput1i(:, 2) /...
+        (norm(meanOutput0i(:, 2)) * norm(meanOutput1i(:, 2)));
     
-    [p(i, :), S] = polyfit(output(:, 2, 1)', output(:, 2, 2)', 1);
+    lsd(i) = sum((meanOutput0i(:, 2) - meanOutput1i(:, 2)).^2);
     
-    normInf(i) = norm(output(:, 2, 1) - output(:, 2, 2), 'inf');
+    R(:, :, i) = corrcoef(meanOutput0i(:, 2), meanOutput1i(:, 2));
+    
+    [p(i, :), S] = polyfit(meanOutput0i(:, 2)', meanOutput1i(:, 2)', 1);
+    
+    normInf(i) = norm(meanOutput0i(:, 2) - meanOutput1i(:, 2), 'inf');
+    
 end
 
 %%
@@ -380,3 +399,25 @@ xticks(1:length(tDose))
 xticklabels(tDose)
 yticks(1:length(tTTum))
 yticklabels(tTTum)
+
+
+%%
+i = 212;
+
+mean0 = cell2mat(meanOutput0(i));
+mean1 = cell2mat(meanOutput1(i));
+
+std0 = cell2mat(stdOutput0(i));
+std1 = cell2mat(stdOutput1(i));
+
+nfig = nfig + 1;
+figure(nfig)
+hold on
+% plot(mean0(:, 1), mean0(:, 2));
+% plot(mean1(:, 1), mean1(:, 2));
+errorbar(mean0(:, 1), mean0(:, 2), std0(:, 2));
+errorbar(mean1(:, 1), mean1(:, 2), std1(:, 2));
+hold off
+xlabel('Time (h)')
+ylabel(char(outputName))
+legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
