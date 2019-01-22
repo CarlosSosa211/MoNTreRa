@@ -17,8 +17,8 @@
 #define IN_OXYTUM_VES  m_in->at(2)
 
 //State variables
-#define ST_PO2         m_st->at(0)
-#define ST_VEGF        m_st->at(1)
+#define ST_OXYPO2      m_st->at(0)
+#define ST_OXYVEGF     m_st->at(1)
 #define ST_HYP         m_st->at(2)
 #define ST_OXYDEAD     m_st->at(3)
 #define ST_OXYNORM_VES m_st->at(4)
@@ -29,7 +29,7 @@
 #define OUT_VEGF      m_out->at(1)
 
 //Internal parameters
-#define PAR_OXYPO2       m_param->at(0)
+#define PAR_PO2_NOT_VES  m_param->at(0)
 #define PAR_PO2_NORM_VES m_param->at(1)
 #define PAR_PO2_TUM_VES  m_param->at(2)
 #define PAR_HYP_THRES    m_param->at(3)

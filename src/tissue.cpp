@@ -41,9 +41,9 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const double res, const double fibDoubTime,
                const double ang, const double angTime,
                const double vegfThres, vector<double> alpha,
-               vector<double> beta, const double doseThres,
-               const double arrestTime, Treatment *const treatment,
-               const double hypNecThres) :
+               vector<double> beta, Treatment *const treatment,
+               const double doseThres, const double arrestTime,
+               const double oxy, const double hypNecThres) :
     Model(0, 27, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
@@ -59,7 +59,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
             for(int j(0); j < m_ncol; j++){
                 m_comp->at(k) = new Cell(i, j, l, tumGrowth, doubTime, cycDur,
                                          res, fibDoubTime, ang, angTime, vegfThres,
-                                         alpha, beta, doseThres, arrestTime,
+                                         alpha, beta, doseThres, arrestTime, oxy,
                                          hypNecThres, this);
                 m_numOut += (m_comp->at(k))->getNumOut();
                 k++;
@@ -206,9 +206,9 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const double res, const double fibDoubTime,
                const double ang, const double angTime,
                const double vegfThres, vector<double> alpha,
-               vector<double> beta, const double doseThres,
-               const double arrestTime, Treatment *const treatment,
-               const double hypNecThres) :
+               vector<double> beta, Treatment *const treatment,
+               const double doseThres, const double arrestTime,
+               const double oxy, const double hypNecThres) :
     Model(0, 27, 35, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
@@ -229,7 +229,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                 m_comp->at(k) = new Cell(i, j, l, tumGrowth, doubTime, cycDur,
                                          res, fibDoubTime, ang, angTime,
                                          vegfThres, alpha, beta, doseThres,
-                                         arrestTime, hypNecThres, this);
+                                         arrestTime, oxy, hypNecThres, this);
                 m_numOut += (m_comp->at(k))->getNumOut();
 
                 ((Cell *)m_comp->at(k))->setInTum(inTum.at(k));

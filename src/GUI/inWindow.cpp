@@ -704,8 +704,8 @@ int InWindow::createInFiles(){
         fParam << m_VmaxVegf->value() *
                   m_oxySimTimeStep-> value() << std::endl;
         fParam << m_KmVegf->value() << std::endl;
-        fParam << m_hypVegf->value() << std::endl;
         fParam << m_vegfThres->value() << std::endl;
+        fParam << m_hypVegf->value() << std::endl;
     }
 
     fParam << m_paramRT->isChecked() << std::endl;
@@ -716,8 +716,6 @@ int InWindow::createInFiles(){
         for(int i(0); i < 8; i++){
             fParam << m_beta.at(i)->value() << std::endl;
         }
-        fParam << m_arrestTime->value() << std::endl;
-        fParam << m_doseThres->value() << std::endl;
         fParam << m_fraction->value() << std::endl;
         fParam << m_totalDose->value() << std::endl;
         fParam << m_interval->value() << std::endl;
@@ -727,10 +725,13 @@ int InWindow::createInFiles(){
         else{
             fParam << 1 << std::endl;
         }
+        fParam << m_doseThres->value() << std::endl;
+        fParam << m_arrestTime->value() << std::endl;
     }
 
     fParam << m_paramOxy->isChecked() << std::endl;
     if(m_paramOxy->isChecked()){
+        fParam << m_hypNecThres->value() << std::endl;
         fParam << m_D->value() *
                   m_oxySimTimeStep->value() << std::endl;
         fParam << m_Vmax->value() *
@@ -739,7 +740,6 @@ int InWindow::createInFiles(){
         fParam << m_pO2NormVes->value() << std::endl;
         fParam << m_pO2TumVes->value() << std::endl;
         fParam << m_hypThres->value() << std::endl;
-        fParam << m_hypNecThres->value() << std::endl;
     }
     else{
         fParam << m_constpO2->value() << std::endl;
@@ -854,7 +854,7 @@ int InWindow::loadInData(std::string nFInData){
     m_paramAng->setChecked(ang);
     if(ang){
         fInData >> angTime >> Dvegf >> VmaxVegf >> KmVegf;
-        fInData >> hypVegf >> vegfThres;
+        fInData >> vegfThres >> hypVegf;
         m_simTimeL->show();
         m_oxySimTimeL->hide();
         m_simTimeStep->setEnabled(true);
@@ -883,8 +883,8 @@ int InWindow::loadInData(std::string nFInData){
         for(int i(0); i < 8; i++){
             fInData >> beta.at(i);
         }
-        fInData >> arrestTime >> doseThres;
         fInData >> fraction >> totalDose >> interval >> schedule;
+        fInData >> doseThres >> arrestTime;
         m_simTimeL->show();
         m_oxySimTimeL->hide();
         m_simTimeStep->setEnabled(true);
@@ -907,9 +907,9 @@ int InWindow::loadInData(std::string nFInData){
     }
 
     bool oxy;
-    double constpO2(0.0), constpO2NormVes(0.0), constpO2TumVes(0.0);
-    double D(0.0), hypThres(0.0), hypNecThres(0.0);
-    double Km(0.0), pO2NormVes(0.0), pO2TumVes(0.0), Vmax(0.0);
+    double constpO2NotVes(0.0), constpO2NormVes(0.0), constpO2TumVes(0.0);
+    double DO2(0.0), hypThres(0.0), hypNecThres(0.0);
+    double KmO2(0.0), pO2NormVes(0.0), pO2TumVes(0.0), VmaxO2(0.0);
 
     fInData >> oxy;
     m_paramOxy->setChecked(oxy);
@@ -917,22 +917,22 @@ int InWindow::loadInData(std::string nFInData){
     m_constpO2NormVes->setEnabled(!oxy);
     m_constpO2TumVes->setEnabled(!oxy);
     if(oxy){
-        fInData >> D >> Vmax >> Km >> pO2NormVes;
-        fInData >> pO2TumVes >> hypThres >> hypNecThres;
+        fInData >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
+        fInData >> pO2NormVes >> pO2TumVes >> hypThres;
     }
     else{
-        fInData >> constpO2 >> constpO2NormVes >> constpO2TumVes;
+        fInData >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes;
     }
 
-    m_D->setValue(D);
-    m_Vmax->setValue(Vmax);
-    m_Km->setValue(Km);
+    m_D->setValue(DO2);
+    m_Vmax->setValue(VmaxO2);
+    m_Km->setValue(KmO2);
     m_pO2NormVes->setValue(pO2NormVes);
     m_pO2TumVes->setValue(pO2TumVes);
     m_hypThres->setValue(hypThres);
     m_hypNecThres->setValue(hypNecThres);
 
-    m_constpO2->setValue(constpO2);
+    m_constpO2->setValue(constpO2NotVes);
     m_constpO2NormVes->setValue(constpO2NormVes);
     m_constpO2TumVes->setValue(constpO2TumVes);
 

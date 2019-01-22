@@ -17,7 +17,7 @@
 
 using namespace std;
 
-Cell::Cell(Model *const parent) : Model(10, 17, 2, 36, 0){
+Cell::Cell(Model *const parent) : Model(10, 20, 2, 34, 0){
     ST_FIB     = 1.0;
     ST_TUM     = 0.0;
     ST_VES     = 0.0;
@@ -47,7 +47,7 @@ Cell::Cell(Model *const parent) : Model(10, 17, 2, 36, 0){
 
     PAR_ANG        = 1.0;
     PAR_ANG_TIME   = 5040.0; //h
-    PAR_VEGF       = 0.0;
+    ST_VEGF       = 0.0;
     PAR_VEGF_THRES = 32.5;
 
     PAR_ALPHA_FIB      = 0.0; //Gy^-1
@@ -80,10 +80,12 @@ Cell::Cell(Model *const parent) : Model(10, 17, 2, 36, 0){
 
     PAR_M   = 3.0; //adim.
     PAR_K   = 3.0; //mmHg
-    PAR_PO2 = 3.0; //mmHg
-    PAR_HYP_NEC_THRES = 1.0; //mmHg
 
-    PAR_ACC_DOSE = 0.0; //Gy
+    ST_ACC_DOSE = 0.0; //Gy
+
+    PAR_OXY = 1.0;
+    ST_PO2 = 3.0; //mmHg
+    PAR_HYP_NEC_THRES = 1.0; //mmHg
 
     m_parent = parent;
     m_treatment = 0;
@@ -98,8 +100,8 @@ Cell::Cell(const int i, const int j, const int l,
            const double angTime, const double vegfThres,
            vector<double> alpha, vector<double> beta,
            const double doseThres, const double arrestTime,
-           const double hypNecThres, Model *const parent) :
-    Model(10, 17, 2, 36, 0){
+           const double oxy, const double hypNecThres,
+           Model *const parent) : Model(10, 20, 2, 34, 0){
     m_i = i;
     m_j = j;
     m_l = l;
@@ -134,7 +136,7 @@ Cell::Cell(const int i, const int j, const int l,
 
     PAR_ANG        = ang;
     PAR_ANG_TIME   = angTime; //h
-    PAR_VEGF       = 0.0;
+    ST_VEGF        = 0.0;
     PAR_VEGF_THRES = vegfThres;
 
     PAR_ALPHA_FIB      = alpha.at(0); //Gy^-1
@@ -167,10 +169,12 @@ Cell::Cell(const int i, const int j, const int l,
 
     PAR_M   = 3.0; //adim.
     PAR_K   = 3.0; //mmHg
-    PAR_PO2 = 0.0; //mmHg
+
+    PAR_OXY = oxy;
+    ST_PO2 = 0.0; //mmHg
     PAR_HYP_NEC_THRES = hypNecThres; //mmHg
 
-    PAR_ACC_DOSE = 0; //Gy
+    ST_ACC_DOSE = 0; //Gy
 
     m_parent = parent;
     m_treatment = ((Tissue *)m_parent)->getTreatment();
@@ -271,8 +275,8 @@ int Cell::initModel(){
         PAR_BETA  = 0.0;
     }
 
-    PAR_PO2  = IN_PO2;
-    PAR_VEGF = IN_VEGF;
+    ST_PO2  = IN_PO2;
+    ST_VEGF = IN_VEGF;
     return 0;
 }
 
@@ -284,8 +288,8 @@ int Cell::terminateModel(){
 
 int Cell::updateModel(const double currentTime,
                       const double DT){
-    PAR_PO2  = IN_PO2;
-    PAR_VEGF = IN_VEGF;
+    ST_PO2  = IN_PO2;
+    ST_VEGF = IN_VEGF;
 
     if(!ST_DEAD){
         calcHypNec();
@@ -313,7 +317,7 @@ int Cell::updateModel(const double currentTime,
                 fmod(currentTime, m_treatment->getInterval()) == DT){
             int i(currentTime / m_treatment->getInterval());
             if((m_treatment->getSchedule()).at(i)){
-                PAR_ACC_DOSE += m_treatment->getFraction();
+                ST_ACC_DOSE += m_treatment->getFraction();
                 if(!ST_DEAD){
                     calcRespToIrr();
                 }
@@ -520,21 +524,21 @@ void Cell::calcFibProlif(double DT){
 
 
 double Cell::calcG1SF() const{
-    //double PAR_C(2.0), PAR_PO2_INFL(2.0);
-    //return exp(-exp(-PAR_C * (PAR_PO2 - PAR_PO2_INFL)));
+    //double PAR_C(2.0), ST_PO2_INFL(2.0);
+    //return exp(-exp(-PAR_C * (ST_PO2 - ST_PO2_INFL)));
     return 1.0;
 }
 
 
 double Cell::calcG2MF() const{
-    //double PAR_C(2.0), PAR_PO2_INFL(2.0);
-    //return exp(-exp(-PAR_C * (PAR_PO2 - PAR_PO2_INFL)));
+    //double PAR_C(2.0), ST_PO2_INFL(2.0);
+    //return exp(-exp(-PAR_C * (ST_PO2 - ST_PO2_INFL)));
     return 1.0;
 }
 
 
 void Cell::calcHypNec(){
-    if(PAR_PO2 < PAR_HYP_NEC_THRES){
+    if(ST_PO2 < PAR_HYP_NEC_THRES){
         IN_HYP_NEC = 1.0;
     }
 }
@@ -542,7 +546,7 @@ void Cell::calcHypNec(){
 
 void Cell::calcNormVesProlif(double DT){
     if(ST_TIMER >= PAR_ANG_TIME){
-        if(PAR_VEGF >= PAR_VEGF_THRES){
+        if(ST_VEGF >= PAR_VEGF_THRES){
             Cell *newVes(0);
             newVes = searchSpaceForTumVes();
             if(newVes){
@@ -564,7 +568,12 @@ void Cell::calcNormVesProlif(double DT){
 
 
 double Cell::calcOER() const{
-    return (PAR_M * PAR_PO2 + PAR_K) / (PAR_PO2 + PAR_K); //mmHg
+    if(PAR_OXY){
+        return (PAR_M * ST_PO2 + PAR_K) / (ST_PO2 + PAR_K); //mmHg
+    }
+    else{
+        return 1.0;
+    }
 }
 
 
@@ -658,7 +667,7 @@ void Cell::calcTumGrowth(double DT){
 
 void Cell::calcTumVesProlif(double DT){
     if(ST_TIMER >= PAR_ANG_TIME){
-        if(PAR_VEGF >= PAR_VEGF_THRES){
+        if(ST_VEGF >= PAR_VEGF_THRES){
             Cell *newVes(0);
             newVes = searchSpaceForTumVes();
             if(newVes){
@@ -684,7 +693,7 @@ bool Cell::getFib() const{
 
 
 double Cell::getAccDose() const{
-    return PAR_ACC_DOSE;
+    return ST_ACC_DOSE;
 }
 
 
@@ -862,8 +871,8 @@ Cell *Cell::searchSpaceForTumVes() const{
                 !tempCell->IN_TUM &&
                 !tempCell->IN_NORM_VES &&
                 !tempCell->IN_TUM_VES){
-            if(tempCell->PAR_VEGF > m){
-                m = tempCell->PAR_VEGF;
+            if(tempCell->ST_VEGF > m){
+                m = tempCell->ST_VEGF;
                 newTumVes = tempCell;
             }
         }

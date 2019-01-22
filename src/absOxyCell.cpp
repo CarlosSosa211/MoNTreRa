@@ -21,8 +21,8 @@ AbsOxyCell::~AbsOxyCell(){
 
 
 int AbsOxyCell::calcModelOut(){
-    OUT_PO2  = ST_PO2;
-    OUT_VEGF = ST_VEGF;
+    OUT_PO2  = ST_OXYPO2;
+    OUT_VEGF = ST_OXYVEGF;
 
     return 0;
 }
@@ -34,25 +34,21 @@ int AbsOxyCell::initModel(){
     ST_OXYTUM_VES  = IN_OXYTUM_VES;
 
     if(ST_OXYNORM_VES){
-        ST_PO2 = PAR_PO2_NORM_VES;
+        ST_OXYPO2 = PAR_PO2_NORM_VES;
     }
     else if(ST_OXYTUM_VES){
-        ST_PO2 = PAR_PO2_TUM_VES;
+        ST_OXYPO2 = PAR_PO2_TUM_VES;
     }
     else if(ST_OXYDEAD){
-        ST_PO2 = 0.0;
+        ST_OXYPO2 = 0.0;
     }
     else{
-        ST_PO2 = PAR_OXYPO2;
-        ST_HYP = ST_PO2 < PAR_HYP_THRES;
+        ST_OXYPO2 = 10.0;
     }
 
-    if(ST_HYP){
-        ST_VEGF = PAR_HYP_VEGF;
-    }
-    else{
-        ST_VEGF = 0.0;
-    }
+    ST_HYP = 0.0;
+    ST_OXYVEGF = 0.0;
+
     return 0;
 }
 
@@ -78,12 +74,12 @@ double AbsOxyCell::getOutVEGF() const{
 
 
 double AbsOxyCell::getPO2() const{
-    return ST_PO2;
+    return ST_OXYPO2;
 }
 
 
 double AbsOxyCell::getVEGF() const{
-    return ST_VEGF;
+    return ST_OXYVEGF;
 }
 
 

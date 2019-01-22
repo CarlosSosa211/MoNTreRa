@@ -65,13 +65,13 @@ void SimThread::run(){
     }
 
     bool tumGrowth;
-    int edgeSize;
+    int edgeOrder;
     double doubTime;
     std::vector<double> cycDur(4);
 
     fParam >> tumGrowth;
     if(tumGrowth){
-        fParam >> doubTime >> edgeSize;
+        fParam >> doubTime >> edgeOrder;
         for(int i(0); i < 4; i++){
             fParam >> cycDur.at(i);
         }
@@ -92,7 +92,7 @@ void SimThread::run(){
     fParam >> ang;
     if(ang){
         fParam >> angTime >> Dvegf >> VmaxVegf >> KmVegf;
-        fParam >> hypVegf >> vegfThres;
+        fParam >> vegfThres >> hypVegf;
     }
 
     bool RT;
@@ -112,8 +112,8 @@ void SimThread::run(){
             fParam >> beta.at(i);
         }
 
-        fParam >> arrestTime >> doseThres;
         fParam >> fraction >> totalDose >> interval >> schedule;
+        fParam >> doseThres >> arrestTime;
 
         treatment = new Treatment(fraction, totalDose,
                                   interval, schedule);
@@ -124,18 +124,19 @@ void SimThread::run(){
 
     std::cout << treatment << std::endl;
 
-    bool oxy;
-    double constpO2, constpO2NormVes, constpO2TumVes;
-    double DO2, hypThres, hypNecThres;
-    double Km, pO2NormVes, pO2TumVes, Vmax;
+    int oxy;
+    double DO2, VmaxO2, KmO2;
+    double hypThres, hypNecThres;
+    double pO2NormVes, pO2TumVes;
+    double constpO2NotVes, constpO2NormVes, constpO2TumVes;
 
     fParam >> oxy;
-    if(oxy){
-        fParam >> DO2 >> Vmax >> Km >> pO2NormVes;
-        fParam >> pO2TumVes >> hypThres >> hypNecThres;
+    if(oxy == 1){
+        fParam >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
+        fParam >> pO2NormVes >> pO2TumVes >> hypThres;
     }
-    else{
-        fParam >> constpO2 >> constpO2NormVes >> constpO2TumVes;
+    else if (oxy == 2){
+        fParam >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes;
     }
 
     fParam.close();
@@ -155,29 +156,30 @@ void SimThread::run(){
         Tissue *model1;
 
         model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum,
-                            inVes, tumGrowth, doubTime, edgeSize,
+                            inVes, tumGrowth, doubTime, edgeOrder,
                             cycDur, cycDistrib, res, fibDoubTime,
                             ang, angTime, vegfThres, alpha, beta,
-                            doseThres, arrestTime, treatment,
-                            hypNecThres);
+                            treatment, doseThres, arrestTime,
+                            oxy, hypNecThres);
 
-        if(oxy){
+        if(oxy == 1){
             OxyTissue *model2;
 
             model2 = new OxyTissue(nrow, ncol, nlayer, cellSize,
-                                   inVes, Dvegf, DO2, Vmax, Km,
+                                   inVes, ang, Dvegf, VmaxVegf, KmVegf,
+                                   hypVegf, DO2, VmaxO2, KmO2,
                                    pO2NormVes, pO2TumVes,
-                                   hypThres, ang, VmaxVegf, KmVegf,
-                                   hypVegf);
+                                   hypThres);
             coupler = new Coupler(model1, model2);
             sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
         }
 
-        else{
+        else if (oxy == 2){
             ConstOxyTissue *model2;
 
             model2 = new ConstOxyTissue(nrow, ncol, nlayer,
-                                        inVes, constpO2, constpO2NormVes,
+                                        inVes, constpO2NotVes,
+                                        constpO2NormVes,
                                         constpO2TumVes, hypThres);
             coupler = new Coupler(model1, model2);
             sclFac = 1.0;
@@ -349,11 +351,10 @@ void SimThread::run(){
         Simulator *sim;
 
         model1 = new OxyTissue(nrow, ncol, nlayer, cellSize,
-                               inVes, Dvegf, DO2, Vmax,
-                               Km, pO2NormVes, pO2TumVes,
-                               hypThres, ang, VmaxVegf, KmVegf,
-                               hypVegf);
-
+                               inVes, ang, Dvegf, VmaxVegf, KmVegf,
+                               hypVegf, DO2, VmaxO2, KmO2,
+                               pO2NormVes, pO2TumVes,
+                               hypThres);
         sim = new Simulator(model1, oxySimTimeStep);
 
         int numIter(simTime / oxySimTimeStep);

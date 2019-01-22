@@ -14,7 +14,7 @@
 class ConstOxyCell : public AbsOxyCell{
 public :
     ConstOxyCell();
-    ConstOxyCell(const double pO2, const double pO2NormVes,
+    ConstOxyCell(const double pO2NotVes, const double pO2NormVes,
                  const double pO2TumVes, const double hypThres,
                  Model *const parent);
     virtual ~ConstOxyCell();

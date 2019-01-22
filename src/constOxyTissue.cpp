@@ -16,7 +16,7 @@
 using namespace std;
 
 ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                               const string nFInVes, const double pO2,
+                               const string nFInVes, const double pO2NotVes,
                                const double pO2NormVes, const double pO2TumVes,
                                const double hypThres) :
     Model(0, 0, 5, 0, nrow * ncol * nlayer){
@@ -25,7 +25,7 @@ ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
     m_nlayer = nlayer;
 
     for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new ConstOxyCell(pO2, pO2NormVes, pO2TumVes,
+        m_comp->at(k) = new ConstOxyCell(pO2NotVes, pO2NormVes, pO2TumVes,
                                          hypThres, this);
         m_numOut += (m_comp->at(k))->getNumOut();
     }
@@ -47,7 +47,7 @@ ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
 
 
 ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                               const vector<bool> &inVes, const double pO2,
+                               const vector<bool> &inVes, const double pO2NotVes,
                                const double pO2NormVes, const double pO2TumVes,
                                const double hypThres) :
     Model(0, 0, 5, 0, nrow * ncol * nlayer){
@@ -56,7 +56,7 @@ ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
     m_nlayer = nlayer;
 
     for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new ConstOxyCell(pO2, pO2NormVes, pO2TumVes,
+        m_comp->at(k) = new ConstOxyCell(pO2NotVes, pO2NormVes, pO2TumVes,
                                          hypThres, this);
         m_numOut += (m_comp->at(k))->getNumOut();
         ((ConstOxyCell *)m_comp->at(k))->setInNormVes(inVes.at(k));
