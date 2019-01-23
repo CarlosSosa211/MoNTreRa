@@ -81,9 +81,9 @@ InWindow::InWindow() : QWidget(){
     m_everyDay  = new QRadioButton("Every day", m_schedule);
 
     m_paramOxy->setCheckable(true);
-    m_D           = new QDoubleSpinBox(m_paramOxy);
-    m_Vmax        = new QDoubleSpinBox(m_paramOxy);
-    m_Km          = new QDoubleSpinBox(m_paramOxy);
+    m_DO2           = new QDoubleSpinBox(m_paramOxy);
+    m_VmaxO2        = new QDoubleSpinBox(m_paramOxy);
+    m_KmO2          = new QDoubleSpinBox(m_paramOxy);
     m_pO2NormVes  = new QDoubleSpinBox(m_paramOxy);
     m_pO2TumVes   = new QDoubleSpinBox(m_paramOxy);
     m_hypThres    = new QDoubleSpinBox(m_paramOxy);
@@ -193,11 +193,11 @@ InWindow::InWindow() : QWidget(){
     m_totalDose->setDecimals(1);
     m_interval->setDecimals(1);
 
-    m_D->setMaximum(9999.9);
-    m_D->setSingleStep(0.1);
-    m_D->setDecimals(1);
-    m_Vmax->setDecimals(3);
-    m_Km->setDecimals(3);
+    m_DO2->setMaximum(9999.9);
+    m_DO2->setSingleStep(0.1);
+    m_DO2->setDecimals(1);
+    m_VmaxO2->setDecimals(3);
+    m_KmO2->setDecimals(3);
     m_hypNecThres->setDecimals(3);
 
     m_constpO2->setEnabled(false);
@@ -305,9 +305,9 @@ InWindow::InWindow() : QWidget(){
     layoutRT->addWidget(m_paramTreat);
     m_paramRT->setLayout(layoutRT);
 
-    formLayoutOxy->addRow("Diffusion coefficient (μm²/ms)", m_D);
-    formLayoutOxy->addRow("Vmax (mmHg/ms)", m_Vmax);
-    formLayoutOxy->addRow("K (mmHg)", m_Km);
+    formLayoutOxy->addRow("Diffusion coefficient (μm²/ms)", m_DO2);
+    formLayoutOxy->addRow("Vmax (mmHg/ms)", m_VmaxO2);
+    formLayoutOxy->addRow("K (mmHg)", m_KmO2);
     formLayoutOxy->addRow("Normal vessels pO2 (mmHg)", m_pO2NormVes);
     formLayoutOxy->addRow("Tumor vessels pO2 (mmHg)", m_pO2TumVes);
     formLayoutOxy->addRow("Hypoxia threshold (mmHg)", m_hypThres);
@@ -385,7 +385,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/in.dat");
+    loadInData("../InputFiles/inNoOxy.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -732,19 +732,19 @@ int InWindow::createInFiles(){
     fParam << m_paramOxy->isChecked() << std::endl;
     if(m_paramOxy->isChecked()){
         fParam << m_hypNecThres->value() << std::endl;
-        fParam << m_D->value() *
+        fParam << m_DO2->value() *
                   m_oxySimTimeStep->value() << std::endl;
-        fParam << m_Vmax->value() *
+        fParam << m_VmaxO2->value() *
                   m_oxySimTimeStep->value() << std::endl;
-        fParam << m_Km->value() << std::endl;
+        fParam << m_KmO2->value() << std::endl;
         fParam << m_pO2NormVes->value() << std::endl;
         fParam << m_pO2TumVes->value() << std::endl;
         fParam << m_hypThres->value() << std::endl;
     }
     else{
-        fParam << m_constpO2->value() << std::endl;
-        fParam << m_constpO2NormVes->value() << std::endl;
-        fParam << m_constpO2TumVes->value() << std::endl;
+        //fParam << m_constpO2->value() << std::endl;
+        //fParam << m_constpO2NormVes->value() << std::endl;
+        //fParam << m_constpO2TumVes->value() << std::endl;
     }
 
     fParam.close();
@@ -906,27 +906,27 @@ int InWindow::loadInData(std::string nFInData){
         m_everyDay->setChecked(true);
     }
 
-    bool oxy;
+    int oxy;
     double constpO2NotVes(0.0), constpO2NormVes(0.0), constpO2TumVes(0.0);
     double DO2(0.0), hypThres(0.0), hypNecThres(0.0);
     double KmO2(0.0), pO2NormVes(0.0), pO2TumVes(0.0), VmaxO2(0.0);
 
     fInData >> oxy;
-    m_paramOxy->setChecked(oxy);
-    m_constpO2->setEnabled(!oxy);
-    m_constpO2NormVes->setEnabled(!oxy);
-    m_constpO2TumVes->setEnabled(!oxy);
-    if(oxy){
+    m_paramOxy->setChecked(oxy == 1);
+    m_constpO2->setEnabled(oxy == 2);
+    m_constpO2NormVes->setEnabled(oxy == 2);
+    m_constpO2TumVes->setEnabled(oxy == 2);
+    if(oxy == 1){
         fInData >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
         fInData >> pO2NormVes >> pO2TumVes >> hypThres;
     }
-    else{
+    else if (oxy == 2){
         fInData >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes;
     }
 
-    m_D->setValue(DO2);
-    m_Vmax->setValue(VmaxO2);
-    m_Km->setValue(KmO2);
+    m_DO2->setValue(DO2);
+    m_VmaxO2->setValue(VmaxO2);
+    m_KmO2->setValue(KmO2);
     m_pO2NormVes->setValue(pO2NormVes);
     m_pO2TumVes->setValue(pO2TumVes);
     m_hypThres->setValue(hypThres);

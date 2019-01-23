@@ -5,7 +5,7 @@ using namespace std;
 void var1ParRange(const int kp, const int L, const string nRefParInt,
                   const string nFInTissueDim, const string nFInTum,
                   const string nFInVes){
-    const int K(38);
+    const int K(39);
     double h[K], x0[K], x[K];
     ifstream fRefParInt(nRefParInt.c_str());
 
@@ -361,7 +361,7 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
 
 void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
                      const string nFInTum, const string nFInVes){
-    const int K(38), L(nFPar.size()), nOut(15);
+    const int K(39), L(nFPar.size()), nOut(15);
     double x[K], y[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
@@ -461,7 +461,7 @@ void varStoch(const int N, const int P, const std::string nFRefParInt,
     readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                 cellSize, inTum, inVes);
 
-    const int K(38), nOut(15);
+    const int K(39), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 

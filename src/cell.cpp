@@ -291,7 +291,7 @@ int Cell::updateModel(const double currentTime,
     ST_PO2  = IN_PO2;
     ST_VEGF = IN_VEGF;
 
-    if(!ST_DEAD){
+    if(PAR_OXY && !ST_DEAD){
         calcHypNec();
     }
 

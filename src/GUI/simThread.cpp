@@ -162,7 +162,16 @@ void SimThread::run(){
                             treatment, doseThres, arrestTime,
                             oxy, hypNecThres);
 
-        if(oxy == 1){
+        if(oxy == 0){
+            ConstOxyTissue *model2;
+
+            model2 = new ConstOxyTissue(nrow, ncol, nlayer,
+                                        inVes, 0.0, 0.0, 0.0, 0.0);
+            coupler = new Coupler(model1, model2);
+            sclFac = 1.0;
+        }
+
+        else if(oxy == 1){
             OxyTissue *model2;
 
             model2 = new OxyTissue(nrow, ncol, nlayer, cellSize,

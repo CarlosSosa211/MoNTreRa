@@ -64,7 +64,7 @@ private:
     QDoubleSpinBox *m_fraction, *m_totalDose, *m_interval;
     QGroupBox *m_schedule;
     QRadioButton *m_MonFri, *m_everyDay;
-    QDoubleSpinBox *m_D, *m_Vmax, *m_Km, *m_pO2NormVes, *m_pO2TumVes;
+    QDoubleSpinBox *m_DO2, *m_VmaxO2, *m_KmO2, *m_pO2NormVes, *m_pO2TumVes;
     QDoubleSpinBox *m_hypThres, *m_hypNecThres;
     QDoubleSpinBox *m_constpO2, *m_constpO2NormVes, *m_constpO2TumVes;
     QLabel *m_simTimeL, *m_oxySimTimeL, *m_simTimeStepL, *m_oxySimTimeStepL;
