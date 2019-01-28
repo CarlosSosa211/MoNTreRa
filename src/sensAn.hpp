@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include "alloc.hpp"
+#include "createAndReadFiles.hpp"
 
 void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim = "",
            const std::string nFInTum = "", const std::string nFInVes = "");

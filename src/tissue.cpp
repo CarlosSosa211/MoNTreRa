@@ -19,7 +19,7 @@ using namespace std;
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                Treatment *const treatment) :
-    Model(0, 27, 35, 2, nrow * ncol * nlayer){
+    Model(0, 29, 37, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -44,7 +44,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, Treatment *const treatment,
                const double doseThres, const double arrestTime,
                const double oxy, const double hypNecThres) :
-    Model(0, 27, 35, 2, nrow * ncol * nlayer){
+    Model(0, 29, 37, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -209,7 +209,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, Treatment *const treatment,
                const double doseThres, const double arrestTime,
                const double oxy, const double hypNecThres) :
-    Model(0, 27, 35, 2, nrow * ncol * nlayer){
+    Model(0, 29, 37, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -417,6 +417,9 @@ int Tissue::calcModelOut(){
     OUT_DOSE_TO_99  = ST_DOSE_TO_99;
     OUT_DOSE_TO_999 = ST_DOSE_TO_999;
 
+    OUT_CONTROLLED      = ST_CONTROLLED;
+    OUT_DOSE_TO_CONTROL = ST_DOSE_TO_CONTROL;
+
     if(m_nlayer == 1){
         OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize * m_cellSize, 1.5);
     }
@@ -467,6 +470,8 @@ int Tissue::initModel(){
     ST_DOSE_TO_95  = 0.0;
     ST_DOSE_TO_99  = 0.0;
     ST_DOSE_TO_999 = 0.0;
+
+    ST_CONTROLLED = 0.0;
 
     /*cout << "Total number of cells = " << m_numComp << endl*/;
     /*cout << "Initial number of cells at G1 = " << getNumG1() << endl*/;
@@ -577,10 +582,14 @@ int Tissue::updateModel(const double currentTime,
             ST_TIME_TO_999 = currentTime;
             ST_DOSE_TO_999 = ((Cell*)m_comp->at(0))->getAccDose();
         }
+
+        if(!getNumTumNotDam() && !ST_CONTROLLED){
+            ST_CONTROLLED = 1.0;
+            ST_DOSE_TO_CONTROL = ((Cell*)m_comp->at(0))->getAccDose();
+        }
     }
     return 0;
 }
-
 
 int Tissue::getNumFib() const{
     int count(0);
@@ -674,6 +683,17 @@ int Tissue::getNumTum() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
         if(((Cell *)m_comp->at(k))->getTum()){
+            count++;
+        }
+    }
+    return count;
+}
+
+
+int Tissue::getNumTumNotDam() const{
+    int count(0);
+    for(int k(0); k < m_numComp; k++){
+        if(((Cell *)m_comp->at(k))->getTumNotDam()){
             count++;
         }
     }

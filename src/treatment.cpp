@@ -126,12 +126,12 @@ ostream &operator<<(ostream &stream, Treatment *treatment){
     stream << "Interval = " << treatment->getInterval() << " h" <<
               endl;
     stream << "Schedule = " << treatment->getScheDescrip() <<  endl;
-    stream << "---------------------------------------------";
+    stream << "---------------------------------------------" << endl;
     }
 
     else{
         stream << "No treatment" <<  endl;
-        stream << "---------------------------------------------";
+        stream << "---------------------------------------------" << endl;
     }
     return stream;
 }

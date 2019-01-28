@@ -24,6 +24,7 @@ cell.hpp
 constOxyCell.hpp
 constOxyTissue.hpp
 coupler.hpp
+createAndReadFiles.hpp
 model.hpp
 oxyCell.hpp
 oxyTissue.hpp
@@ -31,6 +32,7 @@ rootSimulator.hpp
 sensAn.hpp
 simpcell.hpp
 simulator.hpp
+tcp.hpp
 tissue.hpp
 treatment.hpp
 )
@@ -43,6 +45,7 @@ cell.cpp
 constOxyCell.cpp
 constOxyTissue.cpp
 coupler.cpp
+createAndReadFiles.cpp
 model.cpp
 morris.cpp
 oxyCell.cpp
@@ -51,6 +54,7 @@ rootSimulator.cpp
 sensAnR.cpp
 simulator.cpp
 sobol.cpp
+tcp.cpp
 tissue.cpp
 treatment.cpp
 var.cpp

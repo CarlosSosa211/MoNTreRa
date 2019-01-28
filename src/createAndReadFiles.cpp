@@ -1,3 +1,7 @@
+#include "createAndReadFiles.hpp"
+
+using namespace std;
+
 int createInFiles(const int nrow, const int ncol, const int nlayer,
                   const double tumDens, const double sigmaTum,
                   const double vascDens, const double sigmaVasc,
@@ -228,4 +232,26 @@ void readInFiles(const string nFInTissueDim, const string nFInTum,
         fInVes >> temp;
     }
     fInVes.close();
+}
+
+
+void readInFilesTCP(const string nFInTissueTCP, const vector<string> nFTreatmentTCP,
+                    int &nrow, int &ncol, int &nlayer, double &cellSize, double &tumDens,
+                    double &sigmaTum, double &vascDens, double &sigmaVasc,
+                    vector<Treatment> &treatment){
+    /*ifstream fInTissueTCP(nFInTissueTCP.c_str());
+
+    fInTissueTCP >> nrow >> ncol >> nlayer;
+    fInTissueTCP >> cellSize;
+    fInTissueTCP >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
+    fInTissueTCP.close();
+
+    double fraction, totalDose, interval;
+    int schedule;
+    for(int i(0); i < nFTreatmentTCP.size(); i++){
+        ifstream fTreatmentTCP(nFTreatmentTCP[i].c_str());
+        fTreatmentTCP >> fraction >> totalDose >> interval >> schedule;;
+        treatment.push_back(Treatment(fraction, totalDose, interval, schedule));
+        fTreatmentTCP.close();
+    }*/
 }

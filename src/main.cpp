@@ -18,9 +18,9 @@ using namespace std;
 
 
 int main(){
-    //const int N(1e5);
+    const int N(100);
     //const int kp(5), L(6), p(20), P(1), N(200);
-    const int nMethod(0), nModel(1);
+    //const int nMethod(0), nModel(1);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
     //string nFRefParInt("../InputFiles/refParIntToy.dat");
@@ -28,20 +28,20 @@ int main(){
     //string nFMostRelPar("../InputFiles/mostRelParOxy.dat");
     //string nFLeastRelPar("../InputFiles/leastRelParOxy.dat");
     //string nFVarPar("../InputFiles/varParOxy.dat");
-    string nFInTissueDim("../InputFiles/tissueDim.dat");
-    string nFInTum("../InputFiles/inTum.dat");
-    string nFInVes("../InputFiles/inVes.dat");
-
-    srand(time(NULL));
-    //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
-    //varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
-    //nFInVes, L, P);
-    //varStoch(N, P, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
+    //string nFInTissueDim("../InputFiles/tissueDim.dat");
+    //string nFInTum("../InputFiles/inTum.dat");
+    //string nFInVes("../InputFiles/inVes.dat");
     //vector<string> nFPar;
     //nFPar.push_back("../InputFiles/par37_2.dat");
     //nFPar.push_back("../InputFiles/par20_3.dat");
-    //varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes);
-    evalR(nMethod, nModel, nFInTissueDim, nFInTum, nFInVes);
+    string nFInTissueTCP("../InputFiles/inTissueTCP.dat");
+    string nFParTCP("../InputFiles/parTCP.dat");
+    vector<string> nFTreatmentTCP;
+    nFTreatmentTCP.push_back("../InputFiles/2MonFri.dat");
+    nFTreatmentTCP.push_back("../InputFiles/3MonFri.dat");
+
+    srand(time(NULL));
+    //evalR(nMethod, nModel, nFInTissueDim, nFInTum, nFInVes);
     //morrisRT(N, p, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
     //morrisToy(N, p, nFRefParInt);
     //morrisVarRangeRT(kp, L, N, p, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
@@ -49,6 +49,12 @@ int main(){
     //sobolRT(N, nFRefParInt, nFInTissueDim, nFInTum, nFInVes));
     //sobolToy(N, nFRefParInt);
     //sobolFromFiles(2);
+    tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP);
+    //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
+    //varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
+    //nFInVes, L, P);
+    //varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes);
+    //varStoch(N, P, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
 }
 
 

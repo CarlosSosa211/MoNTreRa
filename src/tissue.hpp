@@ -45,6 +45,8 @@
 #define ST_DOSE_TO_95         m_st->at(24)
 #define ST_DOSE_TO_99         m_st->at(25)
 #define ST_DOSE_TO_999        m_st->at(26)
+#define ST_CONTROLLED         m_st->at(27)
+#define ST_DOSE_TO_CONTROL    m_st->at(28)
 
 //Outputs
 #define OUT_TUM_DENS           m_out->at(0)
@@ -82,6 +84,8 @@
 #define OUT_99_KILLED          m_out->at(32)
 #define OUT_999_KILLED         m_out->at(33)
 #define OUT_REC                m_out->at(34)
+#define OUT_CONTROLLED         m_out->at(35)
+#define OUT_DOSE_TO_CONTROL    m_out->at(36)
 
 
 //Internal parameters
@@ -130,6 +134,7 @@ public:
     int getNumNormVes() const;
     int getNumS() const;
     int getNumTum() const;
+    int getNumTumNotDam() const;
     int getNumTumVes() const;
     int getNumVes() const;
     Treatment *getTreatment() const;
