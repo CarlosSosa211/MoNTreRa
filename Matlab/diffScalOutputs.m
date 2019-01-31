@@ -2,23 +2,12 @@ clear all
 close all
 
 nfig = 0;
-nTissue = 4;
 % path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
 %     num2str(nTissue)];
 % path = '../../Carlos/Results/Diff_Ang_432Sim_Tissue4_15Out';
-path = '../../Carlos/Results/Diff_Ang_432x5Sim_Tissue4';
-
-colTTum = 1;
-colDThres = 2;
-% colTArrest = 3;
-colDose = 3;
-
-par = load([path, '/combPar.res']);
-
-tTTum = unique(par(:, colTTum));
-tDThres = unique(par(:, colDThres));
-% tTArrest = unique(par(:, colTArrest));
-tDose = unique(par(:, colDose));
+% path = ['../../Carlos/Results/Diff_Ang_432x5Sim_Tissue', num2str(nTissue)];
+path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues_noHypNec/Tissue';
 
 fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/finTumVol.res', '/intTumDens.res', '/killed50.res'...
@@ -26,7 +15,7 @@ fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/killed999.res', '/timeTo95.res', '/timeTo99.res', '/rec.res'...
     '/recTumDens.res', '/recTime.res'};
 outputNames = {'tumour density at the end of treat.'...
-    'tumour density 3 months after the end of treat.'...
+    'tumour density 3 months after the beginning of treat.'...
     'final tumour volume', 'integral of tumour density'...
     '50% of tumour cells killed', '80% of tumour cells killed'...
     '90% of tumour cells killed', '95% of tumour cells killed'...
@@ -35,19 +24,58 @@ outputNames = {'tumour density at the end of treat.'...
     'time to kill 99% of tumour cells', 'recurrence'...
     'tumour density at recurrence', 'recurrence time'};
 
-selOut = input(['Select an output [endTreaTumDens (1), 3MonTumDens (2) '...
-    'finTumVol (3),\nintTumDens (4), 50%killed (5), 80%killed (6) '...
-    '90%killed (7), 95%killed (8),\n99%killed (9), 99.9%killed (10) '...
-    'timeTo95 (11), timeTo99 (12), rec(13),\nrecTumDens (14), '...
-    'recTime (15) or all of them (-1)]: ']);
+nTissue = input(['Select one tissue (from 1 to 21) or all of'...
+    'them (0) or a mean over them (-1): ']);
 
-if(selOut > 0)
-    output = load([path, char(fileNames(selOut))]);
+if(nTissue >= 1 && nTissue <= 21)
+    pathTissue = [path, num2str(nTissue)];
+    par = load([path, '/combPar.res']);
     
-elseif(selOut == -1)
-    for i = 1:length(fileNames)
-        output(:, :, i) = load([path, char(fileNames(i))]);
+    % colTTum = 1;
+    % colDThres = 2;
+    % colTArrest = 3;
+    colDose = 1;
+    tDose = unique(par(:, colDose));
+    % tTTum = unique(par(:, colTTum));
+    % tDThres = unique(par(:, colDThres));
+    % tTArrest = unique(par(:, colTArrest));
+    
+    selOut = input(['Select an output [endTreaTumDens (1), 3MonTumDens (2) '...
+        'finTumVol (3),\nintTumDens (4), 50%killed (5), 80%killed (6) '...
+        '90%killed (7), 95%killed (8),\n99%killed (9), 99.9%killed (10) '...
+        'timeTo95 (11), timeTo99 (12), rec(13),\nrecTumDens (14), '...
+        'recTime (15) or all of them (-1)]: ']);
+    
+    if(selOut >= 1 && selOut <= 15)
+        output = load([path, char(fileNames(selOut))]);
+        
+    elseif(selOut == -1)
+        for i = 1:length(fileNames)
+            output(:, :, i) = load([path, char(fileNames(i))]);
+        end
     end
+    
+elseif(nTissue == -1)
+    selOut = input(['Select an output [endTreaTumDens (1), 3MonTumDens (2) '...
+        'finTumVol (3),\nintTumDens (4), 50%killed (5), 80%killed (6) '...
+        '90%killed (7), 95%killed (8),\n99%killed (9), 99.9%killed (10) '...
+        'timeTo95 (11), timeTo99 (12), rec(13),\nrecTumDens (14), '...
+        'recTime (15) or all of them (-1)]: ']);
+    
+    for i = 1:21
+        pathTissue = [path, num2str(i)];
+        par(:, :, i) = load([pathTissue, '/combPar.res']);
+        output(:, :, i) = load([pathTissue, char(fileNames(selOut))]);
+    end
+    % colTTum = 1;
+    % colDThres = 2;
+    % colTArrest = 3;
+    colDose = 1;
+    tDose = unique(par(:, colDose, 1));
+    % tTTum = unique(par(:, colTTum));
+    % tDThres = unique(par(:, colDThres));
+    % tTArrest = unique(par(:, colTArrest));
+    output = mean(output, 3);
 end
 
 %%
@@ -78,8 +106,13 @@ errorbar(tTTum, noAngMeanTTum, noAngStdTTum,...
 errorbar(tTTum, angMeanTTum, angStdTTum,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 hold off
-title(['Tissue ', num2str(nTissue), ' - '...
-    char(outputNames(selOut))])
+if(nTissue == - 1)
+    title(['All tissues - '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - '...
+        char(outputNames(selOut))])
+end
 legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
 grid on
 xlabel('TTum (h)')
@@ -99,8 +132,13 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, diffMeanTTum, diffStdTTum,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 grid on
 xlabel('TTum (h)')
 ylabel('Difference')
@@ -129,8 +167,13 @@ errorbar(tDThres, noAngMeanDThres, noAngStdDThres,...
 errorbar(tDThres, angMeanDThres, angStdDThres,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 hold off
-title(['Tissue ', num2str(nTissue), ' - '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - '...
+        char(outputNames(selOut))])
+end
 legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
 grid on
 xlabel('Dose threshold (Gy)')
@@ -150,8 +193,13 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tDThres, diffMeanDThres, diffStdDThres,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 grid on
 xlabel('Dose threshold(Gy)')
 ylabel('Difference')
@@ -170,8 +218,13 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tTArrest, diffMeanTArrest, diffStdTArrest,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 grid on
 xlabel('TArrest (h)')
 ylabel('Difference')
@@ -196,14 +249,20 @@ nfig = nfig + 1;
 figure(nfig)
 hold on
 errorbar(tDose, noAngMeanDose, noAngStdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    'sb', 'MarkerSize', 10, 'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b')
 errorbar(tDose, angMeanDose, angStdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    'sr', 'MarkerSize', 10, 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r')
 hold off
-title(['Tissue ', num2str(nTissue), ' - '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues  - '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - '...
+        char(outputNames(selOut))])
+end
 legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
 grid on
+ylim([0, inf])
 xlabel('Dose (Gy)')
 ylabel(outputNames(selOut))
 
@@ -221,8 +280,13 @@ nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, diffMeanDose, diffStdDose,...
     '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 grid on
 xlabel('Dose (Gy)')
 ylabel('Difference')
@@ -241,8 +305,13 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffTTumDose, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 xlabel('Dose (Gy)')
 ylabel('TTum (h)')
 xticks(1:length(tDose))
@@ -264,8 +333,13 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffDThresDose, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 xlabel('Dose (Gy)')
 ylabel('Dthres (Gy)')
 xticks(1:length(tDose))
@@ -287,8 +361,13 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffTTumDThres, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 xlabel('DThres (Gy)')
 ylabel('TTum (h)')
 xticks(1:length(tDThres))
@@ -310,8 +389,13 @@ nfig = nfig + 1;
 figure(nfig)
 image(diffTTumDThres, 'CDataMapping','scaled')
 colorbar
-title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-    char(outputNames(selOut))])
+if(nTissue == -1)
+    title(['All tissues  - Abs. diff. in '...
+        char(outputNames(selOut))])
+else
+    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
+        char(outputNames(selOut))])
+end
 xlabel('DThres (Gy)')
 ylabel('TTum (h)')
 xticks(1:length(tDThres))
@@ -326,8 +410,13 @@ hold on
 histogram(output(:, 1), 25);
 histogram(output(:, 2), 25);
 hold off
-title(['Tissue ', num2str(nTissue), ' - Histogram of '...
-    char(outputNames(selOut))]);
+if(nTissue == -1)
+    title(['All tissues - Histogram of '...
+        char(outputNames(selOut))]);
+else
+    title(['Tissue ', num2str(nTissue), ' - Histogram of '...
+        char(outputNames(selOut))]);
+end
 legend('No angiogenesis', 'Angiogenesis')
 
 nfig = nfig + 1;
@@ -371,5 +460,10 @@ set(ax,'XTickLabel', diffRel(:, 3), 'fontsize', 20);
 xtickangle(45)
 ax.YGrid = 'on';
 ylim([0, inf])
-title(['Tissue ', num2str(nTissue), ' - Relative differences'],...
-    'fontsize', 20)
+if(nTissue == -1)
+    title('All tissues - Relative differences',...
+        'fontsize', 20)
+else
+    title(['Tissue ', num2str(nTissue), ' - Relative differences'],...
+        'fontsize', 20)
+end
