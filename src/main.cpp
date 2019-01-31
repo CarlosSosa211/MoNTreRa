@@ -18,27 +18,30 @@ using namespace std;
 
 
 int main(){
-    const int N(100);
-    //const int kp(5), L(6), p(20), P(1), N(200);
+    //const int N(100);
+    const int kp(5), L(5), p(20), P(3), N(1);
     //const int nMethod(0), nModel(1);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
     //string nFRefParInt("../InputFiles/refParIntToy.dat");
     //string nRefParMean("../InputFiles/refParMeanRT.dat");
-    //string nFMostRelPar("../InputFiles/mostRelParOxy.dat");
-    //string nFLeastRelPar("../InputFiles/leastRelParOxy.dat");
-    //string nFVarPar("../InputFiles/varParOxy.dat");
-    //string nFInTissueDim("../InputFiles/tissueDim.dat");
-    //string nFInTum("../InputFiles/inTum.dat");
-    //string nFInVes("../InputFiles/inVes.dat");
+    //string nFMostRelPar("../InputFiles/mostRelParAng.dat");
+    //string nFLeastRelPar("../InputFiles/leastRelParAng.dat");
+    //string nFVarPar("../InputFiles/varParAng.dat");
+    string nFInTissueDim("../InputFiles/tissueDim.dat");
+    string nFInTum("../InputFiles/inTum.dat");
+    string nFInVes("../InputFiles/inVes.dat");
     //vector<string> nFPar;
     //nFPar.push_back("../InputFiles/par37_2.dat");
     //nFPar.push_back("../InputFiles/par20_3.dat");
-    string nFInTissueTCP("../InputFiles/inTissueTCP.dat");
+    string nFInTissueTCP("../InputFiles/inTissueTCP0.dat");
     string nFParTCP("../InputFiles/parTCP.dat");
     vector<string> nFTreatmentTCP;
+    nFTreatmentTCP.push_back("../InputFiles/1MonFri.dat");
     nFTreatmentTCP.push_back("../InputFiles/2MonFri.dat");
     nFTreatmentTCP.push_back("../InputFiles/3MonFri.dat");
+    nFTreatmentTCP.push_back("../InputFiles/4MonFri.dat");
+    nFTreatmentTCP.push_back("../InputFiles/5MonFri.dat");
 
     srand(time(NULL));
     //evalR(nMethod, nModel, nFInTissueDim, nFInTum, nFInVes);
@@ -49,14 +52,13 @@ int main(){
     //sobolRT(N, nFRefParInt, nFInTissueDim, nFInTum, nFInVes));
     //sobolToy(N, nFRefParInt);
     //sobolFromFiles(2);
-    tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP);
+    tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP, nFInTissueDim, nFInTum, nFInVes);
     //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
     //varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
     //nFInVes, L, P);
     //varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes);
     //varStoch(N, P, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
 }
-
 
 
 void model(const double *x, double *y, const int nrow,
@@ -304,7 +306,7 @@ void model(const double *x, double *y, const int nrow,
 
     const double simTimeStep(6.0);
     const double sclFac(3.6e6 * simTimeStep / oxySimTimeStep);
-    const double simTime(treatment->getDuration() + 720.0);
+    const double simTime(2160.0);
     RootSimulator *sim;
 
     sim = new RootSimulator(coupler, simTimeStep,
@@ -509,7 +511,7 @@ void model(const double *x, double *y, const int nrow,
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
     }
 
-    const double simTime(treatment->getDuration() + 720.0);
+    const double simTime(2160.0);
     RootSimulator *sim;
 
     sim = new RootSimulator(coupler, simTimeStep,

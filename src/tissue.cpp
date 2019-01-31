@@ -546,7 +546,7 @@ int Tissue::updateModel(const double currentTime,
         else{
             ST_COUNT_REC = 0.0;
         }
-        if(currentTime <= m_treatment->getDuration() + 720.0){
+        if(currentTime <= 2160.0){
             ST_3MON_TUM_DENS = ST_TUM_DENS;
         }
 
