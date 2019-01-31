@@ -147,8 +147,10 @@ void modelTCP(const double *x, double *y, const int nrow,
 
 
 void tcp(const int N, const std::string nFInTissueTCP, const std::string nFParTCP,
-         const std::vector<std::string> nFTreatmentTCP){
+         const std::vector<std::string> nFTreatmentTCP, const std::string nFInTissueDim,
+         const std::string nFInTum, const std::string nFInVes){
     const int K(38), nOut(2);
+    bool art;
     int nrow, ncol, nlayer;
     double cellSize, tumDens, sigmaTum, vascDens, sigmaVasc;
     vector<bool> inTum, inVes;
@@ -159,10 +161,20 @@ void tcp(const int N, const std::string nFInTissueTCP, const std::string nFParTC
 
     ifstream fInTissueTCP(nFInTissueTCP.c_str());
 
-    fInTissueTCP >> nrow >> ncol >> nlayer;
-    fInTissueTCP >> cellSize;
-    fInTissueTCP >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
-    fInTissueTCP.close();
+    fInTissueTCP >> art;
+
+    if(art){
+        fInTissueTCP >> nrow >> ncol >> nlayer;
+        fInTissueTCP >> cellSize;
+        fInTissueTCP >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
+
+        fInTissueTCP.close();
+    }
+
+    else{
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
+                    cellSize, inTum, inVes);
+    }
 
     double fraction, totalDose, interval;
     int schedule;
@@ -187,8 +199,10 @@ void tcp(const int N, const std::string nFInTissueTCP, const std::string nFParTC
         ofstream fControlled("../OutputFiles/controlled_" + to_string(i) + ".res");
         ofstream fDoseToControl("../OutputFiles/doseToControl_" + to_string(i) + ".res");
         for(int j(0); j < N; j++){
+            if(art){
             createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
                           vascDens, sigmaVasc, inTum, inVes);
+            }
             modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, &(treatment[i]));
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
