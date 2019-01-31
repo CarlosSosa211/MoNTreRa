@@ -239,7 +239,7 @@ void readInFilesTCP(const string nFInTissueTCP, const vector<string> nFTreatment
                     int &nrow, int &ncol, int &nlayer, double &cellSize, double &tumDens,
                     double &sigmaTum, double &vascDens, double &sigmaVasc,
                     vector<Treatment> &treatment){
-    /*ifstream fInTissueTCP(nFInTissueTCP.c_str());
+    ifstream fInTissueTCP(nFInTissueTCP.c_str());
 
     fInTissueTCP >> nrow >> ncol >> nlayer;
     fInTissueTCP >> cellSize;
@@ -253,5 +253,5 @@ void readInFilesTCP(const string nFInTissueTCP, const vector<string> nFTreatment
         fTreatmentTCP >> fraction >> totalDose >> interval >> schedule;;
         treatment.push_back(Treatment(fraction, totalDose, interval, schedule));
         fTreatmentTCP.close();
-    }*/
+    }
 }
