@@ -12,6 +12,6 @@ cp ../HistSpec/tissueDim$i.dat ../InputFiles/tissueDim.dat
 cp ../HistSpec/inTum$i.dat ../InputFiles/inTum.dat
 cp ../HistSpec/inVes$i.dat ../InputFiles/inVes.dat
 ./RTsim
-mv ../OutputFiles ../OutputFiles$i
+mv ../OutputFiles ../Tissue$i
 done
 
