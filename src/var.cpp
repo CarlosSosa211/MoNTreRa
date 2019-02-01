@@ -107,7 +107,7 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
 void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLeastPar,
             const string nFInTissueDim, const string nFInTum, const string nFInVes,
             const int L, const int P){
-    const int K(38), nOut(15);
+    const int K(39), nOut(15);
     int nLeastRelPar, nMostRelPar, nVarPar;
 
     ifstream fMostRelPar(nFMostRelPar.c_str());
@@ -118,12 +118,11 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
     double h, x[K], X[nMostRelPar][L];
 
     for(int k(0); k < nMostRelPar; k++){
-        fMostRelPar >> Xi[k] >> X[k][0] >> X[k][5];
-        h = X[k][5] - X[k][0];
-        X[k][1] = X[k][0] + 0.2 * h;
-        X[k][2] = X[k][0] + 0.4 * h;
-        X[k][3] = X[k][0] + 0.6 * h;
-        X[k][4] = X[k][0] + 0.8 * h;
+        fMostRelPar >> Xi[k] >> X[k][0] >> X[k][4];
+        h = X[k][4] - X[k][0];
+        X[k][1] = X[k][0] + 0.25 * h;
+        X[k][2] = X[k][0] + 0.5 * h;
+        X[k][3] = X[k][0] + 0.75 * h;
     }
     fMostRelPar.close();
 
@@ -183,161 +182,155 @@ void varErr(const string nFVarPar, const string nFMostRelPar, const string nFLea
 
     for(int i1(0); i1 < L; i1++){
         x[Xi[0]] = X[0][i1];
-        for(int i2(0); i2 < L; i2++){
-            x[Xi[1]] = X[1][i2];
-            for(int i3(0); i3 < L; i3++){
-                x[Xi[2]] = X[2][i3];
-                for(int k(0); k < nVarPar; k++){
-                    x[XVari[k]] = XVar[k][0];
-                }
+        for(int k(0); k < nVarPar; k++){
+            x[XVari[k]] = XVar[k][0];
+        }
 
-                for(int j(0); j < nOut; j++){
-                    y0mean[j] = 0.0;
-                    y0std[j]  = 0.0;
-                    y1mean[j] = 0.0;
-                    y1std[j]  = 0.0;
-                }
+        for(int j(0); j < nOut; j++){
+            y0mean[j] = 0.0;
+            y0std[j]  = 0.0;
+            y1mean[j] = 0.0;
+            y1std[j]  = 0.0;
+        }
 
-                for(int p(0); p < P; p++){
-                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
-                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
-                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
-                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
-                    nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
-                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
-                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
-                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(count) + "_" +
-                            "0_" + to_string(p) + ".res";
+        for(int p(0); p < P; p++){
+            nFTumDens     = "../OutputFiles/tumDens_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
+            nFTumVol      = "../OutputFiles/tumVol_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
+            nFVascDens    = "../OutputFiles/vascDens_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
+            nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
+            nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
+            nFHypDens     = "../OutputFiles/hypDens_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
+            nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
+            nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(count) + "_" +
+                    "0_" + to_string(p) + ".res";
 
-                    model(x, y0[p],  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
-                          nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
-                          nFPO2Stat, nFVegfStat);
-                    nEv++;
+            model(x, y0[p],  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
+                  nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
+                  nFPO2Stat, nFVegfStat);
+            nEv++;
 
-                    cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-                    cout << "---------------------------------------------" << endl;
+            cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+            cout << "---------------------------------------------" << endl;
 
-                    for(int j(0); j < nOut; j++){
-                        y0mean[j] += y0[p][j];
-                    }
-                }
-
-                for(int j(0); j < nOut; j++){
-                    y0mean[j] /= P;
-                }
-
-                for(int k(0); k < nVarPar; k++){
-                    x[XVari[k]] = XVar[k][1];
-                }
-
-                for(int p(0); p < P; p++){
-                    nFTumDens     = "../OutputFiles/tumDens_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-                    nFTumVol      = "../OutputFiles/tumVol_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-                    nFVascDens    = "../OutputFiles/vascDens_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-                    nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-                    nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-                    nFHypDens     = "../OutputFiles/hypDens_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-                    nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-                    nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(count) + "_" +
-                            "1_" + to_string(p) + ".res";
-
-                    model(x, y1[p],  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
-                          nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
-                          nFPO2Stat, nFVegfStat);
-                    nEv++;
-
-                    cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
-                    cout << "---------------------------------------------" << endl;
-
-                    for(int j(0); j < nOut; j++){
-                        y1mean[j] += y1[p][j];
-                    }
-                }
-                count++;
-
-                for(int j(0); j < nOut; j++){
-                    y1mean[j] /= P;
-                }
-
-                fEndTreatTumDens << y0mean[0]  << " " << y1mean[0]  << " ";
-                f3MonTumDens     << y0mean[1]  << " " << y1mean[1]  << " ";
-                fFinTumVol       << y0mean[2]  << " " << y1mean[2]  << " ";
-                fIntTumDens      << y0mean[3]  << " " << y1mean[3]  << " ";
-                fKilled50        << y0mean[4]  << " " << y1mean[4]  << " ";
-                fKilled80        << y0mean[5]  << " " << y1mean[5]  << " ";
-                fKilled90        << y0mean[6]  << " " << y1mean[6]  << " ";
-                fKilled95        << y0mean[7]  << " " << y1mean[7]  << " ";
-                fTimeTo95        << y0mean[8]  << " " << y1mean[8]  << " ";
-                fKilled99        << y0mean[9]  << " " << y1mean[9]  << " ";
-                fTimeTo99        << y0mean[10] << " " << y1mean[10] << " ";
-                fKilled999       << y0mean[11] << " " << y1mean[11] << " ";
-                fRec             << y0mean[12] << " " << y1mean[12] << " ";
-                fRecTumDens      << y0mean[13] << " " << y1mean[13] << " ";
-                fRecTime         << y0mean[14] << " " << y1mean[14] << " ";
-
-                if(P > 1){
-                    for(int j(0); j < nOut; j++){
-                        for(int p(0); p < P; p++){
-                            y0std[j] += (y0[p][j] - y0mean[j]) * (y0[p][j] - y0mean[j]);
-                            y1std[j] += (y1[p][j] - y1mean[j]) * (y1[p][j] - y1mean[j]);
-                        }
-                        y0std[j] = sqrt(y0std[j] / (P - 1.0));
-                        y1std[j] = sqrt(y1std[j] / (P - 1.0));
-                    }
-
-                    fEndTreatTumDens << y0std[0]  << " " << y1std[0];
-                    f3MonTumDens     << y0std[1]  << " " << y1std[1];
-                    fFinTumVol       << y0std[2]  << " " << y1std[2];
-                    fIntTumDens      << y0std[3]  << " " << y1std[3];
-                    fKilled50        << y0std[4]  << " " << y1std[4];
-                    fKilled80        << y0std[5]  << " " << y1std[5];
-                    fKilled90        << y0std[6]  << " " << y1std[6];
-                    fKilled95        << y0std[7]  << " " << y1std[7];
-                    fTimeTo95        << y0std[8]  << " " << y1std[8];
-                    fKilled99        << y0std[9]  << " " << y1std[9];
-                    fTimeTo99        << y0std[10] << " " << y1std[10];
-                    fKilled999       << y0std[11] << " " << y1std[11];
-                    fRec             << y0std[12] << " " << y1std[12];
-                    fRecTumDens      << y0std[13] << " " << y1std[13];
-                    fRecTime         << y0std[14] << " " << y1std[14];
-                }
-
-                fEndTreatTumDens << endl;
-                f3MonTumDens     << endl;
-                fFinTumVol       << endl;
-                fIntTumDens      << endl;
-                fKilled50        << endl;
-                fKilled80        << endl;
-                fKilled90        << endl;
-                fKilled95        << endl;
-                fTimeTo95        << endl;
-                fKilled99        << endl;
-                fTimeTo99        << endl;
-                fKilled999       << endl;
-                fRec             << endl;
-                fRecTumDens      << endl;
-                fRecTime         << endl;
-
-                for (int j(0); j < nMostRelPar; j ++){
-                    fCombPar << x[Xi[j]] << " ";
-                }
-                fCombPar << endl;
+            for(int j(0); j < nOut; j++){
+                y0mean[j] += y0[p][j];
             }
         }
+
+        for(int j(0); j < nOut; j++){
+            y0mean[j] /= P;
+        }
+
+        for(int k(0); k < nVarPar; k++){
+            x[XVari[k]] = XVar[k][1];
+        }
+
+        for(int p(0); p < P; p++){
+            nFTumDens     = "../OutputFiles/tumDens_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+            nFTumVol      = "../OutputFiles/tumVol_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+            nFVascDens    = "../OutputFiles/vascDens_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+            nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+            nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+            nFHypDens     = "../OutputFiles/hypDens_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+            nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+            nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(count) + "_" +
+                    "1_" + to_string(p) + ".res";
+
+            model(x, y1[p],  nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
+                  nFTumVol, nFVascDens, nFKilledCells, nFCycle, nFHypDens,
+                  nFPO2Stat, nFVegfStat);
+            nEv++;
+
+            cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+            cout << "---------------------------------------------" << endl;
+
+            for(int j(0); j < nOut; j++){
+                y1mean[j] += y1[p][j];
+            }
+        }
+        count++;
+
+        for(int j(0); j < nOut; j++){
+            y1mean[j] /= P;
+        }
+
+        fEndTreatTumDens << y0mean[0]  << " " << y1mean[0]  << " ";
+        f3MonTumDens     << y0mean[1]  << " " << y1mean[1]  << " ";
+        fFinTumVol       << y0mean[2]  << " " << y1mean[2]  << " ";
+        fIntTumDens      << y0mean[3]  << " " << y1mean[3]  << " ";
+        fKilled50        << y0mean[4]  << " " << y1mean[4]  << " ";
+        fKilled80        << y0mean[5]  << " " << y1mean[5]  << " ";
+        fKilled90        << y0mean[6]  << " " << y1mean[6]  << " ";
+        fKilled95        << y0mean[7]  << " " << y1mean[7]  << " ";
+        fTimeTo95        << y0mean[8]  << " " << y1mean[8]  << " ";
+        fKilled99        << y0mean[9]  << " " << y1mean[9]  << " ";
+        fTimeTo99        << y0mean[10] << " " << y1mean[10] << " ";
+        fKilled999       << y0mean[11] << " " << y1mean[11] << " ";
+        fRec             << y0mean[12] << " " << y1mean[12] << " ";
+        fRecTumDens      << y0mean[13] << " " << y1mean[13] << " ";
+        fRecTime         << y0mean[14] << " " << y1mean[14] << " ";
+
+        if(P > 1){
+            for(int j(0); j < nOut; j++){
+                for(int p(0); p < P; p++){
+                    y0std[j] += (y0[p][j] - y0mean[j]) * (y0[p][j] - y0mean[j]);
+                    y1std[j] += (y1[p][j] - y1mean[j]) * (y1[p][j] - y1mean[j]);
+                }
+                y0std[j] = sqrt(y0std[j] / (P - 1.0));
+                y1std[j] = sqrt(y1std[j] / (P - 1.0));
+            }
+
+            fEndTreatTumDens << y0std[0]  << " " << y1std[0];
+            f3MonTumDens     << y0std[1]  << " " << y1std[1];
+            fFinTumVol       << y0std[2]  << " " << y1std[2];
+            fIntTumDens      << y0std[3]  << " " << y1std[3];
+            fKilled50        << y0std[4]  << " " << y1std[4];
+            fKilled80        << y0std[5]  << " " << y1std[5];
+            fKilled90        << y0std[6]  << " " << y1std[6];
+            fKilled95        << y0std[7]  << " " << y1std[7];
+            fTimeTo95        << y0std[8]  << " " << y1std[8];
+            fKilled99        << y0std[9]  << " " << y1std[9];
+            fTimeTo99        << y0std[10] << " " << y1std[10];
+            fKilled999       << y0std[11] << " " << y1std[11];
+            fRec             << y0std[12] << " " << y1std[12];
+            fRecTumDens      << y0std[13] << " " << y1std[13];
+            fRecTime         << y0std[14] << " " << y1std[14];
+        }
+
+        fEndTreatTumDens << endl;
+        f3MonTumDens     << endl;
+        fFinTumVol       << endl;
+        fIntTumDens      << endl;
+        fKilled50        << endl;
+        fKilled80        << endl;
+        fKilled90        << endl;
+        fKilled95        << endl;
+        fTimeTo95        << endl;
+        fKilled99        << endl;
+        fTimeTo99        << endl;
+        fKilled999       << endl;
+        fRec             << endl;
+        fRecTumDens      << endl;
+        fRecTime         << endl;
+
+        for (int j(0); j < nMostRelPar; j ++){
+            fCombPar << x[Xi[j]] << " ";
+        }
+        fCombPar << endl;
     }
 
     fEndTreatTumDens.close();
