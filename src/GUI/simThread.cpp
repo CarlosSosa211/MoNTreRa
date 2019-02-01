@@ -338,7 +338,7 @@ void SimThread::run(){
         fEndTreatTumDens.close();
 
         std::ofstream f3MonTumDens("../OutputFilesGUI/3MonTumDens.res");
-        f3MonTumDens << treatment->getDuration() + 720.0 << " " <<
+        f3MonTumDens << 2160.0 << " " <<
                         model1->getOut()->at(25);
         f3MonTumDens.close();
 
