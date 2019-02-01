@@ -19,7 +19,7 @@ using namespace std;
 
 int main(){
     //const int N(100);
-    const int kp(5), L(5), p(20), P(3), N(1);
+    const int kp(5), L(5), p(20), P(3), N(10);
     //const int nMethod(0), nModel(1);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
@@ -373,6 +373,81 @@ void model(const double *x, double *y, const int nrow,
 
 void model(const double *x, double *y, const int nrow,
            const int ncol, const int nlayer, const double cellSize,
+           const vector<bool> & inVes, const string nFPO2){
+    int k(0);
+    const double ang(x[k] > 0.5);
+    k++;
+    double Dvegf(x[k]);
+    k++;
+    double VmaxVegf(x[k]);
+    k++;
+    const double KmVegf(x[k]);
+    k++;
+    const double hypVegf(x[k]);
+    k++;
+    double oxy(x[k]);
+    k++;
+    double DO2(x[k]);
+    k++;
+    double VmaxO2(x[k]);
+    k++;
+    const double KmO2(x[k]);
+    k++;
+    const double pO2NormVes(x[k]);
+    k++;
+    const double pO2TumVes(x[k]);
+    k++;
+    const double hypThres(x[k]);
+    k++;
+
+    cout << "ang: "         << ang         << endl;
+    cout << "Dvegf: "       << Dvegf       << " um^2/ms" << endl;
+    cout << "VmaxVegf: "    << VmaxVegf    << " mol/um^3ms" << endl;
+    cout << "KmVegf: "      << KmVegf      << " mol/um^3" << endl;
+    cout << "hypVegf: "     << hypVegf     << " mol/um^3" << endl;
+    cout << "oxy: "         << oxy         << endl;
+    cout << "DO2: "         << DO2         << " um^2/ms" << endl;
+    cout << "VmaxO2: "      << VmaxO2      << " mmHg/ms" << endl;
+    cout << "KmO2: "        << KmO2        << " mmHg" << endl;
+    cout << "pO2NormVes: "  << pO2NormVes  << " mmHg" << endl;
+    cout << "pO2TumVes: "   << pO2TumVes   << " mmHg" << endl;
+    cout << "hypThres: "    << hypThres    << " mmHg" << endl;
+
+    const double oxySimTimeStep(10.0);
+
+    Dvegf    *= oxySimTimeStep;
+    VmaxVegf *= oxySimTimeStep;
+    DO2      *= oxySimTimeStep;
+    VmaxO2   *= oxySimTimeStep;
+
+    OxyTissue *model1;
+    Simulator *sim;
+
+    model1 = new OxyTissue(nrow, ncol, nlayer, cellSize,
+                           inVes, ang, Dvegf, VmaxVegf, KmVegf,
+                           hypVegf, DO2, VmaxO2, KmO2,
+                           pO2NormVes, pO2TumVes, hypThres);
+    sim = new Simulator(model1, oxySimTimeStep);
+
+    const double simTime(1000.0);
+
+    sim->initSim();
+    sim->simulate(oxySimTimeStep, simTime);
+    sim->stop();
+
+    std::ofstream fPO2(nFPO2.c_str());
+
+    for(int i(0); i < model1->getNumComp(); i++){
+        fPO2 << model1->getComp()->at(i)->getOut()->at(0) << "\t";
+    }
+
+    delete model1;
+    delete sim;
+}
+
+
+void model(const double *x, double *y, const int nrow,
+           const int ncol, const int nlayer, const double cellSize,
            const vector<bool> &inTum, const vector<bool> & inVes,
            const string nFTumDens, const string nFTumVol,
            const string nFVascDens, const string nFKilledCells,
@@ -647,6 +722,42 @@ void model(const double *x, double *y, const int nrow,
 }
 
 
+void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
+         const string nFInTissueDim = "", const string nFInVes = ""){
+    const int K(12), nOut(1);
+    bool art(0);
+    int nrow, ncol, nlayer;
+    double cellSize, vascDens, sigmaVasc;
+    vector<bool> inVes;
+
+    readInFilesOxy(nFInTissueOxy, &art, nrow, ncol, nlayer, cellSize,
+                   vascDens, sigmaVasc);
+
+    if(!art){
+        readInFiles(nFInTissueDim, nFInVes, nrow, ncol, nlayer,
+                    cellSize, inVes);
+    }
+
+    double x[K], y[nOut];
+    ifstream fParOxy(nFParOxy.c_str());
+
+    for(int k(0); k < K; k++){
+        fParOxy >> x[k];
+    }
+    fParOxy.close();
+
+    for(int j(0); j < N; j++){
+        string nFPO2("../OutputFiles/pO2_" + to_string(i) + ".res");
+        if(art){
+            createInFiles(nrow, ncol, nlayer, vascDens, sigmaVasc, inVes);
+        }
+        model(x, y, nrow, ncol, nlayer, cellSize, inVes, nFPO2);
+        cout << j + 1 << " out of " << N << " evaluations of the model" << endl;
+        cout << "---------------------------------------------" << endl;
+    }
+}
+
 void toyModel(double *x, double *y){
     y[0] = x[0] + 2.0 * x[1] + x[2] * x[2] + x[3] * x[4];
 }
+

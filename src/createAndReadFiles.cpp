@@ -205,6 +205,132 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 }
 
 
+int createInFiles(const int nrow, const int ncol, const int nlayer,
+                  const double vascDens, const double sigmaVasc,
+                  vector<bool> &inVes){
+    int ivd, ivd2;
+    int mindim, mindim2, sqrtmin, tumToDist, vesToDist;
+    int nrowNcol, nrowNcolNlayer;
+    vector<int> div;
+    vector<double> diff;
+
+    nrowNcol = nrow * ncol;
+    nrowNcolNlayer = nrowNcol * nlayer;
+
+    if(vascDens){
+        mindim = min(nrow, ncol);
+        mindim2 = mindim * mindim;
+        sqrtmin = sqrt(mindim);
+
+        for(int l(1); l < sqrtmin; l+=2){
+            if(!(nrow % l) && !(ncol % l)){
+                div.push_back(l);
+                diff.push_back(fabs(1.0 / (l * l) - vascDens));
+                div.push_back(mindim / l);
+                diff.push_back(fabs(double(l * l) / double(mindim2) - vascDens));
+            }
+        }
+
+        ivd = div.at(min_element(diff.begin(), diff.end()) - diff.begin());
+        ivd2 = ivd * ivd;
+        vesToDist = min(nrowNcol / ivd2, nrowNcolNlayer - tumToDist);
+    }
+
+    else{
+        vesToDist = 0;
+    }
+
+    int halfIvd;
+    int lnrowNcol;
+    int irr2, ishift;
+    double R, RR;
+    vector<simpCell> map(nrowNcolNlayer);
+
+    halfIvd = 0.5 * ivd;
+    RR = 1.001 * sqrt(2.0 * halfIvd * halfIvd);
+
+    int k(0);
+
+    for(int l(0); l < nlayer; l++){
+        lnrowNcol = l * nrowNcol;
+        for(int i(0); i < nrow; i++){
+            irr2 = (i % ivd - halfIvd) * (i % ivd - halfIvd);
+            ishift = i / ivd * ncol / ivd;
+            for(int j(0); j < ncol; j++){
+                map.at(k).rr = lnrowNcol + ishift + j / ivd +
+                        sqrt(irr2 + (j % ivd - halfIvd) * (j % ivd - halfIvd)) / RR;
+                map.at(k).k = k;
+                map.at(k).ves = 0;
+                k++;
+            }
+        }
+    }
+
+    sort(map.begin(), map.end(), compRR);
+
+    bool availSpace, firstRound(true);
+    int m, nivd2;
+    double n;
+    default_random_engine gen;
+    normal_distribution<double> distVes(0, sigmaVasc);
+
+    k = 0;
+    while(vesToDist > 0){
+        availSpace = false;
+        for(int j(0); j < ivd2; j++){
+            if(!map.at(k + j).ves){
+                availSpace = true;
+                break;
+            }
+        }
+
+        if(availSpace){
+            n = distVes(gen);
+            while(n < 0.0 || n >= 1.0){
+                n = distVes(gen);
+            }
+            nivd2 = n * ivd2;
+            m = k + nivd2;
+            while(map.at(m).ves){
+                nivd2++;
+                if(nivd2 >= ivd2){
+                    nivd2 = 0;
+                }
+                m = k + nivd2;
+            }
+            map.at(m).ves = 1;
+            vesToDist--;
+            availSpace = false;
+        }
+
+        if(firstRound){
+            k += ivd2;
+        }
+        else{
+            k = rand() % (nrowNcol / ivd2) * ivd2;
+        }
+        if(k >= nrowNcol - ivd2){
+            firstRound = false;
+        }
+    }
+
+    sort(map.begin(), map.end(), compK);
+    for(int k(0); k < nrowNcol; k++){
+        if(map.at(k).ves == 1){
+            for(int l(1); l < nlayer; l++){
+                map.at(l * nrowNcol + k).ves = 1;
+            }
+        }
+    }
+
+    for(k = 0; k < nrowNcolNlayer; k++){
+        inVes.push_back(map.at(k).ves);
+    }
+
+    return 0;
+}
+
+
 void readInFiles(const string nFInTissueDim, const string nFInTum,
                  const string nFInVes, int &nrow, int &ncol, int &nlayer,
                  double &cellSize, vector<bool> &inTum, vector<bool> &inVes){
@@ -232,6 +358,40 @@ void readInFiles(const string nFInTissueDim, const string nFInTum,
         fInVes >> temp;
     }
     fInVes.close();
+}
+
+
+void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow, int &ncol,
+                 int &nlayer, double &cellSize, vector<bool> &inVes){
+    ifstream fInTissueDim(nFInTissueDim.c_str());
+
+    fInTissueDim >> nrow >> ncol >> nlayer;
+    fInTissueDim >> cellSize;
+    fInTissueDim.close();
+
+    ifstream fInVes(nFInVes.c_str());
+    bool temp;
+
+    fInVes >> temp;
+    while(!fInVes.eof()){
+        inVes.push_back(temp);
+        fInVes >> temp;
+    }
+    fInVes.close();
+}
+
+
+void readInFilesOxy(const string nFInTissueOxy, bool art, int &nrow, int &ncol, int &nlayer,
+                    double &cellSize, double &vascDens, double &sigmaVasc){
+    ifstream fInTissueOxy(nFInTissueOxy.c_str());
+
+    fInTissueOxy >> art;
+    if(art){
+        fInTissueOxy >> nrow >> ncol >> nlayer;
+        fInTissueOxy >> cellSize;
+        fInTissueOxy >> vascDens >> sigmaVasc;
+    }
+    fInTissueOxy.close();
 }
 
 

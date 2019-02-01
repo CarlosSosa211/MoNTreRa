@@ -15,6 +15,9 @@ void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim 
 void model(const double *x, double *y, const int nrow,
            const int ncol, const int nlayer, const double cellSize,
            const std::vector<bool> &inTum, const std::vector<bool> &inVes);
+void model(const double *x, double *y, const int nrow,
+           const int ncol, const int nlayer, const double cellSize,
+           const std::vector<bool> & inVes, const std::string nFPO2);
 void model(const double *x, double *y,  const int nrow,
            const int ncol, const int nlayer, const double cellSize,
            const std::vector<bool> &inTum, const std::vector<bool> &inVes,
@@ -50,6 +53,8 @@ void sobolRT(const int N, const std::string nFRefParInt, const std::string nFInT
              const std::string nFInTum, const std::string nFInVes);
 void sobolToy(const int N, const std::string nFRefParInt);
 void toyModel(double *x, double *y);
+void oxy(const int N, const std::string nFInTissueOxy, const std::string nFParOxy,
+         const std::string nFInTissueDim = "", const std::string nFInVes = "");
 void var1ParRange(const int kp, const int L, const std::string nRefParInt,
                   const std::string nFInTissueDim, const std::string nFInTum,
                   const std::string nFInVes);
@@ -60,5 +65,5 @@ void varErr(const std::string nFVarPar, const std::string nFMostRelPar,
 void varParFromFiles(const std::vector<std::string> nFPar, const std::string nFInTissueDim,
                      const std::string nFInTum, const std::string nFInVes);
 void varStoch(const int N, const int P, const std::string nFRefParInt,
-             const std::string nFInTissueDim, const std::string nFInTum,
-             const std::string nFInVes);
+              const std::string nFInTissueDim, const std::string nFInTum,
+              const std::string nFInVes);
