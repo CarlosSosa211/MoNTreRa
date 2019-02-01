@@ -146,32 +146,19 @@ void modelTCP(const double *x, double *y, const int nrow,
 }
 
 
-void tcp(const int N, const std::string nFInTissueTCP, const std::string nFParTCP,
-         const std::vector<std::string> nFTreatmentTCP, const std::string nFInTissueDim,
-         const std::string nFInTum, const std::string nFInVes){
+void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
+         const vector<string> nFTreatmentTCP, const string nFInTissueDim,
+         const string nFInTum, const string nFInVes){
     const int K(38), nOut(2);
-    bool art;
+    bool art(0);
     int nrow, ncol, nlayer;
     double cellSize, tumDens, sigmaTum, vascDens, sigmaVasc;
     vector<bool> inTum, inVes;
     vector<Treatment> treatment;
 
-    /*readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, nrow, ncol, nlayer, cellSize,
-                   tumDens, sigmaTum, vascDens, sigmaVasc, treatment);*/
-
-    ifstream fInTissueTCP(nFInTissueTCP.c_str());
-
-    fInTissueTCP >> art;
-
-    if(art){
-        fInTissueTCP >> nrow >> ncol >> nlayer;
-        fInTissueTCP >> cellSize;
-        fInTissueTCP >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
-
-        fInTissueTCP.close();
-    }
-
-    else{
+    readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, &art, nrow, ncol, nlayer, cellSize,
+                   tumDens, sigmaTum, vascDens, sigmaVasc, treatment);
+    if(!art){
         readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                     cellSize, inTum, inVes);
     }
