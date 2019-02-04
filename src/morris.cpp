@@ -2,10 +2,9 @@
 
 using namespace std;
 
-void morris(const int K, const int L, const int N, const int nOut,
-            const int p, const double *x0, const double *h,
-            double **mu, double **sigma, const string nFInTissueDim,
-            const string nFInTum, const string nFInVes){
+void morris(const int K, const int L, const int N, const int nOut, const int p,
+            const double *x0, const double *h, double **mu, double **sigma,
+            const string nFInTissueDim, const string nFInTum, const string nFInVes){
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
@@ -72,8 +71,8 @@ void morris(const int K, const int L, const int N, const int nOut,
         }
 
         for(int m(0); m < M; m++){
-            //toyModel(Bp[m], y[m]);
-            model(Bp[m], y[m], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            toyModel(Bp[m], y[m]);
+            //model(Bp[m], y[m], nrow, ncol, nlayer, cellSize, inTum, inVes);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
             cout << "---------------------------------------------" << endl;
@@ -117,7 +116,7 @@ void morris(const int K, const int L, const int N, const int nOut,
 
 void morrisRT(const int N, const int p, const string nFRefParInt, const string nFInTissueDim,
               const string nFInTum, const string nFInVes){
-    const int K(34), nOut(15);
+    const int K(35), nOut(15);
     //const int K(20), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
@@ -274,7 +273,7 @@ void morrisVarRange(const int K, const int kp, const int L, const int N,
 void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
                       const string nFRefParInt, const string nFInTissueDim,
                       const string nFInTum, const string nFInVes){
-    const int K(34), nOut(15);
+    const int K(35), nOut(15);
     double ***mu, ***sigma;
 
     mu    = alloc3D(L, nOut, K);

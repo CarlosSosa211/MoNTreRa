@@ -2,12 +2,9 @@
 
 using namespace std;
 
-void sobol(const int K, const int N, const int nOut,
-           const double *x0, const double *h,
-           double **SI, double **TSI,
-           double ***SIConv, double ***TSIConv,
-           const string nFInTissueDim,
-           const string nFInTum, const string nFInVes){
+void sobol(const int K, const int N, const int nOut, const double *x0, const double *h,
+           double **SI, double **TSI, double ***SIConv, double ***TSIConv,
+           const string nFInTissueDim, const string nFInTum, const string nFInVes){
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
