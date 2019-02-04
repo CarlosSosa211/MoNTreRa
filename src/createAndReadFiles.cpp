@@ -381,7 +381,7 @@ void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow, in
 }
 
 
-void readInFilesOxy(const string nFInTissueOxy, bool art, int &nrow, int &ncol, int &nlayer,
+void readInFilesOxy(const string nFInTissueOxy, bool &art, int &nrow, int &ncol, int &nlayer,
                     double &cellSize, double &vascDens, double &sigmaVasc){
     ifstream fInTissueOxy(nFInTissueOxy.c_str());
 
@@ -395,16 +395,19 @@ void readInFilesOxy(const string nFInTissueOxy, bool art, int &nrow, int &ncol, 
 }
 
 
-void readInFilesTCP(const string nFInTissueTCP, const vector<string> nFTreatmentTCP,
+void readInFilesTCP(const string nFInTissueTCP, const vector<string> nFTreatmentTCP, bool &art,
                     int &nrow, int &ncol, int &nlayer, double &cellSize, double &tumDens,
                     double &sigmaTum, double &vascDens, double &sigmaVasc,
                     vector<Treatment> &treatment){
     ifstream fInTissueTCP(nFInTissueTCP.c_str());
 
-    fInTissueTCP >> nrow >> ncol >> nlayer;
-    fInTissueTCP >> cellSize;
-    fInTissueTCP >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
-    fInTissueTCP.close();
+    fInTissueTCP >> art;
+    if(art){
+        fInTissueTCP >> nrow >> ncol >> nlayer;
+        fInTissueTCP >> cellSize;
+        fInTissueTCP >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
+        fInTissueTCP.close();
+    }
 
     double fraction, totalDose, interval;
     int schedule;

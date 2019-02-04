@@ -156,20 +156,11 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
     vector<bool> inTum, inVes;
     vector<Treatment> treatment;
 
-    readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, &art, nrow, ncol, nlayer, cellSize,
+    readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, art, nrow, ncol, nlayer, cellSize,
                    tumDens, sigmaTum, vascDens, sigmaVasc, treatment);
     if(!art){
         readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                     cellSize, inTum, inVes);
-    }
-
-    double fraction, totalDose, interval;
-    int schedule;
-    for(int i(0); i < nFTreatmentTCP.size(); i++){
-        ifstream fTreatmentTCP(nFTreatmentTCP[i].c_str());
-        fTreatmentTCP >> fraction >> totalDose >> interval >> schedule;;
-        treatment.push_back(Treatment(fraction, totalDose, interval, schedule));
-        fTreatmentTCP.close();
     }
 
     double x[K], y[nOut];
@@ -187,8 +178,8 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
         ofstream fDoseToControl("../OutputFiles/doseToControl_" + to_string(i) + ".res");
         for(int j(0); j < N; j++){
             if(art){
-            createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
-                          vascDens, sigmaVasc, inTum, inVes);
+                createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
+                              vascDens, sigmaVasc, inTum, inVes);
             }
             modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, &(treatment[i]));
             nEv++;

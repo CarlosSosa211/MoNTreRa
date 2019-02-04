@@ -19,7 +19,7 @@ using namespace std;
 
 int main(){
     //const int N(100);
-    const int kp(5), L(5), p(20), P(3), N(10);
+    const int kp(5), L(5), p(20), P(3), N(100);
     //const int nMethod(0), nModel(1);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
@@ -28,13 +28,13 @@ int main(){
     //string nFMostRelPar("../InputFiles/mostRelParAng.dat");
     //string nFLeastRelPar("../InputFiles/leastRelParAng.dat");
     //string nFVarPar("../InputFiles/varParAng.dat");
-    string nFInTissueDim("../InputFiles/tissueDim.dat");
-    string nFInTum("../InputFiles/inTum.dat");
-    string nFInVes("../InputFiles/inVes.dat");
+    //string nFInTissueDim("../InputFiles/tissueDim.dat");
+    //string nFInTum("../InputFiles/inTum.dat");
+    //string nFInVes("../InputFiles/inVes.dat");
     //vector<string> nFPar;
     //nFPar.push_back("../InputFiles/par37_2.dat");
     //nFPar.push_back("../InputFiles/par20_3.dat");
-    string nFInTissueTCP("../InputFiles/inTissueTCP0.dat");
+    string nFInTissueTCP("../InputFiles/inTissueTCP.dat");
     string nFParTCP("../InputFiles/parTCP.dat");
     vector<string> nFTreatmentTCP;
     nFTreatmentTCP.push_back("../InputFiles/1MonFri.dat");
@@ -52,7 +52,8 @@ int main(){
     //sobolRT(N, nFRefParInt, nFInTissueDim, nFInTum, nFInVes));
     //sobolToy(N, nFRefParInt);
     //sobolFromFiles(2);
-    tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP, nFInTissueDim, nFInTum, nFInVes);
+    tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP);
+    //tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP, nFInTissueDim, nFInTum, nFInVes);
     //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
     //varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
     //nFInVes, L, P);
@@ -723,14 +724,14 @@ void model(const double *x, double *y, const int nrow,
 
 
 void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
-         const string nFInTissueDim = "", const string nFInVes = ""){
+         const string nFInTissueDim, const string nFInVes){
     const int K(12), nOut(1);
     bool art(0);
     int nrow, ncol, nlayer;
     double cellSize, vascDens, sigmaVasc;
     vector<bool> inVes;
 
-    readInFilesOxy(nFInTissueOxy, &art, nrow, ncol, nlayer, cellSize,
+    readInFilesOxy(nFInTissueOxy, art, nrow, ncol, nlayer, cellSize,
                    vascDens, sigmaVasc);
 
     if(!art){
@@ -747,7 +748,7 @@ void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
     fParOxy.close();
 
     for(int j(0); j < N; j++){
-        string nFPO2("../OutputFiles/pO2_" + to_string(i) + ".res");
+        string nFPO2("../OutputFiles/pO2_" + to_string(j) + ".res");
         if(art){
             createInFiles(nrow, ncol, nlayer, vascDens, sigmaVasc, inVes);
         }
@@ -756,6 +757,7 @@ void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
         cout << "---------------------------------------------" << endl;
     }
 }
+
 
 void toyModel(double *x, double *y){
     y[0] = x[0] + 2.0 * x[1] + x[2] * x[2] + x[3] * x[4];

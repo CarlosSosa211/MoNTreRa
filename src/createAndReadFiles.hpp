@@ -20,9 +20,9 @@ void readInFiles(const std::string nFInTissueDim, const std::string nFInTum,
                  double &cellSize, std::vector<bool> &inTum, std::vector<bool> &inVes);
 void readInFiles(const std::string nFInTissueDim, const std::string nFInVes, int &nrow,
                  int &ncol, int &nlayer, double &cellSize, std::vector<bool> &inVes);
-void readInFilesOxy(const std::string nFInTissueOxy, bool art, int &nrow, int &ncol, int &nlayer,
+void readInFilesOxy(const std::string nFInTissueOxy, bool &art, int &nrow, int &ncol, int &nlayer,
                     double &cellSize, double &vascDens, double &sigmaVasc);
 void readInFilesTCP(const std::string nFInTissueTCP, const std::vector<std::string> nFTreatmentTCP,
-                    bool art, int &nrow, int &ncol, int &nlayer, double &cellSize, double &tumDens,
+                    bool &art, int &nrow, int &ncol, int &nlayer, double &cellSize, double &tumDens,
                     double &sigmaTum, double &vascDens, double &sigmaVasc,
-                    std::vector<Treatment> treatment);
+                    std::vector<Treatment> &treatment);
