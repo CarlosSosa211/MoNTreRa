@@ -1010,8 +1010,8 @@ void OutWindow::changeChart(const int numChart){
             m_cCycle->addSeries(m_recDash);
             m_recDash->attachAxis(m_xCycle);
             m_recDash->attachAxis(m_yCycle);
-            m_chartView->setChart(m_cCycle);
         }
+        m_chartView->setChart(m_cCycle);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
         m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
         if(m_rec){
