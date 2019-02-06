@@ -427,10 +427,17 @@ void SimThread::run(){
 
         sim->stop();
 
-        std::ofstream fStable("../OutputFilesGUI/oxyStable.res");
+        std::ofstream fOxyStable("../OutputFilesGUI/oxyStable.res");
 
-        fStable << model1->getOut()->at(5) << std::endl;
-        fStable.close();
+        fOxyStable << model1->getOut()->at(5) << " " <<
+                      model1->getOut()->at(7) << std::endl;
+        fOxyStable.close();
+
+        std::ofstream fVegfStable("../OutputFilesGUI/vegfStable.res");
+
+        fVegfStable << model1->getOut()->at(6) << " " <<
+                       model1->getOut()->at(8) << std::endl;
+        fVegfStable.close();
 
         delete model1;
         delete sim;

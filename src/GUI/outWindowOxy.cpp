@@ -10,6 +10,7 @@
 
 OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
     m_green = QColor(156, 204, 88);
+    m_blue  = QColor(46, 165, 225);
 
     m_selChartGroup = new QGroupBox("Select a chart", this);
     m_selMapGroup = new QGroupBox("Select a map", this);
@@ -24,24 +25,48 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
     m_sDash->append(0.0, 100.0);
     m_sDash->setPen(QPen(Qt::DashLine));
 
-    std::ifstream fStable((nFOutData + "/oxyStable.res").c_str());
+    std::ifstream fOxyStable((nFOutData + "/oxyStable.res").c_str());
 
-    if(!fStable.is_open()){
+    if(!fOxyStable.is_open()){
         QMessageBox::critical(this, "Error", "Problem while opening oxyStable.res");
     }
 
     else{
-        fStable >> m_stableTime;
-        fStable.close();
+        fOxyStable >> m_oxyStable;
+        if(m_oxyStable){
+            fOxyStable >> m_oxyStableTime;
+            fOxyStable.close();
+        }
     }
 
-    m_stableDash = new QLineSeries;
-    m_stableDash->append(m_stableTime, 0.0);
-    m_stableDash->append(m_stableTime, 100.0);
+    std::ifstream fVegfStable((nFOutData + "/vegfStable.res").c_str());
+
+    if(!fVegfStable.is_open()){
+        QMessageBox::critical(this, "Error", "Problem while opening vegfStable.res");
+    }
+
+    else{
+        fVegfStable >> m_vegfStable;
+        if(m_vegfStable){
+            fVegfStable >> m_vegfStableTime;
+            fVegfStable.close();
+        }
+    }
+
+    m_oxyStableDash = new QLineSeries;
+    m_oxyStableDash->append(m_oxyStableTime, 0.0);
+    m_oxyStableDash->append(m_oxyStableTime, 100.0);
+
+    m_vegfStableDash = new QLineSeries;
+    m_vegfStableDash->append(m_vegfStableTime, 0.0);
+    m_vegfStableDash->append(m_vegfStableTime, 100.0);
+
     QPen pen;
     pen.setStyle(Qt::DashLine);
     pen.setColor(m_green);
-    m_stableDash->setPen(pen);
+    m_oxyStableDash->setPen(pen);
+    pen.setColor(m_blue);
+    m_vegfStableDash->setPen(pen);
 
     double a, b, c;
 
@@ -87,9 +112,11 @@ OutWindowOxy::OutWindowOxy(std::string nFOutData) : QWidget(){
         m_sDash->attachAxis(m_xHypDens);
         m_sDash->attachAxis(m_yHypDens);
 
-        m_cHypDens->addSeries(m_stableDash);
-        m_stableDash->attachAxis(m_xHypDens);
-        m_stableDash->attachAxis(m_yHypDens);
+        if(m_oxyStable){
+            m_cHypDens->addSeries(m_oxyStableDash);
+            m_oxyStableDash->attachAxis(m_xHypDens);
+            m_oxyStableDash->attachAxis(m_yHypDens);
+        }
 
         m_selChart->addItem("Hypoxic density");
     }
@@ -432,43 +459,55 @@ void OutWindowOxy::changeChart(int numChart){
     switch(numChart){
     case 0:{
         m_chartView->chart()->removeSeries(m_sDash);
-        m_chartView->chart()->removeSeries(m_stableDash);
+        m_chartView->chart()->removeSeries(m_oxyStableDash);
+        m_chartView->chart()->removeSeries(m_vegfStableDash);
         m_cHypDens->addSeries(m_sDash);
-        m_cHypDens->addSeries(m_stableDash);
         m_sDash->attachAxis(m_xHypDens);
         m_sDash->attachAxis(m_yHypDens);
-        m_stableDash->attachAxis(m_xHypDens);
-        m_stableDash->attachAxis(m_yHypDens);
+        if(m_oxyStable){
+            m_cHypDens->addSeries(m_oxyStableDash);
+            m_oxyStableDash->attachAxis(m_xHypDens);
+            m_oxyStableDash->attachAxis(m_yHypDens);
+        }
         m_chartView->setChart(m_cHypDens);
         break;
     }
+
     case 1:{
         m_chartView->chart()->removeSeries(m_sDash);
-        m_chartView->chart()->removeSeries(m_stableDash);
+        m_chartView->chart()->removeSeries(m_oxyStableDash);
+        m_chartView->chart()->removeSeries(m_vegfStableDash);
         m_cPO2Stat->addSeries(m_sDash);
-        m_cPO2Stat->addSeries(m_stableDash);
         m_sDash->attachAxis(m_xPO2Stat);
         m_sDash->attachAxis(m_yPO2Stat);
-        m_stableDash->attachAxis(m_xPO2Stat);
-        m_stableDash->attachAxis(m_yPO2Stat);
+        if(m_oxyStable){
+            m_cPO2Stat->addSeries(m_oxyStableDash);
+            m_oxyStableDash->attachAxis(m_xPO2Stat);
+            m_oxyStableDash->attachAxis(m_yPO2Stat);
+        }
         m_chartView->setChart(m_cPO2Stat);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
-        m_chartView->chart()->legend()->markers(m_stableDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_oxyStableDash).front()->setVisible(false);
         break;
     }
 
     case 2:{
         m_chartView->chart()->removeSeries(m_sDash);
-        m_chartView->chart()->removeSeries(m_stableDash);
+        m_chartView->chart()->removeSeries(m_oxyStableDash);
+        m_chartView->chart()->removeSeries(m_vegfStableDash);
         m_cVegfStat->addSeries(m_sDash);
-        m_cVegfStat->addSeries(m_stableDash);
         m_sDash->attachAxis(m_xVegfStat);
         m_sDash->attachAxis(m_yVegfStat);
-        m_stableDash->attachAxis(m_xVegfStat);
-        m_stableDash->attachAxis(m_yVegfStat);
+        if(m_vegfStable){
+            m_cVegfStat->addSeries(m_vegfStableDash);
+            m_vegfStableDash->attachAxis(m_xVegfStat);
+            m_vegfStableDash->attachAxis(m_yVegfStat);
+        }
         m_chartView->setChart(m_cVegfStat);
         m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
-        m_chartView->chart()->legend()->markers(m_stableDash).front()->setVisible(false);
+        if(m_vegfStable){
+            m_chartView->chart()->legend()->markers(m_vegfStableDash).front()->setVisible(false);
+        }
         break;
     }
     }

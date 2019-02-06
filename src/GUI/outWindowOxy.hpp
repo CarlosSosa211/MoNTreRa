@@ -28,7 +28,7 @@ public:
 private:
     int m_mapNrow, m_mapNcol, m_mapSclFac;
     int m_simTime, m_simOxyTimeStep;
-    double m_stableTime;
+    double m_oxyStable, m_oxyStableTime, m_vegfStable, m_vegfStableTime;
     std::vector<std::vector<double> > m_pO2, m_vegf;
     double m_maxpO2, m_maxvegf;
     QComboBox *m_selChart, *m_selMap;
@@ -39,7 +39,7 @@ private:
     QValueAxis *m_xHypDens, *m_yHypDens;
     QValueAxis *m_xPO2Stat, *m_yPO2Stat;
     QValueAxis *m_xVegfStat, *m_yVegfStat;
-    QLineSeries *m_sDash, *m_stableDash;
+    QLineSeries *m_sDash, *m_oxyStableDash, *m_vegfStableDash;
     QPushButton *m_sel, *m_change, *m_newSim;
     QPushButton *m_saveOutFiles;
     QPushButton *m_saveAllMaps, *m_saveChart, *m_saveMap;
@@ -50,7 +50,7 @@ private:
     bool m_stPlay;
     QSpinBox *m_timeS;
     QSlider *m_slider;
-    QColor m_green;
+    QColor m_green, m_blue;
     QLabel *m_pO2Bar, *m_pO2ValMax, *m_pO2ValMin;
     QLabel *m_vegfBar, *m_vegfValMax, *m_vegfValMin;
 
