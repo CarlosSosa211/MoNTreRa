@@ -148,6 +148,7 @@ InWindow::InWindow() : QWidget(){
     m_sigmaTum->setMaximum(2.0);
     m_sigmaTum->setSingleStep(0.01);
     m_vascDens->setMaximum(1.0);
+    m_vascDens->setDecimals(3);
     m_vascDens->setSingleStep(0.01);
     m_sigmaVasc->setMaximum(2.0);
     m_sigmaVasc->setSingleStep(0.01);
@@ -204,7 +205,7 @@ InWindow::InWindow() : QWidget(){
     m_constpO2NormVes->setEnabled(false);
     m_constpO2TumVes->setEnabled(false);
 
-    m_simTime->setMaximum(20000);
+    m_simTime->setMaximum(50000);
 
     QFormLayout *formLayoutArch     = new QFormLayout;
     QFormLayout *formLayoutTG       = new QFormLayout;
@@ -385,7 +386,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/inNoOxy.dat");
+    loadInData("../InputFiles/in.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -405,15 +406,7 @@ void InWindow::changeSimTime(bool value){
 
 
 void InWindow::changeSimTime(double value){
-    if(m_MonFri->isChecked()){
-        m_simTime->setValue((int(m_totalDose->value() / m_fraction->value()) / 5 * 7.0 +
-                             int(m_totalDose->value() / m_fraction->value()) % 5) *
-                            m_interval->value() + 720.0);
-    }
-    if(m_everyDay->isChecked()){
-        m_simTime->setValue((m_totalDose->value() / m_fraction->value()) *
-                            m_interval->value() + 720.0);
-    }
+        m_simTime->setValue(2160.0);
 }
 
 
