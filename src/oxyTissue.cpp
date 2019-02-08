@@ -24,7 +24,7 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double DO2, const double VmaxO2, const double KmO2,
                      const double pO2NormVes, const double pO2TumVes,
                      const double hypThres) :
-    Model(0, 1, 6, 3, nrow * ncol * nlayer){
+    Model(0, 4, 9, 3, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -118,7 +118,7 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double DO2, const double VmaxO2, const double KmO2,
                      const double pO2NormVes, const double pO2TumVes,
                      const double hypThres) :
-    Model(0, 1, 6, 3, nrow * ncol * nlayer){
+    Model(0, 4, 9, 3, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -206,7 +206,10 @@ OxyTissue::~OxyTissue(){
 
 
 int OxyTissue::initModel(){
-    ST_STABLE = -1.0;
+    ST_OXYSTABLE  = 0.0;
+    ST_VEGFSTABLE = 0.0;
+    ST_TIME_TO_OXYSTABLE  = 0.0;
+    ST_TIME_TO_VEGFSTABLE = 0.0;
 
     for (int k(0); k < m_numComp; k++){
         ((OxyCell *)(m_comp->at(k)))->initModel();
@@ -233,7 +236,10 @@ int OxyTissue::calcModelOut(){
     OUT_PO2_MEAN  = accumulate(pO2.begin(), pO2.end(), 0.0) / pO2.size();
     OUT_VEGF_MEAN = accumulate(vegf.begin(), vegf.end(), 0.0) / vegf.size();
 
-    OUT_STABLE = ST_STABLE;
+    OUT_OXYSTABLE  = ST_OXYSTABLE;
+    OUT_VEGFSTABLE = ST_VEGFSTABLE;
+    OUT_TIME_TO_OXYSTABLE  = ST_TIME_TO_OXYSTABLE;
+    OUT_TIME_TO_VEGFSTABLE = ST_TIME_TO_VEGFSTABLE;
 
     return 0;
 }
@@ -244,36 +250,36 @@ int OxyTissue::updateModel(double currentTime, const double DT){
     double diffO2, diffVegf;
     std::vector<OxyCell *> *edge;
 
-    /*for(int k(0); k < m_numComp; k++){
-        edge = ((OxyCell *)m_comp->at(k))->getEdge();
-        edgeSize = edge->size();
-        diffO2   = 0.0;
-        diffVegf = 0.0;
-        for(int n(0); n < edgeSize; n++){
-            diffO2   += edge->at(n)->getOutPO2();
-            diffVegf += edge->at(n)->getOutVEGF();
-        }
-        diffO2   -= edgeSize * ((OxyCell *)m_comp->at(k))->getOutPO2();
-        diffVegf -= edgeSize * ((OxyCell *)m_comp->at(k))->getOutVEGF();
-        ((OxyCell *)m_comp->at(k))->setInDiffO2(PAR_DO2 * diffO2);
-        ((OxyCell *)m_comp->at(k))->setInDiffVEGF(PAR_DVEGF * diffVegf);
-    }*/
-
-    for(int l(0); l < m_nlayer; l++){
-        for(int i(0); i < m_nrow; i++){
-            for(int j(0); j < m_ncol; j++){
-                edge = m_map[l][i][j]->getEdge();
-                edgeSize = edge->size();
-                diffO2   = 0.0;
-                diffVegf = 0.0;
-                for(int n(0); n < edgeSize; n++){
-                    diffO2   += edge->at(n)->getOutPO2();
-                    diffVegf += edge->at(n)->getOutVEGF();
+    if(!ST_OXYSTABLE){
+        for(int l(0); l < m_nlayer; l++){
+            for(int i(0); i < m_nrow; i++){
+                for(int j(0); j < m_ncol; j++){
+                    edge = m_map[l][i][j]->getEdge();
+                    edgeSize = edge->size();
+                    diffO2   = 0.0;
+                    for(int n(0); n < edgeSize; n++){
+                        diffO2   += edge->at(n)->getOutPO2();
+                    }
+                    diffO2   -= edgeSize * m_map[l][i][j]->getOutPO2();
+                    m_map[l][i][j]->setInDiffO2(PAR_DO2 * diffO2);
                 }
-                diffO2   -= edgeSize * m_map[l][i][j]->getOutPO2();
-                diffVegf -= edgeSize * m_map[l][i][j]->getOutVEGF();
-                m_map[l][i][j]->setInDiffO2(PAR_DO2 * diffO2);
-                m_map[l][i][j]->setInDiffVEGF(PAR_DVEGF * diffVegf);
+            }
+        }
+    }
+
+    if(!ST_VEGFSTABLE){
+        for(int l(0); l < m_nlayer; l++){
+            for(int i(0); i < m_nrow; i++){
+                for(int j(0); j < m_ncol; j++){
+                    edge = m_map[l][i][j]->getEdge();
+                    edgeSize = edge->size();
+                    diffVegf = 0.0;
+                    for(int n(0); n < edgeSize; n++){
+                        diffVegf += edge->at(n)->getOutVEGF();
+                    }
+                    diffVegf -= edgeSize * m_map[l][i][j]->getOutVEGF();
+                    m_map[l][i][j]->setInDiffVEGF(PAR_DVEGF * diffVegf);
+                }
             }
         }
     }
@@ -282,22 +288,20 @@ int OxyTissue::updateModel(double currentTime, const double DT){
         m_comp->at(k)->updateModel(currentTime, DT);
     }
 
-    /*Not sure that this is working. Members in if may be equal.*/
-    bool stable(true);
-    for(int k(0); k < m_numComp; k++){
-        if(fabs(((OxyCell *)m_comp->at(k))->getOutPO2() -
-                ((OxyCell *)m_comp->at(k))->getPO2()) >
-                1e-2 * ((OxyCell *)m_comp->at(k))->getOutPO2() ||
-                fabs(((OxyCell *)m_comp->at(k))->getOutVEGF() -
-                     ((OxyCell *)m_comp->at(k))->getVEGF()) >
-                1e-2 * ((OxyCell *)m_comp->at(k))->getOutVEGF()){
-            stable = false;
-        }
+    ST_OXYSTABLE  = isOxyStable();
+    ST_VEGFSTABLE = isVegfStable();
+
+    if(ST_OXYSTABLE && !ST_TIME_TO_OXYSTABLE){
+        ST_TIME_TO_OXYSTABLE = currentTime;
     }
-    if(stable){
-        if(ST_STABLE < 0.0){
-            ST_STABLE = currentTime;
-        }
+
+    if(ST_VEGFSTABLE && !ST_TIME_TO_VEGFSTABLE){
+        ST_TIME_TO_VEGFSTABLE = currentTime;
+    }
+
+    if(ST_OXYSTABLE && ST_OXYVEGF){
+        ST_OXYSTABLE  = 0.0;
+        ST_VEGFSTABLE = 0.0;
         return 1;
     }
     else{
@@ -322,4 +326,27 @@ int OxyTissue::getNumHyp() const{
         }
     }
     return count;
+}
+
+bool OxyTissue::isOxyStable() const{
+    int k(0);
+    bool stable(true);
+
+    while(stable && k < m_numComp){
+        stable = ((OxyCell *)m_comp->at(k))->getOxyStable();
+        k++;
+    }
+    return stable;
+}
+
+
+bool OxyTissue::isVegfStable() const{
+    int k(0);
+    bool stable(true);
+
+    while(stable && k < m_numComp){
+        stable = ((OxyCell *)m_comp->at(k))->getVegfStable();
+        k++;
+    }
+    return stable;
 }

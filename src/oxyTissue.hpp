@@ -17,15 +17,21 @@
 #include "oxyCell.hpp"
 
 //State variables
-#define ST_STABLE m_st->at(0)
+#define ST_OXYSTABLE          m_st->at(0)
+#define ST_VEGFSTABLE         m_st->at(1)
+#define ST_TIME_TO_OXYSTABLE  m_st->at(2)
+#define ST_TIME_TO_VEGFSTABLE m_st->at(3)
 
 //Outputs
-#define OUT_HYP_DENS  m_out->at(0)
-#define OUT_PO2_MED   m_out->at(1)
-#define OUT_PO2_MEAN  m_out->at(2)
-#define OUT_VEGF_MED  m_out->at(3)
-#define OUT_VEGF_MEAN m_out->at(4)
-#define OUT_STABLE    m_out->at(5)
+#define OUT_HYP_DENS           m_out->at(0)
+#define OUT_PO2_MED            m_out->at(1)
+#define OUT_PO2_MEAN           m_out->at(2)
+#define OUT_VEGF_MED           m_out->at(3)
+#define OUT_VEGF_MEAN          m_out->at(4)
+#define OUT_OXYSTABLE          m_out->at(5)
+#define OUT_VEGFSTABLE         m_out->at(6)
+#define OUT_TIME_TO_OXYSTABLE  m_out->at(7)
+#define OUT_TIME_TO_VEGFSTABLE m_out->at(8)
 
 //Internal parameters
 #define PAR_OXY_ANG m_param->at(0)
@@ -54,6 +60,8 @@ public:
     virtual int updateModel(double currentTime, const double DT);
     virtual int terminateModel();
     int getNumHyp() const;
+    bool isOxyStable() const;
+    bool isVegfStable() const;
 
 protected:
     int m_ncol, m_nlayer, m_nrow;

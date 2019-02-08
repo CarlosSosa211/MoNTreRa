@@ -12,7 +12,7 @@
 
 using namespace std;
 
-AbsOxyCell::AbsOxyCell() : Model(3, 6, 2, 5, 0){
+AbsOxyCell::AbsOxyCell() : Model(3, 8, 2, 5, 0){
 }
 
 
@@ -49,6 +49,9 @@ int AbsOxyCell::initModel(){
     ST_HYP = 0.0;
     ST_OXYVEGF = 0.0;
 
+    ST_OXYSTABLE_CELL  = 0.0;
+    ST_VEGFSTABLE_CELL = 0.0;
+
     return 0;
 }
 
@@ -73,6 +76,11 @@ double AbsOxyCell::getOutVEGF() const{
 }
 
 
+bool AbsOxyCell::getOxyStable() const{
+    return ST_OXYSTABLE_CELL;
+}
+
+
 double AbsOxyCell::getPO2() const{
     return ST_OXYPO2;
 }
@@ -80,6 +88,11 @@ double AbsOxyCell::getPO2() const{
 
 double AbsOxyCell::getVEGF() const{
     return ST_OXYVEGF;
+}
+
+
+bool AbsOxyCell::getVegfStable() const{
+    return ST_VEGFSTABLE_CELL;
 }
 
 

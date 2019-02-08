@@ -17,12 +17,14 @@
 #define IN_OXYTUM_VES  m_in->at(2)
 
 //State variables
-#define ST_OXYPO2      m_st->at(0)
-#define ST_OXYVEGF     m_st->at(1)
-#define ST_HYP         m_st->at(2)
-#define ST_OXYDEAD     m_st->at(3)
-#define ST_OXYNORM_VES m_st->at(4)
-#define ST_OXYTUM_VES  m_st->at(5)
+#define ST_OXYPO2          m_st->at(0)
+#define ST_OXYVEGF         m_st->at(1)
+#define ST_HYP             m_st->at(2)
+#define ST_OXYDEAD         m_st->at(3)
+#define ST_OXYNORM_VES     m_st->at(4)
+#define ST_OXYTUM_VES      m_st->at(5)
+#define ST_OXYSTABLE_CELL  m_st->at(6)
+#define ST_VEGFSTABLE_CELL m_st->at(7)
 
 //Outputs
 #define OUT_PO2       m_out->at(0)
@@ -46,8 +48,10 @@ public :
     bool getHyp() const;
     double getOutPO2() const;
     double getOutVEGF() const;
+    bool getOxyStable() const;
     double getPO2() const;
     double getVEGF() const;
+    bool getVegfStable () const;
     void setInDead(const double input);
     void setInNormVes(const double input);
     void setInTumVes(const double input);

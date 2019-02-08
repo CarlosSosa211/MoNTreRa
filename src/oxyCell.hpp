@@ -10,6 +10,8 @@
 #ifndef DEF_OXYCELL
 #define DEF_OXYCELL
 
+#include <cmath>
+
 #include "absOxyCell.hpp"
 
 //Inputs

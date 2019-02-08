@@ -45,8 +45,7 @@ OxyCell::~OxyCell(){
 }
 
 
-int OxyCell::updateModel(const double currentTime,
-                         const double DT){
+int OxyCell::updateModel(const double currentTime, const double DT){
     ST_OXYDEAD     = IN_OXYDEAD;
     ST_OXYNORM_VES = IN_OXYNORM_VES;
     ST_OXYTUM_VES  = IN_OXYTUM_VES;
@@ -61,6 +60,14 @@ int OxyCell::updateModel(const double currentTime,
         calcConsO2();
         ST_OXYPO2 += IN_DIFF_O2 - IN_CONS_O2;
     }
+
+    if(fabs(ST_OXYPO2 - OUT_PO2) < 1e-2){
+        ST_OXYSTABLE_CELL = 1.0;
+    }
+    else{
+        ST_OXYSTABLE_CELL = 0.0;
+    }
+
     ST_HYP = !ST_OXYDEAD * (ST_OXYPO2 < PAR_HYP_THRES);
 
     if(PAR_OXYCELL_ANG){
@@ -71,6 +78,13 @@ int OxyCell::updateModel(const double currentTime,
             calcConsVegf();
             ST_OXYVEGF += IN_DIFF_VEGF - IN_CONS_VEGF;
         }
+    }
+
+    if(fabs(ST_OXYVEGF - OUT_VEGF) < 1e-2){
+        ST_VEGFSTABLE_CELL = 1.0;
+    }
+    else{
+        ST_VEGFSTABLE_CELL = 0.0;
     }
 
     return 0;

@@ -31,8 +31,7 @@ ConstOxyCell::~ConstOxyCell(){
 }
 
 
-int ConstOxyCell::updateModel(const double currentTime,
-                              const double DT){
+int ConstOxyCell::updateModel(const double currentTime, const double DT){
     ST_OXYDEAD     = IN_OXYDEAD;
     ST_OXYNORM_VES = IN_OXYNORM_VES;
     ST_OXYTUM_VES  = IN_OXYTUM_VES;
@@ -49,6 +48,10 @@ int ConstOxyCell::updateModel(const double currentTime,
     else{
         ST_OXYPO2 = PAR_PO2_NOT_VES;
     }
+
+    ST_OXYSTABLE_CELL  = 1.0;
+    ST_VEGFSTABLE_CELL = 1.0;
+
     return 0;
 }
 
