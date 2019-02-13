@@ -77,37 +77,3 @@ xtickangle(45)
 ax.YGrid = 'on';
 ylim([0, inf])
 title('All tissues - Relative differences', 'fontsize', 20)
-
-%%
-nfig = nfig + 1;
-figure(nfig)
-hold on
-histogram(endTreatTumDens(:, 1), 25);
-histogram(endTreatTumDens(:, 2), 25);
-hold off
-title(['Tissue ', num2str(nTissue)...
-    ' - Tumour density at the end of treat.']);
-legend('No angiogenesis', 'Angiogenesis')
-dEndTreatTumDens = endTreatTumDens(:, 1)' - endTreatTumDens(:, 2)';
-medianDEndTreatTumDens = median(dEndTreatTumDens);
-meanDEndTreatTumDens = mean(dEndTreatTumDens);
-binSize = 1/16;
-bound = 3;
-lBound = - bound - 0.5 * binSize;
-rBound = bound + 0.5 * binSize;
-edges = [min([dEndTreatTumDens, lBound]), lBound:binSize:rBound...
-    max([dEndTreatTumDens, rBound])];
-nfig = nfig + 1;
-figure(nfig)
-histogram(dEndTreatTumDens, edges);
-title(['Tissue ', num2str(nTissue)...
-    ' - Difference in tumour density at the end of treat.'])
-
-%%
-nfig = nfig + 1;
-figure(nfig)
-hold on
-plot(endTreatTumDens(:, 1));
-plot(endTreatTumDens(:, 2));
-hold off
-legend('No angiogenesis', 'Angiogenesis')
