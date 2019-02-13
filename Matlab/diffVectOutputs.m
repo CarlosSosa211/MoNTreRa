@@ -2,96 +2,27 @@ clear all
 close all
 
 nfig = 0;
-
-nTissue = 4;
 % path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
 %     num2str(nTissue)];
-path = '../../Carlos/Results/Diff_Ang_432x5Sim_Tissue4';
+% path = '../../Carlos/Results/Diff_Ang_432x5Sim_Tissue4';
+path = '../../Carlos/Results/Diff_Ang_Dose_5Values_5Rep_AllTissues/Tissue';
+nTissues = 21;
+withoutN = 'No angiogenesis';
+withN = 'Angiogenesis';
 
-colTTum = 1;
-colDThres = 2;
-% colTArrest = 3;
-colDose = 3;
+fileNames = {'/tumDens_', '/tumVol_', '/vascDens_', '/vascDens_'...
+    '/vascDens_', '/killedCell_', '/hypDens_', '/pO2Stat_'...
+    '/pO2Stat_', '/vegfStat_', '/vegfStat_', '/cycle_', '/cycle_'...
+    '/cycle_', '/cycle_', '/cycle_'};
 
-par = load([path, '/combPar.res']);
+outputNames = {'tumour density', 'tumour volume', 'vascular density'...
+    'pre-existing vascular density', 'neo-created vascular density'...
+    'killed cells', 'hypoxic density', 'median pO2', 'mean pO2'...
+    'mean VEGF concentration', 'median VEGF concentration'...
+    'G1 distribution', 'S distribution', 'G2 distribution'...
+    'M distribution', 'G0 distribution'};
 
-tTTum = unique(par(:, colTTum));
-tDThres = unique(par(:, colDThres));
-% tTArrest = unique(par(:, colTArrest));
-tDose = unique(par(:, colDose));
-
-selOut = input(['Select an output [tumDens (1), tumVol (2)'...
-    'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
-    'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), '...
-    'vegfMed (10), vegfMean (11), distG1 (12),\n'...
-    'distS (13),  distG2 (14), distM (15) or distG0 (16)] or quit (0): ']);
-
-switch selOut
-    case 1
-        path = [path, '/tumDens_'];
-        outputCol = 2;
-        outputName = 'tumour density';
-    case 2
-        path = [path, '/tumVol_'];
-        outputCol = 2;
-        outputName = 'tumour volume';
-    case 3
-        path = [path, '/vascDens_'];
-        outputCol = 2;
-        outputName = 'vascular density';
-    case 4
-        path = [path, '/vascDens_'];
-        outputCol = 3;
-        outputName = 'pre-existing vascular density';
-    case 5
-        path = [path, '/vascDens_'];
-        outputCol = 4;
-        outputName = 'neo-created vascular density';
-    case 6
-        path = [path, '/killedCell_'];
-        outputCol = 2;
-        outputName = 'killed cells';
-    case 7
-        path = [path, '/hypDens_'];
-        outputCol = 2;
-        outputName = 'hypoxic density';
-    case 8
-        path = [path, '/pO2Stat_'];
-        outputCol = 2;
-        outputName = 'median pO2';
-    case 9
-        path = [path, '/pO2Stat_'];
-        outputCol = 3;
-        outputName = 'mean pO2';
-    case 10
-        path = [path, '/vegfStat_'];
-        outputCol = 2;
-        outputName = 'mean VEGF concentration';
-    case 11
-        path = [path, '/vegfStat_'];
-        outputCol = 3;
-        outputName = 'median VEGF concentration';
-    case 12
-        path = [path, '/cycle_'];
-        outputCol = 2;
-        outputName = 'G1 distribution';
-    case 13
-        path = [path, '/cycle_'];
-        outputCol = 3;
-        outputName = 'S distribution';
-    case 14
-        path = [path, '/cycle_'];
-        outputCol = 4;
-        outputName = 'G2 distribution';
-    case 15
-        path = [path, '/cycle_'];
-        outputCol = 5;
-        outputName = 'M distribution';
-    case 16
-        path = [path, '/cycle_'];
-        outputCol = 6;
-        outputName = 'G0 distribution';
-end
+outputCol = [2, 2, 2, 3, 4, 2, 2, 2, 3, 2, 3, 2, 3, 4, 5, 6];
 
 %%
 meanOutput0 = {};
@@ -99,36 +30,117 @@ meanOutput1 = {};
 stdOutput0 = {};
 stdOutput1 = {};
 P = 5;
-for i = 1:size(par, 1)
-    clear output0 output1
-    for j = 1:P
-        temp0 = load([path, num2str(i - 1), '_0_', num2str(j - 1)...
-            '.res']);
-        temp1 = load([path, num2str(i - 1), '_1_', num2str(j - 1)...
-            '.res']);
-        output0(:, :, j) = temp0(:, [1, outputCol]);
-        output1(:, :, j) = temp1(:, [1, outputCol]);
+
+nTissue = input(['Select one tissue (from 1 to ', num2str(nTissues)...
+    ') or all of them (0) or a mean over them (-1): ']);
+
+if(nTissue >= 1 && nTissue <= nTissues)
+    pathTissue = [path, num2str(nTissue)];
+    par = load([pathTissue, '/combPar.res']);
+    
+    % colTTum = 1;
+    % colDThres = 2;
+    % colTArrest = 3;
+    colDose = 1;
+    tDose = unique(par(:, colDose));
+    % tTTum = unique(par(:, colTTum));
+    % tDThres = unique(par(:, colDThres));
+    % tTArrest = unique(par(:, colTArrest));
+    
+    selOut = input(['Select an output [tumDens (1), tumVol (2)'...
+        'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
+        'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), '...
+        'vegfMed (10), vegfMean (11), distG1 (12),\n'...
+        'distS (13),  distG2 (14), distM (15) or distG0 (16)]'...
+        'or quit (0): ']);
+    
+    for i = 1:size(par, 1)
+        clear output0 output1
+        for j = 1:P
+            temp0 = load([pathTissue, char(fileNames(selOut))...
+                num2str(i - 1), '_0_', num2str(j - 1), '.res']);
+            temp1 = load([pathTissue, char(fileNames(selOut))...
+                num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+            output0(:, :, j) = temp0(:, [1, outputCol(selOut)]);
+            output1(:, :, j) = temp1(:, [1, outputCol(selOut)]);
+        end
+        
+        meanOutput0i = mean(output0, 3);
+        meanOutput1i = mean(output1, 3);
+        meanOutput0(i) = {meanOutput0i};
+        meanOutput1(i) = {meanOutput1i};
+        
+        stdOutput0(i) = {std(output0, 0, 3)};
+        stdOutput1(i) = {std(output1, 0, 3)};
+        
+        sim(i) = meanOutput0i(:, 2)' * meanOutput1i(:, 2) /...
+            (norm(meanOutput0i(:, 2)) * norm(meanOutput1i(:, 2)));
+        
+        lsd(i) = sum((meanOutput0i(:, 2) - meanOutput1i(:, 2)).^2);
+        
+        R(:, :, i) = corrcoef(meanOutput0i(:, 2), meanOutput1i(:, 2));
+        
+        [p(i, :), S] = polyfit(meanOutput0i(:, 2)',...
+            meanOutput1i(:, 2)', 1);
+        
+        normInf(i) = norm(meanOutput0i(:, 2) - meanOutput1i(:, 2), 'inf');
     end
-    
-    meanOutput0i = mean(output0, 3);
-    meanOutput1i = mean(output1, 3);
-    meanOutput0(i) = {meanOutput0i};
-    meanOutput1(i) = {meanOutput1i};
-    
-    stdOutput0(i) = {std(output0, 0, 3)};
-    stdOutput1(i) = {std(output1, 0, 3)};
-    
-    sim(i) = meanOutput0i(:, 2)' * meanOutput1i(:, 2) /...
-        (norm(meanOutput0i(:, 2)) * norm(meanOutput1i(:, 2)));
-    
-    lsd(i) = sum((meanOutput0i(:, 2) - meanOutput1i(:, 2)).^2);
-    
-    R(:, :, i) = corrcoef(meanOutput0i(:, 2), meanOutput1i(:, 2));
-    
-    [p(i, :), S] = polyfit(meanOutput0i(:, 2)', meanOutput1i(:, 2)', 1);
-    
-    normInf(i) = norm(meanOutput0i(:, 2) - meanOutput1i(:, 2), 'inf');
-    
+end
+
+if(nTissue == 0)
+    selOut = input(['Select an output [tumDens (1), tumVol (2)'...
+        'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
+        'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), '...
+        'vegfMed (10), vegfMean (11), distG1 (12),\n'...
+        'distS (13),  distG2 (14), distM (15) or distG0 (16)]'...
+        'or quit (0): ']);
+    for k = 1:nTissues
+        pathTissue = [path, num2str(k)];
+        par = load([pathTissue, '/combPar.res']);
+        
+        % colTTum = 1;
+        % colDThres = 2;
+        % colTArrest = 3;
+        colDose = 1;
+        tDose = unique(par(:, colDose));
+        % tTTum = unique(par(:, colTTum));
+        % tDThres = unique(par(:, colDThres));
+        % tTArrest = unique(par(:, colTArrest));
+        
+        for i = 1:size(par, 1)
+            clear output0 output1
+            for j = 1:P
+                temp0 = load([pathTissue, char(fileNames(selOut))...
+                    num2str(i - 1), '_0_', num2str(j - 1), '.res']);
+                temp1 = load([pathTissue, char(fileNames(selOut))...
+                    num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                output0(:, :, j) = temp0(:, [1, outputCol(selOut)]);
+                output1(:, :, j) = temp1(:, [1, outputCol(selOut)]);
+            end
+            
+            meanOutput0i = mean(output0, 3);
+            meanOutput1i = mean(output1, 3);
+            meanOutput0(i) = {meanOutput0i};
+            meanOutput1(i) = {meanOutput1i};
+            
+            stdOutput0(i) = {std(output0, 0, 3)};
+            stdOutput1(i) = {std(output1, 0, 3)};
+            
+            sim(i, k) = meanOutput0i(:, 2)' * meanOutput1i(:, 2) /...
+                (norm(meanOutput0i(:, 2)) * norm(meanOutput1i(:, 2)));
+            
+            lsd(i, k) = sum((meanOutput0i(:, 2) - meanOutput1i(:, 2)).^2);
+            
+            R(:, :, i, k) = corrcoef(meanOutput0i(:, 2),...
+                meanOutput1i(:, 2));
+            
+            [p(i, k, :), S] = polyfit(meanOutput0i(:, 2)',...
+                meanOutput1i(:, 2)', 1);
+            
+            normInf(i, k) = norm(meanOutput0i(:, 2) -...
+                meanOutput1i(:, 2), 'inf');
+        end
+    end
 end
 
 %%
@@ -183,7 +195,7 @@ end
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, simMeanTTum, simStdTTum,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - Similarity in ', outputName])
 grid on
 xlabel('TTum (h)')
@@ -192,7 +204,7 @@ ylabel('Similarity')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, lsdMeanTTum, lsdStdTTum,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - LSD in ', outputName])
 grid on
 xlabel('TTum (h)')
@@ -201,7 +213,7 @@ ylabel('LSD')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, normInfMeanTTum, normInfStdTTum,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in '...
     outputName])
 grid on
@@ -211,7 +223,7 @@ ylabel('||diff.||_\infty')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, p1MeanTTum, p1StdTTum,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - p1 in ', outputName])
 grid on
 xlabel('TTum (h)')
@@ -220,7 +232,7 @@ ylabel('p1')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tTTum, p0MeanTTum, p0StdTTum,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - p0 in ', outputName])
 grid on
 xlabel('TTum (h)')
@@ -268,7 +280,7 @@ end
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, simMeanDose, simStdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - Similarity in ', outputName])
 grid on
 xlabel('Dose (Gy)')
@@ -277,7 +289,7 @@ ylabel('Similarity')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, lsdMeanDose, lsdStdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - LSD in ', outputName])
 grid on
 xlabel('Dose (Gy)')
@@ -286,7 +298,7 @@ ylabel('LSD')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, normInfMeanDose, normInfStdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - Infitiny norm of abs. diff. in '...
     outputName])
 grid on
@@ -296,7 +308,7 @@ ylabel('||diff.||_\infty')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, p1MeanDose, p1StdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - p1 in ', outputName])
 grid on
 xlabel('Dose (Gy)')
@@ -305,7 +317,7 @@ ylabel('p1')
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, p0MeanDose, p0StdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 title(['Tissue ', num2str(nTissue), ' - p0 in in ', outputName])
 grid on
 xlabel('Dose (Gy)')
@@ -400,7 +412,6 @@ xticklabels(tDose)
 yticks(1:length(tTTum))
 yticklabels(tTTum)
 
-
 %%
 i = 212;
 
@@ -420,4 +431,19 @@ errorbar(mean1(:, 1), mean1(:, 2), std1(:, 2));
 hold off
 xlabel('Time (h)')
 ylabel(char(outputName))
-legend('No angiogenesis', 'Angiogenesis', 'location', 'northwest')
+legend(withoutN, withN, 'location', 'northwest')
+
+%%
+for i = 1:length(tDose)
+    nfig = nfig + 1;
+    figure(nfig)
+    plot(1:nTissues, sim(i, :), 'sb', 'MarkerSize', 10,...
+        'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b')
+    title(['All tissues  - ', char(outputNames(selOut)), '- '...
+        num2str(tDose(i)), ' Gy'])
+    grid on
+    ylim([0, inf])
+    xticks(1:nTissues)
+    xlabel('Tissue')
+    ylabel(outputNames(selOut))
+end
