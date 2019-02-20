@@ -9,12 +9,16 @@ nfig = 0;
 % path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues/Tissue';
 % path = '../../Carlos/Results/Diff_Ang_Dose_5Values_5Rep_AllTissues/Tissue';
 path = '../../Carlos/Results/Diff_Res_Dose_5Values_5Rep_AllTissues/Tissue';
+% path = ['../../Carlos/Results/Diff_AngRes_Dose_5Values_5Rep_AllTissues'...
+%     '/Tissue'];
 % path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues_noHypNec/Tissue';
+nTissues = 21;
 withoutN = 'No healthy cell division';
 withN = 'Healthy cell division';
-nTissues = 21;
 % withoutN = 'No angiogenesis';
 % withN = 'Angiogenesis';
+% withoutN = 'No angiogenesis and no healthy cell division';
+% withN = 'Angiogenesis and healthy cell division';
 
 fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/finTumVol.res', '/intTumDens.res', '/killed50.res'...
@@ -276,12 +280,12 @@ errorbar(tDose, withMeanDose, withStdDose,...
     'sr', 'MarkerSize', 10, 'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r')
 hold off
 if(nTissue == -1)
-    title(['All tissues  - ', char(outputNames(selOut))])
+    title(['All tissues - ', char(outputNames(selOut))])
 else
     title(['Tissue ', num2str(nTissue), ' - '...
         char(outputNames(selOut))])
 end
-legend(withoutN, withN, 'location', 'northwest')
+legend(withoutN, withN, 'location', 'northeast')
 grid on
 ylim([0, inf])
 xlabel('Dose (Gy)')
@@ -300,7 +304,7 @@ end
 nfig = nfig + 1;
 figure(nfig)
 errorbar(tDose, diffMeanDose, diffStdDose,...
-    '-s', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
+    's', 'MarkerSize', 10, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k')
 if(nTissue == -1)
     title(['All tissues - Abs. diff. in ', char(outputNames(selOut))])
 else
@@ -508,7 +512,7 @@ for i = 1:length(tDose)
         'sr', 'MarkerSize', 10, 'MarkerEdgeColor', 'r',...
         'MarkerFaceColor', 'r')
     hold off
-    title(['All tissues  - ', char(outputNames(selOut)), '- '...
+    title(['All tissues - ', char(outputNames(selOut)), ' - '...
         num2str(tDose(i)), ' Gy'])
     legend(withoutN, withN, 'location', 'northwest')
     grid on
