@@ -526,7 +526,7 @@ int Tissue::updateModel(const double currentTime,
     }
 
     ST_PREV_TUM_DENS = ST_TUM_DENS;
-    ST_TUM_DENS      = double(getNumTum()) / double(m_numComp) * 100.0;
+    ST_TUM_DENS = double(getNumTum()) / double(m_numComp) * 100.0;
     ST_INT_TUM_DENS += 0.5 * DT * (ST_PREV_TUM_DENS + ST_TUM_DENS);
 
     if(m_treatment){
