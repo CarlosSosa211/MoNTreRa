@@ -5,7 +5,7 @@ nfig = 0;
 % path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
 %     num2str(nTissue)];
 % path = '../../Carlos/Results/Diff_Ang_432x5Sim_Tissue4';
-path = '../../Carlos/Results/Diff_Ang_Dose_5Values_5Rep_AllTissues/Tissue';
+path = '../../Carlos/Results/Diff_Ang_Dose_5Val_5Rep_AllTissues/Tissue';
 nTissues = 21;
 withoutN = 'No angiogenesis';
 withN = 'Angiogenesis';
