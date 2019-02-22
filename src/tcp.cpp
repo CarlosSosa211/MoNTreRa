@@ -122,15 +122,28 @@ void modelTCP(const double *x, double *y, const int nrow,
     const double simTimeStep(6.0);
     const double sclFac(3.6e6 * simTimeStep / oxySimTimeStep);
     const double simTime(treatment->getDuration());
+    double currentTime(0.0);
     RootSimulator *sim;
 
     sim = new RootSimulator(coupler, simTimeStep,
                             oxySimTimeStep, sclFac);
+
     sim->initSim();
-    sim->simulate(simTimeStep, simTime);
+
+    double controlled(0.0);
+
+    int numIter(simTime / simTimeStep);
+    int j(0);
+
+    while(j < numIter && !controlled){
+        currentTime += simTimeStep;
+        sim->simulate(currentTime, simTimeStep);
+        controlled = model1->getOut()->at(35);
+        j++;
+    }
+
     sim->stop();
 
-    double controlled(model1->getOut()->at(35));
     double doseToControl(model1->getOut()->at(36));
 
     delete model1;
