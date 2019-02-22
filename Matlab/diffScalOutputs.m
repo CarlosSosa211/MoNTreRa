@@ -2,23 +2,21 @@ clear all
 close all
 
 nfig = 0;
-% path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
-%     num2str(nTissue)];
-% path = '../../Carlos/Results/Diff_Ang_432Sim_Tissue4_15Out';
-% path = ['../../Carlos/Results/Diff_Ang_432x5Sim_Tissue', num2str(nTissue)];
-% path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues/Tissue';
-% path = '../../Carlos/Results/Diff_Ang_Dose_5Values_5Rep_AllTissues/Tissue';
-path = '../../Carlos/Results/Diff_Res_Dose_5Values_5Rep_AllTissues/Tissue';
-% path = ['../../Carlos/Results/Diff_AngRes_Dose_5Values_5Rep_AllTissues'...
+% path = '../../Carlos/Results/Diff_Ang_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_Res_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = ['../../Carlos/Results/Diff_AngRes_Dose_5Val_5Rep_AllTissues'...
 %     '/Tissue'];
+path = '../../Carlos/Results/Diff_HypNec_Dose_5Val_5Rep_AllTissues/Tissue';
 % path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues_noHypNec/Tissue';
-nTissues = 21;
-withoutN = 'No healthy cell division';
-withN = 'Healthy cell division';
+nTissues = 1;
 % withoutN = 'No angiogenesis';
 % withN = 'Angiogenesis';
+% withoutN = 'No healthy cell division';
+% withN = 'Healthy cell division';
 % withoutN = 'No angiogenesis and no healthy cell division';
 % withN = 'Angiogenesis and healthy cell division';
+withoutN = 'No hypoxic necrosis';
+withN = 'Hypoxic necrosis';
 
 fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/finTumVol.res', '/intTumDens.res', '/killed50.res'...
@@ -42,7 +40,7 @@ nTissue = input(['Select one tissue (from 1 to ', num2str(nTissues)...
 
 if(nTissue >= 1 && nTissue <= nTissues)
     pathTissue = [path, num2str(nTissue)];
-    par = load([path, '/combPar.res']);
+    par = load([pathTissue, '/combPar.res']);
     
     % colTTum = 1;
     % colDThres = 2;
@@ -60,8 +58,8 @@ if(nTissue >= 1 && nTissue <= nTissues)
         'timeTo99 (12), rec(13),\nrecTumDens (14), recTime (15) '...
         'or all of them (-1)]: ']);
     
-    if(selOut >= 1 && selOut <= 15)
-        output = load([path, char(fileNames(selOut))]);
+    if(selOut >= 1 && selOut <= nTissues)
+        output = load([pathTissue, char(fileNames(selOut))]);
         
     elseif(selOut == -1)
         for i = 1:length(fileNames)
@@ -312,6 +310,7 @@ else
         char(outputNames(selOut))])
 end
 grid on
+ylim([0, inf])
 xlabel('Dose (Gy)')
 ylabel('Difference')
 
