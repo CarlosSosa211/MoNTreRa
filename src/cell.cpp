@@ -325,7 +325,7 @@ int Cell::updateModel(const double currentTime,
         }
     }
 
-    if (IN_HYP_NEC){
+    if(IN_HYP_NEC){
         ST_FIB      = 0.0;
         ST_TUM      = 0.0;
         ST_NORM_VES = 0.0;
@@ -341,7 +341,7 @@ int Cell::updateModel(const double currentTime,
         ST_ARREST = 0.0;
     }
 
-    else if (IN_MIT_CAT){
+    else if(IN_MIT_CAT){
         ST_FIB      = 0.0;
         ST_TUM      = 0.0;
         ST_NORM_VES = 0.0;
@@ -357,7 +357,7 @@ int Cell::updateModel(const double currentTime,
         ST_ARREST = 0.0;
     }
 
-    else if (IN_APOP){
+    else if(IN_APOP){
         ST_FIB      = 0.0;
         ST_TUM      = 0.0;
         ST_NORM_VES = 0.0;
@@ -373,7 +373,7 @@ int Cell::updateModel(const double currentTime,
         ST_ARREST = 0.0;
     }
 
-    else if (IN_NORM_VES){
+    else if(IN_NORM_VES){
         ST_FIB      = 0.0;
         ST_TUM      = 0.0;
         ST_NORM_VES = 1.0;
@@ -389,7 +389,7 @@ int Cell::updateModel(const double currentTime,
         ST_ARREST = 0.0;
     }
 
-    else if (IN_TUM_VES){
+    else if(IN_TUM_VES){
         ST_FIB      = 0.0;
         ST_TUM      = 0.0;
         ST_NORM_VES = 0.0;
@@ -421,7 +421,7 @@ int Cell::updateModel(const double currentTime,
         ST_ARREST = 0.0;
     }
 
-    else if (IN_TUM){
+    else if(IN_TUM){
         ST_FIB      = 0.0;
         ST_TUM      = 1.0;
         ST_NORM_VES = 0.0;
@@ -572,7 +572,7 @@ double Cell::calcOER() const{
         return (PAR_M * ST_PO2 + PAR_K) / (ST_PO2 + PAR_K); //mmHg
     }
     else{
-        return 1.0;
+        return PAR_M;
     }
 }
 
