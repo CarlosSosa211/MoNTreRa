@@ -186,12 +186,13 @@ InWindow::InWindow() : QWidget(){
     for(int i(0); i < 8; i++){
         m_alpha.at(i)->setSingleStep(0.001);
         m_alpha.at(i)->setDecimals(3);
-        m_beta.at(i)->setSingleStep(0.001);
-        m_beta.at(i)->setDecimals(3);
+        m_beta.at(i)->setSingleStep(0.0001);
+        m_beta.at(i)->setDecimals(4);
     }
 
     m_fraction->setDecimals(1);
     m_totalDose->setDecimals(1);
+    m_totalDose->setMaximum(200.0);
     m_interval->setDecimals(1);
 
     m_DO2->setMaximum(9999.9);
