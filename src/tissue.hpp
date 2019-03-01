@@ -47,6 +47,10 @@
 #define ST_DOSE_TO_999        m_st->at(26)
 #define ST_CONTROLLED         m_st->at(27)
 #define ST_DOSE_TO_CONTROL    m_st->at(28)
+#define ST_VES_DENS           m_st->at(29)
+#define ST_NORM_VES_DENS      m_st->at(30)
+#define ST_TUM_VES_DENS       m_st->at(31)
+#define ST_DEAD_DENS          m_st->at(32)
 
 //Outputs
 #define OUT_TUM_DENS           m_out->at(0)
@@ -86,12 +90,11 @@
 #define OUT_REC                m_out->at(34)
 #define OUT_CONTROLLED         m_out->at(35)
 #define OUT_DOSE_TO_CONTROL    m_out->at(36)
-
+#define OUT_DEAD_DENS          m_out->at(37)
 
 //Internal parameters
 #define PAR_INIT_TUM_DENS m_param->at(0)
 #define PAR_INIT_VES_DENS m_param->at(1)
-
 
 class Tissue : public Model{
 public:

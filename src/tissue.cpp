@@ -19,7 +19,7 @@ using namespace std;
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                Treatment *const treatment) :
-    Model(0, 29, 37, 2, nrow * ncol * nlayer){
+    Model(0, 33, 38, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -44,7 +44,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, Treatment *const treatment,
                const double doseThres, const double arrestTime,
                const double oxy, const double hypNecThres) :
-    Model(0, 29, 37, 2, nrow * ncol * nlayer){
+    Model(0, 33, 38, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -209,7 +209,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> beta, Treatment *const treatment,
                const double doseThres, const double arrestTime,
                const double oxy, const double hypNecThres) :
-    Model(0, 29, 37, 2, nrow * ncol * nlayer){
+    Model(0, 33, 38, 2, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -374,9 +374,11 @@ int Tissue::calcModelOut(){
         OUT_KILLED_CELLS = (PAR_INIT_TUM_DENS - ST_TUM_DENS) / PAR_INIT_TUM_DENS * 100.0;
     }
 
-    OUT_VES_DENS      = double(getNumVes()) / double(m_numComp) * 100.0;
-    OUT_NORM_VES_DENS = double(getNumNormVes()) / double(m_numComp) * 100.0;
-    OUT_TUM_VES_DENS  = double(getNumTumVes()) / double(m_numComp) * 100.0;
+    OUT_VES_DENS      = ST_VES_DENS;
+    OUT_NORM_VES_DENS = ST_NORM_VES_DENS;
+    OUT_TUM_VES_DENS  = ST_TUM_VES_DENS;
+
+    OUT_DEAD_DENS = ST_DEAD_DENS;
 
     const int numTum(getNumTum());
 
@@ -436,14 +438,22 @@ int Tissue::initModel(){
         (m_comp->at(k))->initModel();
     }
 
-    PAR_INIT_TUM_DENS = double(getNumTum()) / double(m_numComp) * 100.0;
-    PAR_INIT_VES_DENS = double(getNumVes()) / double(m_numComp) * 100.0;
+    double _numComp100(1.0 / double(m_numComp) * 100.0);
+
+    PAR_INIT_TUM_DENS = double(getNumTum()) * _numComp100;
+    PAR_INIT_VES_DENS = double(getNumVes()) * _numComp100;
 
     ST_TUM_DENS      = PAR_INIT_TUM_DENS;
     ST_PREV_TUM_DENS = PAR_INIT_TUM_DENS;
     ST_INT_TUM_DENS  = 0.0;
     ST_END_TREAT_TUM_DENS = 0.0;
     ST_3MON_TUM_DENS      = 0.0;
+
+    ST_VES_DENS      = double(getNumVes()) * _numComp100;
+    ST_NORM_VES_DENS = double(getNumNormVes()) * _numComp100;
+    ST_TUM_VES_DENS  = double(getNumTumVes()) * _numComp100;
+
+    ST_DEAD_DENS  = double(getNumDead()) * _numComp100;
 
     ST_REC          = 0.0;
     ST_COUNT_REC    = 0.0;
@@ -525,9 +535,16 @@ int Tissue::updateModel(const double currentTime,
         (m_comp->at(k))->updateModel(currentTime, DT);
     }
 
+    double _numComp100(1.0 / double(m_numComp) * 100.0);
     ST_PREV_TUM_DENS = ST_TUM_DENS;
-    ST_TUM_DENS = double(getNumTum()) / double(m_numComp) * 100.0;
+    ST_TUM_DENS = double(getNumTum()) * _numComp100;
     ST_INT_TUM_DENS += 0.5 * DT * (ST_PREV_TUM_DENS + ST_TUM_DENS);
+
+    ST_VES_DENS      = double(getNumVes()) * _numComp100;
+    ST_NORM_VES_DENS = double(getNumNormVes()) * _numComp100;
+    ST_TUM_VES_DENS  = double(getNumTumVes()) * _numComp100;
+
+    ST_DEAD_DENS  = double(getNumDead()) * _numComp100;
 
     if(m_treatment){
         if(currentTime <= m_treatment->getDuration()){

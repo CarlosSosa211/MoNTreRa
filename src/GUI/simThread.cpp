@@ -207,6 +207,7 @@ void SimThread::run(){
         std::ofstream fKilledCells("../OutputFilesGUI/killedCells.res");
         std::ofstream fVascDens("../OutputFilesGUI/vascDens.res");
         std::ofstream fHypDens("../OutputFilesGUI/hypDens.res");
+        std::ofstream fDeadDens("../OutputFilesGUI/deadCellsDens.res");
         std::ofstream fPO2Stat("../OutputFilesGUI/pO2Stat.res");
         std::ofstream fVEGFStat("../OutputFilesGUI/vegfStat.res");
         std::ofstream fState("../OutputFilesGUI/state.res");
@@ -227,6 +228,8 @@ void SimThread::run(){
                         model1->getOut()->at(21) << std::endl;
         fHypDens << currentTime << " " <<
                     coupler->getModel2()->getOut()->at(0) << std::endl;
+        fDeadDens << currentTime << " " <<
+                     model1->getOut()->at(37) << std::endl;
         fPO2Stat << currentTime << " " <<
                     coupler->getModel2()->getOut()->at(1) << " " <<
                     coupler->getModel2()->getOut()->at(2) << std::endl;
@@ -266,9 +269,11 @@ void SimThread::run(){
                          model1->getOut()->at(7) << " " <<
                          model1->getOut()->at(8) << std::endl;
             fKilledCells << currentTime << " " <<
-                            model1->getOut()->at(21) << std::endl;
+                            model1->getOut()->at(37) << std::endl;
             fHypDens << currentTime << " " <<
                         coupler->getModel2()->getOut()->at(0) << std::endl;
+            fDeadDens << currentTime << " " <<
+                         model1->getOut()->at(37) << std::endl;
             fPO2Stat << currentTime << " " <<
                         coupler->getModel2()->getOut()->at(1) << " " <<
                         coupler->getModel2()->getOut()->at(2) << std::endl;
@@ -301,6 +306,7 @@ void SimThread::run(){
         fVascDens.close();
         fKilledCells.close();
         fHypDens.close();
+        fDeadDens.close();
         fPO2Stat.close();
         fVEGFStat.close();
         fState.close();
