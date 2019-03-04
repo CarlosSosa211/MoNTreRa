@@ -206,6 +206,8 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
                     "_" + "0_" + to_string(p) + ".res";
             nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) +
                     "_" + "0_" + to_string(p) + ".res";
+            nFDeadDens    = "../OutputFiles/deadDens_" + to_string(count) +
+                    "_" + "0_" + to_string(p) + ".res";
             nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
                     "0_" + to_string(p) + ".res";
             nFHypDens     = "../OutputFiles/hypDens_" + to_string(count) + "_" +
@@ -245,6 +247,8 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
             nFVascDens    = "../OutputFiles/vascDens_" + to_string(count) +
                     "_" + "1_" + to_string(p) + ".res";
             nFKilledCells = "../OutputFiles/killedCells_" + to_string(count) +
+                    "_" + "1_" + to_string(p) + ".res";
+            nFDeadDens    = "../OutputFiles/deadDens_" + to_string(count) +
                     "_" + "1_" + to_string(p) + ".res";
             nFCycle       = "../OutputFiles/cycle_" + to_string(count) + "_" +
                     "1_" + to_string(p) + ".res";

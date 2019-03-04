@@ -16,36 +16,37 @@ typedef std::vector<double> DoubleVect;
 
 class Model {
 public :
-  Model(const int numIn, const int numSt, const int numOut,
-	const int numParam, const int numComp);
-  virtual ~Model();
-  virtual int calcModelOut() = 0;
-  virtual int initModel() = 0;
-  virtual int terminateModel() = 0;
-  virtual int updateModel(const double currentTime, const double DT = 0 ) = 0;
-  DoubleVect *getIn() const;
-  DoubleVect *getSt() const;
-  DoubleVect *getOut() const;
-  DoubleVect *getParam() const;
-  std::vector<Model*> *getComp() const;
-  int getNumIn() const;
-  int getNumSt() const;
-  int getNumOut() const;
-  int getNumParam() const;
-  int getNumComp() const;
+    Model(const int numIn, const int numSt, const int numOut,
+          const int numParam, const int numComp);
+    virtual ~Model();
+    virtual int calcModelOut() = 0;
+    virtual int initModel() = 0;
+    virtual int terminateModel() = 0;
+    virtual int updateModel(const double currentTime = 0, const double DT = 0) =
+            0;
+    DoubleVect *getIn() const;
+    DoubleVect *getSt() const;
+    DoubleVect *getOut() const;
+    DoubleVect *getParam() const;
+    std::vector<Model*> *getComp() const;
+    int getNumIn() const;
+    int getNumSt() const;
+    int getNumOut() const;
+    int getNumParam() const;
+    int getNumComp() const;
 
 protected:
-  int m_numIn;
-  int m_numSt;
-  int m_numOut;
-  int m_numParam;
-  int m_numComp;
-  DoubleVect *m_in;	
-  DoubleVect *m_st;   
-  DoubleVect *m_out; 
-  DoubleVect *m_param; 
-  std::vector<Model *>  *m_comp;
-  Model	*m_parent; 
+    int m_numIn;
+    int m_numSt;
+    int m_numOut;
+    int m_numParam;
+    int m_numComp;
+    DoubleVect *m_in;
+    DoubleVect *m_st;
+    DoubleVect *m_out;
+    DoubleVect *m_param;
+    std::vector<Model *>  *m_comp;
+    Model	*m_parent;
 };
 
 #endif

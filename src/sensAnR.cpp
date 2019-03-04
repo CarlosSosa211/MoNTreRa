@@ -47,7 +47,7 @@ void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
             }
             toyModel(x, y);
             //cout << i + 1 << " out of " << nEv << " evaluations of the model" <<
-            endl;
+            //endl;
             //cout << "---------------------------------------------" << endl;
 
             fY << y[0] << endl;
