@@ -18,8 +18,8 @@ using namespace std;
 ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
                                const string nFInVes, const double pO2NotVes,
                                const double pO2NormVes, const double pO2TumVes,
-                               const double hypThres) :
-    Model(0, 0, 5, 0, nrow * ncol * nlayer){
+                               const double hypThres) : Model(0, 0, 5, 0, nrow *
+                                                              ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -47,10 +47,11 @@ ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
 
 
 ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                               const vector<bool> &inVes, const double pO2NotVes,
+                               const vector<bool> &inVes,
+                               const double pO2NotVes,
                                const double pO2NormVes, const double pO2TumVes,
-                               const double hypThres) :
-    Model(0, 0, 5, 0, nrow * ncol * nlayer){
+                               const double hypThres) : Model(0, 0, 5, 0, nrow *
+                                                              ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;

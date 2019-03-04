@@ -18,8 +18,8 @@
 using namespace std;
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
-               Treatment *const treatment) :
-    Model(0, 33, 38, 2, nrow * ncol * nlayer){
+               Treatment *const treatment) : Model(0, 33, 38, 2, nrow * ncol *
+                                                   nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -38,13 +38,13 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const string nFInVes, const double tumGrowth,
                const double doubTime, const int edgeOrder,
                vector<double> cycDur, vector<double> cycDistrib,
-               const double res, const double fibDoubTime,
-               const double ang, const double angTime,
-               const double vegfThres, vector<double> alpha,
-               vector<double> beta, Treatment *const treatment,
-               const double doseThres, const double arrestTime,
-               const double oxy, const double hypNecThres) :
-    Model(0, 33, 38, 2, nrow * ncol * nlayer){
+               const double res, const double fibDoubTime, const double ang,
+               const double angTime, const double vegfThres,
+               vector<double> alpha, vector<double> beta,
+               Treatment *const treatment, const double doseThres,
+               const double arrestTime, const double oxy,
+               const double hypNecThres) : Model(0, 33, 38, 2, nrow * ncol *
+                                                 nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -58,9 +58,9 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
         for(int i(0); i < m_nrow; i++){
             for(int j(0); j < m_ncol; j++){
                 m_comp->at(k) = new Cell(i, j, l, tumGrowth, doubTime, cycDur,
-                                         res, fibDoubTime, ang, angTime, vegfThres,
-                                         alpha, beta, doseThres, arrestTime, oxy,
-                                         hypNecThres, this);
+                                         res, fibDoubTime, ang, angTime,
+                                         vegfThres, alpha, beta, doseThres,
+                                         arrestTime, oxy, hypNecThres, this);
                 m_numOut += (m_comp->at(k))->getNumOut();
                 k++;
             }
@@ -79,11 +79,12 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                         iincol = llnrowNcol + incol + ii * m_ncol;
                         for(int jj(-edgeOrder); jj <= edgeOrder; jj++){
                             if(ii != 0 || jj != 0 || ll != 0){
-                                if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0
-                                        && i + ii < m_nrow && j + jj >= 0 &&
-                                        j + jj < m_ncol){
+                                if(l + ll >= 0 && l + ll < m_nlayer &&
+                                        i + ii >= 0 && i + ii < m_nrow &&
+                                        j + jj >= 0 && j + jj < m_ncol){
                                     ((Cell *)m_comp->at(lnrowNcol + incol + j))
-                                            ->addToEdge((Cell *)m_comp->at(iincol + j + jj));
+                                            ->addToEdge((Cell *)m_comp->
+                                                        at(iincol + j + jj));
                                 }
                             }
                         }
@@ -147,8 +148,9 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                                 rand() % int(cycDur.at(2) * doubTime);
                     }
                     else{
-                        inputTimer = (cycDur.at(0) + cycDur.at(1) + cycDur.at(2)) *
-                                doubTime + rand() % int(cycDur.at(3) * doubTime);
+                        inputTimer = (cycDur.at(0) + cycDur.at(1) +
+                                      cycDur.at(2)) * doubTime + rand() %
+                                int(cycDur.at(3) * doubTime);
                     }
                 }
 
@@ -203,13 +205,13 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const vector<bool> &inVes, const double tumGrowth,
                const double doubTime, const int edgeOrder,
                vector<double> cycDur, vector<double> cycDistrib,
-               const double res, const double fibDoubTime,
-               const double ang, const double angTime,
-               const double vegfThres, vector<double> alpha,
-               vector<double> beta, Treatment *const treatment,
-               const double doseThres, const double arrestTime,
-               const double oxy, const double hypNecThres) :
-    Model(0, 33, 38, 2, nrow * ncol * nlayer){
+               const double res, const double fibDoubTime, const double ang,
+               const double angTime, const double vegfThres,
+               vector<double> alpha, vector<double> beta,
+               Treatment *const treatment, const double doseThres,
+               const double arrestTime, const double oxy,
+               const double hypNecThres) : Model(0, 33, 38, 2, nrow * ncol *
+                                                 nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -260,11 +262,12 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                         iincol = llnrowNcol + incol + ii * m_ncol;
                         for(int jj(-edgeOrder); jj <= edgeOrder; jj++){
                             if(ii != 0 || jj != 0 || ll != 0){
-                                if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0
-                                        && i + ii < m_nrow && j + jj >= 0 &&
-                                        j + jj < m_ncol){
+                                if(l + ll >= 0 && l + ll < m_nlayer &&
+                                        i + ii >= 0 && i + ii < m_nrow &&
+                                        j + jj >= 0 && j + jj < m_ncol){
                                     ((Cell *)m_comp->at(lnrowNcol + incol + j))
-                                            ->addToEdge((Cell *)m_comp->at(iincol + j + jj));
+                                            ->addToEdge((Cell *)m_comp->
+                                                        at(iincol + j + jj));
                                 }
                             }
                         }
@@ -292,8 +295,9 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                                 rand() % int(cycDur.at(2) * doubTime);
                     }
                     else{
-                        inputTimer = (cycDur.at(0) + cycDur.at(1) + cycDur.at(2)) *
-                                doubTime + rand() % int(cycDur.at(3) * doubTime);
+                        inputTimer = (cycDur.at(0) + cycDur.at(1) +
+                                      cycDur.at(2)) * doubTime + rand() %
+                                int(cycDur.at(3) * doubTime);
                     }
                 }
                 else{
@@ -366,12 +370,13 @@ int Tissue::calcModelOut(){
     OUT_3MON_TUM_DENS      = ST_3MON_TUM_DENS;
     OUT_INT_TUM_DENS       = ST_INT_TUM_DENS;
 
-    OUT_REC                = ST_REC;
-    OUT_REC_TUM_DENS       = ST_REC_TUM_DENS;
-    OUT_REC_TIME           = ST_REC_TIME;
+    OUT_REC          = ST_REC;
+    OUT_REC_TUM_DENS = ST_REC_TUM_DENS;
+    OUT_REC_TIME     = ST_REC_TIME;
 
     if(PAR_INIT_TUM_DENS){
-        OUT_KILLED_CELLS = (PAR_INIT_TUM_DENS - ST_TUM_DENS) / PAR_INIT_TUM_DENS * 100.0;
+        OUT_KILLED_CELLS = (PAR_INIT_TUM_DENS - ST_TUM_DENS) /
+                PAR_INIT_TUM_DENS * 100.0;
     }
 
     OUT_VES_DENS      = ST_VES_DENS;
@@ -423,7 +428,8 @@ int Tissue::calcModelOut(){
     OUT_DOSE_TO_CONTROL = ST_DOSE_TO_CONTROL;
 
     if(m_nlayer == 1){
-        OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize * m_cellSize, 1.5);
+        OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize *
+                                                     m_cellSize, 1.5);
     }
     else{
         OUT_TUM_VOL = numTum * m_cellSize * m_cellSize * m_cellSize;

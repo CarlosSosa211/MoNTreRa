@@ -93,15 +93,13 @@ Cell::Cell(Model *const parent) : Model(10, 20, 2, 34, 0){
 }
 
 
-Cell::Cell(const int i, const int j, const int l,
-           const double tumGrowth, const double doubTime,
-           vector <double> cycDur, const double res,
-           const double fibDoubTime, const double ang,
-           const double angTime, const double vegfThres,
-           vector<double> alpha, vector<double> beta,
-           const double doseThres, const double arrestTime,
-           const double oxy, const double hypNecThres,
-           Model *const parent) : Model(10, 20, 2, 34, 0){
+Cell::Cell(const int i, const int j, const int l, const double tumGrowth,
+           const double doubTime, vector <double> cycDur, const double res,
+           const double fibDoubTime, const double ang, const double angTime,
+           const double vegfThres, vector<double> alpha, vector<double> beta,
+           const double doseThres, const double arrestTime, const double oxy,
+           const double hypNecThres, Model *const parent) : Model(10, 20, 2, 34,
+                                                                  0){
     m_i = i;
     m_j = j;
     m_l = l;
@@ -188,12 +186,10 @@ Cell::~Cell(){
 
 
 int Cell::calcModelOut(){
-    OUT_STATE = ST_FIB + 2 * (ST_TUM && !ST_DAM) +
-            3 * (ST_TUM && ST_DAM) + 4 * ST_NORM_VES +
-            5 * ST_TUM_VES + 6 * ST_HYP_NEC +
-            7 * ST_MIT_CAT + 8 * ST_APOP;
-    OUT_CYCLE = ST_G1 + 2 * ST_S + 3 * ST_G2 +
-            4 * ST_M + 5 * ST_G0;
+    OUT_STATE = ST_FIB + 2 * (ST_TUM && !ST_DAM) + 3 * (ST_TUM && ST_DAM) +
+            4 * ST_NORM_VES + 5 * ST_TUM_VES + 6 * ST_HYP_NEC + 7 * ST_MIT_CAT +
+            8 * ST_APOP;
+    OUT_CYCLE = ST_G1 + 2 * ST_S + 3 * ST_G2 + 4 * ST_M + 5 * ST_G0;
     return 0;
 }
 
@@ -286,8 +282,7 @@ int Cell::terminateModel(){
 }
 
 
-int Cell::updateModel(const double currentTime,
-                      const double DT){
+int Cell::updateModel(const double currentTime, const double DT){
     ST_PO2  = IN_PO2;
     ST_VEGF = IN_VEGF;
 
@@ -603,8 +598,7 @@ double Cell::calcSF() const{
     fraction = m_treatment->getFraction();
     OER = calcOER();
     SF = exp(-PAR_ALPHA / PAR_M * fraction * OER -
-             PAR_BETA / (PAR_M * PAR_M) * fraction * fraction *
-             OER * OER);
+             PAR_BETA / (PAR_M * PAR_M) * fraction * fraction * OER * OER);
     return SF;
 }
 

@@ -40,8 +40,7 @@ void Simulator::initSim(){
 }
 
 
-void Simulator::simulate(const double currentTime,
-                         const double simTime){
+void Simulator::simulate(const double currentTime, const double simTime){
     int numIter(simTime / m_DT);
 
     m_currentTime = currentTime;

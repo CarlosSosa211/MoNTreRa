@@ -20,8 +20,7 @@ OxyCell::OxyCell() : AbsOxyCell(){
 OxyCell::OxyCell(const double ang, const double  VmaxVegf, const double KmVegf,
                  const double hypVegf, const double VmaxO2, const double KmO2,
                  const double pO2NormVes, const double pO2TumVes,
-                 const double hypThres, Model *const parent) :
-    AbsOxyCell(){
+                 const double hypThres, Model *const parent) : AbsOxyCell(){
     m_in->resize(7);
     m_param->resize(10);
 
@@ -101,16 +100,14 @@ void OxyCell::calcConsO2(){
         IN_CONS_O2 = 0.0;
     }
     else{
-        IN_CONS_O2 = ST_OXYPO2 * PAR_VMAX_O2 /
-                (PAR_KM_O2 + ST_OXYPO2);
+        IN_CONS_O2 = ST_OXYPO2 * PAR_VMAX_O2 / (PAR_KM_O2 + ST_OXYPO2);
     }
 }
 
 
 void OxyCell::calcConsVegf(){
     if(ST_OXYNORM_VES || ST_OXYTUM_VES){
-        IN_CONS_VEGF = ST_OXYVEGF * PAR_VMAX_VEGF /
-                (PAR_KM_VEGF + ST_OXYVEGF);
+        IN_CONS_VEGF = ST_OXYVEGF * PAR_VMAX_VEGF / (PAR_KM_VEGF + ST_OXYVEGF);
     }
     else{
         IN_CONS_VEGF = 0.0;

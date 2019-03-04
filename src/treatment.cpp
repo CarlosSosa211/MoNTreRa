@@ -119,14 +119,11 @@ double Treatment::getTotalDose() const{
 
 ostream &operator<<(ostream &stream, Treatment *treatment){
     if(treatment){
-    stream << "Total dose = " << treatment->getTotalDose() <<
-              " Gy" << endl;
-    stream << "Fraction = " << treatment->getFraction() << " Gy" <<
-              endl;
-    stream << "Interval = " << treatment->getInterval() << " h" <<
-              endl;
-    stream << "Schedule = " << treatment->getScheDescrip() <<  endl;
-    stream << "---------------------------------------------" << endl;
+        stream << "Total dose = " << treatment->getTotalDose() << " Gy" << endl;
+        stream << "Fraction = " << treatment->getFraction() << " Gy" << endl;
+        stream << "Interval = " << treatment->getInterval() << " h" << endl;
+        stream << "Schedule = " << treatment->getScheDescrip() <<  endl;
+        stream << "---------------------------------------------" << endl;
     }
 
     else{

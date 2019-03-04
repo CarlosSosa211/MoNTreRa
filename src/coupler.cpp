@@ -47,13 +47,16 @@ int Coupler::updateModel(const double currentTime,
                     setInVegf(getModel2()->getComp()->at(k)->getOut()->at(1));
 
             ((AbsOxyCell *)getModel2()->getComp()->at(k))->
-                    setInNormVes(((Cell *)getModel1()->getComp()->at(k))->getNormVes());
+                    setInNormVes(((Cell *)getModel1()->getComp()->at(k))->
+                                 getNormVes());
 
             ((AbsOxyCell *)getModel2()->getComp()->at(k))->
-                    setInTumVes(((Cell *)getModel1()->getComp()->at(k))->getTumVes());
+                    setInTumVes(((Cell *)getModel1()->getComp()->at(k))->
+                                getTumVes());
 
             ((AbsOxyCell *)getModel2()->getComp()->at(k))->
-                    setInDead(((Cell *)getModel1()->getComp()->at(k))->getDead());
+                    setInDead(((Cell *)getModel1()->getComp()->at(k))->
+                              getDead());
         }
     }
     return 0;

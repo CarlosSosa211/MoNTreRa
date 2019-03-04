@@ -2,8 +2,8 @@
 
 using namespace std;
 
-void modelTCP(const double *x, double *y, const int nrow,
-              const int ncol, const int nlayer, const double cellSize,
+void modelTCP(const double *x, double *y, const int nrow, const int ncol,
+              const int nlayer, const double cellSize,
               const vector<bool> &inTum, const vector<bool> & inVes,
               Treatment *const treatment){
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
@@ -100,10 +100,10 @@ void modelTCP(const double *x, double *y, const int nrow,
     Tissue *model1;
     OxyTissue *model2;
 
-    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes,
-                        tumGrowth, tumTime, edgeOrder, cycDur, cycDistrib,
-                        res, fibTime, ang, vascTumTime, vegfThres, alpha,
-                        beta, treatment, doseThres, arrestTime, oxy, hypNecThres);
+    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, tumGrowth,
+                        tumTime, edgeOrder, cycDur, cycDistrib, res, fibTime,
+                        ang, vascTumTime, vegfThres, alpha, beta, treatment,
+                        doseThres, arrestTime, oxy, hypNecThres);
 
     const double oxySimTimeStep(10.0);
 
@@ -112,10 +112,9 @@ void modelTCP(const double *x, double *y, const int nrow,
     DO2      *= oxySimTimeStep;
     VmaxO2   *= oxySimTimeStep;
 
-    model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes,
-                           ang, Dvegf, VmaxVegf, KmVegf, hypVegf,
-                           DO2, VmaxO2, KmO2, pO2NormVes, pO2TumVes,
-                           hypThres);
+    model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
+                           VmaxVegf, KmVegf, hypVegf, DO2, VmaxO2, KmO2,
+                           pO2NormVes, pO2TumVes, hypThres);
 
     coupler = new Coupler(model1, model2);
 
@@ -169,8 +168,8 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
     vector<bool> inTum, inVes;
     vector<Treatment> treatment;
 
-    readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, art, nrow, ncol, nlayer, cellSize,
-                   tumDens, sigmaTum, vascDens, sigmaVasc, treatment);
+    readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, art, nrow, ncol, nlayer,
+                   cellSize, tumDens, sigmaTum, vascDens, sigmaVasc, treatment);
     if(!art){
         readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                     cellSize, inTum, inVes);
@@ -187,16 +186,20 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
     const int nEvTot(treatment.size() * N);
     int nEv(0);
     for(int i(0); i < treatment.size(); i++){
-        ofstream fControlled("../OutputFiles/controlled_" + to_string(i) + ".res");
-        ofstream fDoseToControl("../OutputFiles/doseToControl_" + to_string(i) + ".res");
+        ofstream fControlled("../OutputFiles/controlled_" + to_string(i) +
+                             ".res");
+        ofstream fDoseToControl("../OutputFiles/doseToControl_" + to_string(i) +
+                                ".res");
         for(int j(0); j < N; j++){
             if(art){
                 createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
                               vascDens, sigmaVasc, inTum, inVes);
             }
-            modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, &(treatment[i]));
+            modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes,
+                     &(treatment[i]));
             nEv++;
-            cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+            cout << nEv << " out of " << nEvTot <<
+                    " evaluations of the model" << endl;
             cout << "---------------------------------------------" << endl;
 
             fControlled    << y[0] << endl;

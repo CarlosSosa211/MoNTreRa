@@ -93,21 +93,18 @@
 class Cell: public Model{
 public :
     Cell(Model *const parent = 0);
-    Cell(const int i, const int j, const int l,
-         const double tumGrowth, const double doubTime,
-         std::vector<double> cycDur, const double res,
-         const double fibDoubTime, const double ang,
-         const double angTime, const double vegfThres,
-         std::vector<double> alpha, std::vector<double> beta,
-         const double doseThres, const double arrestTime, 
-         const double oxy, const double hypNecThres,
+    Cell(const int i, const int j, const int l, const double tumGrowth,
+         const double doubTime, std::vector<double> cycDur, const double res,
+         const double fibDoubTime, const double ang, const double angTime,
+         const double vegfThres, std::vector<double> alpha,
+         std::vector<double> beta, const double doseThres,
+         const double arrestTime, const double oxy, const double hypNecThres,
          Model *const parent = 0);
     virtual ~Cell();
     virtual int calcModelOut();
     virtual int initModel();
     virtual int terminateModel();
-    virtual int updateModel(const double currentTime,
-                            const double DT);
+    virtual int updateModel(const double currentTime, const double DT);
     void addToEdge(Cell *const cell);
     void calcFibProlif(double DT);
     double calcG1SF() const;

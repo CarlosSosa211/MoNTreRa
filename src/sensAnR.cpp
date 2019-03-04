@@ -46,7 +46,8 @@ void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
                 fX >> x[k];
             }
             toyModel(x, y);
-            //cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
+            //cout << i + 1 << " out of " << nEv << " evaluations of the model" <<
+            endl;
             //cout << "---------------------------------------------" << endl;
 
             fY << y[0] << endl;
@@ -90,7 +91,8 @@ void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
                 fX >> x[k];
             }
             model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes);
-            cout << i + 1 << " out of " << nEv << " evaluations of the model" << endl;
+            cout << i + 1 << " out of " << nEv << " evaluations of the model" <<
+                    endl;
             cout << "---------------------------------------------" << endl;
 
             fYEndTreatTumDens << y[0]  << endl;

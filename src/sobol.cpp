@@ -2,9 +2,10 @@
 
 using namespace std;
 
-void sobol(const int K, const int N, const int nOut, const double *x0, const double *h,
-           double **SI, double **TSI, double ***SIConv, double ***TSIConv,
-           const string nFInTissueDim, const string nFInTum, const string nFInVes){
+void sobol(const int K, const int N, const int nOut, const double *x0,
+           const double *h, double **SI, double **TSI, double ***SIConv,
+           double ***TSIConv, const string nFInTissueDim, const string nFInTum,
+           const string nFInVes){
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
@@ -37,12 +38,14 @@ void sobol(const int K, const int N, const int nOut, const double *x0, const dou
         //toyModel(Xa[i], Ya[i]);
         model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
-        cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+        cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
+                endl;
         cout << "---------------------------------------------" << endl;
         //toyModel(Xb[i], Yb[i]);
         model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
-        cout << nEv << " out of " << nEvTot << " evaluations of the model" << endl;
+        cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
+                endl;
         cout << "---------------------------------------------" << endl;
     }
 
@@ -87,7 +90,8 @@ void sobol(const int K, const int N, const int nOut, const double *x0, const dou
             for(int j(0); j < nOut; j++){
                 f02Conv    = 0.25 / (nConv * nConv) * f0[j] * f0[j] ;
                 sigma2Conv = 0.5 / nConv * sigma2[j] - f02Conv;
-                SIConv[iConv][j][0]  = (alpha[j] / nConv - f02Conv) / sigma2Conv;
+                SIConv[iConv][j][0]  = (alpha[j] / nConv - f02Conv) /
+                        sigma2Conv;
                 TSIConv[iConv][j][0] = 0.5 * beta[j] / (nConv * sigma2Conv);
             }
             iConv++;
@@ -134,7 +138,8 @@ void sobol(const int K, const int N, const int nOut, const double *x0, const dou
                 for(int j(0); j < nOut; j++){
                     f02Conv    = 0.25 / (nConv * nConv) * f0[j] * f0[j] ;
                     sigma2Conv = 0.5 / nConv * sigma2[j] - f02Conv;
-                    SIConv[iConv][j][k]  = (alpha[j] / nConv - f02Conv) / sigma2Conv;
+                    SIConv[iConv][j][k]  = (alpha[j] / nConv - f02Conv) /
+                            sigma2Conv;
                     TSIConv[iConv][j][k] = 0.5 * beta[j] / (nConv * sigma2Conv);
                 }
                 iConv++;
@@ -238,7 +243,8 @@ void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
     SIConv  = alloc3D(NConv, nOut, K);
     TSIConv = alloc3D(NConv, nOut, K);
 
-    sobol(K, N, nOut, x0, h, SI, TSI, SIConv, TSIConv, nFInTissueDim, nFInTum, nFInVes);
+    sobol(K, N, nOut, x0, h, SI, TSI, SIConv, TSIConv, nFInTissueDim, nFInTum,
+          nFInVes);
 
     ofstream fSobolEndTreatTumDens("../OutputFiles/sobolEndTreatTumDens.res");
     ofstream fSobol3MonTumDens("../OutputFiles/sobol3MonTumDens.res");

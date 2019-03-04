@@ -19,12 +19,13 @@ using namespace std;
 
 OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double cellSize, const string nFInVes,
-                     const double ang, const double Dvegf, const double VmaxVegf,
-                     const double KmVegf, const double hypVegf,
-                     const double DO2, const double VmaxO2, const double KmO2,
+                     const double ang, const double Dvegf,
+                     const double VmaxVegf, const double KmVegf,
+                     const double hypVegf, const double DO2,
+                     const double VmaxO2, const double KmO2,
                      const double pO2NormVes, const double pO2TumVes,
-                     const double hypThres) :
-    Model(0, 4, 9, 3, nrow * ncol * nlayer){
+                     const double hypThres) : Model(0, 4, 9, 3, nrow * ncol *
+                                                    nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -42,10 +43,9 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     PAR_OXY_ANG = ang;
 
     for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new OxyCell(ang, VmaxVegf, KmVegf,
-                                    hypVegf, VmaxO2, KmO2,
-                                    pO2NormVes, pO2TumVes,
-                                    hypThres, this);
+        m_comp->at(k) = new OxyCell(ang, VmaxVegf, KmVegf, hypVegf, VmaxO2,
+                                    KmO2, pO2NormVes, pO2TumVes, hypThres,
+                                    this);
         m_numOut += (m_comp->at(k))->getNumOut();
     }
 
@@ -85,10 +85,12 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                     ii = tii[n];
                     jj = tjj[n];
                     ll = tll[n];
-                    mm = lnrowNcol + ll * m_nrow * m_ncol + incol + ii * m_ncol + j + jj;
-                    if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0 && i + ii < m_nrow &&
-                            j + jj >= 0 && j + jj < m_ncol){
-                        ((OxyCell *)m_comp->at(m))->addToEdge((OxyCell *)m_comp->at(mm));
+                    mm = lnrowNcol + ll * m_nrow * m_ncol + incol + ii *
+                            m_ncol + j + jj;
+                    if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0 && i +
+                            ii < m_nrow && j + jj >= 0 && j + jj < m_ncol){
+                        ((OxyCell *)m_comp->at(m))->
+                                addToEdge((OxyCell *)m_comp->at(mm));
                     }
                 }
             }
@@ -113,12 +115,13 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
 
 OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double cellSize, const vector<bool> &inVes,
-                     const double ang, const double Dvegf, const double VmaxVegf,
-                     const double KmVegf, const double hypVegf,
-                     const double DO2, const double VmaxO2, const double KmO2,
+                     const double ang, const double Dvegf,
+                     const double VmaxVegf, const double KmVegf,
+                     const double hypVegf, const double DO2,
+                     const double VmaxO2, const double KmO2,
                      const double pO2NormVes, const double pO2TumVes,
-                     const double hypThres) :
-    Model(0, 4, 9, 3, nrow * ncol * nlayer){
+                     const double hypThres) : Model(0, 4, 9, 3, nrow * ncol *
+                                                    nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -136,10 +139,9 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     PAR_OXY_ANG = ang;
 
     for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new OxyCell(ang, VmaxVegf, KmVegf,
-                                    hypVegf, VmaxO2, KmO2,
-                                    pO2NormVes, pO2TumVes,
-                                    hypThres, this);
+        m_comp->at(k) = new OxyCell(ang, VmaxVegf, KmVegf, hypVegf, VmaxO2,
+                                    KmO2, pO2NormVes, pO2TumVes, hypThres,
+                                    this);
         m_numOut += (m_comp->at(k))->getNumOut();
         ((OxyCell *)m_comp->at(k))->setInNormVes(inVes.at(k));
     }
@@ -178,10 +180,12 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                     ii = tii[n];
                     jj = tjj[n];
                     ll = tll[n];
-                    mm = lnrowNcol + ll * m_nrow * m_ncol + incol + ii * m_ncol + j + jj;
-                    if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0 && i + ii < m_nrow &&
-                            j + jj >= 0 && j + jj < m_ncol){
-                        ((OxyCell *)m_comp->at(m))->addToEdge(((OxyCell *)m_comp->at(mm)));
+                    mm = lnrowNcol + ll * m_nrow * m_ncol + incol + ii *
+                            m_ncol + j + jj;
+                    if(l + ll >= 0 && l + ll < m_nlayer && i + ii >= 0 && i +
+                            ii < m_nrow && j + jj >= 0 && j + jj < m_ncol){
+                        ((OxyCell *)m_comp->at(m))->
+                                addToEdge(((OxyCell *)m_comp->at(mm)));
                     }
                 }
             }

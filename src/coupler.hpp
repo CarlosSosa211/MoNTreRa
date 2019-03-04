@@ -21,8 +21,7 @@ public :
     virtual int calcModelOut();
     virtual int initModel();
     virtual int terminateModel();
-    virtual int updateModel(const double currentTime = 0,
-                            const double DT = 0);
+    virtual int updateModel(const double currentTime = 0, const double DT = 0);
     Model *getModel1() const;
     Model *getModel2() const;
 };

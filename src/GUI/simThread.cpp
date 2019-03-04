@@ -115,8 +115,7 @@ void SimThread::run(){
         fParam >> fraction >> totalDose >> interval >> schedule;
         fParam >> doseThres >> arrestTime;
 
-        treatment = new Treatment(fraction, totalDose,
-                                  interval, schedule);
+        treatment = new Treatment(fraction, totalDose, interval, schedule);
     }
     else{
         treatment = 0;
@@ -155,18 +154,17 @@ void SimThread::run(){
         RootSimulator *sim;
         Tissue *model1;
 
-        model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum,
-                            inVes, tumGrowth, doubTime, edgeOrder,
-                            cycDur, cycDistrib, res, fibDoubTime,
-                            ang, angTime, vegfThres, alpha, beta,
-                            treatment, doseThres, arrestTime,
-                            oxy, hypNecThres);
+        model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes,
+                            tumGrowth, doubTime, edgeOrder, cycDur, cycDistrib,
+                            res, fibDoubTime, ang, angTime, vegfThres, alpha,
+                            beta, treatment, doseThres, arrestTime, oxy,
+                            hypNecThres);
 
         if(oxy == 0){
             ConstOxyTissue *model2;
 
-            model2 = new ConstOxyTissue(nrow, ncol, nlayer,
-                                        inVes, 0.0, 0.0, 0.0, 0.0);
+            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, 0.0, 0.0,
+                                        0.0, 0.0);
             coupler = new Coupler(model1, model2);
             sclFac = 1.0;
         }
@@ -174,10 +172,9 @@ void SimThread::run(){
         else if(oxy == 1){
             OxyTissue *model2;
 
-            model2 = new OxyTissue(nrow, ncol, nlayer, cellSize,
-                                   inVes, ang, Dvegf, VmaxVegf, KmVegf,
-                                   hypVegf, DO2, VmaxO2, KmO2,
-                                   pO2NormVes, pO2TumVes,
+            model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
+                                   Dvegf, VmaxVegf, KmVegf, hypVegf, DO2,
+                                   VmaxO2, KmO2, pO2NormVes, pO2TumVes,
                                    hypThres);
             coupler = new Coupler(model1, model2);
             sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
@@ -186,16 +183,14 @@ void SimThread::run(){
         else if (oxy == 2){
             ConstOxyTissue *model2;
 
-            model2 = new ConstOxyTissue(nrow, ncol, nlayer,
-                                        inVes, constpO2NotVes,
-                                        constpO2NormVes,
+            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes,
+                                        constpO2NotVes, constpO2NormVes,
                                         constpO2TumVes, hypThres);
             coupler = new Coupler(model1, model2);
             sclFac = 1.0;
         }
 
-        sim = new RootSimulator(coupler, simTimeStep,
-                                oxySimTimeStep, sclFac);
+        sim = new RootSimulator(coupler, simTimeStep, oxySimTimeStep, sclFac);
 
         int numIter(simTime / simTimeStep);
         double currentTime(0.0);
@@ -216,87 +211,87 @@ void SimThread::run(){
         std::ofstream fPO2("../OutputFilesGUI/po2.res");
         std::ofstream fVEGF("../OutputFilesGUI/vegf.res");
 
-        fTumDens << currentTime << " " <<
-                    model1->getOut()->at(0) << std::endl;
-        fTumVol << currentTime << " " <<
-                   model1->getOut()->at(23) << std::endl;
-        fVascDens << currentTime << " " <<
-                     model1->getOut()->at(6) << " " <<
-                     model1->getOut()->at(7) << " " <<
-                     model1->getOut()->at(8) << std::endl;
-        fKilledCells << currentTime << " " <<
-                        model1->getOut()->at(21) << std::endl;
-        fHypDens << currentTime << " " <<
-                    coupler->getModel2()->getOut()->at(0) << std::endl;
-        fDeadDens << currentTime << " " <<
-                     model1->getOut()->at(37) << std::endl;
-        fPO2Stat << currentTime << " " <<
-                    coupler->getModel2()->getOut()->at(1) << " " <<
-                    coupler->getModel2()->getOut()->at(2) << std::endl;
-        fVEGFStat << currentTime << " " <<
-                     coupler->getModel2()->getOut()->at(3) << " " <<
-                     coupler->getModel2()->getOut()->at(4) << std::endl;
-        fCycle << currentTime << " " <<
-                  model1->getOut()->at(1) << " " <<
-                  model1->getOut()->at(2) << " " <<
-                  model1->getOut()->at(3) << " " <<
-                  model1->getOut()->at(4) << " " <<
-                  model1->getOut()->at(5) << std::endl;
+        fTumDens     << currentTime << " " << model1->getOut()->at(0) <<
+                        std::endl;
+        fTumVol      << currentTime << " " << model1->getOut()->at(23) <<
+                        std::endl;
+        fVascDens    << currentTime << " " << model1->getOut()->at(6) << " " <<
+                        model1->getOut()->at(7) << " " <<
+                        model1->getOut()->at(8) << std::endl;
+        fKilledCells << currentTime << " " << model1->getOut()->at(21) <<
+                        std::endl;
+        fHypDens     << currentTime << " " <<
+                        coupler->getModel2()->getOut()->at(0) << std::endl;
+        fDeadDens    << currentTime << " " << model1->getOut()->at(37) <<
+                        std::endl;
+        fPO2Stat     << currentTime << " " <<
+                        coupler->getModel2()->getOut()->at(1) << " " <<
+                        coupler->getModel2()->getOut()->at(2) << std::endl;
+        fVEGFStat    << currentTime << " " <<
+                        coupler->getModel2()->getOut()->at(3) << " " <<
+                        coupler->getModel2()->getOut()->at(4) << std::endl;
+        fCycle       << currentTime << " " << model1->getOut()->at(1) << " " <<
+                        model1->getOut()->at(2) << " " <<
+                        model1->getOut()->at(3) << " " <<
+                        model1->getOut()->at(4) << " " <<
+                        model1->getOut()->at(5) << std::endl;
 
         for(int i(0); i < model1->getNumComp(); i++){
             fState << model1->getComp()->at(i)->getOut()->at(0) << "\t";
             fTimer << model1->getComp()->at(i)->getOut()->at(1) << "\t";
-            fPO2 << coupler->getModel2()->getComp()->at(i)->getOut()->at(0) << "\t";
-            fVEGF << coupler->getModel2()->getComp()->at(i)->getOut()->at(1) << "\t";
+            fPO2   << coupler->getModel2()->getComp()->at(i)->getOut()->at(0) <<
+                      "\t";
+            fVEGF  << coupler->getModel2()->getComp()->at(i)->getOut()->at(1) <<
+                      "\t";
 
         }
         fState << std::endl;
         fTimer << std::endl;
-        fPO2 << std::endl;
-        fVEGF << std::endl;
+        fPO2   << std::endl;
+        fVEGF  << std::endl;
 
         emit progressMax(numIter);
         for(int j(0); j < numIter; j++){
             currentTime += simTimeStep;
             sim->simulate(currentTime, simTimeStep);
 
-            fTumDens << currentTime << " " <<
-                        model1->getOut()->at(0) << std::endl;
-            fTumVol << currentTime << " " <<
-                       model1->getOut()->at(23) << std::endl;
-            fVascDens << currentTime << " " <<
-                         model1->getOut()->at(6) << " " <<
-                         model1->getOut()->at(7) << " " <<
-                         model1->getOut()->at(8) << std::endl;
-            fKilledCells << currentTime << " " <<
-                            model1->getOut()->at(37) << std::endl;
-            fHypDens << currentTime << " " <<
-                        coupler->getModel2()->getOut()->at(0) << std::endl;
-            fDeadDens << currentTime << " " <<
-                         model1->getOut()->at(37) << std::endl;
-            fPO2Stat << currentTime << " " <<
-                        coupler->getModel2()->getOut()->at(1) << " " <<
-                        coupler->getModel2()->getOut()->at(2) << std::endl;
-            fVEGFStat << currentTime << " " <<
-                         coupler->getModel2()->getOut()->at(3) << " " <<
-                         coupler->getModel2()->getOut()->at(4) << std::endl;
-            fCycle << currentTime << " " <<
-                      model1->getOut()->at(1) << " " <<
-                      model1->getOut()->at(2) << " " <<
-                      model1->getOut()->at(3) << " " <<
-                      model1->getOut()->at(4) << " " <<
-                      model1->getOut()->at(5) << std::endl;
+            fTumDens     << currentTime << " " << model1->getOut()->at(0) <<
+                            std::endl;
+            fTumVol      << currentTime << " " << model1->getOut()->at(23) <<
+                            std::endl;
+            fVascDens    << currentTime << " " << model1->getOut()->at(6) <<
+                            " " << model1->getOut()->at(7) << " " <<
+                            model1->getOut()->at(8) << std::endl;
+            fKilledCells << currentTime << " " << model1->getOut()->at(37) <<
+                            std::endl;
+            fHypDens     << currentTime << " " <<
+                            coupler->getModel2()->getOut()->at(0) << std::endl;
+            fDeadDens    << currentTime << " " << model1->getOut()->at(37) <<
+                            std::endl;
+            fPO2Stat     << currentTime << " " <<
+                            coupler->getModel2()->getOut()->at(1) << " " <<
+                            coupler->getModel2()->getOut()->at(2) << std::endl;
+            fVEGFStat    << currentTime << " " <<
+                            coupler->getModel2()->getOut()->at(3) << " " <<
+                            coupler->getModel2()->getOut()->at(4) << std::endl;
+            fCycle       << currentTime << " " << model1->getOut()->at(1) <<
+                            " " << model1->getOut()->at(2) << " " <<
+                            model1->getOut()->at(3) << " " <<
+                            model1->getOut()->at(4) << " " <<
+                            model1->getOut()->at(5) << std::endl;
 
             for(int i(0); i < model1->getNumComp(); i++){
                 fState << model1->getComp()->at(i)->getOut()->at(0) << "\t";
                 fTimer << model1->getComp()->at(i)->getOut()->at(1) << "\t";
-                fPO2 << coupler->getModel2()->getComp()->at(i)->getOut()->at(0) << "\t";
-                fVEGF << coupler->getModel2()->getComp()->at(i)->getOut()->at(1) << "\t";
+                fPO2   << coupler->getModel2()->getComp()->at(i)->getOut()->
+                          at(0) << "\t";
+                fVEGF  << coupler->getModel2()->getComp()->at(i)->getOut()->
+                          at(1) << "\t";
             }
             fState << std::endl;
             fTimer << std::endl;
-            fPO2 << std::endl;
-            fVEGF << std::endl;
+            fPO2   << std::endl;
+            fVEGF  << std::endl;
 
             emit progress(j);
         }
@@ -321,8 +316,8 @@ void SimThread::run(){
 
         std::ofstream fIntTumDens("../OutputFilesGUI/intTumDens.res");
 
-        fIntTumDens << currentTime << " " <<
-                       model1->getOut()->at(22) << std::endl;
+        fIntTumDens << currentTime << " " << model1->getOut()->at(22) <<
+                       std::endl;
         fIntTumDens.close();
 
         std::ofstream fPercKilled("../OutputFilesGUI/percKilled.res");
@@ -332,8 +327,7 @@ void SimThread::run(){
         for(int i(0); i < 6; i++){
             fPercKilled << perc[i] << " " << model1->getOut()->at(28 + i)
                         << " " << model1->getOut()->at(9 + i)
-                        << " " << model1->getOut()->at(15 + i)
-                        << std::endl;
+                        << " " << model1->getOut()->at(15 + i) << std::endl;
         }
 
         fPercKilled.close();
@@ -344,14 +338,12 @@ void SimThread::run(){
         fEndTreatTumDens.close();
 
         std::ofstream f3MonTumDens("../OutputFilesGUI/3MonTumDens.res");
-        f3MonTumDens << 2160.0 << " " <<
-                        model1->getOut()->at(25);
+        f3MonTumDens << 2160.0 << " " << model1->getOut()->at(25);
         f3MonTumDens.close();
 
         std::ofstream fRec("../OutputFilesGUI/rec.res");
-        fRec << model1->getOut()->at(34) << " " <<
-                model1->getOut()->at(27) << " " <<
-                model1->getOut()->at(26);
+        fRec << model1->getOut()->at(34) << " " << model1->getOut()->at(27) <<
+                " " << model1->getOut()->at(26);
         fRec.close();
 
         delete treatment;
@@ -365,11 +357,9 @@ void SimThread::run(){
         OxyTissue *model1;
         Simulator *sim;
 
-        model1 = new OxyTissue(nrow, ncol, nlayer, cellSize,
-                               inVes, ang, Dvegf, VmaxVegf, KmVegf,
-                               hypVegf, DO2, VmaxO2, KmO2,
-                               pO2NormVes, pO2TumVes,
-                               hypThres);
+        model1 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
+                               VmaxVegf, KmVegf, hypVegf, DO2, VmaxO2, KmO2,
+                               pO2NormVes, pO2TumVes, hypThres);
         sim = new Simulator(model1, oxySimTimeStep);
 
         int numIter(simTime / oxySimTimeStep);
@@ -383,20 +373,17 @@ void SimThread::run(){
         std::ofstream fPO2("../OutputFilesGUI/po2.res");
         std::ofstream fVEGF("../OutputFilesGUI/vegf.res");
 
-        fHypDens << currentTime << " " <<
-                    model1->getOut()->at(0) << std::endl;
-        fPO2Stat << currentTime << " " <<
-                    model1->getOut()->at(1) << " " <<
-                    model1->getOut()->at(2) << std::endl;
-        fVEGFStat << currentTime << " " <<
-                     model1->getOut()->at(3) << " " <<
+        fHypDens  << currentTime << " " << model1->getOut()->at(0) << std::endl;
+        fPO2Stat  << currentTime << " " << model1->getOut()->at(1) << " " <<
+                     model1->getOut()->at(2) << std::endl;
+        fVEGFStat << currentTime << " " << model1->getOut()->at(3) << " " <<
                      model1->getOut()->at(4) << std::endl;
 
         for(int i(0); i < model1->getNumComp(); i++){
             fPO2 << model1->getComp()->at(i)->getOut()->at(0) << "\t";
             fVEGF << model1->getComp()->at(i)->getOut()->at(1) << "\t";
         }
-        fPO2 << std::endl;
+        fPO2  << std::endl;
         fVEGF << std::endl;
 
         emit progressMax(numIter);
@@ -404,20 +391,18 @@ void SimThread::run(){
             currentTime += oxySimTimeStep;
             sim->simulate(currentTime, oxySimTimeStep);
 
-            fHypDens << currentTime << " " <<
-                        model1->getOut()->at(0) << std::endl;
-            fPO2Stat << currentTime << " " <<
-                        model1->getOut()->at(1) << " " <<
+            fHypDens  << currentTime << " " << model1->getOut()->at(0) <<
+                        std::endl;
+            fPO2Stat  << currentTime << " " << model1->getOut()->at(1) << " " <<
                         model1->getOut()->at(2) << std::endl;
-            fVEGFStat << currentTime << " " <<
-                         model1->getOut()->at(3) << " " <<
+            fVEGFStat << currentTime << " " << model1->getOut()->at(3) << " " <<
                          model1->getOut()->at(4) << std::endl;
 
             for(int i(0); i < model1->getNumComp(); i++){
-                fPO2 << model1->getComp()->at(i)->getOut()->at(0) << "\t";
+                fPO2  << model1->getComp()->at(i)->getOut()->at(0) << "\t";
                 fVEGF << model1->getComp()->at(i)->getOut()->at(1) << "\t";
             }
-            fPO2 << std::endl;
+            fPO2  << std::endl;
             fVEGF << std::endl;
 
             emit progress(j);

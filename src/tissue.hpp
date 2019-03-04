@@ -109,8 +109,7 @@ public:
            const double angTime, const double vegfThres,
            std::vector<double> alpha, std::vector<double> beta,
            Treatment *const treatment, const double doseThres,
-           const double arresTime, const double oxy,
-           const double hypNecThres);
+           const double arresTime, const double oxy, const double hypNecThres);
     Tissue(const int nrow, const int ncol, const int nlayer,
            const double cellSize, const std::vector<bool> &inTum,
            const std::vector<bool> &inVes, const double tumGrowth,
@@ -120,8 +119,7 @@ public:
            const double angTime, const double vegfThres,
            std::vector<double> alpha, std::vector<double> beta,
            Treatment *const treatment, const double doseThres,
-           const double arrestTime, const double oxy,
-           const double hypNecThres);
+           const double arrestTime, const double oxy, const double hypNecThres);
     virtual ~Tissue();
     virtual int calcModelOut();
     virtual int initModel();

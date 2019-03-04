@@ -26,7 +26,8 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
                 div.push_back(l);
                 diff.push_back(fabs(1.0 / (l * l) - vascDens));
                 div.push_back(mindim / l);
-                diff.push_back(fabs(double(l * l) / double(mindim2) - vascDens));
+                diff.push_back(fabs(double(l * l) / double(mindim2) -
+                                    vascDens));
             }
         }
 
@@ -50,7 +51,8 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
     halfNrow = 0.5 * nrow;
     halfNcol = 0.5 * ncol;
     halfNlayer = 0.5 * nlayer;
-    R = sqrt(halfNrow * halfNrow + halfNcol * halfNcol + halfNlayer * halfNlayer);
+    R = sqrt(halfNrow * halfNrow + halfNcol * halfNcol + halfNlayer *
+             halfNlayer);
     RR = 1.001 * sqrt(2.0 * halfIvd * halfIvd);
 
     int k(0);
@@ -66,7 +68,8 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
                 map.at(k).r = sqrt(lmHalfNlayer2 + imHalfNrow2 +
                                    (j - halfNcol) * (j - halfNcol)) / R;
                 map.at(k).rr = lnrowNcol + ishift + j / ivd +
-                        sqrt(irr2 + (j % ivd - halfIvd) * (j % ivd - halfIvd)) / RR;
+                        sqrt(irr2 + (j % ivd - halfIvd) * (j % ivd - halfIvd)) /
+                        RR;
                 map.at(k).k = k;
                 map.at(k).tum = 0;
                 map.at(k).ves = 0;
@@ -227,7 +230,8 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
                 div.push_back(l);
                 diff.push_back(fabs(1.0 / (l * l) - vascDens));
                 div.push_back(mindim / l);
-                diff.push_back(fabs(double(l * l) / double(mindim2) - vascDens));
+                diff.push_back(fabs(double(l * l) / double(mindim2) -
+                                    vascDens));
             }
         }
 
@@ -258,7 +262,8 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
             ishift = i / ivd * ncol / ivd;
             for(int j(0); j < ncol; j++){
                 map.at(k).rr = lnrowNcol + ishift + j / ivd +
-                        sqrt(irr2 + (j % ivd - halfIvd) * (j % ivd - halfIvd)) / RR;
+                        sqrt(irr2 + (j % ivd - halfIvd) * (j % ivd - halfIvd)) /
+                        RR;
                 map.at(k).k = k;
                 map.at(k).ves = 0;
                 k++;
@@ -361,8 +366,8 @@ void readInFiles(const string nFInTissueDim, const string nFInTum,
 }
 
 
-void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow, int &ncol,
-                 int &nlayer, double &cellSize, vector<bool> &inVes){
+void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
+                 int &ncol, int &nlayer, double &cellSize, vector<bool> &inVes){
     ifstream fInTissueDim(nFInTissueDim.c_str());
 
     fInTissueDim >> nrow >> ncol >> nlayer;
@@ -381,8 +386,9 @@ void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow, in
 }
 
 
-void readInFilesOxy(const string nFInTissueOxy, bool &art, int &nrow, int &ncol, int &nlayer,
-                    double &cellSize, double &vascDens, double &sigmaVasc){
+void readInFilesOxy(const string nFInTissueOxy, bool &art, int &nrow, int &ncol,
+                    int &nlayer, double &cellSize, double &vascDens,
+                    double &sigmaVasc){
     ifstream fInTissueOxy(nFInTissueOxy.c_str());
 
     fInTissueOxy >> art;
@@ -395,10 +401,11 @@ void readInFilesOxy(const string nFInTissueOxy, bool &art, int &nrow, int &ncol,
 }
 
 
-void readInFilesTCP(const string nFInTissueTCP, const vector<string> nFTreatmentTCP, bool &art,
-                    int &nrow, int &ncol, int &nlayer, double &cellSize, double &tumDens,
-                    double &sigmaTum, double &vascDens, double &sigmaVasc,
-                    vector<Treatment> &treatment){
+void readInFilesTCP(const string nFInTissueTCP,
+                    const vector<string> nFTreatmentTCP, bool &art,
+                    int &nrow, int &ncol, int &nlayer, double &cellSize,
+                    double &tumDens, double &sigmaTum, double &vascDens,
+                    double &sigmaVasc, vector<Treatment> &treatment){
     ifstream fInTissueTCP(nFInTissueTCP.c_str());
 
     fInTissueTCP >> art;

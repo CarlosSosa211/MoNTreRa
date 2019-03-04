@@ -44,8 +44,7 @@ void RootSimulator::initSim(){
 }
 
 
-void RootSimulator::simulate(const double currentTime,
-                             const double simTime){
+void RootSimulator::simulate(const double currentTime, const double simTime){
     int numIter(simTime / m_DT1);
     m_currentTime = currentTime;
 

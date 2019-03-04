@@ -34,6 +34,6 @@ private:
   
 };
 
-std::ostream &operator<<(std::ostream &stream,
-			 Treatment *treatment);
+std::ostream &operator<<(std::ostream &stream, Treatment *treatment);
+
 #endif

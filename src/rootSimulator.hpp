@@ -17,8 +17,8 @@
 class RootSimulator{
 public:
     RootSimulator();
-    RootSimulator(Coupler *coupler, const double DT1,
-                  const double DT2, const double sclFac);
+    RootSimulator(Coupler *coupler, const double DT1, const double DT2,
+                  const double sclFac);
     ~RootSimulator();
     void initSim();
     void simulate(const double currentTime, const double simTime);

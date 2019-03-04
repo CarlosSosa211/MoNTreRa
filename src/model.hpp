@@ -22,8 +22,7 @@ public :
   virtual int calcModelOut() = 0;
   virtual int initModel() = 0;
   virtual int terminateModel() = 0;
-  virtual int updateModel(const double currentTime = 0,
-			  const double DT = 0 ) = 0;
+  virtual int updateModel(const double currentTime, const double DT = 0 ) = 0;
   DoubleVect *getIn() const;
   DoubleVect *getSt() const;
   DoubleVect *getOut() const;
