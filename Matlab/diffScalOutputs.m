@@ -1,26 +1,49 @@
 clear all
 close all
 
+%%
+% This block initialises nfig and defines
+% - path: the path of the ouput directory,
+% - nTissues: the number of tissues,
+% - withoutN: the name of the X_0_X simulations
+% - withN: the name of the X_1_X simulations
+% - fileNames: the names of the ouput files,
+% - ouputNames: the names of the outputs,
+% - outputCol: the column number of the output in the corresponding files.
+
 nfig = 0;
 % path = '../../Carlos/Results/Diff_Ang_Dose_5Val_5Rep_AllTissues/Tissue';
 % path = '../../Carlos/Results/Diff_Res_Dose_5Val_5Rep_AllTissues/Tissue';
 % path = ['../../Carlos/Results/Diff_AngRes_Dose_5Val_5Rep_AllTissues'...
 %     '/Tissue'];
-path = '../../Carlos/Results/Diff_HypNec_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_HypNec_Dose_5Val_5Rep_AllTissues/Tissue';
 % path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues_noHypNec/Tissue';
-nTissues = 1;
+% path = '../../Carlos/Results/Diff_Arrest_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_Oxy_Dose_5Val_5Rep_AllTissues/Tissue';
+path = ['../../Carlos/Results/Diff_OxyNoHypNec_Dose_5Val_5Rep_'...
+    'AllTissues/Tissue'];
+
+nTissues = 21;
+nOut = 15;
+
 % withoutN = 'No angiogenesis';
 % withN = 'Angiogenesis';
 % withoutN = 'No healthy cell division';
 % withN = 'Healthy cell division';
 % withoutN = 'No angiogenesis and no healthy cell division';
 % withN = 'Angiogenesis and healthy cell division';
-withoutN = 'No hypoxic necrosis';
-withN = 'Hypoxic necrosis';
+% withoutN = 'No hypoxic necrosis';
+% withN = 'Hypoxic necrosis';
+% withoutN = 'No arrest';
+% withN = 'Arrest';
+% withoutN = 'No oxyegenation (no hypoxic necrosis)';
+% withN = 'Oxygenation';
+withoutN = 'No oxyegenation (no hypoxic necrosis)';
+withN = 'Oxygenation (no hypoxic necrosis)';
 
 fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/finTumVol.res', '/intTumDens.res', '/killed50.res'...
-    '/killed80.res''/killed90.res', '/killed95.res', '/killed99.res'...
+    '/killed80.res', '/killed90.res', '/killed95.res', '/killed99.res'...
     '/killed999.res', '/timeTo95.res', '/timeTo99.res', '/rec.res'...
     '/recTumDens.res', '/recTime.res'};
 
@@ -35,6 +58,25 @@ outputNames = {'tumour density at the end of treat.'...
     'tumour density at recurrence', 'recurrence time'};
 
 %%
+% This block asks the user to select the tissues and the output to be
+% studied. Then, it reads the corresponding files.
+% The following intermidiate variables are considered:
+% - par: a matrix containing the combinations of parameters simulated. Each
+% row corresponds to a simulation and each column, to a parameter,
+% - output: a matrix containing the values of the scalar output(s) in
+% question. For the single tissue - single output case
+% (1 <= nTissue <= nTissues and 1 <= selOut <= nOut), each row
+% corresponds to a combination of parameters. The first column corresponds
+% to the mean values for nRep repetitions of X_0_X simulations; the second
+% one, to the mean values of X_1_X simulations; the third one, two the std
+% values of X_0_X simulations and the fourth one, to the std values of 
+% X_1_X simulations. For the single tissue - multiple outputs case
+% (1 <= nTissue <= nTissues and selOut = 0), each layer correponds to an
+% output. For the multiple tissues - single output case, (nTissue = 0 and
+% 1 <= selOut <= nOut) each layer corresponds to a tissue. Finally, for the
+% mean over the tissues - single output case (nTissue = -1 and
+% 1 <= selOut <= nOut), the matrix has a single layer with the mean values.  
+
 nTissue = input(['Select one tissue (from 1 to ', num2str(nTissues)...
     ') or all of them (0) or a mean over them (-1): ']);
 
@@ -58,12 +100,12 @@ if(nTissue >= 1 && nTissue <= nTissues)
         'timeTo99 (12), rec(13),\nrecTumDens (14), recTime (15) '...
         'or all of them (-1)]: ']);
     
-    if(selOut >= 1 && selOut <= nTissues)
+    if(selOut >= 1 && selOut <= nOut)
         output = load([pathTissue, char(fileNames(selOut))]);
         
     elseif(selOut == -1)
         for i = 1:length(fileNames)
-            output(:, :, i) = load([path, char(fileNames(i))]);
+            output(:, :, i) = load([pathTissue, char(fileNames(i))]);
         end
     end
     
@@ -108,10 +150,15 @@ elseif(nTissue == -1)
 end
 
 %%
+% This block calculates the difference and the absolute difference of the
+% mean values of X_0_X and X_1_X simulations.
 outputDiff = output(:, 1)' - output(:, 2)';
 outputAbsDiff = abs(outputDiff);
 
 %%
+% This block plots the mean and std of the selected output for simulations
+% X_0_X and X_1_1 as a function of the studied TTum values
+
 withoutMeanTTum = [];
 withoutStdTTum = [];
 withMeanTTum = [];
@@ -147,6 +194,10 @@ xlabel('TTum (h)')
 ylabel(outputNames(selOut))
 
 %%
+% This block plots the mean and std of the abs. difference of the selected 
+% output for simulations X_0_X and X_1_1 as a function of the studied TTum
+% values
+
 diffMeanTTum = [];
 diffStdTTum = [];
 for i = 1:length(tTTum)
@@ -171,6 +222,9 @@ xlabel('TTum (h)')
 ylabel('Difference')
 
 %%
+% This block plots the mean and std of the selected output for simulations
+% X_0_X and X_1_1 as a function of the studied DThres values
+
 withoutMeanDThres = [];
 withoutStdDThres = [];
 withMeanDThres = [];
@@ -206,6 +260,10 @@ xlabel('Dose threshold (Gy)')
 ylabel(outputNames(selOut))
 
 %%
+% This block plots the mean and std of the abs. difference of the selected 
+% output for simulations X_0_X and X_1_1 as a function of the studied
+% Dthres values
+
 diffMeanDThres = [];
 diffStdDThres = [];
 for i = 1:length(tDThres)
@@ -230,6 +288,10 @@ xlabel('Dose threshold(Gy)')
 ylabel('Difference')
 
 %%
+% This block plots the mean and std of the abs. difference of the selected 
+% output for simulations X_0_X and X_1_1 as a function of the studied
+% Dthres values
+
 diffMeanTArrest = [];
 diffStdTArrest = [];
 for i = 1:length(tTArrest)
@@ -254,6 +316,9 @@ xlabel('TArrest (h)')
 ylabel('Difference')
 
 %%
+% This block plots the mean and std of the selected output for simulations
+% X_0_X and X_1_1 as a function of the studied dose values
+
 withoutMeanDose = [];
 withoutStdDose = [];
 withMeanDose = [];
@@ -290,6 +355,10 @@ xlabel('Dose (Gy)')
 ylabel(outputNames(selOut))
 
 %%
+% This block plots the mean and std of the abs. difference of the selected 
+% output for simulations X_0_X and X_1_1 as a function of the studied
+% dose values
+
 diffMeanDose = [];
 diffStdDose = [];
 for i = 1:length(tDose)
@@ -315,6 +384,10 @@ xlabel('Dose (Gy)')
 ylabel('Difference')
 
 %%
+% This block plots the mean and std of the abs. difference of the selected 
+% output for simulations X_0_X and X_1_1 as a function of the studied
+% dose and TTum values
+
 diffTTumDose = zeros(length(tTTum), length(tDose));
 for i = 1:length(tTTum)
     for j = 1:length(tDose)
@@ -342,6 +415,10 @@ yticks(1:length(tTTum))
 yticklabels(tTTum)
 
 %%
+% This block plots the mean and std of the abs. difference of the selected 
+% output for simulations X_0_X and X_1_1 as a function of the studied
+% dose and Dthres values
+
 diffDThresDose = zeros(length(tDThres), length(tDose));
 for i = 1:length(tDThres)
     for j = 1:length(tDose)
@@ -369,6 +446,10 @@ yticks(1:length(tDThres))
 yticklabels(tDThres)
 
 %%
+% This block plots the mean and std of the abs. difference of the selected 
+% output for simulations X_0_X and X_1_1 as a function of the studied
+% DThres and TTum values
+
 diffTTumDThres = zeros(length(tTTum), length(tDThres));
 for i = 1:length(tTTum)
     for j = 1:length(tDThres)
@@ -396,33 +477,10 @@ yticks(1:length(tTTum))
 yticklabels(tTTum)
 
 %%
-diffTTumDThres = zeros(length(tTTum), length(tDThres));
-for i = 1:length(tTTum)
-    for j = 1:length(tDThres)
-        diffTTumDThres(i, j) =...
-            mean(outputAbsDiff(par(:, colTTum) == tTTum(i) &...
-            par(:, colDThres) == tDThres(j)));
-    end
-end
+% This block plots the histogram of the values of the selected 
+% output for simulations X_0_X and X_1_1 and the histogram of the
+% differences between them.
 
-nfig = nfig + 1;
-figure(nfig)
-image(diffTTumDThres, 'CDataMapping','scaled')
-colorbar
-if(nTissue == -1)
-    title(['All tissues  - Abs. diff. in ', char(outputNames(selOut))])
-else
-    title(['Tissue ', num2str(nTissue), ' - Abs. diff. in '...
-        char(outputNames(selOut))])
-end
-xlabel('DThres (Gy)')
-ylabel('TTum (h)')
-xticks(1:length(tDThres))
-xticklabels(tDThres)
-yticks(1:length(tTTum))
-yticklabels(tTTum)
-
-%%
 nfig = nfig + 1;
 figure(nfig)
 hold on
@@ -446,11 +504,13 @@ title(['Tissue ', num2str(nTissue), ' - Histogram of difference in '...
 
 
 %%
+% This block plots the mean and std values of the abs. differences between
+% simulations X_0_X and X_1_1 for all the outputs.
+
 b = {'$endTreatTumDens$'; '$3MonTumDens$'; '$tumVol$'; '$intTumDens$';...
     '$50\%killed$'; '$80\%killed$'; '$90\%killed$'; '$95\%killed$';...
     '$99\%killed$'; '$99.9%killed$'; '$timeTo95$'; '$timeTo99$';...
-    '$rec$', '$recTime$'; '$recTumDens$';};
-nOut = 15;
+    '$rec$'; '$recTime$'; '$recTumDens$';};
 
 outputDiff = output(:, 1, :) - output(:, 2, :);
 outputDiff = permute(outputDiff, [3, 1, 2]);
@@ -486,6 +546,10 @@ else
 end
 
 %%
+% This blocks plots for all the values of dose, the mean and std of the
+% selected output for simulations X_0_X and X_1_1 as a function of the
+% tissue
+
 withoutMeanDose = zeros(length(tDose), nTissues);
 withoutStdDose = zeros(length(tDose), nTissues);
 withMeanDose = zeros(length(tDose), nTissues);
@@ -513,7 +577,7 @@ for i = 1:length(tDose)
     hold off
     title(['All tissues - ', char(outputNames(selOut)), ' - '...
         num2str(tDose(i)), ' Gy'])
-    legend(withoutN, withN, 'location', 'northwest')
+    legend(withoutN, withN, 'location', 'northeast')
     grid on
     ylim([0, inf])
     xticks(1:nTissues)
