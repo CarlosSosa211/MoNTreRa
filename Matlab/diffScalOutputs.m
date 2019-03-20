@@ -384,8 +384,8 @@ xlabel('Dose (Gy)')
 ylabel('Difference')
 
 %%
-% This block plots the mean and std of the abs. difference of the selected 
-% output for simulations X_0_X and X_1_1 as a function of the studied
+% This block plots the mean of the abs. difference of the selected output
+% for simulations X_0_X and X_1_1 as a function of the studied
 % dose and TTum values
 
 diffTTumDose = zeros(length(tTTum), length(tDose));
@@ -415,8 +415,8 @@ yticks(1:length(tTTum))
 yticklabels(tTTum)
 
 %%
-% This block plots the mean and std of the abs. difference of the selected 
-% output for simulations X_0_X and X_1_1 as a function of the studied
+% This block plots the mean of the abs. difference of the selected output
+% for simulations X_0_X and X_1_1 as a function of the studied
 % dose and Dthres values
 
 diffDThresDose = zeros(length(tDThres), length(tDose));
@@ -446,8 +446,8 @@ yticks(1:length(tDThres))
 yticklabels(tDThres)
 
 %%
-% This block plots the mean and std of the abs. difference of the selected 
-% output for simulations X_0_X and X_1_1 as a function of the studied
+% This block plots the mean of the abs. difference of the selected output
+% for simulations X_0_X and X_1_1 as a function of the studied
 % DThres and TTum values
 
 diffTTumDThres = zeros(length(tTTum), length(tDThres));

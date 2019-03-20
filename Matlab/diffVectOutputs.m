@@ -1,14 +1,44 @@
 clear all
 close all
+%%
+% This block initialises nfig and defines
+% - path: the path of the ouput directory,
+% - nTissues: the number of tissues,
+% - withoutN: the name of the X_0_X simulations
+% - withN: the name of the X_1_X simulations
+% - fileNames: the names of the ouput files,
+% - ouputNames: the names of the outputs,
+% - outputCol: the column number of the output in the corresponding files.
 
 nfig = 0;
-% path = ['../../Carlos/Results/Diff_Ang_432Sim_AllTissues/Tissue'...
-%     num2str(nTissue)];
-% path = '../../Carlos/Results/Diff_Ang_432x5Sim_Tissue4';
-path = '../../Carlos/Results/Diff_Ang_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_Ang_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_Res_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = ['../../Carlos/Results/Diff_AngRes_Dose_5Val_5Rep_AllTissues'...
+%     '/Tissue'];
+% path = '../../Carlos/Results/Diff_HypNec_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues_noHypNec/Tissue';
+% path = '../../Carlos/Results/Diff_Arrest_Dose_5Val_5Rep_AllTissues/Tissue';
+% path = '../../Carlos/Results/Diff_Oxy_Dose_5Val_5Rep_AllTissues/Tissue';
+path = ['../../Carlos/Results/Diff_OxyNoHypNec_Dose_5Val_5Rep_'...
+    'AllTissues/Tissue'];
+
 nTissues = 21;
-withoutN = 'No angiogenesis';
-withN = 'Angiogenesis';
+nOut = 16;
+
+% withoutN = 'No angiogenesis';
+% withN = 'Angiogenesis';
+% withoutN = 'No healthy cell division';
+% withN = 'Healthy cell division';
+% withoutN = 'No angiogenesis and no healthy cell division';
+% withN = 'Angiogenesis and healthy cell division';
+% withoutN = 'No hypoxic necrosis';
+% withN = 'Hypoxic necrosis';
+% withoutN = 'No arrest';
+% withN = 'Arrest';
+% withoutN = 'No oxyegenation (no hypoxic necrosis)';
+% withN = 'Oxygenation';
+withoutN = 'No oxyegenation (no hypoxic necrosis)';
+withN = 'Oxygenation (no hypoxic necrosis)';
 
 fileNames = {'/tumDens_', '/tumVol_', '/vascDens_', '/vascDens_'...
     '/vascDens_', '/killedCell_', '/hypDens_', '/pO2Stat_'...
@@ -25,18 +55,52 @@ outputNames = {'tumour density', 'tumour volume', 'vascular density'...
 outputCol = [2, 2, 2, 3, 4, 2, 2, 2, 3, 2, 3, 2, 3, 4, 5, 6];
 
 %%
-meanOutput0 = {};
-meanOutput1 = {};
-stdOutput0 = {};
-stdOutput1 = {};
+% This block studies the correlation between the values of a given output
+% for X_0_X and X_1_X simulations. For every combination of parameters
+% the following indicators are calculated:
+% - sim: <u0, u1> / (||u0|| * ||u1||),
+% - lsd: Sum of u0i^2 - u1i^2,
+% - R: the correlation coefficients,
+% - p: the polynomial of degree 1 fitting the curve u0 = u1.
+% - normInf: ||u0 - u1||_inf
+
+% For the case of nTissues = 0, these indicators are calculated
+% independently for each tissue.
+
+% The following intermidiate variables are considered:
+% - par: a matrix containing the combinations of parameters simulated. Each
+% row corresponds to a simulation and each column, to a parameter,
+% - meanOutput0i: a matrix containing the mean values for P repetitions of
+% the output for X_0_X simulations for the combination of parameters i,
+% - meanOutput1i: a matrix containing the mean values for P repetitions of
+% the output for X_1_X simulations for the combination of parameters i,
+% - meanOutput0: a cell array containing the mean values for P repetitions
+% of the output for X_0_X simulations for all the combination of
+% parameters,
+% - meanOutput1: a cell array containing the mean values for P repetitions
+% of the output for X_0_X simulations for all the combination of
+% parameters,
+% - stdOutput1: a cell array containing the std values for P repetitions of
+% the output for X_0_X simulations for all the combination of parameters,
+% - stdOutput2: a cell array containing the std values for P repetitions of
+% the output for X_1_X simulations for all the combination of parameters.
+
 P = 5;
 
 nTissue = input(['Select one tissue (from 1 to ', num2str(nTissues)...
     ') or all of them (0) or a mean over them (-1): ']);
 
+selOut = input(['Select an output [tumDens (1), tumVol (2)'...
+    'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
+    'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), '...
+    'vegfMed (10), vegfMean (11), distG1 (12),\n'...
+    'distS (13),  distG2 (14), distM (15) or distG0 (16)]'...
+    'or quit (0): ']);
+
 if(nTissue >= 1 && nTissue <= nTissues)
     pathTissue = [path, num2str(nTissue)];
     par = load([pathTissue, '/combPar.res']);
+    nCombPar = size(par, 1);
     
     % colTTum = 1;
     % colDThres = 2;
@@ -47,14 +111,18 @@ if(nTissue >= 1 && nTissue <= nTissues)
     % tDThres = unique(par(:, colDThres));
     % tTArrest = unique(par(:, colTArrest));
     
-    selOut = input(['Select an output [tumDens (1), tumVol (2)'...
-        'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
-        'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), '...
-        'vegfMed (10), vegfMean (11), distG1 (12),\n'...
-        'distS (13),  distG2 (14), distM (15) or distG0 (16)]'...
-        'or quit (0): ']);
+    meanOutput0 = cell(1, nCombPar);
+    meanOutput1 = cell(1, nCombPar);
+    stdOutput0 = cell(1, nCombPar);
+    stdOutput1 = cell(1, nCombPar);
     
-    for i = 1:size(par, 1)
+    sim = zeros(nCombPar, 1);
+    lsd = zeros(nCombPar, 1);
+    R = zeros(2, 2, nCombPar);
+    p = zeros(nCombPar, 2);
+    normInf = zeros(nCombPar, 1);
+     
+    for i = 1:nCombPar
         clear output0 output1
         for j = 1:P
             temp0 = load([pathTissue, char(fileNames(selOut))...
@@ -88,15 +156,10 @@ if(nTissue >= 1 && nTissue <= nTissues)
 end
 
 if(nTissue == 0)
-    selOut = input(['Select an output [tumDens (1), tumVol (2)'...
-        'vascDens (3), preExVascDens (4), neoCreVascDens (5)\n'...
-        'killedCells (6), hypDens (7), pO2Med (8), pO2Mean (9), '...
-        'vegfMed (10), vegfMean (11), distG1 (12),\n'...
-        'distS (13),  distG2 (14), distM (15) or distG0 (16)]'...
-        'or quit (0): ']);
     for k = 1:nTissues
         pathTissue = [path, num2str(k)];
         par = load([pathTissue, '/combPar.res']);
+        nCombPar = size(par, 1);
         
         % colTTum = 1;
         % colDThres = 2;
@@ -106,6 +169,17 @@ if(nTissue == 0)
         % tTTum = unique(par(:, colTTum));
         % tDThres = unique(par(:, colDThres));
         % tTArrest = unique(par(:, colTArrest));
+        
+        meanOutput1 = cell(1, nCombPar);
+        meanOutput2 = cell(1, nCombPar);
+        stdOutput1 = cell(1, nCombPar);
+        stdOutput2 = cell(1, nCombPar);
+        
+        sim = zeros(nCombPar, nTissues);
+        lsd = zeros(nCombPar, nTissues);
+        R = zeros(2, 2, nCombPar, nTissues);
+        p = zeros(nCombPar, 2, nTissues);
+        normInf = zeros(nCombPar, nTissues);
         
         for i = 1:size(par, 1)
             clear output0 output1
@@ -144,6 +218,8 @@ if(nTissue == 0)
 end
 
 %%
+% This block calculates the mean and std values of all the indicators 
+
 meanSim = mean(sim);
 stdSim = std(sim);
 meanR = mean(R, 3);
@@ -154,6 +230,9 @@ meanNorm = mean(normInf);
 stdNormInf = std(normInf);
 
 %%
+% This block plots the mean and std values of all the indicators as a
+% function of the studied TTum values
+
 simMeanTTum = [];
 simStdTTum = [];
 lsdMeanTTum = [];
@@ -239,6 +318,10 @@ xlabel('TTum (h)')
 ylabel('p0')
 
 %%
+%%
+% This block plots the mean and std values of all the indicators as a
+% function of the studied dose values
+
 simMeanDose = [];
 simStdDose = [];
 lsdMeanDose = [];
@@ -324,6 +407,9 @@ xlabel('Dose (Gy)')
 ylabel('p0')
 
 %%
+% This block plots the mean of the indicator sim as a function of the
+% studied dose and TTum values
+
 simTTumDose = zeros(length(tTTum), length(tDose));
 for i = 1:length(tTTum)
     for j = 1:length(tDose)
@@ -346,6 +432,9 @@ yticks(1:length(tTTum))
 yticklabels(tTTum)
 
 %%
+% This block plots the mean of the indicator sim as a function of the
+% studied dose and DThres values
+
 simDThresDose = zeros(length(tDThres), length(tDose));
 for i = 1:length(tDThres)
     for j = 1:length(tDose)
@@ -368,6 +457,9 @@ yticks(1:length(tDThres))
 yticklabels(tDThres)
 
 %%
+% This block plots the mean of the indicator lsd as a function of the
+% studied dose and TTum values
+
 lsdTTumDose = zeros(length(tTTum), length(tDose));
 for i = 1:length(tTTum)
     for j = 1:length(tDose)
@@ -390,6 +482,9 @@ yticks(1:length(tTTum))
 yticklabels(tTTum)
 
 %%
+% This block plots the mean of the indicator normInf as a function of the
+% studied dose and TTum values
+
 normInfTTumDose = zeros(length(tTTum), length(tDose));
 for i = 1:length(tTTum)
     for j = 1:length(tDose)
@@ -413,6 +508,9 @@ yticks(1:length(tTTum))
 yticklabels(tTTum)
 
 %%
+% This blocks plots the i-th curves contained than meanOutput0 and
+% meanOutput1 with the corresponding std.
+
 i = 212;
 
 mean0 = cell2mat(meanOutput0(i));
@@ -424,26 +522,9 @@ std1 = cell2mat(stdOutput1(i));
 nfig = nfig + 1;
 figure(nfig)
 hold on
-% plot(mean0(:, 1), mean0(:, 2));
-% plot(mean1(:, 1), mean1(:, 2));
 errorbar(mean0(:, 1), mean0(:, 2), std0(:, 2));
 errorbar(mean1(:, 1), mean1(:, 2), std1(:, 2));
 hold off
 xlabel('Time (h)')
 ylabel(char(outputName))
 legend(withoutN, withN, 'location', 'northwest')
-
-%%
-for i = 1:length(tDose)
-    nfig = nfig + 1;
-    figure(nfig)
-    plot(1:nTissues, sim(i, :), 'sb', 'MarkerSize', 10,...
-        'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b')
-    title(['All tissues  - ', char(outputNames(selOut)), '- '...
-        num2str(tDose(i)), ' Gy'])
-    grid on
-    ylim([0, inf])
-    xticks(1:nTissues)
-    xlabel('Tissue')
-    ylabel(outputNames(selOut))
-end
