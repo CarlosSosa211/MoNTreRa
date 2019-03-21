@@ -16,9 +16,9 @@ void evalR(const int nMethod, const int nModel,
 void model(const double *x, double *y, const int nrow,
            const int ncol, const int nlayer, const double cellSize,
            const std::vector<bool> &inTum, const std::vector<bool> &inVes);
-void model(const double *x, double *y, const int nrow, const int ncol,
-           const int nlayer, const double cellSize,
-           const std::vector<bool> &inVes, const std::string nFPO2);
+void model(const double *x, const int nrow, const int ncol, const int nlayer,
+           const double cellSize, const std::vector<bool> &inVes,
+           const std::string nFPO2);
 void model(const double *x, double *y,  const int nrow,
            const int ncol, const int nlayer, const double cellSize,
            const std::vector<bool> &inTum, const std::vector<bool> &inVes,
