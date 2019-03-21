@@ -1,5 +1,6 @@
 clear all
 close all
+
 %%
 % This block initialises nfig and defines
 % - path: the path of the ouput directory,
