@@ -19,29 +19,29 @@ using namespace std;
 
 int main(){
     //const int N(100);
-    const int kp(5), L(5), p(20), P(1), N(10);
+    const int kp(5), L(5), p(20), P(5), N(10);
     //const int nMethod(0), nModel(1);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
     //string nFRefParInt("../InputFiles/refParIntToy.dat");
     //string nRefParMean("../InputFiles/refParMeanRT.dat");
-    string nFMostRelPar("../InputFiles/mostRelParRes.dat");
-    string nFLeastRelPar("../InputFiles/leastRelParRes.dat");
-    string nFVarPar("../InputFiles/varParRes.dat");
+    /*string nFMostRelPar("../InputFiles/mostRelParOxy.dat");
+    string nFLeastRelPar("../InputFiles/leastRelParOxy.dat");
+    string nFVarPar("../InputFiles/varParOxy.dat");*/
     string nFInTissueDim("../InputFiles/tissueDim.dat");
     string nFInTum("../InputFiles/inTum.dat");
     string nFInVes("../InputFiles/inVes.dat");
     //vector<string> nFPar;
     //nFPar.push_back("../InputFiles/par37_2.dat");
     //nFPar.push_back("../InputFiles/par20_3.dat");
-    /*string nFInTissueTCP("../InputFiles/inTissueTCP0.dat");
+    string nFInTissueTCP("../InputFiles/inTissueTCP0.dat");
     string nFParTCP("../InputFiles/parTCP.dat");
     vector<string> nFTreatmentTCP;
     nFTreatmentTCP.push_back("../InputFiles/1MonFri.dat");
     nFTreatmentTCP.push_back("../InputFiles/2MonFri.dat");
     nFTreatmentTCP.push_back("../InputFiles/3MonFri.dat");
     nFTreatmentTCP.push_back("../InputFiles/4MonFri.dat");
-    nFTreatmentTCP.push_back("../InputFiles/5MonFri.dat");*/
+    nFTreatmentTCP.push_back("../InputFiles/5MonFri.dat");
 
     srand(time(NULL));
     //evalR(nMethod, nModel, nFInTissueDim, nFInTum, nFInVes);
@@ -53,141 +53,37 @@ int main(){
     //sobolToy(N, nFRefParInt);
     //sobolFromFiles(2);
     //tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP);
-    /*tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP, nFInTissueDim, nFInTum,
-    nFInVes);*/
+    tcp(N, nFInTissueTCP, nFParTCP, nFTreatmentTCP, nFInTissueDim, nFInTum,
+    nFInVes);
     //var1ParRange(kp, L, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
-    varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
-           nFInVes, L, P);
+    /*varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
+           nFInVes, L, P);*/
     //varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes);
     //varStoch(N, P, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
 }
 
 
-void model(const double *x, double *y, const int nrow,
-           const int ncol, const int nlayer, const double cellSize,
-           const vector<bool> &inTum, const vector<bool> & inVes){
-    //int k(0);
-    /*int nrow(90), ncol(90), nlayer(1);
-    cout << "Creating tissue with: "  << endl;
-    cout << nrow << " row";
-    if(nrow > 1){
-    cout << "s";
-    }
-    cout << endl;
-    cout << ncol << " column";
-    if(ncol > 1){
-    cout << "s";
-    }
-    cout << endl;
-    cout << nlayer << " layer";
-    if(nlayer > 1){
-    cout << "s";
-    }
-    cout << endl;
+/* -----------------------------------------------------------------------------
+ * This functions evaluates the model of tumour growth and response to
+ * radiotherapy to obtain its scalar outputs.
+ *
+ * Inputs:
+ *  - x: array containing the parameters of the model,
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+ *
+ * Outputs:
+ *  - y: array containing the scalar outputs of the model.
+ -----------------------------------------------------------------------------*/
 
-    cout << "---------------------------------------------" << endl;*/
-
-    /*double tumDensRef(0.4), sigmaTumRef(0.1);
-    double vascDensRef(0.03), sigmaVascRef(0.1);
-
-    double tumDens   = tumDensRef;
-    double sigmaTum  = sigmaTumRef;
-    double vascDens  = vascDensRef;
-    double sigmaVasc = sigmaVascRef;
-
-    cout << "tumDens: " << tumDens << endl;
-    cout << "sigmaTum: " << sigmaTum << endl;
-    cout << "vascDens: " << vascDens << endl;
-    cout << "sigmaVasc: " << sigmaVasc << endl;*/
-
-    /*createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
-    vascDens, sigmaVasc, inTum, inVes);*/
-
-    /*vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
-    const double tumGrowth(1.0);
-    const int edgeOrder(1);
-    vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
-    const double res(1.0);
-    const double ang(1.0);
-
-    const double tumTime(x[k]);
-    k++;
-    const double fibTime(x[k]);
-    k++;
-    const double vascTumTime(x[k]);
-    k++;
-    const double vegfThres(x[k]);
-    k++;
-    vector<double> alpha(8), beta(8);
-    for(int i(0); i < 8; i++){
-        alpha[i] = x[k];
-        k++;
-        beta[i]  = alpha[i] / x[k];
-        k++;
-    }*/
-    /*for(int i(0); i < 8; i++){
-        alpha[i] = x[k];
-        beta[i]  = alpha[i] / x[k + 1];
-    }
-    k = k + 2;*/
-    /*const double doseThres(x[k]);
-    k++;
-    const double arrestTime(x[k]);
-    k++;
-    const double hypNecThres(x[k]);
-    k++;
-    const double dose(x[k]);
-    k++;
-    double DO2(x[k]);
-    k++;
-    double Vmax(x[k]);
-    k++;
-    const double Km(x[k]);
-    k++;
-    double Dvegf(x[k]);
-    k++;
-    double VmaxVegf(x[k]);
-    k++;
-    const double KmVegf(x[k]);
-    k++;
-    const double pO2NormVes(x[k]);
-    k++;
-    const double pO2TumVes(x[k]);
-    k++;
-    const double hypThres(x[k]);
-    k++;
-    const double hypVegf(x[k]);
-    k++;
-
-    cout << "tumTime: "     << tumTime     << " h" <<endl;
-    cout << "fibTime: "     << fibTime     << " h" << endl;
-    cout << "vascTumTime: " << vascTumTime << " h" << endl;
-    cout << "vegfThres: "   << vegfThres   << " mol/um^3" << endl;
-    cout << "alpha: ";
-    for(int i(0); i < 8; i++){
-        cout << alpha[i] << " ";
-    }
-    cout << "Gy^-1" << endl;
-    cout << "beta: ";
-    for(int i(0); i < 8; i++){
-        cout << beta[i] << " ";
-    }
-    cout << "Gy^-2" << endl;
-    cout << "doseThres: "   << doseThres   << " Gy" << endl;
-    cout << "arrestTime: "  << arrestTime  << " h" << endl;
-    cout << "hypNecThres: " << hypNecThres << " mmHg" << endl;
-    cout << "dose: "        << dose        << " Gy" << endl;
-    cout << "DO2: "         << DO2         << " um^2/ms" << endl;
-    cout << "Vmax: "        << Vmax        << " mmHg/ms" << endl;
-    cout << "Km: "          << Km          << " mmHg" << endl;
-    cout << "Dvegf: "       << Dvegf       << " um^2/ms" << endl;
-    cout << "VmaxVegf: "    << VmaxVegf    << " mol/um^3ms" << endl;
-    cout << "KmVegf: "      << KmVegf      << " mol/um^3" << endl;
-    cout << "pO2NormVes: "  << pO2NormVes  << " mmHg" << endl;
-    cout << "pO2TumVes: "   << pO2TumVes   << " mmHg" << endl;
-    cout << "hypThres: "    << hypThres    << " mmHg" << endl;
-    cout << "hypVegf: "     << hypVegf     << " mol/um^3" << endl;*/
-
+void model(const double *x, double *y, const int nrow, const int ncol,
+           const int nlayer, const double cellSize, const vector<bool> &inTum,
+           const vector<bool> & inVes){
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
@@ -371,8 +267,23 @@ void model(const double *x, double *y, const int nrow,
 }
 
 
-void model(const double *x, double *y, const int nrow, const int ncol,
-           const int nlayer, const double cellSize, const vector<bool> & inVes,
+/* -----------------------------------------------------------------------------
+ * This functions evaluates the model of oxygenation and angiogenesis to obtain
+ * pO2(x, t) values.
+ *
+ * Inputs:
+ *  - x: array containing the parameters of the model,
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - nFPO2: name of the file where pO2(x, t) values will be written.
+ -----------------------------------------------------------------------------*/
+
+void model(const double *x, const int nrow, const int ncol, const int nlayer,
+           const double cellSize, const vector<bool> & inVes,
            const string nFPO2){
     int k(0);
     const double ang(x[k] > 0.5);
@@ -444,6 +355,41 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     delete sim;
 }
 
+
+/* -----------------------------------------------------------------------------
+ * This functions evaluates the model of tumour growth and response to
+ * radiotherapy to obtain both its scalar and time-dependent outputs.
+ *
+ * Inputs:
+ *  - x: array containing the parameters of the model,
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - nFTumDens: name of the file where the tumour density values will be
+ *  written,
+ *  - nFTumVol: name of the file where the tumour volume values will be written,
+ *  - nFVascDens: name of the file where the vascular density values will be
+ *  written,
+ *  - nFKilledCells: name of the file where the killed tumour cell percentages
+ *  values will be written,
+ *  - nFDeadDens: name of the file where the dead cell density values will be
+ *  written,
+ *  - nFCycle: name of the file where the cycle distributon values will be
+ *  written,
+ *  - nFHypDens: name of the file where the hypoxic density values will be
+ *  written,
+ *  - nFPO2Stat: name of the file where the pO2 statistic values will be
+ *  written,
+ *  - nFVegfStat: name of the file where the pO2 statistic values will be
+ *  written.
+ *
+ * Outputs:
+ *  - y: array containing the scalar outputs of the model.
+ -----------------------------------------------------------------------------*/
 
 void model(const double *x, double *y, const int nrow, const int ncol,
            const int nlayer, const double cellSize, const vector<bool> &inTum,
@@ -713,6 +659,22 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 }
 
 
+/* -----------------------------------------------------------------------------
+ * This function evaluates N times the model of oxygenation and angiogenesis to
+ * obtain pO2(x, t) values, using parameters and a tissue architecture defined
+ * in input files.
+ *
+ * Inputs:
+ *  - N: number of repetitions,
+ *  - nFInTissueOxy: name of the file containing the tissue architecture,
+ *  - nFParOxy: name of the file containing the values of the parameters of the
+ *  model,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen; it is empty if an artificial tissue is used,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration; it is empty if an artificial tissue is used.
+ -----------------------------------------------------------------------------*/
+
 void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
          const string nFInTissueDim, const string nFInVes){
     const int K(12), nOut(1);
@@ -742,12 +704,22 @@ void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
         if(art){
             createInFiles(nrow, ncol, nlayer, vascDens, sigmaVasc, inVes);
         }
-        model(x, y, nrow, ncol, nlayer, cellSize, inVes, nFPO2);
+        model(x, nrow, ncol, nlayer, cellSize, inVes, nFPO2);
         cout << j + 1 << " out of " << N << " evaluations of the model" << endl;
         cout << "---------------------------------------------" << endl;
     }
 }
 
+
+/* -----------------------------------------------------------------------------
+ * This function evaluates the toy model.
+ *
+ * Inputs:
+ *  - x: array containing the parameters of the model.
+ *
+ * Outputs:
+ *  - y: array containing the scalar outputs of the model.
+ -----------------------------------------------------------------------------*/
 
 void toyModel(double *x, double *y){
     y[0] = x[0] + 2.0 * x[1] + x[2] * x[2] + x[3] * x[4];
