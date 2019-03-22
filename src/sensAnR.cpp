@@ -2,6 +2,23 @@
 
 using namespace std;
 
+
+/*------------------------------------------------------------------------------
+ * This functions evaluates a model using the combinations of parameters already
+ * built in R and writes the outputs in files.
+ *
+ * Inputs:
+ *  - nMethod: method used (0 for Morris and 1 for Sobol),
+ *  - nModel: model considered (0 for the model of tumour growth and response to
+ *  radiotherapy and 1 for the toy model),
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen; it is empty if the toy model is considered,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration; it is empty if the toy model is considered,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration; it is empty if the toy model is considered.
+------------------------------------------------------------------------------*/
+
 void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
            const std::string nFInTum, const std::string nFInVes){
     string nFDim;
@@ -46,9 +63,9 @@ void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
                 fX >> x[k];
             }
             toyModel(x, y);
-            //cout << i + 1 << " out of " << nEv << " evaluations of the model" <<
-            //endl;
-            //cout << "---------------------------------------------" << endl;
+            cout << i + 1 << " out of " << nEv << " evaluations of the model" <<
+                    endl;
+            cout << "---------------------------------------------" << endl;
 
             fY << y[0] << endl;
         }

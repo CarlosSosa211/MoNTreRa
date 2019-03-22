@@ -2,7 +2,8 @@
 
 using namespace std;
 
-/* -----------------------------------------------------------------------------
+
+/*------------------------------------------------------------------------------
  * This functions studies the impact of incrementing the value of one parameter
  * on the scalar outputs of the model. Regular increments are considered. Mean
  * values of ranges are used for the not varying parameters.
@@ -18,7 +19,7 @@ using namespace std;
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
  *  configuration.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void var1ParRange(const int kp, const int L, const string nRefParInt,
                   const string nFInTissueDim, const string nFInTum,
@@ -125,7 +126,7 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This functions studies the impact of varying one or more parameters on both
  * scalar and time-dependent outputs of the model. For the most relevant
  * parameters of the model, several values within their ranges are used. For the
@@ -146,7 +147,7 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
  *  configuration,
  *  - L: number of possible values of the most relevant parameters,
  *  - P: number of repetitions for each combination of parameters.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void varErr(const string nFVarPar, const string nFMostRelPar,
             const string nFLeastPar, const string nFInTissueDim,
@@ -403,7 +404,7 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This functions compares the scalar output values obtained for two or more
  * evaluations of the model using parameters defined in input files.
  *
@@ -416,7 +417,7 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
  *  configuration.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
                      const string nFInTum, const string nFInVes){
@@ -513,7 +514,7 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This functions evaluates the model for random combinations of the values of
  * the parameters within their ranges. The scalar ouptuts are calculated.
  *
@@ -528,7 +529,7 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
  *  configuration.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void varStoch(const int N, const int P, const std::string nFRefParInt,
               const std::string nFInTissueDim, const std::string nFInTum,

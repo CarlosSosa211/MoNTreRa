@@ -2,6 +2,36 @@
 
 using namespace std;
 
+
+/*------------------------------------------------------------------------------
+ * This functions performs a Sobol analysis.
+ *
+ * Inputs:
+ *  - K: number of parameters,
+ *  - N: number of repetitions,
+ *  - nOut: number of outputs of the model,
+ *  - x0: array containing the inferior values of the ranges of the parameters,
+ *  - h: array containing the length of the ranges of the parameters,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration.
+ *
+ * Outputs:
+ *  - SI: matrix containing the obtained SI values; each row corresponds to an
+ *  output and each column, to a parameter,
+ *  - TSI: matrix containing the obtained TSI values; each row corresponds
+ *  to an output and each column, to a parameter,
+ *  - SIConv: 3D matrix containing the obtained SI values; each row corresponds
+ *  to an output, each column, to a parameter and each layer, to a number of
+ *  repetitions of the form 2^i < N,
+ *  - TSIConv: 3D matrix containing the obtained TSI values; each row
+ *  corresponds to an output, each column, to a parameter and each layer, to a
+ *  number of repetitions of the form 2^i < N.
+------------------------------------------------------------------------------*/
+
 void sobol(const int K, const int N, const int nOut, const double *x0,
            const double *h, double **SI, double **TSI, double ***SIConv,
            double ***TSIConv, const string nFInTissueDim, const string nFInTum,
@@ -164,6 +194,13 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
     free2D(Yc, N);
 }
 
+/*------------------------------------------------------------------------------
+ * This functions performs a Sobol analysis using outputs already calculated and
+ * read from files.
+ *
+ * Inputs:
+ *  - K: number of parameters.
+------------------------------------------------------------------------------*/
 
 void sobolFromFiles(int K){
     int N;
@@ -220,6 +257,22 @@ void sobolFromFiles(int K){
 
     fSens.close();
 }
+
+/*------------------------------------------------------------------------------
+ * This functions prepares and perform a Sobol analysis of the model of tumour
+ * growth and response to radiotherapy and writes the obtained results in files.
+ *
+ * Inputs:
+ *  - N: number of repetitions,
+ *  - nRefParInt: name of the file containing the reference ranges for all the
+ *  parameters,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration.
+------------------------------------------------------------------------------*/
 
 void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
              const string nFInTum, const string nFInVes){
@@ -444,6 +497,16 @@ void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
     free3D(SIConv, NConv, nOut);
 }
 
+
+/*------------------------------------------------------------------------------
+ * This functions prepares and perform a Sobol analysis of the toy model and
+ * writes the obtained results in files.
+ *
+ * Inputs:
+ *  - N: number of repetitions,
+ *  - nRefParInt: name of the file containing the reference ranges for all the
+ *  parameters.
+------------------------------------------------------------------------------*/
 
 void sobolToy(const int N, const string nFRefParInt){
     const int K(5), NConv(log(N) / log(2.0)), nOut(1);

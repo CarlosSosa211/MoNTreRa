@@ -2,6 +2,33 @@
 
 using namespace std;
 
+
+/*------------------------------------------------------------------------------
+ * This functions performs a Morris analysis.
+ *
+ * Inputs:
+ *  - K: number of parameters,
+ *  - L: number of repetitions of the analysis (number of times that the
+ *  function is called; it is used to calculate the total number of evaluations,
+ *  - N: number of repetitions,
+ *  - nOut: number of outputs of the model,
+ *  - p: number of levels of the Morris analysis,
+ *  - x0: array containing the inferior values of the ranges of the parameters,
+ *  - h: array containing the length of the ranges of the parameters,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration.
+ *
+ * Outputs:
+ *  - mu: matrix containing the obtained mu* values; each row corresponds to an
+ *  output and each column, to a parameter,
+ *  - sigma: matrix containing the obtained sigma values; each row corresponds
+ *  to an output and each column, to a parameter.
+------------------------------------------------------------------------------*/
+
 void morris(const int K, const int L, const int N, const int nOut, const int p,
             const double *x0, const double *h, double **mu, double **sigma,
             const string nFInTissueDim, const string nFInTum,
@@ -116,11 +143,27 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
 }
 
 
+/*------------------------------------------------------------------------------
+ * This functions prepares and performs a Morris analysis of the model of tumour
+ * growth and response to radiotherapy and write in files the obtained results.
+ *
+ * Inputs:
+ *  - N: number of repetitions,
+ *  - p: number of levels of the Morris analysis,
+ *  - nRefParInt: name of the file containing the reference ranges for all the
+ *  parameters,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration.
+------------------------------------------------------------------------------*/
+
 void morrisRT(const int N, const int p, const string nFRefParInt,
               const string nFInTissueDim, const string nFInTum,
               const string nFInVes){
     const int K(35), nOut(15);
-    //const int K(20), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
@@ -201,7 +244,18 @@ void morrisRT(const int N, const int p, const string nFRefParInt,
 }
 
 
-void morrisToy(const int p, const int N, const string nFRefParInt){
+/*------------------------------------------------------------------------------
+ * This functions prepares and performs a Morris analysis of the toy model and
+ * write in files the obtained results.
+ *
+ * Inputs:
+ *  - N: number of repetitions,
+ *  - p: number of levels of the Morris analysis,
+ *  - nRefParInt: name of the file containing the reference ranges for all the
+ *  parameters.
+------------------------------------------------------------------------------*/
+
+void morrisToy(const int N, const int p, const string nFRefParInt){
     const int K(5), nOut(1);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
@@ -241,6 +295,35 @@ void morrisToy(const int p, const int N, const string nFRefParInt){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This functions studies the impact of varying the range of a parameter when
+ * performing a Morris analysis. Regular increments are considered.
+ *
+ * Inputs:
+ *  - K: number of parameters,
+ *  - kp: parameter of the model to be incremented,
+ *  - L: number of regular increments,
+ *  - N: number of repetitions,
+ *  - nOut: number of outputs of the model,
+ *  - p: number of levels of the Morris analysis,
+ *  - nRefParInt: name of the file containing the reference ranges for all the
+ *  parameters,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration.
+ *
+ * Outputs:
+ *  - mu: 3D matrix containing the obtained mu* values; each row corresponds to
+ *  an output, each column, to a parameter and each layer, to a range of
+ *  parameter kp,
+ *  - sigma: 3D matrix containing the obtained sigma values; each row
+ *  corresponds to an output, each column, to a parameter and each layer, to a
+ *  range of parameter kp.
+------------------------------------------------------------------------------*/
+
 void morrisVarRange(const int K, const int kp, const int L, const int N,
                     const int nOut, const int p, const string nFRefParInt,
                     double ***mu, double ***sigma, const string nFInTissueDim,
@@ -272,6 +355,26 @@ void morrisVarRange(const int K, const int kp, const int L, const int N,
     fVarRange.close();
 }
 
+
+/*------------------------------------------------------------------------------
+ * This functions prepares and performs a study of the impact of varying ranges
+ * when performing a Morris analysis of the model of tumour growth and response
+ * to radiotherapy and write in files the obtained results.
+ *
+ * Inputs:
+ *  - kp: parameter of the model to be incremented,
+ *  - L: number of regular increments,
+ *  - N: number of repetitions,
+ *  - p: number of levels of the Morris analysis,
+ *  - nRefParInt: name of the file containing the reference ranges for all the
+ *  parameters,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration.
+------------------------------------------------------------------------------*/
 
 void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
                       const string nFRefParInt, const string nFInTissueDim,
@@ -380,6 +483,26 @@ void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
     free3D(sigma, L, nOut);
 }
 
+
+/*------------------------------------------------------------------------------
+ * This functions prepares and performs a study of the impact of varying ranges
+ * when performing a Morris analysis of the toy model and write in files the
+ * obtained results.
+ *
+ * Inputs:
+ *  - kp: parameter of the model to be incremented,
+ *  - L: number of regular increments,
+ *  - N: number of repetitions,
+ *  - p: number of levels of the Morris analysis,
+ *  - nRefParInt: name of the file containing the reference ranges for all the
+ *  parameters,
+ *  - nFInTissueDim: name of the file containing the dimensions of a
+ *  histological specimen,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration.
+------------------------------------------------------------------------------*/
 
 void morrisVarRangeToy(const int kp, const int L, const int N, const int p,
                        const string nFRefParInt){

@@ -63,7 +63,7 @@ int main(){
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This functions evaluates the model of tumour growth and response to
  * radiotherapy to obtain its scalar outputs.
  *
@@ -79,7 +79,7 @@ int main(){
  *
  * Outputs:
  *  - y: array containing the scalar outputs of the model.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void model(const double *x, double *y, const int nrow, const int ncol,
            const int nlayer, const double cellSize, const vector<bool> &inTum,
@@ -267,7 +267,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This functions evaluates the model of oxygenation and angiogenesis to obtain
  * pO2(x, t) values.
  *
@@ -280,7 +280,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
  *  of the tissue,
  *  - inVes: vector containing the initial endothelial cell configuration,
  *  - nFPO2: name of the file where pO2(x, t) values will be written.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void model(const double *x, const int nrow, const int ncol, const int nlayer,
            const double cellSize, const vector<bool> & inVes,
@@ -356,7 +356,7 @@ void model(const double *x, const int nrow, const int ncol, const int nlayer,
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This functions evaluates the model of tumour growth and response to
  * radiotherapy to obtain both its scalar and time-dependent outputs.
  *
@@ -389,7 +389,7 @@ void model(const double *x, const int nrow, const int ncol, const int nlayer,
  *
  * Outputs:
  *  - y: array containing the scalar outputs of the model.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void model(const double *x, double *y, const int nrow, const int ncol,
            const int nlayer, const double cellSize, const vector<bool> &inTum,
@@ -659,7 +659,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This function evaluates N times the model of oxygenation and angiogenesis to
  * obtain pO2(x, t) values, using parameters and a tissue architecture defined
  * in input files.
@@ -673,7 +673,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
  *  histological specimen; it is empty if an artificial tissue is used,
  *  - nFInVes: name of the file containing the initial endothelial cell
  *  configuration; it is empty if an artificial tissue is used.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
          const string nFInTissueDim, const string nFInVes){
@@ -711,7 +711,7 @@ void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
 }
 
 
-/* -----------------------------------------------------------------------------
+/*------------------------------------------------------------------------------
  * This function evaluates the toy model.
  *
  * Inputs:
@@ -719,7 +719,7 @@ void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
  *
  * Outputs:
  *  - y: array containing the scalar outputs of the model.
- -----------------------------------------------------------------------------*/
+------------------------------------------------------------------------------*/
 
 void toyModel(double *x, double *y){
     y[0] = x[0] + 2.0 * x[1] + x[2] * x[2] + x[3] * x[4];
