@@ -12,16 +12,15 @@ close all
 % - outputCol: the column number of the output in the corresponding files.
 
 nfig = 0;
-% path = '../../Carlos/Results/Diff_Ang_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = '../../Carlos/Results/Diff_Res_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = ['../../Carlos/Results/Diff_AngRes_Dose_5Val_5Rep_AllTissues'...
-%     '/Tissue'];
-% path = '../../Carlos/Results/Diff_HypNec_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues_noHypNec/Tissue';
-% path = '../../Carlos/Results/Diff_Arrest_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = '../../Carlos/Results/Diff_Oxy_Dose_5Val_5Rep_AllTissues/Tissue';
-path = ['../../Carlos/Results/Diff_OxyNoHypNec_Dose_5Val_5Rep_'...
-    'AllTissues/Tissue'];
+% path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/Res_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/AngRes_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/HypNec_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/Ang_10x3Sim_noHypNec/Tissue';
+% path = '../../Carlos/Results/Diff/Arrest_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/Oxy_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/OxyNoHypNec_Dose_5Val_5Rep/Tissue';
+path = '../../Carlos/Results/Diff/OxyNoAngNoHypNec_Dose_5Val_5Rep/Tissue';
 
 nTissues = 21;
 nOut = 15;
@@ -38,8 +37,10 @@ nOut = 15;
 % withN = 'Arrest';
 % withoutN = 'No oxyegenation (no hypoxic necrosis)';
 % withN = 'Oxygenation';
+% withoutN = 'No oxyegenation (no hypoxic necrosis)';
+% withN = 'Oxygenation (no hypoxic necrosis)';
 withoutN = 'No oxyegenation (no hypoxic necrosis)';
-withN = 'Oxygenation (no hypoxic necrosis)';
+withN = 'Oxygenation (no angiogenesis, no hypoxic necrosis)';
 
 fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/finTumVol.res', '/intTumDens.res', '/killed50.res'...

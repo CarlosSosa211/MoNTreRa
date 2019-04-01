@@ -11,19 +11,18 @@ close all
 % - outputCol: the column number of the output in the corresponding files.
 
 nfig = 0;
-% path = '../../Carlos/Results/Diff_Ang_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = '../../Carlos/Results/Diff_Res_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = ['../../Carlos/Results/Diff_AngRes_Dose_5Val_5Rep_AllTissues'...
-%     '/Tissue'];
-% path = '../../Carlos/Results/Diff_HypNec_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = '../../Carlos/Results/Diff_Ang_10x3Sim_AllTissues_noHypNec/Tissue';
-% path = '../../Carlos/Results/Diff_Arrest_Dose_5Val_5Rep_AllTissues/Tissue';
-% path = '../../Carlos/Results/Diff_Oxy_Dose_5Val_5Rep_AllTissues/Tissue';
-path = ['../../Carlos/Results/Diff_OxyNoHypNec_Dose_5Val_5Rep_'...
-    'AllTissues/Tissue'];
+% path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/Res_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/AngRes_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/HypNec_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/Ang_10x3Sim_noHypNec/Tissue';
+% path = '../../Carlos/Results/Diff/Arrest_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/Oxy_Dose_5Val_5Rep/Tissue';
+path = '../../Carlos/Results/Diff/OxyNoHypNec_Dose_5Val_5Rep/Tissue';
 
 nTissues = 21;
 nOut = 16;
+P = 5;
 
 % withoutN = 'No angiogenesis';
 % withN = 'Angiogenesis';
@@ -84,8 +83,6 @@ outputCol = [2, 2, 2, 3, 4, 2, 2, 2, 3, 2, 3, 2, 3, 4, 5, 6];
 % the output for X_0_X simulations for all the combination of parameters,
 % - stdOutput2: a cell array containing the std values for P repetitions of
 % the output for X_1_X simulations for all the combination of parameters.
-
-P = 5;
 
 nTissue = input(['Select one tissue (from 1 to ', num2str(nTissues)...
     ') or all of them (0) or a mean over them (-1): ']);
