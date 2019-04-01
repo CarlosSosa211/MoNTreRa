@@ -2,6 +2,30 @@
 
 using namespace std;
 
+
+/*------------------------------------------------------------------------------
+ * This function creates the initial configuration of an artificial tissue in
+ * terms of tumour and endothelial cells.
+ *
+ * Inputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - tumDens: initial tumour density,
+ *  - sigmaTum: initial tumour sigma. A small value (close to 0), indicates that
+ *  tumour cells form a cluster at the center of the tissue. For a big value
+ *  (close to 1), they appear to follow a uniform distribution.
+ *  - vascDens: initial vascular density,
+ *  - sigmaVasc: initial vascular sigma. A small value (close to 0), indicates
+ *  that endothelial cells are placed on a regular grid. For a big value
+ *  (close to 1), they appear to follow a uniform distribution.
+ *  - vascDens: initial vascular density.
+ *
+ * Outputs:
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+------------------------------------------------------------------------------*/
+
 int createInFiles(const int nrow, const int ncol, const int nlayer,
                   const double tumDens, const double sigmaTum,
                   const double vascDens, const double sigmaVasc,
@@ -208,6 +232,23 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function creates the initial configuration of a tissue in terms of
+ * endothelial cells. It is supposed to contain no tumour cells.
+ *
+ * Inputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - vascDens: initial vascular density,
+ *  - sigmaVasc: initial vascular sigma. A small value (close to 0), indicates
+ *  that endothelial cells are placed on a regular grid. For a big value
+ *  (close to 1), they appear to follow a uniform distribution.
+ *
+ * Outputs:
+ *  - inVes: vector containing the initial endothelial cell configuration.
+------------------------------------------------------------------------------*/
+
 int createInFiles(const int nrow, const int ncol, const int nlayer,
                   const double vascDens, const double sigmaVasc,
                   vector<bool> &inVes){
@@ -336,6 +377,27 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function reads the files containing the dimensions and the initial
+ * configuration in terms of tumour and endothelial cell of a tissue.
+ *
+ * Inputs:
+ *  - nFInTissueDim: name of the file containing the dimensions of a tissue,
+ *  - nFInTum: name of the file containing the initial tumour cell
+ *  configuration of a tissue,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration of a tissue.
+ *
+ * Outputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inTum: vector containing the initial endothelial cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+------------------------------------------------------------------------------*/
+
 void readInFiles(const string nFInTissueDim, const string nFInTum,
                  const string nFInVes, int &nrow, int &ncol, int &nlayer,
                  double &cellSize, vector<bool> &inTum, vector<bool> &inVes){
@@ -366,6 +428,24 @@ void readInFiles(const string nFInTissueDim, const string nFInTum,
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function reads the files containing the dimensions and the initial
+ * configuration in terms of endothelial cell of a tissue.
+ *
+ * Inputs:
+ *  - nFInTissueDim: name of the file containing the dimensions of a tissue,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration of a tissue.
+ *
+ * Outputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+------------------------------------------------------------------------------*/
+
 void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
                  int &ncol, int &nlayer, double &cellSize, vector<bool> &inVes){
     ifstream fInTissueDim(nFInTissueDim.c_str());
@@ -386,6 +466,27 @@ void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function reads the files containing the dimensions and the initial
+ * vascular configuration parameters of a tissue.
+ *
+ * Inputs:
+ *  - nFInTissueOxy: name of the file containing the dimensions of a tissue and
+ * its initial vascular configuration parameters,
+ *
+ * Outputs:
+ *  - art: 0, if the tissue is a histological specimen or 1 if it is artificial
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - vascDens: initial vascular density,
+ *  - sigmaVasc: initial vascular sigma. A small value (close to 0), indicates
+ *  that endothelial cells are placed on a regular grid. For a big value
+ *  (close to 1), they appear to follow a uniform distribution.
+------------------------------------------------------------------------------*/
+
 void readInFilesOxy(const string nFInTissueOxy, bool &art, int &nrow, int &ncol,
                     int &nlayer, double &cellSize, double &vascDens,
                     double &sigmaVasc){
@@ -401,11 +502,40 @@ void readInFilesOxy(const string nFInTissueOxy, bool &art, int &nrow, int &ncol,
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function reads the files containing the dimensions and the initial
+ * configuration parameters of a tissue and the treatments considered for a tcp
+ * simulation.
+ *
+ * Inputs:
+ *  - nFInTissueTCP: name of the file containing the dimensions of a tissue and
+ * its initial configuration parameters,
+ *  - nFInTreatmentTCP: vector with the names of the files containing the
+ *  treatments.
+ *
+ * Outputs:
+ *  - art: 0, if the tissue is a histological specimen or 1 if it is artificial
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - tumDens: initial tumour density,
+ *  - sigmaTum: initial tumour sigma. A small value (close to 0), indicates that
+ *  tumour cells form a cluster at the center of the tissue. For a big value
+ *  (close to 1), they appear to follow a uniform distribution.
+ *  - vascDens: initial vascular density,
+ *  - sigmaVasc: initial vascular sigma. A small value (close to 0), indicates
+ *  that endothelial cells are placed on a regular grid. For a big value
+ *  (close to 1), they appear to follow a uniform distribution,
+ *  - treatment: vector containing the treatments.
+------------------------------------------------------------------------------*/
+
 void readInFilesTCP(const string nFInTissueTCP,
-                    const vector<string> nFTreatmentTCP, bool &art,
-                    int &nrow, int &ncol, int &nlayer, double &cellSize,
-                    double &tumDens, double &sigmaTum, double &vascDens,
-                    double &sigmaVasc, vector<Treatment> &treatment){
+                    const vector<string> nFTreatmentTCP, bool &art, int &nrow,
+                    int &ncol, int &nlayer, double &cellSize, double &tumDens,
+                    double &sigmaTum, double &vascDens, double &sigmaVasc,
+                    vector<Treatment> &treatment){
     ifstream fInTissueTCP(nFInTissueTCP.c_str());
 
     fInTissueTCP >> art;

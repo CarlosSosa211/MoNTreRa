@@ -2,6 +2,28 @@
 
 using namespace std;
 
+
+/*------------------------------------------------------------------------------
+ * This functions evaluates the model of tumour growth and response to
+ * radiotherap considering a given treatment. Simulation is stopped when the
+ * tumour is controlled.
+ *
+ * Inputs:
+ *  - x: array containing the parameters of the model,
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+ *  - treatment: pointer to the treatment to be considered
+ *
+ * Outputs:
+ *  - y: array containing the scalar outputs "controlled" and "doseToControl" of
+ *  the model.
+------------------------------------------------------------------------------*/
+
 void modelTCP(const double *x, double *y, const int nrow, const int ncol,
               const int nlayer, const double cellSize,
               const vector<bool> &inTum, const vector<bool> & inVes,
@@ -174,6 +196,26 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     y[1] = doseToControl;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This functions performs the simulations needed to obtain tcp curves.
+ *
+ * Inputs:
+ *  - N: number of repetitions,
+ *  - nFInTissueTCP: name of the file containing the architecture of the tissue
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+ *  - treatment: pointer to the treatment to be considered
+ *
+ * Outputs:
+ *  - y: array containing the scalar outputs "controlled" and "doseToControl" of
+ *  the model.
+------------------------------------------------------------------------------*/
 
 void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
          const vector<string> nFTreatmentTCP, const string nFInTissueDim,

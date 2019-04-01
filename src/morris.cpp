@@ -15,12 +15,11 @@ using namespace std;
  *  - p: number of levels of the Morris analysis,
  *  - x0: array containing the inferior values of the ranges of the parameters,
  *  - h: array containing the length of the ranges of the parameters,
- *  - nFInTissueDim: name of the file containing the dimensions of a
- *  histological specimen,
+ *  - nFInTissueDim: name of the file containing the dimensions of a tissue,
  *  - nFInTum: name of the file containing the initial tumour cell
- *  configuration,
+ *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration of a tissue.
  *
  * Outputs:
  *  - mu: matrix containing the obtained mu* values; each row corresponds to an
@@ -155,9 +154,9 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
  *  - nFInTissueDim: name of the file containing the dimensions of a
  *  histological specimen,
  *  - nFInTum: name of the file containing the initial tumour cell
- *  configuration,
+ *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration of a tissue.
 ------------------------------------------------------------------------------*/
 
 void morrisRT(const int N, const int p, const string nFRefParInt,
@@ -311,9 +310,9 @@ void morrisToy(const int N, const int p, const string nFRefParInt){
  *  - nFInTissueDim: name of the file containing the dimensions of a
  *  histological specimen,
  *  - nFInTum: name of the file containing the initial tumour cell
- *  configuration,
+ *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration of a tissue.
  *
  * Outputs:
  *  - mu: 3D matrix containing the obtained mu* values; each row corresponds to
@@ -371,9 +370,9 @@ void morrisVarRange(const int K, const int kp, const int L, const int N,
  *  - nFInTissueDim: name of the file containing the dimensions of a
  *  histological specimen,
  *  - nFInTum: name of the file containing the initial tumour cell
- *  configuration,
+ *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration of a tissue.
 ------------------------------------------------------------------------------*/
 
 void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
@@ -499,9 +498,9 @@ void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
  *  - nFInTissueDim: name of the file containing the dimensions of a
  *  histological specimen,
  *  - nFInTum: name of the file containing the initial tumour cell
- *  configuration,
+ *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration of a tissue.
 ------------------------------------------------------------------------------*/
 
 void morrisVarRangeToy(const int kp, const int L, const int N, const int p,
