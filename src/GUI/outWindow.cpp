@@ -41,7 +41,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fEndTreatTime((nFOutData + "/endTreatTumDens.res").c_str());
 
     if(!fEndTreatTime.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening endTreatTumDens.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "endTreatTumDens.res");
     }
 
     else{
@@ -85,7 +86,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fTumDens((nFOutData + "/tumDens.res").c_str());
 
     if(!fTumDens.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening tumDens.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "tumDens.res");
     }
 
     else{
@@ -104,7 +106,10 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
             fTumDens >> a >> b;
         }
         fTumDens.close();
-
+        QPen pen;
+        pen.setWidth(5);
+        pen.setColor(m_blueTum);
+        sTumDens->setPen(pen);
         m_cTumDens->addSeries(sTumDens);
         m_cTumDens->legend()->hide();
         m_cTumDens->setTitle("Evolution of the tumor density");
@@ -140,7 +145,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fTumVol((nFOutData + "/tumVol.res").c_str());
 
     if(!fTumVol.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening tumVol.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "tumVol.res");
     }
 
     else{
@@ -181,7 +187,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fVascDens((nFOutData + "/vascDens.res").c_str());
 
     if(!fVascDens.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening vascDens.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "vascDens.res");
     }
 
     else{
@@ -241,7 +248,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fKilledCells((nFOutData + "/killedCells.res").c_str());
 
     if(!fKilledCells.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening killedCells.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "killedCells.res");
     }
 
     else{
@@ -263,7 +271,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         m_cKilledCells->addSeries(sKilledCells);
         m_cKilledCells->legend()->hide();
-        m_cKilledCells->setTitle("Evolution of the percentage of killed tumor cells");
+        m_cKilledCells->setTitle("Evolution of the percentage of killed tumor "
+                                 "cells");
 
         m_xKilledCells->setTitleText("Time (h)");
         m_yKilledCells->setLabelFormat("%i");
@@ -277,6 +286,48 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_yKilledCells->applyNiceNumbers();
 
         m_selChart->addItem("Percentage of killed tumor cells");
+    }
+
+    std::ifstream fDeadDens((nFOutData + "/deadCellsDens.res").c_str());
+
+    if(!fDeadDens.is_open()){
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "deadCellsDens.res");
+    }
+
+    else{
+        m_cDeadDens = new QChart;
+        m_xDeadDens = new QValueAxis;
+        m_yDeadDens = new QValueAxis;
+        m_cDeadDens->addAxis(m_xDeadDens, Qt::AlignBottom);
+        m_cDeadDens->addAxis(m_yDeadDens, Qt::AlignLeft);
+        m_cDeadDens->setMaximumWidth(1000);
+
+        QLineSeries *sDeadDens = new QLineSeries(m_cDeadDens);
+
+        fDeadDens >> a >> b;
+        while(!fDeadDens.eof()){
+            sDeadDens->append(a, b);
+            fDeadDens >> a >> b;
+        }
+        fDeadDens.close();
+
+        m_cDeadDens->addSeries(sDeadDens);
+        m_cDeadDens->legend()->hide();
+        m_cDeadDens->setTitle("Evolution of the dead cell density");
+
+        m_xDeadDens->setTitleText("Time (h)");
+        m_xDeadDens->setLabelFormat("%i");
+        sDeadDens->attachAxis(m_xDeadDens);
+        m_xDeadDens->applyNiceNumbers();
+
+        m_yDeadDens->setTitleText("Dead cell density");
+        m_yDeadDens->setLabelFormat("%4.2f");
+        sDeadDens->attachAxis(m_yDeadDens);
+        m_yDeadDens->setMin(0.0);
+        m_yDeadDens->applyNiceNumbers();
+
+        m_selChart->addItem("Dead cell density");
     }
 
     std::ifstream fCycle((nFOutData + "/cycle.res").c_str());
@@ -348,7 +399,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fHypDens((nFOutData + "/hypDens.res").c_str());
 
     if(!fHypDens.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening hypDens.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "hypDens.res");
     }
 
     else{
@@ -389,7 +441,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fPO2Stat((nFOutData + "/pO2Stat.res").c_str());
 
     if(!fPO2Stat.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening pO2Stat.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "pO2Stat.res");
     }
 
     else{
@@ -436,7 +489,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fVegfStat((nFOutData + "/vegfStat.res").c_str());
 
     if(!fVegfStat.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening vegfStat.res");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "vegfStat.res");
     }
 
     else{
@@ -487,7 +541,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fTissueDim((nFOutData + "/tissueDim.dat").c_str());
 
     if(!fTissueDim.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening tissueDim.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "tissueDim.dat");
     }
 
     else{
@@ -502,7 +557,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     std::ifstream fSimParam((nFOutData + "/simParam.dat").c_str());
 
     if(!fSimParam.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening simParam.dat");
+        QMessageBox::critical(this, "Error", "Problem while opening "
+                                             "simParam.dat");
     }
 
     else{
@@ -556,14 +612,22 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_mitCat  = new QLabel("Mitotic catastrophe cells", m_legendSt);
         m_apop    = new QLabel("Apoptotic cells", m_legendSt);
 
-        QImage fibIm     = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage tumIm     = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage tumDamIm  = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage normVesIm = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage tumVesIm  = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage hypNecIm  = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage mitCatIm  = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage apopIm    = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
+        QImage fibIm     = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
+        QImage tumIm     = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
+        QImage tumDamIm  = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
+        QImage normVesIm = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
+        QImage tumVesIm  = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
+        QImage hypNecIm  = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
+        QImage mitCatIm  = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
+        QImage apopIm    = QImage(m_mapSclFac, m_mapSclFac,
+                                  QImage::Format_RGB32);
 
         fibIm.fill(m_white.rgb());
         tumIm.fill(m_blueTum.rgb());
@@ -651,7 +715,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_imTimer->setColor(4, m_violet.rgb());
         m_imTimer->setColor(5, m_redG0.rgb());
 
-        m_G1 = new QLabel(QString::fromStdString("G1" + std::string(25, ' ')), m_legendCyc);
+        m_G1 = new QLabel(QString::fromStdString("G1" + std::string(25, ' ')),
+                          m_legendCyc);
         m_S  = new QLabel("S", m_legendCyc);
         m_G2 = new QLabel("G2", m_legendCyc);
         m_M  = new QLabel("M", m_legendCyc);
@@ -741,7 +806,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         for(int i(0); i < nrowOxy; i++){
             for(int j(0); j < ncolOxy; j++){
-                oxyIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200, 255));
+                oxyIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200,
+                                                          255));
             }
         }
         m_pO2Bar->setPixmap(QPixmap::fromImage(oxyIm));
@@ -803,7 +869,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         for(int i(0); i < nrowVegf; i++){
             for(int j(0); j < ncolVegf; j++){
-                vegfIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200, 255));
+                vegfIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200,
+                                                           255));
             }
         }
         m_vegfBar->setPixmap(QPixmap::fromImage(vegfIm));
@@ -884,20 +951,33 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     layout->addLayout(hLayout);
     setLayout(layout);
 
-    QObject::connect(m_selMap, SIGNAL(currentIndexChanged(int)), this, SLOT(changeNumMap(int)));
-    QObject::connect(m_selChart, SIGNAL(currentIndexChanged(int)), this, SLOT(changeChart(int)));
-    QObject::connect(m_slider, SIGNAL(valueChanged(int)), m_timeS, SLOT(setValue(int)));
-    QObject::connect(m_timeS, SIGNAL(valueChanged(int)), m_slider, SLOT(setValue(int)));
-    QObject::connect(m_timeS, SIGNAL(valueChanged(int)), this, SLOT(changeIter(int)));
-    QObject::connect(this, SIGNAL(updateSlider(int)), m_slider, SLOT(setValue(int)));
-    QObject::connect(m_play, SIGNAL(clicked()), this, SLOT(play()));
+    QObject::connect(m_selMap, SIGNAL(currentIndexChanged(int)), this,
+                     SLOT(changeNumMap(int)));
+    QObject::connect(m_selChart, SIGNAL(currentIndexChanged(int)), this,
+                     SLOT(changeChart(int)));
+    QObject::connect(m_slider, SIGNAL(valueChanged(int)), m_timeS,
+                     SLOT(setValue(int)));
+    QObject::connect(m_timeS, SIGNAL(valueChanged(int)), m_slider,
+                     SLOT(setValue(int)));
+    QObject::connect(m_timeS, SIGNAL(valueChanged(int)), this,
+                     SLOT(changeIter(int)));
+    QObject::connect(this, SIGNAL(updateSlider(int)), m_slider,
+                     SLOT(setValue(int)));
+    QObject::connect(m_play, SIGNAL(clicked()), this,
+                     SLOT(play()));
     QObject::connect(m_sel, SIGNAL(clicked()), this, SLOT(sel()));
-    QObject::connect(m_change, SIGNAL(clicked()), this, SLOT(change()));
-    QObject::connect(m_newSim, SIGNAL(clicked()),this, SLOT(newSim()));
-    QObject::connect(m_saveOutFiles, SIGNAL(clicked()), this, SLOT(saveOutFiles()));
-    QObject::connect(m_saveChart, SIGNAL(clicked()), this, SLOT(saveChart()));
-    QObject::connect(m_saveMap, SIGNAL(clicked()), this, SLOT(saveMap()));
-    QObject::connect(m_saveAllMaps, SIGNAL(clicked()), this, SLOT(saveAllMaps()));
+    QObject::connect(m_change, SIGNAL(clicked()), this,
+                     SLOT(change()));
+    QObject::connect(m_newSim, SIGNAL(clicked()),this,
+                     SLOT(newSim()));
+    QObject::connect(m_saveOutFiles, SIGNAL(clicked()), this,
+                     SLOT(saveOutFiles()));
+    QObject::connect(m_saveChart, SIGNAL(clicked()), this,
+                     SLOT(saveChart()));
+    QObject::connect(m_saveMap, SIGNAL(clicked()), this,
+                     SLOT(saveMap()));
+    QObject::connect(m_saveAllMaps, SIGNAL(clicked()), this,
+                     SLOT(saveAllMaps()));
 
     drawMap(m_selMap->currentIndex(), m_slider->value());
 
@@ -969,10 +1049,13 @@ void OutWindow::changeChart(const int numChart){
             m_recDash->attachAxis(m_yVascDens);
         }
         m_chartView->setChart(m_cVascDens);
-        m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
-        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_sDash).front()->
+                setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->
+                setVisible(false);
         if(m_rec){
-            m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
+            m_chartView->chart()->legend()->markers(m_recDash).front()->
+                    setVisible(false);
         }
         break;
     }
@@ -999,6 +1082,25 @@ void OutWindow::changeChart(const int numChart){
     case 4:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_chartView->chart()->removeSeries(m_endTreatDash);
+        m_cDeadDens->addSeries(m_sDash);
+        m_cDeadDens->addSeries(m_endTreatDash);
+        m_sDash->attachAxis(m_xDeadDens);
+        m_sDash->attachAxis(m_yDeadDens);
+        m_endTreatDash->attachAxis(m_xDeadDens);
+        m_endTreatDash->attachAxis(m_yDeadDens);
+        if(m_rec){
+            m_chartView->chart()->removeSeries(m_recDash);
+            m_cDeadDens->addSeries(m_recDash);
+            m_recDash->attachAxis(m_xDeadDens);
+            m_recDash->attachAxis(m_yDeadDens);
+        }
+        m_chartView->setChart(m_cDeadDens);
+        break;
+    }
+
+    case 5:{
+        m_chartView->chart()->removeSeries(m_sDash);
+        m_chartView->chart()->removeSeries(m_endTreatDash);
         m_cCycle->addSeries(m_sDash);
         m_cCycle->addSeries(m_endTreatDash);
         m_sDash->attachAxis(m_xCycle);
@@ -1012,15 +1114,18 @@ void OutWindow::changeChart(const int numChart){
             m_recDash->attachAxis(m_yCycle);
         }
         m_chartView->setChart(m_cCycle);
-        m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
-        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_sDash).front()->
+                setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->
+                setVisible(false);
         if(m_rec){
-            m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
+            m_chartView->chart()->legend()->markers(m_recDash).front()->
+                    setVisible(false);
         }
         break;
     }
 
-    case 5:{
+    case 6:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_chartView->chart()->removeSeries(m_endTreatDash);
         m_cHypDens->addSeries(m_sDash);
@@ -1039,7 +1144,7 @@ void OutWindow::changeChart(const int numChart){
         break;
     }
 
-    case 6:{
+    case 7:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_chartView->chart()->removeSeries(m_endTreatDash);
         m_cPO2Stat->addSeries(m_sDash);
@@ -1055,15 +1160,18 @@ void OutWindow::changeChart(const int numChart){
             m_recDash->attachAxis(m_yPO2Stat);
         }
         m_chartView->setChart(m_cPO2Stat);
-        m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
-        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_sDash).front()->
+                setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->
+                setVisible(false);
         if(m_rec){
-            m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
+            m_chartView->chart()->legend()->markers(m_recDash).front()->
+                    setVisible(false);
         }
         break;
     }
 
-    case 7:{
+    case 8:{
         m_chartView->chart()->removeSeries(m_sDash);
         m_chartView->chart()->removeSeries(m_endTreatDash);
         m_cVegfStat->addSeries(m_sDash);
@@ -1079,10 +1187,13 @@ void OutWindow::changeChart(const int numChart){
             m_recDash->attachAxis(m_yVegfStat);
         }
         m_chartView->setChart(m_cVegfStat);
-        m_chartView->chart()->legend()->markers(m_sDash).front()->setVisible(false);
-        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->setVisible(false);
+        m_chartView->chart()->legend()->markers(m_sDash).front()->
+                setVisible(false);
+        m_chartView->chart()->legend()->markers(m_endTreatDash).front()->
+                setVisible(false);
         if(m_rec){
-            m_chartView->chart()->legend()->markers(m_recDash).front()->setVisible(false);
+            m_chartView->chart()->legend()->markers(m_recDash).front()->
+                    setVisible(false);
         }
         break;
     }
@@ -1111,17 +1222,22 @@ void OutWindow::drawChartDashLine(const int iter){
 
 
 void OutWindow::drawMap(const int numMap, const int mapIter){
+    const int iter(mapIter / m_simTimeStep);
+    const double normPO2(240.0 / m_maxpO2);
+    const double normVegf(240.0 / m_maxvegf);
+    int colour;
+    QColor colourQ;
     switch(numMap){
     case 0:{
-        int iSclFac, jSclFac;
+        int iSF, jSF;
         for(int i(0); i < m_mapNrow; i++){
-            iSclFac = i * m_mapSclFac;
+            iSF = i * m_mapSclFac;
             for(int j(0); j < m_mapNcol; j++){
-                jSclFac = j * m_mapSclFac;
+                jSF = j * m_mapSclFac;
+                colour = m_state[iter][i * m_mapNcol + j] - 1;
                 for(int si(0); si < m_mapSclFac; si++){
                     for(int sj(0); sj < m_mapSclFac; sj++){
-                        m_imState->setPixel(jSclFac + sj, iSclFac + si,
-                                            m_state[mapIter / m_simTimeStep][i * m_mapNcol + j] - 1);
+                        m_imState->setPixel(jSF + sj, iSF + si, colour);
                     }
                 }
             }
@@ -1136,15 +1252,15 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
     }
 
     case 1:{
-        int iSclFac, jSclFac;
+        int iSF, jSF;
         for(int i(0); i < m_mapNrow; i++){
-            iSclFac = i * m_mapSclFac;
+            iSF = i * m_mapSclFac;
             for(int j(0); j < m_mapNcol; j++){
-                jSclFac = j * m_mapSclFac;
+                jSF = j * m_mapSclFac;
+                colour = m_state[iter][i * m_mapNcol + j];
                 for(int si(0); si < m_mapSclFac; si++){
                     for(int sj(0); sj < m_mapSclFac; sj++){
-                        m_imTimer->setPixel(jSclFac + sj, iSclFac + si,
-                                            m_timer[mapIter / m_simTimeStep][i * m_mapNcol + j]);
+                        m_imTimer->setPixel(jSF + sj, iSF + si, colour);
                     }
                 }
             }
@@ -1160,16 +1276,16 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
     }
 
     case 2:{
-        int iSclFac, jSclFac;
+        int iSF, jSF;
         for(int i(0); i < m_mapNrow; i++){
-            iSclFac = i * m_mapSclFac;
+            iSF = i * m_mapSclFac;
             for(int j(0); j < m_mapNcol; j++){
-                jSclFac = j * m_mapSclFac;
+                jSF = j * m_mapSclFac;
+                colour = normPO2 * (m_maxpO2 - m_pO2[iter][i * m_mapNcol + j]);
+                colourQ = QColor::fromHsv(colour, 200, 255);
                 for(int si(0); si < m_mapSclFac; si++){
                     for(int sj(0); sj < m_mapSclFac; sj++){
-                        m_imPO2->setPixelColor(jSclFac + sj, iSclFac + si,
-                                               QColor::fromHsv(240.0 * (m_maxpO2 - m_pO2[mapIter / m_simTimeStep]
-                                                               [i * m_mapNcol + j]) / m_maxpO2, 200, 255));
+                        m_imPO2->setPixelColor(jSF + sj, iSF + si, colourQ);
                     }
                 }
             }
@@ -1185,16 +1301,17 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
     }
 
     case 3:{
-        int iSclFac, jSclFac;
+        int iSF, jSF;
         for(int i(0); i < m_mapNrow; i++){
-            iSclFac = i * m_mapSclFac;
+            iSF = i * m_mapSclFac;
             for(int j(0); j < m_mapNcol; j++){
-                jSclFac = j * m_mapSclFac;
+                jSF = j * m_mapSclFac;
+                colour = normVegf * (m_maxvegf -
+                                     m_vegf[iter][i * m_mapNcol + j]);
+                colourQ = QColor::fromHsv(colour, 200, 255);
                 for(int si(0); si < m_mapSclFac; si++){
                     for(int sj(0); sj < m_mapSclFac; sj++){
-                        m_imVegf->setPixelColor(jSclFac + sj, iSclFac + si,
-                                                QColor::fromHsv(240.0 * (m_maxvegf - m_vegf[mapIter / m_simTimeStep]
-                                                                [i * m_mapNcol + j]) / m_maxvegf, 200, 255));
+                        m_imVegf->setPixelColor(jSF + sj, iSF + si, colourQ);
                     }
                 }
             }
@@ -1240,6 +1357,7 @@ void OutWindow::saveAllMaps(){
     switch (m_selMap->currentIndex()){
     case 0:{
         QDir().mkdir("../Figures/state");
+        QDir().mkdir("../Figures/tumDens");
         const int K(m_state.size() * m_simTimeStep);
 
         for(int k(0); K; k += m_simTimeStep){
@@ -1249,6 +1367,10 @@ void OutWindow::saveAllMaps(){
             fileName = fileName.rightJustified(4, '0');
             fileName = "../Figures/state/" + fileName + ".png";
             m_map->grab().save(fileName);
+            fileName = QString::number(k);
+            fileName = fileName.rightJustified(4, '0');
+            fileName = "../Figures/tumDens/" + fileName + ".png";
+            m_chartView->grab().save(fileName);
             qApp->processEvents();
         }
         break;
@@ -1306,8 +1428,10 @@ void OutWindow::saveAllMaps(){
 
 
 void OutWindow::saveChart(){
-    QString fileName = QFileDialog::getSaveFileName(this, "Savem_chart", "../Figures",
-                                                    "Images(*.png *.gif *.jpg *.jpeg)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Save chart",
+                                                    "../Figures",
+                                                    "Images(*.png *.gif *.jpg"
+                                                    "*.jpeg)");
     if(!fileName.isEmpty()){
         int nSeries(m_chartView->chart()->series().size());
         m_chartView->chart()->series().at(nSeries - 1)->hide();
@@ -1317,16 +1441,21 @@ void OutWindow::saveChart(){
         m_chartView->chart()->series().at(nSeries - 1)->show();
         m_chartView->chart()->series().at(nSeries - 2)->show();
         m_chartView->chart()->series().at(nSeries - 3)->show();
-        m_chartView->chart()->legend()->markers().at(nSeries - 1)->setVisible(false);
-        m_chartView->chart()->legend()->markers().at(nSeries - 2)->setVisible(false);
-        m_chartView->chart()->legend()->markers().at(nSeries - 3)->setVisible(false);
+        m_chartView->chart()->legend()->markers().at(nSeries - 1)->
+                setVisible(false);
+        m_chartView->chart()->legend()->markers().at(nSeries - 2)->
+                setVisible(false);
+        m_chartView->chart()->legend()->markers().at(nSeries - 3)->
+                setVisible(false);
     }
 }
 
 
 void OutWindow::saveMap(){
-    QString fileName = QFileDialog::getSaveFileName(this, "Save map", "../Figures",
-                                                    "Images(*.png *.gif *.jpg *.jpeg)");
+    QString fileName = QFileDialog::getSaveFileName(this, "Save map",
+                                                    "../Figures",
+                                                    "Images(*.png *.gif *.jpg"
+                                                    "*.jpeg)");
     if(!fileName.isEmpty()){
         m_map->grab().save(fileName);
     }
@@ -1334,7 +1463,8 @@ void OutWindow::saveMap(){
 
 
 void OutWindow::saveOutFiles(){
-    QString dirName = QFileDialog::getSaveFileName(this, "Save ouptut files", "..");
+    QString dirName = QFileDialog::getSaveFileName(this, "Save ouptut files",
+                                                   "..");
 
     if(!dirName.isEmpty()){
         QDir newDir;
@@ -1345,7 +1475,8 @@ void OutWindow::saveOutFiles(){
         filesList = outDir.entryList();
 
         for(int i(0); i < filesList.size(); i++){
-            QFile::copy("../OutputFilesGUI/" + filesList[i], dirName + "/" + filesList[i]);
+            QFile::copy("../OutputFilesGUI/" + filesList[i], dirName + "/" +
+                        filesList[i]);
         }
     }
 }

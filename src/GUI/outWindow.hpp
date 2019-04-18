@@ -36,12 +36,13 @@ private:
     QGroupBox *m_selChartGroup, *m_selMapGroup, *m_mapGroup;
     QGroupBox *m_legendSt, *m_legendCyc, *m_legendPO2, *m_legendVegf;
     QChartView *m_chartView;
-    QChart *m_cTumDens, *m_cTumVol, *m_cVascDens, *m_cKilledCells;
+    QChart *m_cTumDens, *m_cTumVol, *m_cVascDens, *m_cKilledCells, *m_cDeadDens;
     QChart *m_cCycle, *m_cHypDens, *m_cPO2Stat, *m_cVegfStat;
     QValueAxis *m_xTumDens, *m_yTumDens;
     QValueAxis *m_xTumVol, *m_yTumVol;
     QValueAxis *m_xVascDens, *m_yVascDens;
     QValueAxis *m_xKilledCells, *m_yKilledCells;
+    QValueAxis *m_xDeadDens, *m_yDeadDens;
     QValueAxis *m_xCycle, *m_yCycle;
     QValueAxis *m_xHypDens, *m_yHypDens;
     QValueAxis *m_xPO2Stat, *m_yPO2Stat;
