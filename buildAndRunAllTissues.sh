@@ -11,6 +11,7 @@ mkdir ../OutputFiles
 cp ../HistSpec/tissueDim$i.dat ../InputFiles/tissueDim.dat
 cp ../HistSpec/inTum$i.dat ../InputFiles/inTum.dat
 cp ../HistSpec/inVes$i.dat ../InputFiles/inVes.dat
+cp ../HistSpec/inPO2$i.dat ../InputFiles/inPO2.dat
 ./RTsim
 mv ../OutputFiles ../Tissue$i
 done
