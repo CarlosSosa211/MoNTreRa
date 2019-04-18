@@ -13,12 +13,13 @@ close all
 nfig = 0;
 % path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/Res_Dose_5Val_5Rep/Tissue';
-% path = '../../Carlos/Results/Diff/AngRes_Dose_5Val_5Rep/Tissue';
+path = '../../Carlos/Results/Diff/Arrest_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/HypNec_Dose_5Val_5Rep/Tissue';
-% path = '../../Carlos/Results/Diff/Ang_10x3Sim_noHypNec/Tissue';
-% path = '../../Carlos/Results/Diff/Arrest_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/Oxy_Dose_5Val_5Rep/Tissue';
-path = '../../Carlos/Results/Diff/OxyNoHypNec_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/AngRes_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/ArrestNoAngNoRes_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/OxyNoHypNec_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/OxyNoAngNoHypNec_Dose_5Val_5Rep/Tissue';
 
 nTissues = 21;
 nOut = 16;
@@ -28,16 +29,20 @@ P = 5;
 % withN = 'Angiogenesis';
 % withoutN = 'No healthy cell division';
 % withN = 'Healthy cell division';
-% withoutN = 'No angiogenesis and no healthy cell division';
-% withN = 'Angiogenesis and healthy cell division';
+withoutN = 'No arrest';
+withN = 'Arrest';
 % withoutN = 'No hypoxic necrosis';
 % withN = 'Hypoxic necrosis';
-% withoutN = 'No arrest';
-% withN = 'Arrest';
 % withoutN = 'No oxyegenation (no hypoxic necrosis)';
 % withN = 'Oxygenation';
-withoutN = 'No oxyegenation (no hypoxic necrosis)';
-withN = 'Oxygenation (no hypoxic necrosis)';
+% withoutN = 'No angiogenesis and no healthy cell division';
+% withN = 'Angiogenesis and healthy cell division';
+% withoutN = 'No arrest, no angiogenesis, no healthy cell division';
+% withN = 'Arrest, no angiogenesis, no healthy cell division';
+% withoutN = 'No oxyegenation (no hypoxic necrosis)';
+% withN = 'Oxygenation (no hypoxic necrosis)';
+% withoutN = 'No oxyegenation (no hypoxic necrosis)';
+% withN = 'Oxygenation (no angiogenesis, no hypoxic necrosis)';
 
 fileNames = {'/tumDens_', '/tumVol_', '/vascDens_', '/vascDens_'...
     '/vascDens_', '/killedCell_', '/hypDens_', '/pO2Stat_'...
@@ -314,7 +319,6 @@ grid on
 xlabel('TTum (h)')
 ylabel('p0')
 
-%%
 %%
 % This block plots the mean and std values of all the indicators as a
 % function of the studied dose values
