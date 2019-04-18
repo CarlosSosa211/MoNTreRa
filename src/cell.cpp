@@ -93,11 +93,11 @@ Cell::Cell(Model *const parent) : Model(10, 20, 2, 34, 0){
 }
 
 
-Cell::Cell(const int i, const int j, const int l, const double tumGrowth,
-           const double doubTime, vector <double> cycDur, const double res,
-           const double fibDoubTime, const double ang, const double angTime,
+Cell::Cell(const int i, const int j, const int l, const bool tumGrowth,
+           const double doubTime, vector <double> cycDur, const bool res,
+           const double fibDoubTime, const bool ang, const double angTime,
            const double vegfThres, vector<double> alpha, vector<double> beta,
-           const double doseThres, const double arrestTime, const double oxy,
+           const double doseThres, const double arrestTime, const int oxy,
            const double hypNecThres, Model *const parent) : Model(10, 20, 2, 34,
                                                                   0){
     m_i = i;

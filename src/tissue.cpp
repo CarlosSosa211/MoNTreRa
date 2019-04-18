@@ -35,14 +35,14 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const double cellSize, const string nFInTum,
-               const string nFInVes, const double tumGrowth,
+               const string nFInVes, const bool tumGrowth,
                const double doubTime, const int edgeOrder,
                vector<double> cycDur, vector<double> cycDistrib,
-               const double res, const double fibDoubTime, const double ang,
+               const bool res, const double fibDoubTime, const bool ang,
                const double angTime, const double vegfThres,
                vector<double> alpha, vector<double> beta,
                Treatment *const treatment, const double doseThres,
-               const double arrestTime, const double oxy,
+               const double arrestTime, const int oxy,
                const double hypNecThres) : Model(0, 33, 38, 2, nrow * ncol *
                                                  nlayer){
     m_nrow   = nrow;
@@ -202,14 +202,14 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const double cellSize, const vector<bool> &inTum,
-               const vector<bool> &inVes, const double tumGrowth,
+               const vector<bool> &inVes, const bool tumGrowth,
                const double doubTime, const int edgeOrder,
                vector<double> cycDur, vector<double> cycDistrib,
-               const double res, const double fibDoubTime, const double ang,
+               const bool res, const double fibDoubTime, const bool ang,
                const double angTime, const double vegfThres,
                vector<double> alpha, vector<double> beta,
                Treatment *const treatment, const double doseThres,
-               const double arrestTime, const double oxy,
+               const double arrestTime, const int oxy,
                const double hypNecThres) : Model(0, 33, 38, 2, nrow * ncol *
                                                  nlayer){
     m_nrow   = nrow;

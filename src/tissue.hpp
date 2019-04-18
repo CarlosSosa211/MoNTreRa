@@ -102,24 +102,24 @@ public:
            Treatment *const treatment);
     Tissue(const int nrow, const int ncol, const int nlayer,
            const double cellSize, const std::string nFInTum,
-           const std::string nFInVes, const double tumGrowth,
+           const std::string nFInVes, const bool tumGrowth,
            const double doubTime, const int edgeOrder,
            std::vector<double> cycDur, std::vector<double> cycDistrib,
-           const double res, const double fibDoubTime, const double ang,
+           const bool res, const double fibDoubTime, const bool ang,
            const double angTime, const double vegfThres,
            std::vector<double> alpha, std::vector<double> beta,
            Treatment *const treatment, const double doseThres,
-           const double arresTime, const double oxy, const double hypNecThres);
+           const double arresTime, const int oxy, const double hypNecThres);
     Tissue(const int nrow, const int ncol, const int nlayer,
            const double cellSize, const std::vector<bool> &inTum,
-           const std::vector<bool> &inVes, const double tumGrowth,
+           const std::vector<bool> &inVes, const bool tumGrowth,
            const double doubTime, const int edgeOrder,
            std::vector<double> cycDur, std::vector<double> cycDistrib,
-           const double res, const double fibDoubTime, const double ang,
+           const bool res, const double fibDoubTime, const bool ang,
            const double angTime, const double vegfThres,
            std::vector<double> alpha, std::vector<double> beta,
            Treatment *const treatment, const double doseThres,
-           const double arrestTime, const double oxy, const double hypNecThres);
+           const double arrestTime, const int oxy, const double hypNecThres);
     virtual ~Tissue();
     virtual int calcModelOut();
     virtual int initModel();
