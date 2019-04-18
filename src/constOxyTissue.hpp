@@ -25,13 +25,8 @@
 class ConstOxyTissue : public Model{
 public:
     ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                   const std::string nFInVes, const double pO2,
-                   const double pO2NormVes, const double pO2TumVes,
-                   const double hypThres);
-    ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                   const std::vector<bool> &inVes, const double pO2,
-                   const double pO2NormVes, const double pO2TumVes,
-                   const double hypThres);
+                   const std::vector<bool> &inVes,
+                   const std::vector<double> &inPO2, const double hypThres);
     virtual ~ConstOxyTissue();
     virtual int initModel();
     virtual int calcModelOut();

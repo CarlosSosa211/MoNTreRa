@@ -1,10 +1,10 @@
-#include "sensAn.hpp"
+#include "sobol.hpp"
 
 using namespace std;
 
 
 /*------------------------------------------------------------------------------
- * This functions performs a Sobol analysis.
+ * This function performs a Sobol analysis.
  *
  * Inputs:
  *  - K: number of parameters,
@@ -17,7 +17,8 @@ using namespace std;
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration,
+ *  - nFInPO2: name of the file containing the initial pO2 values.
  *
  * Outputs:
  *  - SI: matrix containing the obtained SI values; each row corresponds to an
@@ -35,14 +36,15 @@ using namespace std;
 void sobol(const int K, const int N, const int nOut, const double *x0,
            const double *h, double **SI, double **TSI, double ***SIConv,
            double ***TSIConv, const string nFInTissueDim, const string nFInTum,
-           const string nFInVes){
+           const string nFInVes, const string nFInPO2){
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
+    vector<double> inPO2;
 
     if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
-        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
-                    cellSize, inTum, inVes);
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nFInPO2, nrow, ncol,
+                    nlayer, cellSize, inTum, inVes, inPO2);
     }
 
     int nEv(0), nEvTot((K + 2) * N);
@@ -66,13 +68,13 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
 
     for(int i(0); i < N; i++){
         //toyModel(Xa[i], Ya[i]);
-        model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
         cout << "---------------------------------------------" << endl;
         //toyModel(Xb[i], Yb[i]);
-        model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
@@ -104,7 +106,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         Xc[i][0] = Xb[i][0];
 
         //toyModel(Xc[i], Yc[i]);
-        model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model";
         cout << "---------------------------------------------" << endl;
@@ -152,7 +154,8 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             Xc[i][k] = Xb[i][k];
 
             //toyModel(Xc[i], Yc[i]);
-            model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes,
+                  inPO2);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model";
             cout << "---------------------------------------------" << endl;
@@ -195,7 +198,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
 }
 
 /*------------------------------------------------------------------------------
- * This functions performs a Sobol analysis using outputs already calculated and
+ * This function performs a Sobol analysis using outputs already calculated and
  * read from files.
  *
  * Inputs:
@@ -259,7 +262,7 @@ void sobolFromFiles(int K){
 }
 
 /*------------------------------------------------------------------------------
- * This functions prepares and perform a Sobol analysis of the model of tumour
+ * This function prepares and performs a Sobol analysis of the model of tumour
  * growth and response to radiotherapy and writes the obtained results in files.
  *
  * Inputs:
@@ -271,11 +274,12 @@ void sobolFromFiles(int K){
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration,
+ *  - nFInPO2: name of the file containing the initial pO2 values.
 ------------------------------------------------------------------------------*/
 
 void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
-             const string nFInTum, const string nFInVes){
+             const string nFInTum, const string nFInVes, const string nFInPO2){
     const int K(34), NConv(log(N) / log(2.0)), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
@@ -297,7 +301,7 @@ void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
     TSIConv = alloc3D(NConv, nOut, K);
 
     sobol(K, N, nOut, x0, h, SI, TSI, SIConv, TSIConv, nFInTissueDim, nFInTum,
-          nFInVes);
+          nFInVes, nFInPO2);
 
     ofstream fSobolEndTreatTumDens("../OutputFiles/sobolEndTreatTumDens.res");
     ofstream fSobol3MonTumDens("../OutputFiles/sobol3MonTumDens.res");
@@ -315,8 +319,10 @@ void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
     ofstream fSobolRecTumDens("../OutputFiles/sobolRecTumDens.res");
     ofstream fSobolRecTime("../OutputFiles/sobolRecTime.res");
 
-    ofstream fConvSIEndTreatTumDens("../OutputFiles/convSIEndTreatTumDens.res");
-    ofstream fConvTSIEndTreatTumDens("../OutputFiles/convTSIEndTreatTumDens.res");
+    ofstream fConvSIEndTreatTumDens("../OutputFiles/convSIEndTreatTumDens"
+                                    ".res");
+    ofstream fConvTSIEndTreatTumDens("../OutputFiles/convTSIEndTreatTumDens"
+                                     ".res");
     ofstream fConvSI3MonTumDens("../OutputFiles/convSI3MonTumDens.res");
     ofstream fConvTSI3MonTumDens("../OutputFiles/convTS3MonTumDens.res");
     ofstream fConvSITumVol("../OutputFiles/convSITumVol.res");
@@ -499,7 +505,7 @@ void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
 
 
 /*------------------------------------------------------------------------------
- * This functions prepares and perform a Sobol analysis of the toy model and
+ * This function prepares and performs a Sobol analysis of the toy model and
  * writes the obtained results in files.
  *
  * Inputs:

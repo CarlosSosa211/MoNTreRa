@@ -36,22 +36,25 @@
 //Internal parameters
 #define PAR_OXY_ANG m_param->at(0)
 #define PAR_DVEGF   m_param->at(1)
-#define PAR_DO2	    m_param->at(2)
+#define PAR_OXY_OXY m_param->at(2)
+#define PAR_DO2	    m_param->at(3)
 
 class OxyTissue : public Model{
 public:
     OxyTissue(const int nrow, const int ncol, const int nlayer,
               const double cellSize, const std::string nFInVes,
-              const double ang, const double Dvegf, const double VmaxVegf,
-              const double KmVegf, const double hypVegf, const double DO2,
-              const double VmaxO2, const double KmO2, const double pO2NormVes,
-              const double pO2TumVes, const double hypThres) ;
+              const bool ang, const double Dvegf, const double VmaxVegf,
+              const double KmVegf, const double hypVegf, const int oxy,
+              const double DO2, const double VmaxO2, const double KmO2,
+              const double pO2NormVes, const double pO2TumVes,
+              const double hypThres);
     OxyTissue(const int nrow, const int ncol, const int nlayer,
               const double cellSize, const std::vector<bool> &inVes,
-              const double ang, const double Dvegf, const double VmaxVegf,
-              const double KmVegf, const double hypVegf, const double DO2,
-              const double VmaxO2, const double KmO2, const double pO2NormVes,
-              const double pO2TumVes, const double hypThres);
+              const bool ang, const double Dvegf, const double VmaxVegf,
+              const double KmVegf, const double hypVegf, const int oxy,
+              const double DO2, const double VmaxO2, const double KmO2,
+              const double pO2NormVes, const double pO2TumVes,
+              const double hypThres);
     virtual ~OxyTissue();
     virtual int initModel();
     virtual int calcModelOut();

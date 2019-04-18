@@ -25,16 +25,20 @@ constOxyCell.hpp
 constOxyTissue.hpp
 coupler.hpp
 createAndReadFiles.hpp
+evalModel.hpp
 model.hpp
+morris.hpp
 oxyCell.hpp
 oxyTissue.hpp
 rootSimulator.hpp
 sensAn.hpp
 simpcell.hpp
 simulator.hpp
+sobol.hpp
 tcp.hpp
 tissue.hpp
 treatment.hpp
+var.hpp
 )
 
 # RTsim basic source files
@@ -46,6 +50,7 @@ constOxyCell.cpp
 constOxyTissue.cpp
 coupler.cpp
 createAndReadFiles.cpp
+evalModel.cpp
 model.cpp
 morris.cpp
 oxyCell.cpp

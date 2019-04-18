@@ -19,12 +19,12 @@ using namespace std;
 
 OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double cellSize, const string nFInVes,
-                     const double ang, const double Dvegf,
+                     const bool ang, const double Dvegf,
                      const double VmaxVegf, const double KmVegf,
-                     const double hypVegf, const double DO2,
+                     const double hypVegf, const int oxy, const double DO2,
                      const double VmaxO2, const double KmO2,
                      const double pO2NormVes, const double pO2TumVes,
-                     const double hypThres) : Model(0, 4, 9, 3, nrow * ncol *
+                     const double hypThres) : Model(0, 4, 9, 4, nrow * ncol *
                                                     nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
@@ -41,6 +41,7 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     }
 
     PAR_OXY_ANG = ang;
+    PAR_OXY_OXY = oxy;
 
     for(int k(0); k < m_numComp; k++){
         m_comp->at(k) = new OxyCell(ang, VmaxVegf, KmVegf, hypVegf, VmaxO2,
@@ -115,12 +116,12 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
 
 OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
                      const double cellSize, const vector<bool> &inVes,
-                     const double ang, const double Dvegf,
+                     const bool ang, const double Dvegf,
                      const double VmaxVegf, const double KmVegf,
-                     const double hypVegf, const double DO2,
+                     const double hypVegf, const int oxy, const double DO2,
                      const double VmaxO2, const double KmO2,
                      const double pO2NormVes, const double pO2TumVes,
-                     const double hypThres) : Model(0, 4, 9, 3, nrow * ncol *
+                     const double hypThres) : Model(0, 4, 9, 4, nrow * ncol *
                                                     nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
@@ -137,6 +138,7 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     }
 
     PAR_OXY_ANG = ang;
+    PAR_OXY_OXY = oxy;
 
     for(int k(0); k < m_numComp; k++){
         m_comp->at(k) = new OxyCell(ang, VmaxVegf, KmVegf, hypVegf, VmaxO2,
@@ -262,16 +264,16 @@ int OxyTissue::updateModel(double currentTime, const double DT){
                     edgeSize = edge->size();
                     diffO2   = 0.0;
                     for(int n(0); n < edgeSize; n++){
-                        diffO2   += edge->at(n)->getOutPO2();
+                        diffO2 += edge->at(n)->getOutPO2();
                     }
-                    diffO2   -= edgeSize * m_map[l][i][j]->getOutPO2();
+                    diffO2 -= edgeSize * m_map[l][i][j]->getOutPO2();
                     m_map[l][i][j]->setInDiffO2(PAR_DO2 * diffO2);
                 }
             }
         }
     }
 
-    if(!ST_VEGFSTABLE){
+    if(PAR_OXY_ANG && !ST_VEGFSTABLE){
         for(int l(0); l < m_nlayer; l++){
             for(int i(0); i < m_nrow; i++){
                 for(int j(0); j < m_ncol; j++){
@@ -288,8 +290,10 @@ int OxyTissue::updateModel(double currentTime, const double DT){
         }
     }
 
-    for(int k(0); k < m_numComp; k++){
-        m_comp->at(k)->updateModel(currentTime, DT);
+    if(!ST_OXYSTABLE || !ST_VEGFSTABLE){
+        for(int k(0); k < m_numComp; k++){
+            m_comp->at(k)->updateModel(currentTime, DT);
+        }
     }
 
     ST_OXYSTABLE  = isOxyStable();
@@ -299,13 +303,15 @@ int OxyTissue::updateModel(double currentTime, const double DT){
         ST_TIME_TO_OXYSTABLE = currentTime;
     }
 
-    if(ST_VEGFSTABLE && !ST_TIME_TO_VEGFSTABLE){
+    if(ST_OXYSTABLE && ST_VEGFSTABLE && !ST_TIME_TO_VEGFSTABLE){
         ST_TIME_TO_VEGFSTABLE = currentTime;
     }
 
     if(ST_OXYSTABLE && ST_OXYVEGF){
-        ST_OXYSTABLE  = 0.0;
-        ST_VEGFSTABLE = 0.0;
+        if(PAR_OXY_OXY == 1){
+            ST_OXYSTABLE  = 0.0;
+            ST_VEGFSTABLE = 0.0;
+        }
         return 1;
     }
     else{

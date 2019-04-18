@@ -1,4 +1,4 @@
-#include "sensAn.hpp"
+#include "morris.hpp"
 
 using namespace std;
 
@@ -19,7 +19,8 @@ using namespace std;
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration of a tissue.
+ *  configuration of a tissue,
+ *  - nFInPO2: name of the file containing the initial pO2 values.
  *
  * Outputs:
  *  - mu: matrix containing the obtained mu* values; each row corresponds to an
@@ -31,14 +32,15 @@ using namespace std;
 void morris(const int K, const int L, const int N, const int nOut, const int p,
             const double *x0, const double *h, double **mu, double **sigma,
             const string nFInTissueDim, const string nFInTum,
-            const string nFInVes){
+            const string nFInVes, const string nFInPO2){
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
+    vector<double> inPO2;
 
     if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
-        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
-                    cellSize, inTum, inVes);
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nFInPO2, nrow, ncol,
+                    nlayer, cellSize, inTum, inVes, inPO2);
     }
 
     vector<int> vP;
@@ -99,7 +101,8 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
 
         for(int m(0); m < M; m++){
             toyModel(Bp[m], y[m]);
-            //model(Bp[m], y[m], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            /*model(Bp[m], y[m], nrow, ncol, nlayer, cellSize, inTum, inVes,
+            inPO2);*/
             nEv++;
             cout << nEv << " out of " << nEvTot <<
                     " evaluations of the model" << endl;
@@ -156,12 +159,13 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration of a tissue.
+ *  configuration of a tissue,
+ *  - nFInPO2: name of the file containing the initial pO2 values.
 ------------------------------------------------------------------------------*/
 
 void morrisRT(const int N, const int p, const string nFRefParInt,
               const string nFInTissueDim, const string nFInTum,
-              const string nFInVes){
+              const string nFInVes, const string nFInPO2){
     const int K(35), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
@@ -312,7 +316,8 @@ void morrisToy(const int N, const int p, const string nFRefParInt){
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration of a tissue.
+ *  configuration of a tissue,
+ *  - nFInPO2: name of the file containing the initial pO2 values.
  *
  * Outputs:
  *  - mu: 3D matrix containing the obtained mu* values; each row corresponds to
@@ -326,7 +331,8 @@ void morrisToy(const int N, const int p, const string nFRefParInt){
 void morrisVarRange(const int K, const int kp, const int L, const int N,
                     const int nOut, const int p, const string nFRefParInt,
                     double ***mu, double ***sigma, const string nFInTissueDim,
-                    const string nFInTum, const string nFInVes){
+                    const string nFInTum, const string nFInVes,
+                    const string nFInPO2){
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
@@ -347,7 +353,7 @@ void morrisVarRange(const int K, const int kp, const int L, const int N,
     for(int l(0); l < L; l++){
         fVarRange << h[kp] << endl;
         morris(K, L, N, nOut, p, x0, h, mu[l], sigma[l], nFInTissueDim,
-               nFInTum, nFInVes);
+               nFInTum, nFInVes, nFInPO2);
         h[kp] += h10;
     }
 
@@ -372,12 +378,14 @@ void morrisVarRange(const int K, const int kp, const int L, const int N,
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration of a tissue,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration of a tissue.
+ *  configuration of a tissue,
+ *  - nFInPO2: name of the file containing the initial pO2 values.
 ------------------------------------------------------------------------------*/
 
 void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
                       const string nFRefParInt, const string nFInTissueDim,
-                      const string nFInTum, const string nFInVes){
+                      const string nFInTum, const string nFInVes,
+                      const string nFInPO2){
     const int K(35), nOut(15);
     double ***mu, ***sigma;
 
@@ -394,7 +402,7 @@ void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
     }
 
     morrisVarRange(K, kp, L, N, nOut, p, nFRefParInt, mu, sigma, nFInTissueDim,
-                   nFInTum, nFInVes);
+                   nFInTum, nFInVes, nFInPO2);
 
     for(int l(0); l < L; l++){
         ofstream fMorrisEndTreatTumDens("../OutputFiles/morrisEndTreatTumDens_"
@@ -494,13 +502,7 @@ void morrisVarRangeRT(const int kp, const int L, const int N, const int p,
  *  - N: number of repetitions,
  *  - p: number of levels of the Morris analysis,
  *  - nRefParInt: name of the file containing the reference ranges for all the
- *  parameters,
- *  - nFInTissueDim: name of the file containing the dimensions of a
- *  histological specimen,
- *  - nFInTum: name of the file containing the initial tumour cell
- *  configuration of a tissue,
- *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration of a tissue.
+ *  parameters.
 ------------------------------------------------------------------------------*/
 
 void morrisVarRangeToy(const int kp, const int L, const int N, const int p,

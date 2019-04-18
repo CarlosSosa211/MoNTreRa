@@ -1,4 +1,5 @@
-#include "sensAn.hpp"
+#include "evalModel.hpp"
+#include "sensAnR.hpp"
 
 using namespace std;
 
@@ -19,8 +20,8 @@ using namespace std;
  *  configuration; it is empty if the toy model is considered.
 ------------------------------------------------------------------------------*/
 
-void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
-           const std::string nFInTum, const std::string nFInVes){
+void evalR(const int nMethod, const int nModel, const string nFInTissueDim,
+           const string nFInTum, const string nFInVes, const string nFInPO2){
     string nFDim;
 
     switch(nMethod){
@@ -79,10 +80,11 @@ void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
         int nrow, ncol, nlayer;
         double cellSize;
         vector<bool> inTum, inVes;
+        vector<double> inPO2;
 
         if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
-            readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
-                        cellSize, inTum, inVes);
+            readInFiles(nFInTissueDim, nFInTum, nFInVes, nFInPO2, nrow, ncol,
+                        nlayer, cellSize, inTum, inVes, inPO2);
         }
 
         const int nOut(15);
@@ -107,7 +109,7 @@ void evalR(const int nMethod, const int nModel, const std::string nFInTissueDim,
             for(int k(0); k < K; k++){
                 fX >> x[k];
             }
-            model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes);
+            model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
             cout << i + 1 << " out of " << nEv << " evaluations of the model" <<
                     endl;
             cout << "---------------------------------------------" << endl;

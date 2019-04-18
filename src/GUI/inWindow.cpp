@@ -15,7 +15,8 @@
 #include "inWindow.hpp"
 
 InWindow::InWindow() : QWidget(){
-    m_param      = new QGroupBox("Select the processes to be simulated and enter the value of the parameters", this);
+    m_param      = new QGroupBox("Select the processes to be simulated and"
+                                 "enter the value of the parameters", this);
     m_paramArch  = new QGroupBox("Tissue architecture");
     m_paramTG    = new QGroupBox("Tumor growth", m_param);
     m_paramRes   = new QGroupBox("Fibroblasts proliferation", m_param);
@@ -46,7 +47,8 @@ InWindow::InWindow() : QWidget(){
     m_paramTG->setCheckable(true);
     m_doubTime  = new QDoubleSpinBox(m_paramTG);
     m_edgeOrder  = new QSpinBox(m_paramTG);
-    m_timeGroup = new QGroupBox("Fraction of duration of each phase", m_paramTG);
+    m_timeGroup = new QGroupBox("Fraction of duration of each phase",
+                                m_paramTG);
     for(int i(0); i < 4; i++){
         m_time.push_back(new QDoubleSpinBox(m_timeGroup));
     }
@@ -81,9 +83,10 @@ InWindow::InWindow() : QWidget(){
     m_everyDay  = new QRadioButton("Every day", m_schedule);
 
     m_paramOxy->setCheckable(true);
-    m_DO2           = new QDoubleSpinBox(m_paramOxy);
-    m_VmaxO2        = new QDoubleSpinBox(m_paramOxy);
-    m_KmO2          = new QDoubleSpinBox(m_paramOxy);
+    m_selOxyType  = new QComboBox(m_paramOxy);
+    m_DO2         = new QDoubleSpinBox(m_paramOxy);
+    m_VmaxO2      = new QDoubleSpinBox(m_paramOxy);
+    m_KmO2        = new QDoubleSpinBox(m_paramOxy);
     m_pO2NormVes  = new QDoubleSpinBox(m_paramOxy);
     m_pO2TumVes   = new QDoubleSpinBox(m_paramOxy);
     m_hypThres    = new QDoubleSpinBox(m_paramOxy);
@@ -96,7 +99,8 @@ InWindow::InWindow() : QWidget(){
     m_simTimeL        = new QLabel("Simulation time (h)", m_paramSim);
     m_oxySimTimeL     = new QLabel("Simulation time (ms)", m_paramSim);
     m_simTimeStepL    = new QLabel("Simulation timestep (h)", m_paramSim);
-    m_oxySimTimeStepL = new QLabel("Oxygenation simulation timestep (ms)", m_paramSim);
+    m_oxySimTimeStepL = new QLabel("Oxygenation simulation timestep (ms)",
+                                   m_paramSim);
 
     m_simTime        = new QSpinBox(m_paramSim);
     m_simTimeStep    = new QSpinBox(m_paramSim);
@@ -195,6 +199,10 @@ InWindow::InWindow() : QWidget(){
     m_totalDose->setMaximum(200.0);
     m_interval->setDecimals(1);
 
+
+    QStringList oxyTypeList = {"Time-and-space-dependent", "Space dependent",
+                               "Time dependent", "Constant"};
+    m_selOxyType->addItems(oxyTypeList);
     m_DO2->setMaximum(9999.9);
     m_DO2->setSingleStep(0.1);
     m_DO2->setDecimals(1);
@@ -288,7 +296,8 @@ InWindow::InWindow() : QWidget(){
     m_betaGroup->setLayout(betaLayout);
     formLayoutRS->addRow(m_betaGroup);
     formLayoutRS->addRow("Time of cycle arrest (h)", m_arrestTime);
-    formLayoutRS->addRow("Mitotic catastrophe \ndose threshold (Gy)", m_doseThres);
+    formLayoutRS->addRow("Mitotic catastrophe \ndose threshold (Gy)",
+                         m_doseThres);
 
     m_paramRS->setLayout(formLayoutRS);
 
@@ -307,6 +316,7 @@ InWindow::InWindow() : QWidget(){
     layoutRT->addWidget(m_paramTreat);
     m_paramRT->setLayout(layoutRT);
 
+    formLayoutOxy->addRow(m_selOxyType);
     formLayoutOxy->addRow("Diffusion coefficient (μm²/ms)", m_DO2);
     formLayoutOxy->addRow("Vmax (mmHg/ms)", m_VmaxO2);
     formLayoutOxy->addRow("K (mmHg)", m_KmO2);
@@ -317,8 +327,10 @@ InWindow::InWindow() : QWidget(){
     m_paramOxy->setLayout(formLayoutOxy);
 
     formLayoutConstOxy->addRow("Constant pO2 (mmHg)", m_constpO2);
-    formLayoutConstOxy->addRow("Normal vessels constant pO2 (mmHg)", m_constpO2NormVes);
-    formLayoutConstOxy->addRow("Tumor vessels constant pO2 (mmHg)", m_constpO2TumVes);
+    formLayoutConstOxy->addRow("Normal vessels constant pO2 (mmHg)",
+                               m_constpO2NormVes);
+    formLayoutConstOxy->addRow("Tumor vessels constant pO2 (mmHg)",
+                               m_constpO2TumVes);
 
     QVBoxLayout *vOxyLayout = new QVBoxLayout;
     vOxyLayout->addWidget(m_paramOxy);
@@ -370,19 +382,32 @@ InWindow::InWindow() : QWidget(){
     m_progressSimL->hide();
     m_progressOutL->hide();
 
-    QObject::connect(m_histSpec, SIGNAL(toggled(bool)), m_selHistSpec, SLOT(setEnabled(bool)));
-    QObject::connect(m_artif, SIGNAL(toggled(bool)), m_artifGroup, SLOT(setEnabled(bool)));
-    QObject::connect(m_fraction, SIGNAL(valueChanged(double)), this, SLOT(changeSimTime(double)));
-    QObject::connect(m_totalDose, SIGNAL(valueChanged(double)), this, SLOT(changeSimTime(double)));
-    QObject::connect(m_interval, SIGNAL(valueChanged(double)), this, SLOT(changeSimTime(double)));
-    QObject::connect(m_MonFri, SIGNAL(clicked(bool)), this, SLOT(changeSimTime(bool)));
-    QObject::connect(m_everyDay, SIGNAL(clicked(bool)), this, SLOT(changeSimTime(bool)));
-    QObject::connect(m_paramTG, SIGNAL(toggled(bool)), this, SLOT(coupSim(bool)));
-    QObject::connect(m_paramRes, SIGNAL(toggled(bool)), this, SLOT(coupSim(bool)));
-    QObject::connect(m_paramAng, SIGNAL(toggled(bool)), this, SLOT(coupSim(bool)));
-    QObject::connect(m_paramRT, SIGNAL(toggled(bool)), this, SLOT(coupSim(bool)));
-    QObject::connect(m_paramOxy, SIGNAL(toggled(bool)), this, SLOT(disable(bool)));
-    QObject::connect(m_loadInData, SIGNAL(clicked()), this, SLOT(selInDataFile()));
+    QObject::connect(m_histSpec, SIGNAL(toggled(bool)), m_selHistSpec,
+                     SLOT(setEnabled(bool)));
+    QObject::connect(m_artif, SIGNAL(toggled(bool)), m_artifGroup,
+                     SLOT(setEnabled(bool)));
+    QObject::connect(m_fraction, SIGNAL(valueChanged(double)), this,
+                     SLOT(changeSimTime(double)));
+    QObject::connect(m_totalDose, SIGNAL(valueChanged(double)), this,
+                     SLOT(changeSimTime(double)));
+    QObject::connect(m_interval, SIGNAL(valueChanged(double)), this,
+                     SLOT(changeSimTime(double)));
+    QObject::connect(m_MonFri, SIGNAL(clicked(bool)), this,
+                     SLOT(changeSimTime(bool)));
+    QObject::connect(m_everyDay, SIGNAL(clicked(bool)), this,
+                     SLOT(changeSimTime(bool)));
+    QObject::connect(m_paramTG, SIGNAL(toggled(bool)), this,
+                     SLOT(coupSim(bool)));
+    QObject::connect(m_paramRes, SIGNAL(toggled(bool)), this,
+                     SLOT(coupSim(bool)));
+    QObject::connect(m_paramAng, SIGNAL(toggled(bool)), this,
+                     SLOT(coupSim(bool)));
+    QObject::connect(m_paramRT, SIGNAL(toggled(bool)), this,
+                     SLOT(coupSim(bool)));
+    QObject::connect(m_paramOxy, SIGNAL(currentIndexChanged(int)), this,
+                     SLOT(disable(int)));
+    QObject::connect(m_loadInData, SIGNAL(clicked()), this,
+                     SLOT(selInDataFile()));
     QObject::connect(m_back, SIGNAL(clicked()), this, SLOT(back()));
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
@@ -407,7 +432,7 @@ void InWindow::changeSimTime(bool value){
 
 
 void InWindow::changeSimTime(double value){
-        m_simTime->setValue(2160.0);
+    m_simTime->setValue(2160.0);
 }
 
 
@@ -433,23 +458,29 @@ int InWindow::createInFiles(){
     dir.removeRecursively();
     QDir().mkdir("../OutputFilesGUI");
     if(m_histSpec->isChecked()){
-        QFile::copy(QString::fromStdString("../HistSpec/tissueDim" +
-                                           std::to_string(m_selHistSpec->currentIndex()) +
-                                           ".dat"), QString::fromStdString("../OutputFilesGUI/tissueDim.dat"));
+        std::string tissueDim("../HistSpec/tissueDim" +
+                              std::to_string(m_selHistSpec->currentIndex()) +
+                              ".dat");
+        QFile::copy(QString::fromStdString(tissueDim),
+                    QString::fromStdString("../OutputFilesGUI/tissueDim.dat"));
 
         if (QFile::exists(QString::fromStdString("inTum.dat"))){
             QFile::remove(QString::fromStdString("inTum.dat"));
         }
-        QFile::copy(QString::fromStdString("../HistSpec/inTum" +
-                                           std::to_string(m_selHistSpec->currentIndex()) +
-                                           ".dat"), QString::fromStdString("inTum.dat"));
+        std::string inTum("../HistSpec/inTum" +
+                          std::to_string(m_selHistSpec->currentIndex()) +
+                          ".dat");
+        QFile::copy(QString::fromStdString(inTum),
+                    QString::fromStdString("inTum.dat"));
 
         if (QFile::exists(QString::fromStdString("inVes.dat"))){
             QFile::remove(QString::fromStdString("inVes.dat"));
         }
-        QFile::copy(QString::fromStdString("../HistSpec/inVes" +
-                                           std::to_string(m_selHistSpec->currentIndex()) +
-                                           ".dat"), QString::fromStdString("inVes.dat"));
+        std::string inVes("../HistSpec/inVes" +
+                          std::to_string(m_selHistSpec->currentIndex()) +
+                          ".dat");
+        QFile::copy(QString::fromStdString(inVes),
+                    QString::fromStdString("inVes.dat"));
     }
 
     else{
@@ -481,11 +512,13 @@ int InWindow::createInFiles(){
                     div.push_back(l);
                     diff.push_back(fabs(1.0 / (l * l) - m_vascDens->value()));
                     div.push_back(mindim / l);
-                    diff.push_back(fabs(double(l * l) / double(mindim2) - m_vascDens->value()));
+                    diff.push_back(fabs(double(l * l) / double(mindim2) -
+                                        m_vascDens->value()));
                 }
             }
 
-            ivd = div.at(std::min_element(diff.begin(), diff.end()) - diff.begin());
+            ivd = div.at(std::min_element(diff.begin(), diff.end()) -
+                         diff.begin());
             ivd2 = ivd * ivd;
             vesToDist = std::min(nrowNcol / ivd2, nrowNcolNlayer - tumToDist);
         }
@@ -505,7 +538,8 @@ int InWindow::createInFiles(){
         halfNrow = 0.5 * m_nrow->value();
         halfNcol = 0.5 * m_ncol->value();
         halfNlayer = 0.5 * m_nlayer->value();
-        R = sqrt(halfNrow * halfNrow + halfNcol * halfNcol + halfNlayer * halfNlayer);
+        R = sqrt(halfNrow * halfNrow + halfNcol * halfNcol + halfNlayer *
+                 halfNlayer);
         RR = 1.001 * sqrt(2.0 * halfIvd * halfIvd);
 
         int k(0);
@@ -521,7 +555,8 @@ int InWindow::createInFiles(){
                     map.at(k).r = sqrt(lmHalfNlayer2 + imHalfNrow2 +
                                        (j - halfNcol) * (j - halfNcol)) / R;
                     map.at(k).rr = lnrowNcol + ishift + j / ivd +
-                            sqrt(irr2 + (j % ivd - halfIvd) * (j % ivd - halfIvd)) / RR;
+                            sqrt(irr2 + (j % ivd - halfIvd) *
+                                 (j % ivd - halfIvd)) / RR;
                     map.at(k).k = k;
                     map.at(k).tum = 0;
                     map.at(k).ves = 0;
@@ -549,7 +584,8 @@ int InWindow::createInFiles(){
                     if(!map.at(m).tum){
                         map.at(m).tum = 1;
                         tumToDist--;
-                        m_progress->setValue(m_progress->maximum() - tumToDist - vesToDist);
+                        m_progress->setValue(m_progress->maximum() - tumToDist -
+                                             vesToDist);
                     }
                 }
             }
@@ -569,7 +605,8 @@ int InWindow::createInFiles(){
                     if(map.at(m).tum){
                         map.at(m).tum = 0;
                         tumToRemove--;
-                        m_progress->setValue(m_progress->maximum() - tumToRemove - vesToDist);
+                        m_progress->setValue(m_progress->maximum() -
+                                             tumToRemove - vesToDist);
                     }
                 }
             }
@@ -586,7 +623,8 @@ int InWindow::createInFiles(){
                         if(!map.at(m).tum){
                             map.at(m).tum = 1;
                             tumToDist--;
-                            m_progress->setValue(m_progress->maximum() - tumToDist - vesToDist);
+                            m_progress->setValue(m_progress->maximum() -
+                                                 tumToDist - vesToDist);
                             cond = false;
                         }
                         else{
@@ -723,22 +761,26 @@ int InWindow::createInFiles(){
         fParam << m_arrestTime->value() << std::endl;
     }
 
-    fParam << m_paramOxy->isChecked() << std::endl;
     if(m_paramOxy->isChecked()){
-        fParam << m_hypNecThres->value() << std::endl;
-        fParam << m_DO2->value() *
-                  m_oxySimTimeStep->value() << std::endl;
-        fParam << m_VmaxO2->value() *
-                  m_oxySimTimeStep->value() << std::endl;
-        fParam << m_KmO2->value() << std::endl;
-        fParam << m_pO2NormVes->value() << std::endl;
-        fParam << m_pO2TumVes->value() << std::endl;
-        fParam << m_hypThres->value() << std::endl;
+        fParam << m_selOxyType->currentIndex() + 1 << std::endl;
+        if(m_selOxyType->currentIndex() + 1 == 4){
+            fParam << m_constpO2->value() << std::endl;
+            fParam << m_constpO2NormVes->value() << std::endl;
+            fParam << m_constpO2TumVes->value() << std::endl;
+        }
+        else{
+            fParam << m_hypNecThres->value() << std::endl;
+            fParam << m_DO2->value() * m_oxySimTimeStep->value() << std::endl;
+            fParam << m_VmaxO2->value() * m_oxySimTimeStep->value() <<
+                      std::endl;
+            fParam << m_KmO2->value() << std::endl;
+            fParam << m_pO2NormVes->value() << std::endl;
+            fParam << m_pO2TumVes->value() << std::endl;
+            fParam << m_hypThres->value() << std::endl;
+        }
     }
     else{
-        //fParam << m_constpO2->value() << std::endl;
-        //fParam << m_constpO2NormVes->value() << std::endl;
-        //fParam << m_constpO2TumVes->value() << std::endl;
+        fParam << 0 << std::endl;
     }
 
     fParam.close();
@@ -755,10 +797,10 @@ int InWindow::createInFiles(){
 }
 
 
-void InWindow::disable(bool oxy){
-    m_constpO2NormVes->setEnabled(!oxy);
-    m_constpO2TumVes->setEnabled(!oxy);
-    m_constpO2->setEnabled(!oxy);
+void InWindow::disable(int oxy){
+    m_constpO2NormVes->setEnabled(oxy == 3);
+    m_constpO2TumVes->setEnabled(oxy == 3);
+    m_constpO2->setEnabled(oxy == 3);
 }
 
 
@@ -906,16 +948,16 @@ int InWindow::loadInData(std::string nFInData){
     double KmO2(0.0), pO2NormVes(0.0), pO2TumVes(0.0), VmaxO2(0.0);
 
     fInData >> oxy;
-    m_paramOxy->setChecked(oxy == 1);
-    m_constpO2->setEnabled(oxy == 2);
-    m_constpO2NormVes->setEnabled(oxy == 2);
-    m_constpO2TumVes->setEnabled(oxy == 2);
-    if(oxy == 1){
-        fInData >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
-        fInData >> pO2NormVes >> pO2TumVes >> hypThres;
-    }
-    else if (oxy == 2){
-        fInData >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes;
+    m_paramOxy->setChecked(oxy);
+    if(oxy){
+        m_selOxyType->setCurrentIndex(oxy - 1);
+        if(oxy == 4){
+            fInData >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes;
+        }
+        else{
+            fInData >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
+            fInData >> pO2NormVes >> pO2TumVes >> hypThres;
+        }
     }
 
     m_DO2->setValue(DO2);
@@ -925,7 +967,6 @@ int InWindow::loadInData(std::string nFInData){
     m_pO2TumVes->setValue(pO2TumVes);
     m_hypThres->setValue(hypThres);
     m_hypNecThres->setValue(hypNecThres);
-
     m_constpO2->setValue(constpO2NotVes);
     m_constpO2NormVes->setValue(constpO2NormVes);
     m_constpO2TumVes->setValue(constpO2TumVes);
@@ -972,7 +1013,9 @@ void InWindow::nextWindow(int simType){
 
 
 void InWindow::selInDataFile(){
-    QString QnFInData = QFileDialog::getOpenFileName(this, "Select input data file", "../InputFiles");
+    QString QnFInData(QFileDialog::getOpenFileName(this,
+                                                   "Select input data file",
+                                                   "../InputFiles"));
 
     if(!QnFInData.isNull()){
         std::string nFInData = QnFInData.toUtf8().constData();
@@ -1001,10 +1044,14 @@ int InWindow::simulate(){
     m_progressSimL->show();
     m_progress->reset();
     SimThread *thread = new SimThread(this);
-    QObject::connect(thread, SIGNAL(resultReady(int)), this, SLOT(nextWindow(int)));
-    QObject::connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    QObject::connect(thread, SIGNAL(progressMax(int)), m_progress, SLOT(setMaximum(int)));
-    QObject::connect(thread, SIGNAL(progress(int)), m_progress, SLOT(setValue(int)));
+    QObject::connect(thread, SIGNAL(resultReady(int)), this,
+                     SLOT(nextWindow(int)));
+    QObject::connect(thread, SIGNAL(finished()), thread,
+                     SLOT(deleteLater()));
+    QObject::connect(thread, SIGNAL(progressMax(int)), m_progress,
+                     SLOT(setMaximum(int)));
+    QObject::connect(thread, SIGNAL(progress(int)), m_progress,
+                     SLOT(setValue(int)));
     thread->start();
     return 0;
 }

@@ -64,6 +64,7 @@ private:
     QDoubleSpinBox *m_fraction, *m_totalDose, *m_interval;
     QGroupBox *m_schedule;
     QRadioButton *m_MonFri, *m_everyDay;
+    QComboBox *m_selOxyType;
     QDoubleSpinBox *m_DO2, *m_VmaxO2, *m_KmO2, *m_pO2NormVes, *m_pO2TumVes;
     QDoubleSpinBox *m_hypThres, *m_hypNecThres;
     QDoubleSpinBox *m_constpO2, *m_constpO2NormVes, *m_constpO2TumVes;
@@ -81,7 +82,7 @@ private slots:
     void changeSimTime(bool value);
     void changeSimTime(double value);
     void coupSim(bool value);
-    void disable(bool oxy);
+    void disable(int oxy);
     void nextWindow(int simType);
     void selInDataFile();
 

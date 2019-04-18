@@ -5,7 +5,7 @@ using namespace std;
 
 /*------------------------------------------------------------------------------
  * This functions evaluates the model of tumour growth and response to
- * radiotherap considering a given treatment. Simulation is stopped when the
+ * radiotherapy considering a given treatment. Simulation is stopped when the
  * tumour is controlled.
  *
  * Inputs:
@@ -16,8 +16,9 @@ using namespace std;
  *  - cellSize: length of the side of square cells, corresponding to a voxel
  *  of the tissue,
  *  - inTum: vector containing the initial tumour cell configuration,
- *  - inVes: vector containing the initial endothelial cell configuration.
- *  - treatment: pointer to the treatment to be considered
+ *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - inPO2: vector containing the initial pO2 values,
+ *  - treatment: pointer to the treatment to be considered.
  *
  * Outputs:
  *  - y: array containing the scalar outputs "controlled" and "doseToControl" of
@@ -27,22 +28,22 @@ using namespace std;
 void modelTCP(const double *x, double *y, const int nrow, const int ncol,
               const int nlayer, const double cellSize,
               const vector<bool> &inTum, const vector<bool> & inVes,
-              Treatment *const treatment){
+              const vector<double> &inPO2, Treatment *const treatment){
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
     int k(0);
-    const double tumGrowth(x[k]);
+    const int tumGrowth(x[k]);
     k++;
     const double tumTime(x[k]);
     k++;
     const int edgeOrder(x[k]);
     k++;
-    const double res(x[k]);
+    const int res(x[k]);
     k++;
     const double fibTime(x[k]);
     k++;
-    const double ang(x[k]);
+    const int ang(x[k]);
     k++;
     const double vascTumTime(x[k]);
     k++;
@@ -67,7 +68,7 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     k++;
     const double arrestTime(x[k]);
     k++;
-    double oxy(x[k]);
+    const int oxy(x[k]);
     k++;
     const double hypNecThres(x[k]);
     k++;
@@ -144,8 +145,7 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     if(oxy == 0){
         ConstOxyTissue *model2;
 
-        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, 0.0, 0.0, 0.0,
-                                    0.0);
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, 0.0);
         coupler = new Coupler(model1, model2);
         sclFac = 1.0;
     }
@@ -153,8 +153,8 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     else if(oxy == 1){
         OxyTissue *model2;
         model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
-                               VmaxVegf, KmVegf, hypVegf, DO2, VmaxO2, KmO2,
-                               pO2NormVes, pO2TumVes, hypThres);
+                               VmaxVegf, KmVegf, hypVegf, oxy, DO2, VmaxO2,
+                               KmO2, pO2NormVes, pO2TumVes, hypThres);
 
         coupler = new Coupler(model1, model2);
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
@@ -219,19 +219,20 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
 
 void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
          const vector<string> nFTreatmentTCP, const string nFInTissueDim,
-         const string nFInTum, const string nFInVes){
+         const string nFInTum, const string nFInVes, const string nFInPO2){
     const int K(38), nOut(2);
     bool art(0);
     int nrow, ncol, nlayer;
     double cellSize, tumDens, sigmaTum, vascDens, sigmaVasc;
     vector<bool> inTum, inVes;
+    vector<double> inPO2;
     vector<Treatment> treatment;
 
     readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, art, nrow, ncol, nlayer,
                    cellSize, tumDens, sigmaTum, vascDens, sigmaVasc, treatment);
     if(!art){
-        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
-                    cellSize, inTum, inVes);
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nFInPO2, nrow, ncol,
+                    nlayer, cellSize, inTum, inVes, inPO2);
     }
 
     double x[K], y[nOut];
@@ -254,7 +255,7 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
                 createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
                               vascDens, sigmaVasc, inTum, inVes);
             }
-            modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes,
+            modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2,
                      &(treatment[i]));
             nEv++;
             cout << nEv << " out of " << nEvTot <<

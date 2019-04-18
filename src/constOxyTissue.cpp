@@ -15,41 +15,10 @@
 
 using namespace std;
 
-ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                               const string nFInVes, const double pO2NotVes,
-                               const double pO2NormVes, const double pO2TumVes,
-                               const double hypThres) : Model(0, 0, 5, 0, nrow *
-                                                              ncol * nlayer){
-    m_nrow   = nrow;
-    m_ncol   = ncol;
-    m_nlayer = nlayer;
-
-    for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new ConstOxyCell(pO2NotVes, pO2NormVes, pO2TumVes,
-                                         hypThres, this);
-        m_numOut += (m_comp->at(k))->getNumOut();
-    }
-
-    ifstream fInVes(nFInVes.c_str());
-    double inputVes;
-
-    for(int k(0); k < m_numComp; k++){
-        if(fInVes >> inputVes){
-            ((ConstOxyCell *)m_comp->at(k))->setInNormVes(inputVes);
-        }
-        else{
-            cout << "Insufficient data in vessel file" << endl;
-            break;
-        }
-    }
-    fInVes.close();
-}
-
 
 ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
                                const vector<bool> &inVes,
-                               const double pO2NotVes,
-                               const double pO2NormVes, const double pO2TumVes,
+                               const vector<double> &inPO2,
                                const double hypThres) : Model(0, 0, 5, 0, nrow *
                                                               ncol * nlayer){
     m_nrow   = nrow;
@@ -57,10 +26,10 @@ ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
     m_nlayer = nlayer;
 
     for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new ConstOxyCell(pO2NotVes, pO2NormVes, pO2TumVes,
-                                         hypThres, this);
+        m_comp->at(k) = new ConstOxyCell(hypThres, this);
         m_numOut += (m_comp->at(k))->getNumOut();
         ((ConstOxyCell *)m_comp->at(k))->setInNormVes(inVes.at(k));
+        ((ConstOxyCell *)m_comp->at(k))->setInPO2(inPO2.at(k));
     }
 }
 
@@ -102,7 +71,7 @@ int ConstOxyTissue::updateModel(double currentTime, const double DT){
     for(int k(0); k < m_numComp; k++){
         (m_comp->at(k))->updateModel();
     }
-    return 0;
+    return 1;
 }
 
 

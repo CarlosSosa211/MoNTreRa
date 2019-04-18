@@ -395,12 +395,14 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
  *  - cellSize: length of the side of square cells, corresponding to a voxel
  *  of the tissue,
  *  - inTum: vector containing the initial endothelial cell configuration,
- *  - inVes: vector containing the initial endothelial cell configuration.
+ *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - inPO2: vector containing the initial pO2 values.
 ------------------------------------------------------------------------------*/
 
 void readInFiles(const string nFInTissueDim, const string nFInTum,
-                 const string nFInVes, int &nrow, int &ncol, int &nlayer,
-                 double &cellSize, vector<bool> &inTum, vector<bool> &inVes){
+                 const string nFInVes, const string nFInPO2, int &nrow,
+                 int &ncol, int &nlayer, double &cellSize, vector<bool> &inTum,
+                 vector<bool> &inVes, vector<double> &inPO2){
     ifstream fInTissueDim(nFInTissueDim.c_str());
 
     fInTissueDim >> nrow >> ncol >> nlayer;
@@ -425,6 +427,16 @@ void readInFiles(const string nFInTissueDim, const string nFInTum,
         fInVes >> temp;
     }
     fInVes.close();
+
+    ifstream fInPO2(nFInPO2.c_str());
+    double tempD;
+
+    fInPO2 >> tempD;
+    while(!fInPO2.eof()){
+        inPO2.push_back(tempD);
+        fInPO2 >> tempD;
+    }
+    fInPO2.close();
 }
 
 
@@ -443,11 +455,13 @@ void readInFiles(const string nFInTissueDim, const string nFInTum,
  *  - nlayer: number of layers of the tissue,
  *  - cellSize: length of the side of square cells, corresponding to a voxel
  *  of the tissue,
- *  - inVes: vector containing the initial endothelial cell configuration.
+ *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - inPO2: vector containing the initial pO2 values.
 ------------------------------------------------------------------------------*/
 
-void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
-                 int &ncol, int &nlayer, double &cellSize, vector<bool> &inVes){
+void readInFiles(const string nFInTissueDim, const string nFInVes,
+                 const string nFInPO2, int &nrow, int &ncol, int &nlayer,
+                 double &cellSize, vector<bool> &inVes, vector<double> &inPO2){
     ifstream fInTissueDim(nFInTissueDim.c_str());
 
     fInTissueDim >> nrow >> ncol >> nlayer;
@@ -463,6 +477,16 @@ void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
         fInVes >> temp;
     }
     fInVes.close();
+
+    ifstream fInPO2(nFInPO2.c_str());
+
+    double tempD;
+    fInPO2 >> tempD;
+    while(!fInPO2.eof()){
+        inPO2.push_back(tempD);
+        fInPO2 >> tempD;
+    }
+    fInPO2.close();
 }
 
 
