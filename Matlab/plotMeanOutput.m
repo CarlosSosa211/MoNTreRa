@@ -100,14 +100,14 @@ switch tissueSet
             char(outputNames(selOut))], 'fontsize', 20)
 end
 
-ctr = zeros(nPar, 2);
-ydt = zeros(nPar, 2);
+xpos = zeros(nPar, 2);
+ypos = zeros(nPar, 2);
 for k = 1:2
-    ctr(:, k) = bsxfun(@plus, hBar(1).XData, [hBar(k).XOffset]');
-    ydt(:, k) = hBar(k).YData;
+    xpos(:, k) = hBar(1).XData + hBar(k).XOffset;
+    ypos(:, k) = hBar(k).YData;
 end
 
-errorbar(ctr, ydt, cell2mat(cOutput(:, 7:8)), '.k')
+errorbar(xpos, ypos, cell2mat(cOutput(:, 7:8)), '.k')
 hold off
 ylim([0, inf])
 legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$'...
