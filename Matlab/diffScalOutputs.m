@@ -12,10 +12,10 @@ close all
 % - outputCol: the column number of the output in the corresponding files.
 
 nfig = 0;
-% path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
+path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/Res_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/Arrest_Dose_5Val_5Rep/Tissue';
-path = '../../Carlos/Results/Diff/HypNec_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/HypNec_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/Oxy_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/AngRes_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/ArrestNoAngNoRes_Dose_5Val_5Rep/Tissue';
@@ -28,14 +28,14 @@ nTissues = 21;
 [initVascDens, tissuesVascDens] = sort(initVascDens);
 nOut = 15;
 
-% withoutN = 'No angiogenesis';
-% withN = 'Angiogenesis';
+withoutN = 'No angiogenesis';
+withN = 'Angiogenesis';
 % withoutN = 'No healthy cell division';
 % withN = 'Healthy cell division';
 % withoutN = 'No arrest';
 % withN = 'Arrest';
-withoutN = 'No hypoxic necrosis';
-withN = 'Hypoxic necrosis';
+% withoutN = 'No hypoxic necrosis';
+% withN = 'Hypoxic necrosis';
 % withoutN = 'No oxyegenation (no hypoxic necrosis)';
 % withN = 'Oxygenation';
 % withoutN = 'No angiogenesis and no healthy cell division';
@@ -179,7 +179,7 @@ switch selPar
     case 4
         parName = 'Dose (Gy)';
         parT = tDose;
-        parCol = colDose;        
+        parCol = colDose;
 end
 
 %%
@@ -262,7 +262,7 @@ switch selPar1
     case 4
         parName1 = 'Dose (Gy)';
         parT1 = tDose;
-        parCol1 = colDose;        
+        parCol1 = colDose;
 end
 
 selPar2 = 4;
@@ -282,7 +282,7 @@ switch selPar2
     case 4
         parName2 = 'Dose (Gy)';
         parT2 = tDose;
-        parCol2 = colDose;        
+        parCol2 = colDose;
 end
 
 %%
@@ -408,10 +408,16 @@ for i = 1:length(tDose)
     nfig = nfig + 1;
     figure(nfig)
     hold on
-    errorbar(1:nTissues, withoutMeanDose(i, tissuesVascDens),...
+%     errorbar(1:nTissues, withoutMeanDose(i, tissuesVascDens),...
+%         withoutStdDose(i, tissuesVascDens), 'sb', 'MarkerSize', 10,...
+%         'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b')
+%     errorbar(1:nTissues, withMeanDose(i, tissuesVascDens),...
+%         withStdDose(i, tissuesVascDens), 'sr', 'MarkerSize', 10,...
+%         'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r')
+    errorbar(initVascDens, withoutMeanDose(i, tissuesVascDens),...
         withoutStdDose(i, tissuesVascDens), 'sb', 'MarkerSize', 10,...
         'MarkerEdgeColor', 'b', 'MarkerFaceColor', 'b')
-    errorbar(1:nTissues, withMeanDose(i, tissuesVascDens),...
+    errorbar(initVascDens, withMeanDose(i, tissuesVascDens),...
         withStdDose(i, tissuesVascDens), 'sr', 'MarkerSize', 10,...
         'MarkerEdgeColor', 'r', 'MarkerFaceColor', 'r')
     hold off
@@ -420,9 +426,11 @@ for i = 1:length(tDose)
     legend(withoutN, withN, 'location', 'northeast')
     grid on
     ylim([0, inf])
-    xticks(1:nTissues)
-    xticklabels(num2cell(tissuesVascDens))
-    xlabel('Tissue')
+    %     xticks(1:nTissues)
+    %     xticklabels(num2cell(tissuesVascDens))
+    %     xticklabels(num2cell(initVascDens))
+    %     xlabel('Tissue')
+    xlabel('Initial vascular density')
     ylabel(outputNames(selOut))
 end
 
@@ -438,15 +446,41 @@ for i = 1:length(tDose)
     nfig = nfig + 1;
     figure(nfig)
     hold on
-    plot(1:nTissues, absDiffDose(i, tissuesVascDens), 'sk', 'MarkerSize',...
+    plot(initVascDens, absDiffDose(i, tissuesVascDens), 'sk', 'MarkerSize',...
         10, 'MarkerFaceColor', 'k')
     title(['All tissues - Abs. diff. in ', char(outputNames(selOut))...
         ' - ', num2str(tDose(i)), ' Gy'])
-    legend(withoutN, withN, 'location', 'northeast')
     grid on
     ylim([0, inf])
-    xticks(1:nTissues)
-    xticklabels(num2cell(tissuesVascDens))
-    xlabel('Tissue')
+    %     xticks(1:nTissues)
+    %     xticklabels(num2cell(tissuesVascDens))
+    %     xticklabels(num2cell(initVascDens))
+    %     xlabel('Tissue')
+    xlabel('Initial vascular density')
+    ylabel(outputNames(selOut))
+end
+
+%%
+% This block plots, for all the values of dose, the mean and std of the
+% rel. differences of the selected output for simulations X_0_X and X_1_1
+% as a function of the tissue
+relDiffDose = (abs(output(:, 1, :) - output(:, 2, :))) ./ output(:, 2, :);
+relDiffDose = permute(relDiffDose, [1, 3, 2]);
+
+for i = 1:length(tDose)
+    nfig = nfig + 1;
+    figure(nfig)
+    hold on
+    plot(initVascDens, relDiffDose(i, tissuesVascDens), 'sk', 'MarkerSize',...
+        10, 'MarkerFaceColor', 'k')
+    title(['All tissues - Rel. diff. in ', char(outputNames(selOut))...
+        ' - ', num2str(tDose(i)), ' Gy'])
+    grid on
+    ylim([0, inf])
+    %     xticks(1:nTissues)
+    %     xticklabels(num2cell(tissuesVascDens))
+    %     xticklabels(num2cell(initVascDens))
+    %     xlabel('Tissue')
+    xlabel('Initial vascular density')
     ylabel(outputNames(selOut))
 end
