@@ -1257,7 +1257,7 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
             iSF = i * m_mapSclFac;
             for(int j(0); j < m_mapNcol; j++){
                 jSF = j * m_mapSclFac;
-                colour = m_state[iter][i * m_mapNcol + j];
+                colour = m_timer[iter][i * m_mapNcol + j];
                 for(int si(0); si < m_mapSclFac; si++){
                     for(int sj(0); sj < m_mapSclFac; sj++){
                         m_imTimer->setPixel(jSF + sj, iSF + si, colour);

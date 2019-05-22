@@ -14,7 +14,8 @@ using namespace std;
  *  - cellSize: length of the side of square cells, corresponding to a voxel
  *  of the tissue,
  *  - inTum: vector containing the initial tumour cell configuration,
- *  - inVes: vector containing the initial endothelial cell configuration.
+ *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - inPO2: vector containing the initial pO2 values.
  *
  * Outputs:
  *  - y: array containing the scalar outputs of the model.
@@ -150,21 +151,21 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     sim->simulate(simTimeStep, simTime);
     sim->stop();
 
-    double endTreatTumDens(model1->getOut()->at(24));
-    double threeMonTumDens(model1->getOut()->at(25));
-    double tumVol(model1->getOut()->at(23));
-    double intTumDens(model1->getOut()->at(22));
-    double killed50(model1->getOut()->at(28));
-    double killed80(model1->getOut()->at(29));
-    double killed90(model1->getOut()->at(30));
-    double killed95(model1->getOut()->at(31));
-    double timeTo95(model1->getOut()->at(12));
-    double killed99(model1->getOut()->at(32));
-    double timeTo99(model1->getOut()->at(13));
-    double killed999(model1->getOut()->at(33));
-    double rec(model1->getOut()->at(34));
-    double recTumDens(model1->getOut()->at(26));
-    double recTime(model1->getOut()->at(27));
+    double endTreatTumDens(model1->getOutD()[0]);
+    double threeMonTumDens(model1->getOutD()[1]);
+    double tumVol(model1->getOutD()[19]);
+    double intTumDens(model1->getOutD()[2]);
+    double killed50(model1->getOutB()[0]);
+    double killed80(model1->getOutB()[1]);
+    double killed90(model1->getOutB()[2]);
+    double killed95(model1->getOutB()[3]);
+    double timeTo95(model1->getOutD()[6]);
+    double killed99(model1->getOutB()[4]);
+    double timeTo99(model1->getOutD()[7]);
+    double killed999(model1->getOutB()[5]);
+    double rec(model1->getOutB()[6]);
+    double recTumDens(model1->getOutD()[16]);
+    double recTime(model1->getOutD()[17]);
 
     delete treatment;
     delete model1;
@@ -287,7 +288,7 @@ void model(const double *x, const int nrow, const int ncol, const int nlayer,
     std::ofstream fPO2(nFPO2.c_str());
 
     for(int i(0); i < model1->getNumComp(); i++){
-        fPO2 << model1->getComp()->at(i)->getOut()->at(0) << "\t";
+        fPO2 << model1->getComp()->at(i)->getOutD()[0] << "\t";
     }
 
     delete model1;
@@ -435,6 +436,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     Coupler *coupler;
     Tissue *model1;
+    AbsOxyTissue *model2;
 
     model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, tumGrowth,
                         tumTime, edgeOrder, cycDur, cycDistrib, res, fibTime,
@@ -451,16 +453,12 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     VmaxVegf *= oxySimTimeStep;
 
     if(oxy == 0 or oxy == 2 or oxy == 4){
-        ConstOxyTissue *model2;
-
         model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 1.0;
     }
 
     else if(oxy == 1){
-        OxyTissue *model2;
-
         model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
                                VmaxVegf, KmVegf, hypVegf, oxy, DO2, VmaxO2,
                                KmO2, pO2NormVes, pO2TumVes, hypThres);
@@ -485,26 +483,23 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     sim->initSim();
 
-    fTumDens     << currentTime << " " << model1->getOut()->at(0) << endl;
-    fTumVol      << currentTime << " " << model1->getOut()->at(23) << endl;
-    fVascDens    << currentTime << " " << model1->getOut()->at(6) << " " <<
-                    model1->getOut()->at(7) << " " <<
-                    model1->getOut()->at(8) << endl;
-    fKilledCells << currentTime << " " << model1->getOut()->at(21) << endl;
-    fDeadDens    << currentTime << " " << model1->getOut()->at(37) << endl;
-    fHypDens     << currentTime << " " <<
-                    coupler->getModel2()->getOut()->at(0) << endl;
-    fPO2Stat     << currentTime << " " <<
-                    coupler->getModel2()->getOut()->at(1) << " " <<
-                    coupler->getModel2()->getOut()->at(2) << endl;
-    fVEGFStat    << currentTime << " " <<
-                    coupler->getModel2()->getOut()->at(3) << " " <<
-                    coupler->getModel2()->getOut()->at(4) << endl;
-    fCycle       << currentTime << " " << model1->getOut()->at(1) << " " <<
-                    model1->getOut()->at(2) << " " <<
-                    model1->getOut()->at(3) << " " <<
-                    model1->getOut()->at(4) << " " <<
-                    model1->getOut()->at(5) << endl;
+    fTumDens     << currentTime << " " << model1->getOutD()[18] << std::endl;
+    fTumVol      << currentTime << " " << model1->getOutD()[19] << std::endl;
+    fVascDens    << currentTime << " " << model1->getOutD()[20] <<
+                    " " << model1->getOutD()[21] <<
+                    " " << model1->getOutD()[22] << std::endl;
+    fKilledCells << currentTime << " " << model1->getOutD()[23] << std::endl;
+    fHypDens     << currentTime << " " << model2->getOutD()[0] << std::endl;
+    fDeadDens    << currentTime << " " << model1->getOutD()[24] << std::endl;
+    fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
+                    model2->getOutD()[2] << std::endl;
+    fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
+                    model2->getOutD()[4] << std::endl;
+    fCycle       << currentTime << " " << model1->getOutD()[25] <<
+                    " " << model1->getOutD()[26] <<
+                    " " << model1->getOutD()[27] <<
+                    " " << model1->getOutD()[28] <<
+                    " " << model1->getOutD()[29] << std::endl;
 
     int numIter(simTime / simTimeStep);
 
@@ -512,26 +507,28 @@ void model(const double *x, double *y, const int nrow, const int ncol,
         currentTime += simTimeStep;
         sim->simulate(currentTime, simTimeStep);
 
-        fTumDens     << currentTime << " " << model1->getOut()->at(0) << endl;
-        fTumVol      << currentTime << " " << model1->getOut()->at(23) << endl;
-        fVascDens    << currentTime << " " << model1->getOut()->at(6) << " " <<
-                        model1->getOut()->at(7) << " " <<
-                        model1->getOut()->at(8) << endl;
-        fKilledCells << currentTime << " " << model1->getOut()->at(21) << endl;
-        fDeadDens    << currentTime << " " << model1->getOut()->at(37) << endl;
-        fHypDens     << currentTime << " " <<
-                        coupler->getModel2()->getOut()->at(0) << endl;
-        fPO2Stat     << currentTime << " " <<
-                        coupler->getModel2()->getOut()->at(1) << " " <<
-                        coupler->getModel2()->getOut()->at(2) << endl;
-        fVEGFStat    << currentTime << " " <<
-                        coupler->getModel2()->getOut()->at(3) << " " <<
-                        coupler->getModel2()->getOut()->at(4) << endl;
-        fCycle       << currentTime << " " << model1->getOut()->at(1) << " " <<
-                        model1->getOut()->at(2) << " " <<
-                        model1->getOut()->at(3) << " " <<
-                        model1->getOut()->at(4) << " " <<
-                        model1->getOut()->at(5) << endl;
+        fTumDens     << currentTime << " " << model1->getOutD()[18] <<
+                        std::endl;
+        fTumVol      << currentTime << " " << model1->getOutD()[19] <<
+                        std::endl;
+        fVascDens    << currentTime << " " << model1->getOutD()[20] <<
+                        " " << model1->getOutD()[21] <<
+                        " " << model1->getOutD()[22] << std::endl;
+        fKilledCells << currentTime << " " << model1->getOutD()[23] <<
+                        std::endl;
+        fHypDens     << currentTime << " " << model2->getOutD()[0] <<
+                        std::endl;
+        fDeadDens    << currentTime << " " << model1->getOutD()[24] <<
+                        std::endl;
+        fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
+                        model2->getOutD()[2] << std::endl;
+        fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
+                        model2->getOutD()[4] << std::endl;
+        fCycle       << currentTime << " " << model1->getOutD()[25] <<
+                        " " << model1->getOutD()[26] <<
+                        " " << model1->getOutD()[27] <<
+                        " " << model1->getOutD()[28] <<
+                        " " << model1->getOutD()[29] << std::endl;
     }
 
     fTumDens.close();
@@ -545,25 +542,25 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     sim->stop();
 
-    double endTreatTumDens(model1->getOut()->at(24));
-    double threeMonTumDens(model1->getOut()->at(25));
-    double tumVol(model1->getOut()->at(23));
-    double intTumDens(model1->getOut()->at(22));
-    double killed50(model1->getOut()->at(28));
-    double killed80(model1->getOut()->at(29));
-    double killed90(model1->getOut()->at(30));
-    double killed95(model1->getOut()->at(31));
-    double timeTo95(model1->getOut()->at(12));
-    double killed99(model1->getOut()->at(32));
-    double timeTo99(model1->getOut()->at(13));
-    double killed999(model1->getOut()->at(33));
-    double rec(model1->getOut()->at(34));
-    double recTumDens(model1->getOut()->at(26));
-    double recTime(model1->getOut()->at(27));
+    double endTreatTumDens(model1->getOutD()[0]);
+    double threeMonTumDens(model1->getOutD()[1]);
+    double tumVol(model1->getOutD()[19]);
+    double intTumDens(model1->getOutD()[2]);
+    double killed50(model1->getOutB()[0]);
+    double killed80(model1->getOutB()[1]);
+    double killed90(model1->getOutB()[2]);
+    double killed95(model1->getOutB()[3]);
+    double timeTo95(model1->getOutD()[6]);
+    double killed99(model1->getOutB()[4]);
+    double timeTo99(model1->getOutD()[7]);
+    double killed999(model1->getOutB()[5]);
+    double rec(model1->getOutB()[6]);
+    double recTumDens(model1->getOutD()[16]);
+    double recTime(model1->getOutD()[17]);
 
     delete treatment;
     delete model1;
-    delete coupler->getModel2();
+    delete model2;
     delete coupler;
     delete sim;
 

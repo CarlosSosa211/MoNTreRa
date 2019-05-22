@@ -128,6 +128,7 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     double sclFac;
     Coupler *coupler;
     Tissue *model1;
+    AbsOxyTissue *model2;
 
     model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, tumGrowth,
                         tumTime, edgeOrder, cycDur, cycDistrib, res, fibTime,
@@ -143,15 +144,12 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     VmaxO2   *= oxySimTimeStep;
 
     if(oxy == 0){
-        ConstOxyTissue *model2;
-
         model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, 0.0);
         coupler = new Coupler(model1, model2);
         sclFac = 1.0;
     }
 
     else if(oxy == 1){
-        OxyTissue *model2;
         model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
                                VmaxVegf, KmVegf, hypVegf, oxy, DO2, VmaxO2,
                                KmO2, pO2NormVes, pO2TumVes, hypThres);
@@ -176,16 +174,17 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     while(j < numIter && !controlled){
         currentTime += simTimeStep;
         sim->simulate(currentTime, simTimeStep);
-        controlled = model1->getOut()->at(35);
+        controlled = model1->getOutB()[7];
         j++;
     }
 
     sim->stop();
+    cout << "test" << endl;
 
-    const double doseToControl(model1->getOut()->at(36));
+    const double doseToControl(model1->getOutD()[15]);
 
     delete model1;
-    delete coupler->getModel2();
+    delete model2;
     delete coupler;
     delete sim;
 

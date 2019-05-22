@@ -2,8 +2,6 @@
  * @file tissue.cpp
  * @brief
  * @author Carlos Sosa Marrero
- * @author Nicolas Ciferri
- * @author Alfredo Hernandez
  * @date 05.19.17
  */
 
@@ -17,188 +15,42 @@
 
 using namespace std;
 
-Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
-               Treatment *const treatment) : Model(0, 33, 38, 2, nrow * ncol *
-                                                   nlayer){
-    m_nrow   = nrow;
-    m_ncol   = ncol;
-    m_nlayer = nlayer;
-
-    m_treatment = treatment;
-
-    for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new Cell(this);
-        m_numOut += (m_comp->at(k))->getNumOut();
-    }
-}
-
-
-Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
-               const double cellSize, const string nFInTum,
-               const string nFInVes, const bool tumGrowth,
-               const double doubTime, const int edgeOrder,
-               vector<double> cycDur, vector<double> cycDistrib,
-               const bool res, const double fibDoubTime, const bool ang,
-               const double angTime, const double vegfThres,
-               vector<double> alpha, vector<double> beta,
-               Treatment *const treatment, const double doseThres,
-               const double arrestTime, const int oxy,
-               const double hypNecThres) : Model(0, 33, 38, 2, nrow * ncol *
-                                                 nlayer){
-    m_nrow   = nrow;
-    m_ncol   = ncol;
-    m_nlayer = nlayer;
-    m_cellSize = cellSize; //(mm)
-
-    m_treatment = treatment;
-
-    //Creation of the cells composing the tissue model
-    int k(0);
-    for(int l(0); l < m_nlayer; l++){
-        for(int i(0); i < m_nrow; i++){
-            for(int j(0); j < m_ncol; j++){
-                m_comp->at(k) = new Cell(i, j, l, tumGrowth, doubTime, cycDur,
-                                         res, fibDoubTime, ang, angTime,
-                                         vegfThres, alpha, beta, doseThres,
-                                         arrestTime, oxy, hypNecThres, this);
-                m_numOut += (m_comp->at(k))->getNumOut();
-                k++;
-            }
-        }
-    }
-
-    int incol, iincol, lnrowNcol, llnrowNcol;
-    for(int l(0); l < m_nlayer; l++){
-        lnrowNcol = l * m_nrow * m_ncol;
-        for(int i(0); i < m_nrow; i++){
-            incol = i * m_ncol;
-            for(int j(0); j < m_ncol; j++){
-                for(int ll(-edgeOrder); ll <= edgeOrder; ll++){
-                    llnrowNcol = lnrowNcol + ll * m_nrow * m_ncol;
-                    for(int ii(-edgeOrder); ii <= edgeOrder; ii++){
-                        iincol = llnrowNcol + incol + ii * m_ncol;
-                        for(int jj(-edgeOrder); jj <= edgeOrder; jj++){
-                            if(ii != 0 || jj != 0 || ll != 0){
-                                if(l + ll >= 0 && l + ll < m_nlayer &&
-                                        i + ii >= 0 && i + ii < m_nrow &&
-                                        j + jj >= 0 && j + jj < m_ncol){
-                                    ((Cell *)m_comp->at(lnrowNcol + incol + j))
-                                            ->addToEdge((Cell *)m_comp->
-                                                        at(iincol + j + jj));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    double inputTimer, inputTum, inputVes, n;
-    ifstream fInTum(nFInTum.c_str());
-    ifstream fInVes(nFInVes.c_str());
-
-    //Initialization of the cells state
-    if(!fInTum.is_open()){
-        /*cout << "An error occurred while opening initial tumor" <<
-                "data file" << endl*/;
-    }
-    else if(!fInVes.is_open()){
-        /*cout << "An error occurred while opening initial vessel" <<
-                "data file" << endl*/;
-    }
-    else{
-        srand(time(NULL));
-        for(int k(0); k < m_numComp; k++){
-            if(fInTum >> inputTum){
-                ((Cell *)m_comp->at(k))->setInTum(inputTum);
-            }
-            else{
-                /*cout << "Insufficient data in tumor file" << endl*/;
-                break;
-            }
-            if(fInVes >> inputVes){
-                if(inputTum && inputVes){
-                    /*cout << "Conflict between initial data. Cell "<< k <<
-                            " is both tumor and vessel" << endl*/;
-                    break;
-                }
-                else{
-                    ((Cell *)m_comp->at(k))->setInNormVes(inputVes);
-                }
-            }
-            else{
-                /*cout << "Insufficient data in vessel file" << endl*/;
-                break;
-            }
-
-            if(inputTum){
-                if(tumGrowth){
-                    n = double(rand()) / double(RAND_MAX);
-                    if(n < cycDistrib.at(0)){
-                        inputTimer = rand() % int(cycDur.at(0) * doubTime);
-                    }
-                    else if(n < cycDistrib.at(0) + cycDistrib.at(1)){
-                        inputTimer = cycDur.at(0) * doubTime +
-                                rand() % int(cycDur.at(1) * doubTime);
-                    }
-                    else if(n < cycDistrib.at(0) + cycDistrib.at(1) +
-                            cycDistrib.at(2)){
-                        inputTimer = (cycDur.at(0) + cycDur.at(1)) * doubTime +
-                                rand() % int(cycDur.at(2) * doubTime);
-                    }
-                    else{
-                        inputTimer = (cycDur.at(0) + cycDur.at(1) +
-                                      cycDur.at(2)) * doubTime + rand() %
-                                int(cycDur.at(3) * doubTime);
-                    }
-                }
-
-                else{
-                    n = double(rand()) / double(RAND_MAX);
-                    if(n < cycDistrib.at(0)){
-                        inputTimer = -1.0;
-                    }
-                    else if(n < cycDistrib.at(0) + cycDistrib.at(1)){
-                        inputTimer = -2.0;
-                    }
-                    else if(n < cycDistrib.at(0) + cycDistrib.at(1) +
-                            cycDistrib.at(2)){
-                        inputTimer = -3.0;
-                    }
-                    else{
-                        inputTimer = -4.0;
-                    }
-                }
-            }
-
-            else if(inputVes){
-                if(ang){
-                    n = double(rand()) / double(RAND_MAX);
-                    inputTimer = n * angTime;
-                }
-                else{
-                    inputTimer = 0.0;
-                }
-            }
-
-            else{
-                if(1){
-                    n = double(rand()) / double(RAND_MAX);
-                    inputTimer = n * 500.0;
-                }
-                else{
-                    inputTimer = 0.0;
-                }
-            }
-
-            ((Cell *)m_comp->at(k))->setInTimer(inputTimer);
-        }
-        fInTum.close();
-        fInVes.close();
-    }
-}
-
+/*------------------------------------------------------------------------------
+ * Constructor of the class Tissue.
+ *
+ * Inputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue (um),
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - tumGrowth: tumour growth,
+ *  - doubTime: duration of the cycle of tumour cells (h),
+ *  - edgeOrder: order of the edge of cells,
+ *  - cycDur: vector containing the duration fractions of every phase of the
+ *  cell cycle,
+ *  - cycDistrib: vector containing the initial distribution of tumour cells in
+ *  the cycle,
+ *  - res: healthy cell division,
+ *  - fibDoubTime: duration of the cycle of healthy cells (h),
+ *  - ang: angiogenesis,
+ *  - angTime: duration of the cycle of endothelial cells (h),
+ *  - vegfThres: VEGF threshold for provoking endothelial cell division
+ *  (mol/um^3),
+ *  - alpha: vector containing the alpha values for every cell type and phase
+ *  (Gy^-1),
+ *  - beta: vector containing the beta values for every cell type and phase
+ *  (Gy^-2),
+ *  - treatment: pointer to the treatment,
+ *  - doseThres: dose threshold to provoke instantaneous death by apoptosis
+ *  (Gy),
+ *  - arrestTime: radiation-induced arrest time (h),
+ *  - oxy: integer indicating the oxygenation scenario (1, space-and-time
+ *  dependent),
+ *  - hypNecThres: pO2 hypoxic necrosis thresthold (mmHg).
+------------------------------------------------------------------------------*/
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const double cellSize, const vector<bool> &inTum,
@@ -210,8 +62,11 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                vector<double> alpha, vector<double> beta,
                Treatment *const treatment, const double doseThres,
                const double arrestTime, const int oxy,
-               const double hypNecThres) : Model(0, 33, 38, 2, nrow * ncol *
-                                                 nlayer){
+               const double hypNecThres) :
+    Model(TISSUE_NUM_IN_B, TISSUE_NUM_IN_I, TISSUE_NUM_IN_D, TISSUE_NUM_ST_B,
+          TISSUE_NUM_ST_I, TISSUE_NUM_ST_D, TISSUE_NUM_OUT_B, TISSUE_NUM_OUT_I,
+          TISSUE_NUM_OUT_D, TISSUE_NUM_PAR_B, TISSUE_NUM_PAR_I,
+          TISSUE_NUM_PAR_D, nrow * ncol * nlayer){
     m_nrow   = nrow;
     m_ncol   = ncol;
     m_nlayer = nlayer;
@@ -219,7 +74,6 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
 
     m_treatment = treatment;
 
-    //Creation of the cells composing the tissue model
     int k(0);
     double inputTimer, n;
 
@@ -232,13 +86,12 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                                          res, fibDoubTime, ang, angTime,
                                          vegfThres, alpha, beta, doseThres,
                                          arrestTime, oxy, hypNecThres, this);
-                m_numOut += (m_comp->at(k))->getNumOut();
 
                 ((Cell *)m_comp->at(k))->setInTum(inTum.at(k));
 
                 if(inTum.at(k) && inVes.at(k)){
-                    /*cout << "Conflict between initial data. Cell "<< k <<
-                            " is both tumor and vessel" << endl*/;
+                    cout << "Conflict between initial data. Cell "<< k <<
+                            " is both tumor and vessel" << endl;
                     break;
                 }
 
@@ -352,6 +205,9 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
     }
 }
 
+/*------------------------------------------------------------------------------
+ * Destructor of the class Tissue.
+------------------------------------------------------------------------------*/
 
 Tissue::~Tissue(){
     for(int k(0); k < m_numComp; k++){
@@ -359,6 +215,10 @@ Tissue::~Tissue(){
     }
 }
 
+
+/*------------------------------------------------------------------------------
+ * Redefinition of the Model calcModelOut method.
+------------------------------------------------------------------------------*/
 
 int Tissue::calcModelOut(){
     for(int k(0); k < m_numComp; k++){
@@ -439,6 +299,10 @@ int Tissue::calcModelOut(){
 }
 
 
+/*------------------------------------------------------------------------------
+ * Redefinition of the Model initModel method.
+------------------------------------------------------------------------------*/
+
 int Tissue::initModel(){
     for(int k(0); k < m_numComp; k++){
         (m_comp->at(k))->initModel();
@@ -449,9 +313,9 @@ int Tissue::initModel(){
     PAR_INIT_TUM_DENS = double(getNumTum()) * _numComp100;
     PAR_INIT_VES_DENS = double(getNumVes()) * _numComp100;
 
-    ST_TUM_DENS      = PAR_INIT_TUM_DENS;
-    ST_PREV_TUM_DENS = PAR_INIT_TUM_DENS;
-    ST_INT_TUM_DENS  = 0.0;
+    ST_TUM_DENS           = PAR_INIT_TUM_DENS;
+    ST_PREV_TUM_DENS      = PAR_INIT_TUM_DENS;
+    ST_INT_TUM_DENS       = 0.0;
     ST_END_TREAT_TUM_DENS = 0.0;
     ST_3MON_TUM_DENS      = 0.0;
 
@@ -461,17 +325,17 @@ int Tissue::initModel(){
 
     ST_DEAD_DENS  = double(getNumDead()) * _numComp100;
 
-    ST_REC          = 0.0;
-    ST_COUNT_REC    = 0.0;
+    ST_REC          = false;
+    ST_COUNT_REC    = 0;
     ST_REC_TUM_DENS = 0.0;
     ST_REC_TIME     = 0.0;
 
-    ST_50_KILLED  = 0.0;
-    ST_80_KILLED  = 0.0;
-    ST_90_KILLED  = 0.0;
-    ST_95_KILLED  = 0.0;
-    ST_99_KILLED  = 0.0;
-    ST_999_KILLED = 0.0;
+    ST_50_KILLED  = false;
+    ST_80_KILLED  = false;
+    ST_90_KILLED  = false;
+    ST_95_KILLED  = false;
+    ST_99_KILLED  = false;
+    ST_999_KILLED = false;
 
     ST_TIME_TO_50  = 0.0;
     ST_TIME_TO_80  = 0.0;
@@ -487,63 +351,40 @@ int Tissue::initModel(){
     ST_DOSE_TO_99  = 0.0;
     ST_DOSE_TO_999 = 0.0;
 
-    ST_CONTROLLED = 0.0;
-
-    /*cout << "Total number of cells = " << m_numComp << endl*/;
-    /*cout << "Initial number of cells at G1 = " << getNumG1() << endl*/;
-    /*cout << "Initial number of cells at S = " << getNumS() << endl*/;
-    /*cout << "Initial number of cells at G2 = " << getNumG2() << endl*/;
-    /*cout << "Initial number of cells at M = " << getNumM() << endl*/;
-    /*cout << "Initial number of cells at G0 = " << getNumG0() << endl*/;
-    /*cout << "Initial number of living cells = "
-         << getNumFib() << endl*/;
-    /*cout << "Initial number of tumor cells = " << getNumTum() << endl*/;
-    /*cout << "Initial tumor density: " << PAR_INIT_TUM_DENS << "%"
-         << endl*/;
-    /*cout << "Initial number of vessels = " << getNumVes() << endl*/;
-    /*cout << "Initial vascular density: " << PAR_INIT_VES_DENS << "%"
-         << endl*/;
-    /*cout << "Initial number of dead cells = " << getNumDead() << endl*/;
-    /*cout << "---------------------------------------------" << endl*/;
+    ST_CONTROLLED = false;
 
     return 0;
 }
 
+
+/*------------------------------------------------------------------------------
+ * Redefinition of the Model terminalModel method.
+------------------------------------------------------------------------------*/
 
 int Tissue::terminateModel(){
     for(int k(0); k < m_numComp; k++){
         (m_comp->at(k))->terminateModel();
     }
-
-    /*cout << "---------------------------------------------" << endl*/;
-    /*cout << "Final number of cells at G1 = " << getNumG1() << endl*/;
-    /*cout << "Final number of cells at S = " << getNumS() << endl*/;
-    /*cout << "Final number of cells at G2 = " << getNumG2() << endl*/;
-    /*cout << "Final number of cells at M = " << getNumM() << endl*/;
-    /*cout << "Final number of cells at G0 = " << getNumG0() << endl*/;
-    /*cout << "Final number of living cells = "
-         << getNumFib() << endl*/;
-    /*cout << "Final number of tumor cells = " << getNumTum() << endl*/;
-    /*cout << "Final tumor density: " << OUT_TUM_DENS << "%" << endl*/;
-    /*cout << (PAR_INIT_TUM_DENS - OUT_TUM_DENS) / PAR_INIT_TUM_DENS
-            * 100 << "% of initial tumor cells killed" << endl*/;
-    /*cout << "Final number of vessels = " << getNumVes() << endl*/;
-    /*cout << "Final vascular density: " << OUT_VES_DENS << "%" << endl*/;
-    /*cout << "Final number of dead cells = "<< getNumDead() << endl*/;
-    /*cout << "---------------------------------------------" << endl*/;
     return 0;
 }
 
 
-int Tissue::updateModel(const double currentTime,
-                        const double DT){
+/*------------------------------------------------------------------------------
+ * Redefinition of the Model updateModel method.
+ *
+ * Inputs:
+ *  - currentTime: simulation current time (h),
+ *  - DT: simulation timestep (h).
+------------------------------------------------------------------------------*/
+
+int Tissue::updateModel(const double currentTime, const double DT){
     for(int k(0); k < m_numComp; k++){
         (m_comp->at(k))->updateModel(currentTime, DT);
     }
 
     double _numComp100(1.0 / double(m_numComp) * 100.0);
     ST_PREV_TUM_DENS = ST_TUM_DENS;
-    ST_TUM_DENS = double(getNumTum()) * _numComp100;
+    ST_TUM_DENS      = double(getNumTum()) * _numComp100;
     ST_INT_TUM_DENS += 0.5 * DT * (ST_PREV_TUM_DENS + ST_TUM_DENS);
 
     ST_VES_DENS      = double(getNumVes()) * _numComp100;
@@ -561,13 +402,13 @@ int Tissue::updateModel(const double currentTime,
                 ST_REC_TUM_DENS = ST_TUM_DENS;
                 ST_REC_TIME = currentTime;
             }
-            ST_COUNT_REC += 1.0;
-            if(ST_COUNT_REC == 10.0){
-                ST_REC = 1.0;
+            ST_COUNT_REC ++;
+            if(ST_COUNT_REC = 10){
+                ST_REC = true;
             }
         }
         else{
-            ST_COUNT_REC = 0.0;
+            ST_COUNT_REC = 0;
         }
         if(currentTime <= 2160.0){
             ST_3MON_TUM_DENS = ST_TUM_DENS;
@@ -576,43 +417,51 @@ int Tissue::updateModel(const double currentTime,
         double tumSurv;
         tumSurv = ST_TUM_DENS / PAR_INIT_TUM_DENS;
         if(tumSurv < 0.5 && !ST_50_KILLED){
-            ST_50_KILLED = 1.0;
+            ST_50_KILLED = true;
             ST_TIME_TO_50 = currentTime;
             ST_DOSE_TO_50 = ((Cell*)m_comp->at(0))->getAccDose();
         }
         if(tumSurv < 0.2 && !ST_80_KILLED){
-            ST_80_KILLED = 1.0;
+            ST_80_KILLED = true;
             ST_TIME_TO_80 = currentTime;
             ST_DOSE_TO_80 = ((Cell*)m_comp->at(0))->getAccDose();
         }
         if(tumSurv < 0.1 && !ST_90_KILLED){
-            ST_90_KILLED = 1.0;
+            ST_90_KILLED = true;
             ST_TIME_TO_90 = currentTime;
             ST_DOSE_TO_90 = ((Cell*)m_comp->at(0))->getAccDose();
         }
         if(tumSurv < 0.05 && !ST_95_KILLED){
-            ST_95_KILLED = 1.0;
+            ST_95_KILLED = true;
             ST_TIME_TO_95 = currentTime;
             ST_DOSE_TO_95 = ((Cell*)m_comp->at(0))->getAccDose();
         }
         if(tumSurv < 0.01 && !ST_99_KILLED){
-            ST_99_KILLED = 1.0;
+            ST_99_KILLED = true;
             ST_TIME_TO_99 = currentTime;
             ST_DOSE_TO_99 = ((Cell*)m_comp->at(0))->getAccDose();
         }
         if(tumSurv < 0.001 && !ST_999_KILLED){
-            ST_999_KILLED = 1.0;
+            ST_999_KILLED = true;
             ST_TIME_TO_999 = currentTime;
             ST_DOSE_TO_999 = ((Cell*)m_comp->at(0))->getAccDose();
         }
 
         if(!getNumTumNotDam() && !ST_CONTROLLED){
-            ST_CONTROLLED = 1.0;
+            ST_CONTROLLED = true;
             ST_DOSE_TO_CONTROL = ((Cell*)m_comp->at(0))->getAccDose();
         }
     }
     return 0;
 }
+
+
+/*------------------------------------------------------------------------------
+ * This function counts the healthy cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of healthy cells of the tissue
+------------------------------------------------------------------------------*/
 
 int Tissue::getNumFib() const{
     int count(0);
@@ -625,6 +474,13 @@ int Tissue::getNumFib() const{
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function counts the dead cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of dead cells of the tissue
+------------------------------------------------------------------------------*/
+
 int Tissue::getNumDead() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
@@ -635,6 +491,13 @@ int Tissue::getNumDead() const{
     return count;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function counts the G0 cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of G0 cells of the tissue
+------------------------------------------------------------------------------*/
 
 int Tissue::getNumG0() const{
     int count(0);
@@ -647,6 +510,13 @@ int Tissue::getNumG0() const{
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function counts the G1 cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of G1 cells of the tissue
+------------------------------------------------------------------------------*/
+
 int Tissue::getNumG1() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
@@ -657,6 +527,13 @@ int Tissue::getNumG1() const{
     return count;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function counts the G2 cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of G2 cells of the tissue
+------------------------------------------------------------------------------*/
 
 int Tissue::getNumG2() const{
     int count(0);
@@ -669,6 +546,13 @@ int Tissue::getNumG2() const{
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function counts the M cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of M cells of the tissue
+------------------------------------------------------------------------------*/
+
 int Tissue::getNumM() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
@@ -679,6 +563,13 @@ int Tissue::getNumM() const{
     return count;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function counts the pre-existing endothelial cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of pre-existing endothelial cells of the tissue
+------------------------------------------------------------------------------*/
 
 int Tissue::getNumNormVes() const{
     int count(0);
@@ -691,6 +582,13 @@ int Tissue::getNumNormVes() const{
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function counts the S cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of S cells of the tissue
+------------------------------------------------------------------------------*/
+
 int Tissue::getNumS() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
@@ -701,6 +599,13 @@ int Tissue::getNumS() const{
     return count;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function counts the tumour cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of tumour cells of the tissue
+------------------------------------------------------------------------------*/
 
 int Tissue::getNumTum() const{
     int count(0);
@@ -713,6 +618,13 @@ int Tissue::getNumTum() const{
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function counts the not damaged tumour cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of not damaged tumour cells of the tissue
+------------------------------------------------------------------------------*/
+
 int Tissue::getNumTumNotDam() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
@@ -723,6 +635,13 @@ int Tissue::getNumTumNotDam() const{
     return count;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function counts the neo-created endothelial cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of neo-created endothelial cells of the tissue
+------------------------------------------------------------------------------*/
 
 int Tissue::getNumTumVes() const{
     int count(0);
@@ -735,6 +654,13 @@ int Tissue::getNumTumVes() const{
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function counts the endothelial cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of endothelial cells of the tissue
+------------------------------------------------------------------------------*/
+
 int Tissue::getNumVes() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
@@ -745,6 +671,10 @@ int Tissue::getNumVes() const{
     return count;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function gets the treatment.
+------------------------------------------------------------------------------*/
 
 Treatment *Tissue::getTreatment() const{
     return m_treatment;

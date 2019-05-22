@@ -19,9 +19,9 @@ int main(){
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
     //string nFRefParInt("../InputFiles/refParIntToy.dat");
     //string nRefParMean("../InputFiles/refParMeanRT.dat");
-    string nFMostRelPar("../InputFiles/mostRelParArrest.dat");
-    string nFLeastRelPar("../InputFiles/leastRelParArrest.dat");
-    string nFVarPar("../InputFiles/varParArrest.dat");
+    string nFMostRelPar("../InputFiles/mostRelParResArrest.dat");
+    string nFLeastRelPar("../InputFiles/leastRelParResArrest.dat");
+    string nFVarPar("../InputFiles/varParResArrest.dat");
     string nFInTissueDim("../InputFiles/tissueDim.dat");
     string nFInTum("../InputFiles/inTum.dat");
     string nFInVes("../InputFiles/inVes.dat");

@@ -11,12 +11,13 @@
 
 using namespace std;
 
-Simulator::Simulator(){
-    m_model = 0;
-    m_currentTime = 0.0;
-    m_DT = 1; //h
-}
-
+/*------------------------------------------------------------------------------
+ * Constructor of the class Simulator.
+ *
+ * Inputs:
+ *  - model: pointer to the model to be simulated,
+ *  - DT: simulation timestep.
+------------------------------------------------------------------------------*/
 
 Simulator::Simulator(Model *model, const double DT){
     m_model = model;
@@ -25,20 +26,42 @@ Simulator::Simulator(Model *model, const double DT){
 }
 
 
+/*------------------------------------------------------------------------------
+ * Destructor of the class Simulator.
+------------------------------------------------------------------------------*/
+
 Simulator::~Simulator(){
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function sets the model.
+ *
+ * Inputs:
+ *  - model: pointer to the model to be simulated.
+------------------------------------------------------------------------------*/
 
 void Simulator::setModel(Model *model){
     m_model = model;
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function initialises the simulation.
+------------------------------------------------------------------------------*/
 void Simulator::initSim(){ 
     m_model->initModel();
     m_model->calcModelOut();
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function runs a simulation of the model.
+ *
+ * Inputs:
+ *  - currentTime: initial simulation time,
+ *  - simTime: duration of the simulation.
+------------------------------------------------------------------------------*/
 
 void Simulator::simulate(const double currentTime, const double simTime){
     int numIter(simTime / m_DT);
@@ -53,6 +76,10 @@ void Simulator::simulate(const double currentTime, const double simTime){
     }
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function stops the simulation.
+------------------------------------------------------------------------------*/
 
 void Simulator::stop(){
     m_model->terminateModel();

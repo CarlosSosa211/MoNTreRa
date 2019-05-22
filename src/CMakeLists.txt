@@ -19,6 +19,7 @@ project(RTsim)
 
 set(RTSIM_HEADER_FILES
 absOxyCell.hpp
+absOxyTissue.hpp
 alloc.hpp
 cell.hpp
 constOxyCell.hpp
@@ -44,6 +45,7 @@ var.hpp
 # RTsim basic source files
 set(RTSIM_SOURCE_FILES
 absOxyCell.cpp
+absOxyTissue.cpp
 alloc.cpp
 cell.cpp
 constOxyCell.cpp

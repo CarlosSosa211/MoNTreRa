@@ -23,8 +23,7 @@ public:
   void stop();
   
 private:
-  double m_DT;	
-  double m_currentTime;
+  double m_currentTime, m_DT;
   Model *m_model;
 };
 

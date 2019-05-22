@@ -15,24 +15,42 @@
 #include "absOxyCell.hpp"
 
 //Inputs
-#define IN_DIFF_O2   m_in->at(3)
-#define IN_CONS_O2   m_in->at(4)
-#define IN_DIFF_VEGF m_in->at(5)
-#define IN_CONS_VEGF m_in->at(6)
+#define OXYCELL_NUM_IN_B 3
+#define OXYCELL_NUM_IN_I 0
+#define OXYCELL_NUM_IN_D 3
+
+#define IN_DIFF_O2   m_inD[0] //diffused O2
+#define IN_CONS_O2   m_inD[1] //consumed O2
+#define IN_DIFF_VEGF m_inD[2] //diffused VEGF
+#define IN_CONS_VEGF m_inD[3] //consumed O2
+
+//State variables
+#define OXYCELL_NUM_ST_B 6
+#define OXYCELL_NUM_ST_I 0
+#define OXYCELL_NUM_ST_D 2
+
+//Outputs
+#define OXYCELL_NUM_OUT_B 0
+#define OXYCELL_NUM_OUT_I 0
+#define OXYCELL_NUM_OUT_D 2
 
 //Internal parameters
-#define PAR_OXYCELL_ANG m_param->at(5)
-#define PAR_VMAX_VEGF   m_param->at(6)
-#define PAR_KM_VEGF     m_param->at(7)
-#define PAR_VMAX_O2     m_param->at(8)
-#define PAR_KM_O2       m_param->at(9)
+#define OXYCELL_NUM_PAR_B 1
+#define OXYCELL_NUM_PAR_I 0
+#define OXYCELL_NUM_PAR_D 8
 
+#define PAR_OXYCELL_ANG m_parB[0] //angiogenesis
+
+#define PAR_VMAX_VEGF   m_parD[4] //maximum VEGF consumption ratio (mol/um^3ms)
+#define PAR_KM_VEGF     m_parD[5] //VEGF Michaelis constant (mol/um^3)
+#define PAR_VMAX_O2     m_parD[6] //maximum pO2 consumption ratio (mmHg/ms)
+#define PAR_KM_O2       m_parD[7] //pO2 Michaelis constant (mmHg)
 
 
 class OxyCell: public AbsOxyCell{
 public :
     OxyCell();
-    OxyCell(const double ang, const double  VmaxVegf, const double KmVegf,
+    OxyCell(const bool ang, const double  VmaxVegf, const double KmVegf,
              const double hypVegf, const double VmaxO2, const double KmO2,
              const double pO2NormVes, const double pO2TumVes,
              const double hypThres, Model *const parent);

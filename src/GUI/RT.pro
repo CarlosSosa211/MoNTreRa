@@ -1,5 +1,6 @@
 HEADERS += \
     ../absOxyCell.hpp \
+    ../absOxyTissue.hpp \
     ../cell.hpp \
     ../constOxyCell.hpp \
     ../constOxyTissue.hpp \
@@ -32,6 +33,7 @@ QT += \
 
 SOURCES += \
     ../absOxyCell.cpp \
+    ../absOxyTissue.cpp \
     ../cell.cpp \
     ../constOxyCell.cpp \
     ../constOxyTissue.cpp \

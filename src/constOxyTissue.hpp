@@ -2,7 +2,6 @@
  * @file constOxyTissue.hpp
  * @brief
  * @author Carlos Sosa Marrero
- * @author Alfredo Hernandez
  * @date 05.07.17
  */
 
@@ -12,17 +11,31 @@
 #include <string>
 #include <vector>
 
+#include "absOxyTissue.hpp"
 #include "constOxyCell.hpp"
 #include "model.hpp"
 
-//Outputs
-#define OUT_HYP_DENS  m_out->at(0)
-#define OUT_PO2_MED   m_out->at(1)
-#define OUT_PO2_MEAN  m_out->at(2)
-#define OUT_VEGF_MED  m_out->at(3)
-#define OUT_VEGF_MEAN m_out->at(4)
+//Inputs
+#define CONSTOXYTISSUE_NUM_IN_B 0
+#define CONSTOXYTISSUE_NUM_IN_I 0
+#define CONSTOXYTISSUE_NUM_IN_D 0
 
-class ConstOxyTissue : public Model{
+//State variables
+#define CONSTOXYTISSUE_NUM_ST_B 0
+#define CONSTOXYTISSUE_NUM_ST_I 0
+#define CONSTOXYTISSUE_NUM_ST_D 0
+
+//Outputs
+#define CONSTOXYTISSUE_NUM_OUT_B 0
+#define CONSTOXYTISSUE_NUM_OUT_I 0
+#define CONSTOXYTISSUE_NUM_OUT_D 5
+
+//Internal parameters
+#define CONSTOXYTISSUE_NUM_PAR_B 1
+#define CONSTOXYTISSUE_NUM_PAR_I 1
+#define CONSTOXYTISSUE_NUM_PAR_D 0
+
+class ConstOxyTissue : public AbsOxyTissue{
 public:
     ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
                    const std::vector<bool> &inVes,
@@ -31,8 +44,6 @@ public:
     virtual int initModel();
     virtual int calcModelOut();
     virtual int updateModel(double currentTime, const double DT);
-    virtual int terminateModel();
-    int getNumHyp() const;
 
 protected:
     int m_ncol, m_nlayer, m_nrow;

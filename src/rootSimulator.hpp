@@ -16,7 +16,6 @@
 
 class RootSimulator{
 public:
-    RootSimulator();
     RootSimulator(Coupler *coupler, const double DT1, const double DT2,
                   const double sclFac);
     ~RootSimulator();

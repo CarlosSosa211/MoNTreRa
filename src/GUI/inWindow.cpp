@@ -14,6 +14,10 @@
 
 #include "inWindow.hpp"
 
+/*------------------------------------------------------------------------------
+ * Constructor of the class InWindow
+------------------------------------------------------------------------------*/
+
 InWindow::InWindow() : QWidget(){
     m_param      = new QGroupBox("Select the processes to be simulated and"
                                  "enter the value of the parameters", this);

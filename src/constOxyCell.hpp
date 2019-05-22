@@ -12,15 +12,29 @@
 #include "absOxyCell.hpp"
 
 //Inputs
-#define IN_OXYPO2      m_in->at(3)
-#define IN_OXYVEGF     m_in->at(4)
+#define CONSTOXYCELL_NUM_IN_B 3
+#define CONSTOXYCELL_NUM_IN_I 0
+#define CONSTOXYCELL_NUM_IN_D 1
+
+#define IN_OXY_PO2  m_inD[0] //pO2 (mmHg)
+
+//State variables
+#define CONSTOXYCELL_NUM_ST_B 6
+#define CONSTOXYCELL_NUM_ST_I 0
+#define CONSTOXYCELL_NUM_ST_D 2
+
+//Outputs
+#define CONSTOXYCELL_NUM_OUT_B 0
+#define CONSTOXYCELL_NUM_OUT_I 0
+#define CONSTOXYCELL_NUM_OUT_D 2
+
+//Internal parameters
+#define CONSTOXYCELL_NUM_PAR_B 0
+#define CONSTOXYCELL_NUM_PAR_I 0
+#define CONSTOXYCELL_NUM_PAR_D 4
 
 class ConstOxyCell : public AbsOxyCell{
 public :
-    ConstOxyCell();
-    ConstOxyCell(const double pO2NotVes, const double pO2NormVes,
-                 const double pO2TumVes, const double hypThres,
-                 Model *const parent);
     ConstOxyCell(const double hypThres, Model *const parent);
     virtual ~ConstOxyCell();
     virtual int updateModel(const double currentTime, const double DT);

@@ -14,9 +14,15 @@
 
 using namespace std;
 
-RootSimulator::RootSimulator(){
-}
-
+/*------------------------------------------------------------------------------
+ * Constructor of the class RootSimulator.
+ *
+ * Inputs:
+ *  - coupler: pointer to the coupler containing the 2 models to be simulated,
+ *  - DT1: simulation 1 timestep,
+ *  - DT2: simulation 2 timestep,
+ *  - sclFac: scale factor between the 2 timesteps.
+------------------------------------------------------------------------------*/
 
 RootSimulator::RootSimulator(Coupler *coupler, const double DT1,
                              const double DT2, const double sclFac){
@@ -32,17 +38,33 @@ RootSimulator::RootSimulator(Coupler *coupler, const double DT1,
 }
 
 
+/*------------------------------------------------------------------------------
+ * Destructor of the class RootSimulator.
+------------------------------------------------------------------------------*/
+
 RootSimulator::~RootSimulator(){
     delete m_sim1;
     delete m_sim2;
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function initialises the simulation.
+------------------------------------------------------------------------------*/
+
 void RootSimulator::initSim(){
     m_sim1->initSim();
     m_sim2->initSim();
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function runs a simulation of the models.
+ *
+ * Inputs:
+ *  - currentTime: initial simulation time,
+ *  - simTime: duration of the simulation.
+------------------------------------------------------------------------------*/
 
 void RootSimulator::simulate(const double currentTime, const double simTime){
     int numIter(simTime / m_DT1);
@@ -57,6 +79,10 @@ void RootSimulator::simulate(const double currentTime, const double simTime){
     }
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function stops the simulation.
+------------------------------------------------------------------------------*/
 
 void RootSimulator::stop(){
     m_sim1->stop();
