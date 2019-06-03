@@ -11,27 +11,15 @@
 
 using namespace std;
 
-Treatment::Treatment(){
-    int accSession(0), i(0), numSession;
-
-    m_fraction  = 2.0; //Gy
-    m_interval  = 24.0; //h
-    m_totalDose = 80.0; //Gy
-
-    m_scheDescrip = "Mon-Fri";
-    numSession = (int)(m_totalDose / m_fraction);
-    while(accSession <= numSession){
-        if((i + 1) % 7 == 6 || (i + 1) % 7 == 0){
-            m_schedule.push_back(false);
-        }
-        else{
-            m_schedule.push_back(true);
-            accSession++;
-        }
-        i++;
-    }
-}
-
+/*------------------------------------------------------------------------------
+ * Constructor of the class Treatment.
+ *
+ * Inputs:
+ *  - fraction: dose per fraction (Gy),
+ *  - totalDose: total dose (Gy),
+ *  - interval: interval between two sessions (h),
+ *  - schedule: irradiation schedule (0, Mon-Fri; 1, Mon-Sund).
+------------------------------------------------------------------------------*/
 
 Treatment::Treatment(const double fraction, const double totalDose,
                      const double interval, const int schedule){
@@ -83,39 +71,70 @@ Treatment::Treatment(const double fraction, const double totalDose,
 }
 
 
+/*------------------------------------------------------------------------------
+ * Destructor of the class Treatment.
+------------------------------------------------------------------------------*/
+
 Treatment::~Treatment(){
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function gets the duration of the treatment.
+------------------------------------------------------------------------------*/
 
 double Treatment::getDuration() const{
     return m_schedule.size() * m_interval;
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function gets the fraction.
+------------------------------------------------------------------------------*/
+
 double Treatment::getFraction() const{
     return m_fraction;
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function gets the interval between two sessions.
+------------------------------------------------------------------------------*/
 
 double Treatment::getInterval() const{
     return m_interval;
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function gets the schedule.
+------------------------------------------------------------------------------*/
+
 vector<bool> Treatment::getSchedule() const{
     return m_schedule;
 }
 
+/*------------------------------------------------------------------------------
+ * This function gets the schedule description.
+------------------------------------------------------------------------------*/
 
 string Treatment::getScheDescrip() const{
     return m_scheDescrip;
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function gets the total dose.
+------------------------------------------------------------------------------*/
+
 double Treatment::getTotalDose() const{
     return m_totalDose;
 }
 
+
+/*------------------------------------------------------------------------------
+ * Overload of the << operator.
+------------------------------------------------------------------------------*/
 
 ostream &operator<<(ostream &stream, Treatment *treatment){
     if(treatment){

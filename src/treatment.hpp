@@ -14,7 +14,6 @@
 
 class Treatment{
 public:
-  Treatment();
   Treatment(const double fraction, const double totalDose,
 	    const double interval, const int schedule);
   ~Treatment();
@@ -31,7 +30,6 @@ private:
   double m_totalDose;
   std::string m_scheDescrip;
   std::vector<bool> m_schedule;
-  
 };
 
 std::ostream &operator<<(std::ostream &stream, Treatment *treatment);
