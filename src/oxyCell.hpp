@@ -17,7 +17,7 @@
 //Inputs
 #define OXYCELL_NUM_IN_B 3
 #define OXYCELL_NUM_IN_I 0
-#define OXYCELL_NUM_IN_D 3
+#define OXYCELL_NUM_IN_D 4
 
 #define IN_DIFF_O2   m_inD[0] //diffused O2
 #define IN_CONS_O2   m_inD[1] //consumed O2
