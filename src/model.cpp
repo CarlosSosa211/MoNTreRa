@@ -8,6 +8,7 @@
  */
 
 #include "model.hpp"
+#include <iostream>
 
 using namespace std;
 
@@ -52,18 +53,18 @@ Model::Model(const int numInB, const int numInI, const int numInD,
 
 Model::~Model(){
     delete [] m_inB;
-    delete [] m_stB;
-    delete [] m_outB;
-    delete [] m_parB;
     delete [] m_inI;
-    delete [] m_stI;
-    delete [] m_outI;
-    delete [] m_parI;
     delete [] m_inD;
+    delete [] m_stB;
+    delete [] m_stI;
     delete [] m_stD;
+    delete [] m_outB;
+    delete [] m_outI;
     delete [] m_outD;
+    delete [] m_parB;
+    delete [] m_parI;
     delete [] m_parD;
-    delete [] m_comp;
+    delete m_comp;
 }
 
 
