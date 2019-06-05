@@ -80,7 +80,7 @@ private:
 private slots:
     void back();
     void changeSimTime(bool value);
-    void changeSimTime(double value);
+    void changeSimTime(double value = 0.0);
     void coupSim(bool value);
     void disable(int oxy);
     void nextWindow(int simType);

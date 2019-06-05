@@ -15,7 +15,7 @@
 #include "inWindow.hpp"
 
 /*------------------------------------------------------------------------------
- * Constructor of the class InWindow
+ * Constructor of the class InWindow.
 ------------------------------------------------------------------------------*/
 
 InWindow::InWindow() : QWidget(){
@@ -408,7 +408,7 @@ InWindow::InWindow() : QWidget(){
                      SLOT(coupSim(bool)));
     QObject::connect(m_paramRT, SIGNAL(toggled(bool)), this,
                      SLOT(coupSim(bool)));
-    QObject::connect(m_paramOxy, SIGNAL(currentIndexChanged(int)), this,
+    QObject::connect(m_selOxyType, SIGNAL(currentIndexChanged(int)), this,
                      SLOT(disable(int)));
     QObject::connect(m_loadInData, SIGNAL(clicked()), this,
                      SLOT(selInDataFile()));
@@ -416,7 +416,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/in.dat");
+    loadInData("../InputFiles/inConstOxy.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -424,21 +424,42 @@ InWindow::InWindow() : QWidget(){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot goes back to the StartWindow.
+------------------------------------------------------------------------------*/
+
 void InWindow::back(){
     new StartWindow;
     close();
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot calls the slot that changes the simulation time.
+ * Inputs:
+ *  - value: phantom value.
+------------------------------------------------------------------------------*/
+
 void InWindow::changeSimTime(bool value){
-    changeSimTime(0.0);
+    changeSimTime();
 }
 
+
+/*------------------------------------------------------------------------------
+ * This slot changes the simulation time to 3 months (2160 h).
+ * Inputs:
+ *  - value: phantom value.
+------------------------------------------------------------------------------*/
 
 void InWindow::changeSimTime(double value){
     m_simTime->setValue(2160.0);
 }
 
+
+/*------------------------------------------------------------------------------
+ * This slot enables and disable the corresponding time boxes for a coupled or
+ * not coupled simulation.
+------------------------------------------------------------------------------*/
 
 void InWindow::coupSim(bool value){
     m_coupSim = m_paramTG->isChecked() || m_paramRes->isChecked() ||
@@ -456,6 +477,10 @@ void InWindow::coupSim(bool value){
     m_simTimeStep->setEnabled(m_coupSim);
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function creates the necessary input files.
+------------------------------------------------------------------------------*/
 
 int InWindow::createInFiles(){
     QDir dir("../OutputFilesGUI");
@@ -490,9 +515,9 @@ int InWindow::createInFiles(){
     else{
         std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
 
-        fTissueDim << m_nrow->value()     << std::endl;
-        fTissueDim << m_ncol->value()     << std::endl;
-        fTissueDim << m_nlayer->value()   << std::endl;
+        fTissueDim << m_nrow->value() << std::endl;
+        fTissueDim << m_ncol->value() << std::endl;
+        fTissueDim << m_nlayer->value() << std::endl;
         fTissueDim << m_cellSize->value() << std::endl;
 
         fTissueDim.close();
@@ -735,10 +760,8 @@ int InWindow::createInFiles(){
     fParam << m_paramAng->isChecked() << std::endl;
     if(m_paramAng->isChecked()){
         fParam << m_angTime->value() << std::endl;
-        fParam << m_Dvegf->value() *
-                  m_oxySimTimeStep->value()  << std::endl;
-        fParam << m_VmaxVegf->value() *
-                  m_oxySimTimeStep-> value() << std::endl;
+        fParam << m_Dvegf->value() * m_oxySimTimeStep->value()  << std::endl;
+        fParam << m_VmaxVegf->value() * m_oxySimTimeStep-> value() << std::endl;
         fParam << m_KmVegf->value() << std::endl;
         fParam << m_vegfThres->value() << std::endl;
         fParam << m_hypVegf->value() << std::endl;
@@ -801,12 +824,34 @@ int InWindow::createInFiles(){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot enables and disables the corresponding boxes according to the
+ * oxygenation scenario.
+ * Inputs:
+ *  - oxy: oxygenation scenario (0, no oxygenation; 1, time-and-space dependent,
+ *  2, space dependent; 3, time dependent, 4 constant)
+------------------------------------------------------------------------------*/
+
 void InWindow::disable(int oxy){
-    m_constpO2NormVes->setEnabled(oxy == 3);
-    m_constpO2TumVes->setEnabled(oxy == 3);
-    m_constpO2->setEnabled(oxy == 3);
+    const int oxyP1(oxy + 1);
+    m_DO2->setEnabled(oxyP1 == 1 || oxyP1 == 2);
+    m_VmaxO2->setEnabled(oxyP1 == 1 || oxyP1 == 2);
+    m_KmO2->setEnabled(oxyP1 == 1 || oxyP1 == 2);
+    m_pO2NormVes->setEnabled(oxyP1 == 1 || oxyP1 == 2);
+    m_pO2TumVes->setEnabled(oxyP1 == 1 || oxyP1 == 2);
+    m_hypThres->setEnabled(oxyP1 == 1 || oxyP1 == 2);
+    m_hypNecThres->setEnabled(oxyP1 == 1 || oxyP1 == 2);
+    m_constpO2NormVes->setEnabled(oxyP1 == 4);
+    m_constpO2TumVes->setEnabled(oxyP1 == 4);
+    m_constpO2->setEnabled(oxyP1 == 4);
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function loads input data from a file.
+ * Inputs:
+ *  - nFInData: name of the file containing the input data.
+------------------------------------------------------------------------------*/
 
 int InWindow::loadInData(std::string nFInData){
     m_simTimeL->hide();
@@ -991,6 +1036,14 @@ int InWindow::loadInData(std::string nFInData){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function goes to the corresponding output window (OutWindowOxy,
+ * OutWindow or OutWindow3D).
+ * Inputs:
+ *  - simType: simulation type (0, 2D not coupled; 2, 2D coupled; 3,
+ *  3D coupled).
+------------------------------------------------------------------------------*/
+
 void InWindow::nextWindow(int simType){
     m_progress->setRange(0, 0);
     m_progressSimL->hide();
@@ -1016,6 +1069,10 @@ void InWindow::nextWindow(int simType){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function selects and loads an input file.
+------------------------------------------------------------------------------*/
+
 void InWindow::selInDataFile(){
     QString QnFInData(QFileDialog::getOpenFileName(this,
                                                    "Select input data file",
@@ -1027,6 +1084,10 @@ void InWindow::selInDataFile(){
     }
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function performs a simulation of the model on a different SimThread.
+------------------------------------------------------------------------------*/
 
 int InWindow::simulate(){
     m_paramArch->setEnabled(false);
@@ -1050,8 +1111,7 @@ int InWindow::simulate(){
     SimThread *thread = new SimThread(this);
     QObject::connect(thread, SIGNAL(resultReady(int)), this,
                      SLOT(nextWindow(int)));
-    QObject::connect(thread, SIGNAL(finished()), thread,
-                     SLOT(deleteLater()));
+    QObject::connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     QObject::connect(thread, SIGNAL(progressMax(int)), m_progress,
                      SLOT(setMaximum(int)));
     QObject::connect(thread, SIGNAL(progress(int)), m_progress,

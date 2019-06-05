@@ -9,6 +9,13 @@
 
 #include "outWindow.hpp"
 
+/*------------------------------------------------------------------------------
+ * Constructor of the class OutWindow.
+ *
+ * Inputs:
+ *  - nFOutData: directory containing the output files.
+------------------------------------------------------------------------------*/
+
 OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     m_white      = QColor(255, 255, 255);
     m_blueTum    = QColor(46, 165, 225);
@@ -589,9 +596,7 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         fState.close();
 
         m_pixState = new QPixmap;
-
         m_legendSt = new QGroupBox(m_mapGroup);
-
         m_imState = new QImage(m_mapSclFac * m_mapNcol, m_mapSclFac * m_mapNrow,
                                QImage::Format_Indexed8);
         m_imState->setColor(0, m_white.rgb());
@@ -703,9 +708,7 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         fTimer.close();
 
         m_pixTimer = new QPixmap;
-
         m_legendCyc = new QGroupBox(m_mapGroup);
-
         m_imTimer = new QImage(m_mapSclFac * m_mapNcol, m_mapSclFac * m_mapNrow,
                                QImage::Format_Indexed8);
         m_imTimer->setColor(0, m_white.rgb());
@@ -723,9 +726,9 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_G0 = new QLabel("G0", m_legendCyc);
 
         QImage G1Im = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage SIm = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
+        QImage SIm  = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
         QImage G2Im = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
-        QImage MIm = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
+        QImage MIm  = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
         QImage G0Im = QImage(m_mapSclFac, m_mapSclFac, QImage::Format_RGB32);
 
         G1Im.fill(m_blueG1.rgb());
@@ -792,30 +795,29 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         fPO2.close();
 
         m_pixPO2 = new QPixmap;
-
         m_legendPO2 = new QGroupBox(m_mapGroup);
-
         m_imPO2 = new QImage(m_mapSclFac * m_mapNcol, m_mapSclFac * m_mapNrow,
                              QImage::Format_RGB32);
-        m_pO2Bar    = new QLabel(m_legendPO2);
+        m_pO2Bar = new QLabel(m_legendPO2);
         m_pO2ValMax = new QLabel(QString::number(m_maxpO2) + " mmHg");
         m_pO2ValMin = new QLabel("0 mmHg");
 
-        int nrowOxy(50), ncolOxy(720);
+        const int nrowOxy(50), ncolOxy(720);
+        int compH;
         QImage oxyIm = QImage(ncolOxy, nrowOxy, QImage::Format_RGB32);
 
         for(int i(0); i < nrowOxy; i++){
             for(int j(0); j < ncolOxy; j++){
-                oxyIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200,
-                                                          255));
+                compH = (ncolOxy - j) / 3 % 241;
+                oxyIm.setPixelColor(j, i, QColor::fromHsv(compH, 200, 255));
             }
         }
         m_pO2Bar->setPixmap(QPixmap::fromImage(oxyIm));
 
         QGridLayout *legOxyLayout = new QGridLayout();
+        legOxyLayout->addWidget(m_pO2ValMin, 0, 0);
         legOxyLayout->addWidget(m_pO2Bar, 0, 1, 1, 2);
-        legOxyLayout->addWidget(m_pO2ValMax, 0, 0);
-        legOxyLayout->addWidget(m_pO2ValMin, 0, 3);
+        legOxyLayout->addWidget(m_pO2ValMax, 0, 3);
 
         m_legendPO2->setMinimumWidth(100);
         m_legendPO2->setLayout(legOxyLayout);
@@ -855,30 +857,29 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         }
 
         m_pixVegf = new QPixmap;
-
         m_legendVegf = new QGroupBox(m_mapGroup);
-
         m_imVegf = new QImage(m_mapSclFac * m_mapNcol, m_mapSclFac * m_mapNrow,
                               QImage::Format_RGB32);
-        m_vegfBar    = new QLabel(m_legendVegf);
+        m_vegfBar = new QLabel(m_legendVegf);
         m_vegfValMax = new QLabel(QString::number(m_maxvegf) + "mol/μm³");
         m_vegfValMin = new QLabel("0 mol/μm³");
 
-        int nrowVegf(50), ncolVegf(720);
+        const int nrowVegf(50), ncolVegf(720);
+        int compH;
         QImage vegfIm = QImage(ncolVegf, nrowVegf, QImage::Format_RGB32);
 
         for(int i(0); i < nrowVegf; i++){
             for(int j(0); j < ncolVegf; j++){
-                vegfIm.setPixelColor(j, i, QColor::fromHsv((j/3) % 240, 200,
-                                                           255));
+                compH = (ncolVegf - j) / 3 % 241;
+                vegfIm.setPixelColor(j, i, QColor::fromHsv(compH, 200, 255));
             }
         }
         m_vegfBar->setPixmap(QPixmap::fromImage(vegfIm));
 
         QGridLayout *legVegfLayout = new QGridLayout();
+        legVegfLayout->addWidget(m_vegfValMin, 0, 0);
         legVegfLayout->addWidget(m_vegfBar, 0, 1, 1, 2);
-        legVegfLayout->addWidget(m_vegfValMax, 0, 0);
-        legVegfLayout->addWidget(m_vegfValMin, 0, 3);
+        legVegfLayout->addWidget(m_vegfValMax, 0, 3);
 
         m_legendVegf->setMinimumWidth(100);
         m_legendVegf->setLayout(legVegfLayout);
@@ -963,19 +964,14 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
                      SLOT(changeIter(int)));
     QObject::connect(this, SIGNAL(updateSlider(int)), m_slider,
                      SLOT(setValue(int)));
-    QObject::connect(m_play, SIGNAL(clicked()), this,
-                     SLOT(play()));
+    QObject::connect(m_play, SIGNAL(clicked()), this, SLOT(play()));
     QObject::connect(m_sel, SIGNAL(clicked()), this, SLOT(sel()));
-    QObject::connect(m_change, SIGNAL(clicked()), this,
-                     SLOT(change()));
-    QObject::connect(m_newSim, SIGNAL(clicked()),this,
-                     SLOT(newSim()));
+    QObject::connect(m_change, SIGNAL(clicked()), this, SLOT(change()));
+    QObject::connect(m_newSim, SIGNAL(clicked()),this, SLOT(newSim()));
     QObject::connect(m_saveOutFiles, SIGNAL(clicked()), this,
                      SLOT(saveOutFiles()));
-    QObject::connect(m_saveChart, SIGNAL(clicked()), this,
-                     SLOT(saveChart()));
-    QObject::connect(m_saveMap, SIGNAL(clicked()), this,
-                     SLOT(saveMap()));
+    QObject::connect(m_saveChart, SIGNAL(clicked()), this, SLOT(saveChart()));
+    QObject::connect(m_saveMap, SIGNAL(clicked()), this, SLOT(saveMap()));
     QObject::connect(m_saveAllMaps, SIGNAL(clicked()), this,
                      SLOT(saveAllMaps()));
 
@@ -987,11 +983,24 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot goes back to the InWindow to change the model and simulation
+ * parameters.
+------------------------------------------------------------------------------*/
+
 void OutWindow::change(){
     new InWindow;
     close();
 }
 
+
+/*------------------------------------------------------------------------------
+ * This slot changes the current chart.
+ * Inputs:
+ *  - numChart: chart to be visualised (0, tumour density; 1, tumour volume;
+ *  2, vascular density; 3, killed cells; 4, dead cell density; 5, cell cycle
+ *  distribution; 6, hypoxic density; 7, pO2 statistics; 8, VEGF statistics).
+------------------------------------------------------------------------------*/
 
 void OutWindow::changeChart(const int numChart){
     switch(numChart){
@@ -1202,16 +1211,34 @@ void OutWindow::changeChart(const int numChart){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot changes the current map iteration.
+ * Inputs:
+ *  - iter: map iteration to be visualised.
+------------------------------------------------------------------------------*/
+
 void OutWindow::changeIter(const int iter){
     drawMap(m_selMap->currentIndex(), iter);
     drawChartDashLine(iter);
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot changes the current map.
+ * Inputs:
+ *  - numMap: map to be visualised (0, state; 1, cell cycle; 2, pO2; 3, VEGF).
+------------------------------------------------------------------------------*/
+
 void OutWindow::changeNumMap(const int numMap){
     drawMap(numMap, m_slider->value());
 }
 
+
+/*------------------------------------------------------------------------------
+ * This function draws the chart dash line at the current iteration.
+ * Inputs:
+ *  - iter: current iteration.
+------------------------------------------------------------------------------*/
 
 void OutWindow::drawChartDashLine(const int iter){
     QVector<QPointF> points;
@@ -1221,12 +1248,20 @@ void OutWindow::drawChartDashLine(const int iter){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This function draws the current map.
+ * Inputs:
+ *  - numMap: map to be visualised (0, state; 1, cell cycle; 2, pO2; 3, VEGF),
+ *  - mapIter: current iteration.
+------------------------------------------------------------------------------*/
+
 void OutWindow::drawMap(const int numMap, const int mapIter){
     const int iter(mapIter / m_simTimeStep);
     const double normPO2(240.0 / m_maxpO2);
     const double normVegf(240.0 / m_maxvegf);
     int colour;
     QColor colourQ;
+
     switch(numMap){
     case 0:{
         int iSF, jSF;
@@ -1329,11 +1364,20 @@ void OutWindow::drawMap(const int numMap, const int mapIter){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot launches a simulation with the same parameters.
+ * TO-DO
+------------------------------------------------------------------------------*/
+
 void OutWindow::newSim(){
     new InWindow;
     close();
 }
 
+
+/*------------------------------------------------------------------------------
+ * This slot plays or pauses the evolution of the current map.
+------------------------------------------------------------------------------*/
 
 void OutWindow::play(){
     m_stPlay = !m_stPlay;
@@ -1351,6 +1395,10 @@ void OutWindow::play(){
     m_play->setIcon(QIcon("../Figures/play.png"));
 }
 
+
+/*------------------------------------------------------------------------------
+ * This slot saves all the iterations of the current map.
+------------------------------------------------------------------------------*/
 
 void OutWindow::saveAllMaps(){
     QString fileName;
@@ -1427,6 +1475,10 @@ void OutWindow::saveAllMaps(){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot saves the current chart.
+------------------------------------------------------------------------------*/
+
 void OutWindow::saveChart(){
     QString fileName = QFileDialog::getSaveFileName(this, "Save chart",
                                                     "../Figures",
@@ -1451,6 +1503,10 @@ void OutWindow::saveChart(){
 }
 
 
+/*------------------------------------------------------------------------------
+ * This slot saves the current iteration of the current map.
+------------------------------------------------------------------------------*/
+
 void OutWindow::saveMap(){
     QString fileName = QFileDialog::getSaveFileName(this, "Save map",
                                                     "../Figures",
@@ -1461,6 +1517,10 @@ void OutWindow::saveMap(){
     }
 }
 
+
+/*------------------------------------------------------------------------------
+ * This slot saves the output files on the specified directory.
+------------------------------------------------------------------------------*/
 
 void OutWindow::saveOutFiles(){
     QString dirName = QFileDialog::getSaveFileName(this, "Save ouptut files",
@@ -1480,6 +1540,10 @@ void OutWindow::saveOutFiles(){
         }
     }
 }
+
+/*------------------------------------------------------------------------------
+ * This slot goes back to the StartWindow.
+------------------------------------------------------------------------------*/
 
 void OutWindow::sel(){
     new StartWindow;
