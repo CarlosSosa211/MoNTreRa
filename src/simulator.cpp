@@ -2,8 +2,6 @@
  * @file simulator.cpp
  * @brief
  * @author Carlos Sosa Marrero
- * @author Nicolas Ciferri
- * @author Alfredo Hernandez
  * @date 05.19.17
  */
 
@@ -69,7 +67,7 @@ void Simulator::simulate(const double currentTime, const double simTime){
     m_currentTime = currentTime;
     for(int j(0); j < numIter; j++){
         if(m_model->updateModel(m_currentTime, m_DT)){
-            break;
+            j = numIter;
         }
         m_model->calcModelOut();
         m_currentTime += m_DT;
