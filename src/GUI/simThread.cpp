@@ -160,22 +160,50 @@ void SimThread::run(){
                             res, fibDoubTime, ang, angTime, vegfThres, alpha,
                             beta, treatment, doseThres, arrestTime, oxy,
                             hypNecThres);
-
-        if(oxy == 0){
+        switch(oxy){
+        case 0:{
             const std::vector<double> inPO2(nrow * ncol * nlayer, 0.0);
             model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2,
-                                        hypThres);
+                                        oxy, hypThres);
             coupler = new Coupler(model1, model2);
-            sclFac = 1.0;
+            sclFac = oxySimTimeStep;
+            break;
         }
 
-        else if(oxy == 1 || oxy == 2){
+        case 1:{
             model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
                                    Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
                                    VmaxO2, KmO2, pO2NormVes, pO2TumVes,
                                    hypThres);
             coupler = new Coupler(model1, model2);
             sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
+            break;
+        }
+
+        case 2:{
+            model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
+                                   Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
+                                   VmaxO2, KmO2, pO2NormVes, pO2TumVes,
+                                   hypThres);
+            coupler = new Coupler(model1, model2);
+            sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
+            break;
+        }
+
+        case 3:{
+            break;
+        }
+
+        case 4:{
+            const int nComp(nrow * ncol * nlayer);
+            std::vector<double> inPO2(nComp, constpO2NotVes);
+
+            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
+                                        hypThres, constpO2NotVes);
+            coupler = new Coupler(model1, model2);
+            sclFac = oxySimTimeStep;
+            break;
+        }
         }
 
         sim = new RootSimulator(coupler, simTimeStep, oxySimTimeStep, sclFac);
@@ -314,21 +342,22 @@ void SimThread::run(){
 
         std::ofstream fEndTreatTumDens("../OutputFilesGUI/endTreatTumDens.res");
         fEndTreatTumDens << treatment->getDuration() << " " <<
-                            model1->getOutD()[0];
+                            model1->getOutD()[0] << std::endl;
         fEndTreatTumDens.close();
 
         std::ofstream f3MonTumDens("../OutputFilesGUI/3MonTumDens.res");
-        f3MonTumDens << 2160.0 << " " << model1->getOutD()[1];
+        f3MonTumDens << 2160.0 << " " << model1->getOutD()[1] << std::endl;
         f3MonTumDens.close();
 
         std::ofstream fRec("../OutputFilesGUI/rec.res");
         fRec << model1->getOutB()[6] << " " << model1->getOutD()[17] <<
-                                        " " << model1->getOutD()[16];
+                                        " " << model1->getOutD()[16] <<
+                                        std::endl;
         fRec.close();
 
         delete treatment;
         delete model1;
-        delete coupler->getModel2();
+        delete model2;
         delete coupler;
         delete sim;
     }
