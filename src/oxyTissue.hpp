@@ -23,13 +23,13 @@
 //State variables
 #define OXYTISSUE_NUM_ST_B 2
 #define OXYTISSUE_NUM_ST_I 0
-#define OXYTISSUE_NUM_ST_D 2
+#define OXYTISSUE_NUM_ST_D 6
 
 #define ST_OXY_STABLE  m_stB[0] //pO2 stability
 #define ST_VEGF_STABLE m_stB[1] //VEGF concentration stability
 
-#define ST_TIME_TO_OXY_STABLE  m_stD[0] //time to pO2 stability (ms)
-#define ST_TIME_TO_VEGF_STABLE m_stD[1] //time to VEGF conc. stability (ms)
+#define ST_TIME_TO_OXY_STABLE  m_stD[4] //time to pO2 stability (ms)
+#define ST_TIME_TO_VEGF_STABLE m_stD[5] //time to VEGF conc. stability (ms)
 
 //Outputs
 #define OXYTISSUE_NUM_OUT_B 2

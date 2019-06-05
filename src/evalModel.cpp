@@ -452,29 +452,56 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     Dvegf    *= oxySimTimeStep;
     VmaxVegf *= oxySimTimeStep;
 
-    if(oxy == 0 or oxy == 2 or oxy == 4){
-        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, hypThres);
+
+    switch(oxy){
+    case 0:{
+        const std::vector<double> inPO2(nrow * ncol * nlayer, 0.0);
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2,
+                                    oxy, hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 1.0;
+        break;
     }
 
-    else if(oxy == 1){
-        model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
-                               VmaxVegf, KmVegf, hypVegf, oxy, DO2, VmaxO2,
-                               KmO2, pO2NormVes, pO2TumVes, hypThres);
+    case 1:{
+        model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
+                               Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
+                               hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
+        break;
     }
 
-    else if(oxy == 3){
+    case 2:{
+        model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
+                               Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
+                               hypThres);
+        coupler = new Coupler(model1, model2);
+        sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
+        break;
+    }
 
+    case 3:{
+        break;
+    }
+
+    case 4:{
+        const int nComp(nrow * ncol * nlayer);
+        std::vector<double> inPO2(nComp, 0.0);
+
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
+                                    hypThres);
+        coupler = new Coupler(model1, model2);
+        sclFac = 1.0;
+        break;
+    }
     }
 
     const double simTime(2160.0);
     RootSimulator *sim;
-    sim = new RootSimulator(coupler, simTimeStep,
-                            oxySimTimeStep, sclFac);
-
+    sim = new RootSimulator(coupler, simTimeStep, oxySimTimeStep, sclFac);
     double currentTime(0.0);
     ofstream fTumDens(nFTumDens), fTumVol(nFTumVol);
     ofstream fKilledCells(nFKilledCells), fVascDens(nFVascDens);

@@ -45,7 +45,7 @@
 #define ST_REC_TIME           m_stD[6]  //time at start of recurrence (h)
 #define ST_TIME_TO_50         m_stD[7]  //t to kill 50% of init. tum. cells (h)
 #define ST_TIME_TO_80         m_stD[8]  //t to kill 50% of init. tum. cells (h)
-#define ST_TIME_TO_90         m_stD[9] //t to kill 90% of init. tum. cells (h)
+#define ST_TIME_TO_90         m_stD[9]  //t to kill 90% of init. tum. cells (h)
 #define ST_TIME_TO_95         m_stD[10] //t to kill 95% of init. tum. cells (h)
 #define ST_TIME_TO_99         m_stD[11] //t to kill 99% of init. tum. cells (h)
 #define ST_TIME_TO_999        m_stD[12] //t to kill 99.9% of in. tum. cells (h)

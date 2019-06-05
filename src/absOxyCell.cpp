@@ -39,8 +39,8 @@ AbsOxyCell::~AbsOxyCell(){
 ------------------------------------------------------------------------------*/
 
 int AbsOxyCell::calcModelOut(){
-    OUT_PO2  = ST_OXY_PO2;
-    OUT_VEGF = ST_OXY_VEGF;
+    OUT_PO2  = ST_OXYCELL_PO2;
+    OUT_VEGF = ST_OXYCELL_VEGF;
 
     return 0;
 }
@@ -51,28 +51,29 @@ int AbsOxyCell::calcModelOut(){
 ------------------------------------------------------------------------------*/
 
 int AbsOxyCell::initModel(){
-    ST_OXY_DEAD     = IN_OXY_DEAD;
-    ST_OXY_NORM_VES = IN_OXY_NORM_VES;
-    ST_OXY_TUM_VES  = IN_OXY_TUM_VES;
+    ST_OXYCELL_DEAD     = IN_OXYCELL_DEAD;
+    ST_OXYCELL_NORM_VES = IN_OXYCELL_NORM_VES;
+    ST_OXYCELL_TUM_VES  = IN_OXYCELL_TUM_VES;
+    ST_OXYCELL_VES      = ST_OXYCELL_NORM_VES || ST_OXYCELL_TUM_VES;
 
-    if(ST_OXY_NORM_VES){
-        ST_OXY_PO2 = PAR_PO2_NORM_VES;
+    if(ST_OXYCELL_NORM_VES){
+        ST_OXYCELL_PO2 = PAR_PO2_NORM_VES;
     }
-    else if(ST_OXY_TUM_VES){
-        ST_OXY_PO2 = PAR_PO2_TUM_VES;
+    else if(ST_OXYCELL_TUM_VES){
+        ST_OXYCELL_PO2 = PAR_PO2_TUM_VES;
     }
-    else if(ST_OXY_DEAD){
-        ST_OXY_PO2 = 0.0;
+    else if(ST_OXYCELL_DEAD){
+        ST_OXYCELL_PO2 = 0.0;
     }
     else{
-        ST_OXY_PO2 = 10.0;
+        ST_OXYCELL_PO2 = 10.0;
     }
 
-    ST_HYP = 0.0;
-    ST_OXY_VEGF = 0.0;
+    ST_HYP = false;
+    ST_OXYCELL_VEGF = 0.0;
 
-    ST_OXY_STABLE_CELL  = false;
-    ST_VEGF_STABLE_CELL = false;
+    ST_OXYCELL_OXY_STABLE  = false;
+    ST_OXYCELL_VEGF_STABLE = false;
 
     return 0;
 }
@@ -88,11 +89,29 @@ int AbsOxyCell::terminateModel(){
 
 
 /*------------------------------------------------------------------------------
+ * This function gets the healthy cell state.
+------------------------------------------------------------------------------*/
+
+bool AbsOxyCell::getDead() const{
+    return ST_OXYCELL_DEAD;
+}
+
+
+/*------------------------------------------------------------------------------
  * This function gets the hypoxic state.
 ------------------------------------------------------------------------------*/
 
 bool AbsOxyCell::getHyp() const{
     return ST_HYP;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function gets the pre-existing endothelial cell state.
+------------------------------------------------------------------------------*/
+
+bool AbsOxyCell::getNormVes() const{
+    return ST_OXYCELL_NORM_VES;
 }
 
 
@@ -118,7 +137,7 @@ double AbsOxyCell::getOutVEGF() const{
 ------------------------------------------------------------------------------*/
 
 bool AbsOxyCell::getOxyStable() const{
-    return ST_OXY_STABLE_CELL;
+    return ST_OXYCELL_OXY_STABLE;
 }
 
 
@@ -127,7 +146,16 @@ bool AbsOxyCell::getOxyStable() const{
 ------------------------------------------------------------------------------*/
 
 double AbsOxyCell::getPO2() const{
-    return ST_OXY_PO2;
+    return ST_OXYCELL_PO2;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function gets the neo-created endothelial cell state.
+------------------------------------------------------------------------------*/
+
+bool AbsOxyCell::getTumVes() const{
+    return ST_OXYCELL_TUM_VES;
 }
 
 
@@ -136,7 +164,7 @@ double AbsOxyCell::getPO2() const{
 ------------------------------------------------------------------------------*/
 
 double AbsOxyCell::getVEGF() const{
-    return ST_OXY_VEGF;
+    return ST_OXYCELL_VEGF;
 }
 
 
@@ -145,7 +173,16 @@ double AbsOxyCell::getVEGF() const{
 ------------------------------------------------------------------------------*/
 
 bool AbsOxyCell::getVegfStable() const{
-    return ST_VEGF_STABLE_CELL;
+    return ST_OXYCELL_VEGF_STABLE;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function gets the endothelial cell state.
+------------------------------------------------------------------------------*/
+
+bool AbsOxyCell::getVes() const{
+    return ST_OXYCELL_VES;
 }
 
 
@@ -157,7 +194,7 @@ bool AbsOxyCell::getVegfStable() const{
 ------------------------------------------------------------------------------*/
 
 void AbsOxyCell::setInDead(const bool input){
-    IN_OXY_DEAD = input;
+    IN_OXYCELL_DEAD = input;
 }
 
 
@@ -169,7 +206,7 @@ void AbsOxyCell::setInDead(const bool input){
 ------------------------------------------------------------------------------*/
 
 void AbsOxyCell::setInNormVes(const bool input){
-    IN_OXY_NORM_VES = input;
+    IN_OXYCELL_NORM_VES = input;
 }
 
 
@@ -181,5 +218,5 @@ void AbsOxyCell::setInNormVes(const bool input){
 ------------------------------------------------------------------------------*/
 
 void AbsOxyCell::setInTumVes(const bool input){
-    IN_OXY_TUM_VES = input;
+    IN_OXYCELL_TUM_VES = input;
 }

@@ -47,8 +47,7 @@ using namespace std;
  *  - doseThres: dose threshold to provoke instantaneous death by apoptosis
  *  (Gy),
  *  - arrestTime: radiation-induced arrest time (h),
- *  - oxy: integer indicating the oxygenation scenario (1, space-and-time
- *  dependent),
+ *  - oxy: oxygenation scenario (1, space-and-time dependent),
  *  - hypNecThres: pO2 hypoxic necrosis thresthold (mmHg).
 ------------------------------------------------------------------------------*/
 
@@ -97,6 +96,8 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
 
                 else{
                     ((Cell *)m_comp->at(k))->setInNormVes(inVes.at(k));
+                    ((Cell *)m_comp->at(k))->setInFib(!inTum.at(k) &&
+                                                      !inVes.at(k));
                 }
                 k++;
             }

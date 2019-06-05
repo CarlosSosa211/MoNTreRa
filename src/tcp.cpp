@@ -143,19 +143,50 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     DO2      *= oxySimTimeStep;
     VmaxO2   *= oxySimTimeStep;
 
-    if(oxy == 0){
-        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, 0.0);
+    switch(oxy){
+    case 0:{
+        const std::vector<double> inPO2(nrow * ncol * nlayer, 0.0);
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
+                                    hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 1.0;
+        break;
     }
 
-    else if(oxy == 1){
-        model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
-                               VmaxVegf, KmVegf, hypVegf, oxy, DO2, VmaxO2,
-                               KmO2, pO2NormVes, pO2TumVes, hypThres);
-
+    case 1:{
+        model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
+                               Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
+                               hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
+        break;
+    }
+
+    case 2:{
+        model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
+                               Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
+                               hypThres);
+        coupler = new Coupler(model1, model2);
+        sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
+        break;
+    }
+
+    case 3:{
+        break;
+    }
+
+    case 4:{
+        const int nComp(nrow * ncol * nlayer);
+        std::vector<double> inPO2(nComp, 0.0);
+
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
+                                    hypThres);
+        coupler = new Coupler(model1, model2);
+        sclFac = 1.0;
+        break;
+    }
     }
 
     const double simTime(treatment->getDuration());
@@ -179,7 +210,6 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     }
 
     sim->stop();
-    cout << "test" << endl;
 
     const double doseToControl(model1->getOutD()[15]);
 

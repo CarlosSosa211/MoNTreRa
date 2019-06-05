@@ -25,7 +25,7 @@
 #define IN_CONS_VEGF m_inD[3] //consumed O2
 
 //State variables
-#define OXYCELL_NUM_ST_B 6
+#define OXYCELL_NUM_ST_B 7
 #define OXYCELL_NUM_ST_I 0
 #define OXYCELL_NUM_ST_D 2
 

@@ -14,7 +14,6 @@
 
 using namespace std;
 
-
 /*------------------------------------------------------------------------------
  * Constructor of the class ConstOxyTissue.
  *
@@ -22,17 +21,17 @@ using namespace std;
  *  - nrow: number of rows of the tissue,
  *  - ncol: number of columns of the tissue,
  *  - nlayer: number of layers of the tissue,
- *  - oxy: integer indicating the oxygenation scenario (0, no oxygenation;
- *  2, space dependent; 3, time dependent, 4 constant),
  *  - inVes: vector containing the initial endothelial cell configuration,
  *  - inPO2: vector containing the initial pO2 values,
+ *  - oxy: oxygenation scenario (0, no oxygenation; 2, space dependent;
+ *  3, time dependent, 4 constant),
  *  - hypThres: pO2 hypoxia threshold (mmHg).
 ------------------------------------------------------------------------------*/
 
 ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
                                const vector<bool> &inVes,
-                               const vector<double> &inPO2,
-                               const double hypThres) :
+                               const vector<double> &inPO2, const int oxy,
+                               const double hypThres, const double pO2NotVes) :
     AbsOxyTissue(CONSTOXYTISSUE_NUM_IN_B, CONSTOXYTISSUE_NUM_IN_I,
                  CONSTOXYTISSUE_NUM_IN_D, CONSTOXYTISSUE_NUM_ST_B,
                  CONSTOXYTISSUE_NUM_ST_I, CONSTOXYTISSUE_NUM_ST_D,
@@ -47,8 +46,10 @@ ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
     for(int k(0); k < m_numComp; k++){
         m_comp->at(k) = new ConstOxyCell(hypThres, this);
         ((ConstOxyCell *)m_comp->at(k))->setInNormVes(inVes.at(k));
-        ((ConstOxyCell *)m_comp->at(k))->setInPO2(inPO2.at(k));
     }
+
+    PAR_OXYTISSUE_OXY = oxy;
+    PAR_PO2_NOT_VES   = pO2NotVes;
 }
 
 
@@ -106,6 +107,35 @@ int ConstOxyTissue::calcModelOut(){
 ------------------------------------------------------------------------------*/
 
 int ConstOxyTissue::updateModel(double currentTime, const double DT){
+    double _numComp100(1.0 / double(m_numComp) * 100.0);
+    ST_OXYTISSUE_VES_DENS      = double(getNumVes()) * _numComp100;
+    ST_OXYTISSUE_NORM_VES_DENS = double(getNumNormVes()) * _numComp100;
+    ST_OXYTISSUE_TUM_VES_DENS  = double(getNumTumVes()) * _numComp100;
+
+    ST_OXYTISSUE_DEAD_DENS  = double(getNumDead()) * _numComp100;
+
+    switch(PAR_OXYTISSUE_OXY){
+    case 0:{
+        for(int k(0); k < m_numComp; k++){
+            ((ConstOxyCell *)m_comp->at(k))->setInPO2(PAR_PO2_NOT_VES);
+        }
+        break;
+    }
+    case 3:{
+        for(int k(0); k < m_numComp; k++){
+            ((ConstOxyCell *)m_comp->at(k))->setInPO2(0.1 *
+                                                      ST_OXYTISSUE_DEAD_DENS);
+        }
+        break;
+    }
+    case 4:{
+        for(int k(0); k < m_numComp; k++){
+            ((ConstOxyCell *)m_comp->at(k))->setInPO2(PAR_PO2_NOT_VES);
+        }
+        break;
+    }
+    }
+
     for(int k(0); k < m_numComp; k++){
         (m_comp->at(k))->updateModel();
     }

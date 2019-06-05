@@ -49,18 +49,6 @@ AbsOxyTissue::~AbsOxyTissue(){
 
 
 /*------------------------------------------------------------------------------
- * Redefinition of the Model initModel method.
-------------------------------------------------------------------------------*/
-
-int AbsOxyTissue::initModel(){
-    for (int k(0); k < m_numComp; k++){
-        (m_comp->at(k))->initModel();
-    }
-    return 1;
-}
-
-
-/*------------------------------------------------------------------------------
  * Redefinition of the Model terminalModel method.
 ------------------------------------------------------------------------------*/
 
@@ -69,6 +57,24 @@ int AbsOxyTissue::terminateModel(){
         (m_comp->at(k))->terminateModel();
     }
     return 0;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function counts the dead cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of dead cells of the tissue
+------------------------------------------------------------------------------*/
+
+int AbsOxyTissue::getNumDead() const{
+    int count(0);
+    for(int k(0); k < m_numComp; k++){
+        if(((AbsOxyCell *)m_comp->at(k))->getDead()){
+            count++;
+        }
+    }
+    return count;
 }
 
 
@@ -83,6 +89,60 @@ int AbsOxyTissue::getNumHyp() const{
     int count(0);
     for(int k(0); k < m_numComp; k++){
         if(((AbsOxyCell *)m_comp->at(k))->getHyp()){
+            count++;
+        }
+    }
+    return count;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function counts the pre-existing endothelial cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of pre-existing endothelial cells of the tissue
+------------------------------------------------------------------------------*/
+
+int AbsOxyTissue::getNumNormVes() const{
+    int count(0);
+    for(int k(0); k < m_numComp; k++){
+        if(((AbsOxyCell *)m_comp->at(k))->getNormVes()){
+            count++;
+        }
+    }
+    return count;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function counts the neo-created endothelial cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of neo-created endothelial cells of the tissue
+------------------------------------------------------------------------------*/
+
+int AbsOxyTissue::getNumTumVes() const{
+    int count(0);
+    for(int k(0); k < m_numComp; k++){
+        if(((AbsOxyCell *)m_comp->at(k))->getTumVes()){
+            count++;
+        }
+    }
+    return count;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function counts the endothelial cells of the tissue.
+ *
+ * Outputs:
+ *  - count: number of endothelial cells of the tissue
+------------------------------------------------------------------------------*/
+
+int AbsOxyTissue::getNumVes() const{
+    int count(0);
+    for(int k(0); k < m_numComp; k++){
+        if(((AbsOxyCell *)m_comp->at(k))->getVes()){
             count++;
         }
     }

@@ -27,6 +27,8 @@ ConstOxyCell::ConstOxyCell(const double hypThres, Model *const parent) :
                CONSTOXYCELL_NUM_OUT_B, CONSTOXYCELL_NUM_OUT_I,
                CONSTOXYCELL_NUM_OUT_D, CONSTOXYCELL_NUM_PAR_B,
                CONSTOXYCELL_NUM_PAR_I, CONSTOXYCELL_NUM_PAR_D){
+
+
     PAR_HYP_THRES = hypThres;
     m_parent = parent;
 }
@@ -49,26 +51,34 @@ ConstOxyCell::~ConstOxyCell(){
 ------------------------------------------------------------------------------*/
 
 int ConstOxyCell::updateModel(const double currentTime, const double DT){
-    ST_OXY_DEAD     = IN_OXY_DEAD;
-    ST_OXY_NORM_VES = IN_OXY_NORM_VES;
-    ST_OXY_TUM_VES  = IN_OXY_TUM_VES;
+    ST_OXYCELL_DEAD     = IN_OXYCELL_DEAD;
+    ST_OXYCELL_NORM_VES = IN_OXYCELL_NORM_VES;
+    ST_OXYCELL_TUM_VES  = IN_OXYCELL_TUM_VES;
+    ST_OXYCELL_VES      = ST_OXYCELL_NORM_VES || ST_OXYCELL_TUM_VES;
 
-    ST_OXY_PO2  = IN_OXY_PO2;
+    if(ST_OXYCELL_NORM_VES){
+        ST_OXYCELL_PO2 = PAR_PO2_NORM_VES;
+    }
+    else if(ST_OXYCELL_TUM_VES){
+        ST_OXYCELL_PO2 = PAR_PO2_TUM_VES;
+    }
+    else{
+        ST_OXYCELL_PO2 = IN_OXY_PO2;
+    }
 
-    ST_HYP = !ST_OXY_DEAD && (ST_OXY_PO2 < PAR_HYP_THRES);
+    ST_HYP = !ST_OXYCELL_DEAD && (ST_OXYCELL_PO2 < PAR_HYP_THRES);
 
-    ST_OXY_STABLE_CELL  = true;
-    ST_VEGF_STABLE_CELL = true;
+    ST_OXYCELL_OXY_STABLE  = true;
+    ST_OXYCELL_VEGF_STABLE = true;
 
     return 0;
 }
-
 
 /*------------------------------------------------------------------------------
  * This function sets the pO2 input.
  *
  * Inputs:
- *  - input: pO2 input (mmHg).
+ *  - input: pO2 input.
 ------------------------------------------------------------------------------*/
 
 void ConstOxyCell::setInPO2(const double input){

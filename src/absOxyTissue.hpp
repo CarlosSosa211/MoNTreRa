@@ -14,6 +14,12 @@
 #include "absOxyCell.hpp"
 #include "model.hpp"
 
+//State variables
+#define ST_OXYTISSUE_VES_DENS      m_stD[0] //vascular density
+#define ST_OXYTISSUE_NORM_VES_DENS m_stD[1] //pre-existing vascular density
+#define ST_OXYTISSUE_TUM_VES_DENS  m_stD[2] //neo-created vascular density
+#define ST_OXYTISSUE_DEAD_DENS     m_stD[3] //dead cell density
+
 //Outputs
 #define OUT_HYP_DENS  m_outD[0] //hypoxic density
 #define OUT_PO2_MED   m_outD[1] //median pO2 (mmHg)
@@ -38,7 +44,11 @@ public:
     virtual int calcModelOut() = 0;
     virtual int terminateModel();
     virtual int updateModel(double currentTime, const double DT) = 0;
+    int getNumDead() const;
     int getNumHyp() const;
+    int getNumNormVes() const;
+    int getNumTumVes() const;
+    int getNumVes() const;
 
 protected:
     int m_ncol, m_nlayer, m_nrow;

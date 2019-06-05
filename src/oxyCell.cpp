@@ -71,45 +71,45 @@ OxyCell::~OxyCell(){
 ------------------------------------------------------------------------------*/
 
 int OxyCell::updateModel(const double currentTime, const double DT){
-    ST_OXY_DEAD     = IN_OXY_DEAD;
-    ST_OXY_NORM_VES = IN_OXY_NORM_VES;
-    ST_OXY_TUM_VES  = IN_OXY_TUM_VES;
+    ST_OXYCELL_DEAD     = IN_OXYCELL_DEAD;
+    ST_OXYCELL_NORM_VES = IN_OXYCELL_NORM_VES;
+    ST_OXYCELL_TUM_VES  = IN_OXYCELL_TUM_VES;
 
-    if(ST_OXY_NORM_VES){
-        ST_OXY_PO2 = PAR_PO2_NORM_VES;
+    if(ST_OXYCELL_NORM_VES){
+        ST_OXYCELL_PO2 = PAR_PO2_NORM_VES;
     }
-    else if(ST_OXY_TUM_VES){
-        ST_OXY_PO2 = PAR_PO2_TUM_VES;
+    else if(ST_OXYCELL_TUM_VES){
+        ST_OXYCELL_PO2 = PAR_PO2_TUM_VES;
     }
     else{
         calcConsO2();
-        ST_OXY_PO2 += IN_DIFF_O2 - IN_CONS_O2;
+        ST_OXYCELL_PO2 += IN_DIFF_O2 - IN_CONS_O2;
     }
 
-    if(fabs(ST_OXY_PO2 - OUT_PO2) < 1e-2){
-        ST_OXY_STABLE_CELL = true;
+    if(fabs(ST_OXYCELL_PO2 - OUT_PO2) < 1e-2){
+        ST_OXYCELL_OXY_STABLE = true;
     }
     else{
-        ST_OXY_STABLE_CELL = false;
+        ST_OXYCELL_OXY_STABLE = false;
     }
 
-    ST_HYP = !ST_OXY_DEAD * (ST_OXY_PO2 < PAR_HYP_THRES);
+    ST_HYP = !ST_OXYCELL_DEAD && (ST_OXYCELL_PO2 < PAR_HYP_THRES);
 
     if(PAR_OXYCELL_ANG){
         if(ST_HYP){
-            ST_OXY_VEGF = PAR_HYP_VEGF;
+            ST_OXYCELL_VEGF = PAR_HYP_VEGF;
         }
         else{
             calcConsVegf();
-            ST_OXY_VEGF += IN_DIFF_VEGF - IN_CONS_VEGF;
+            ST_OXYCELL_VEGF += IN_DIFF_VEGF - IN_CONS_VEGF;
         }
     }
 
-    if(fabs(ST_OXY_VEGF - OUT_VEGF) < 1e-2){
-        ST_VEGF_STABLE_CELL = true;
+    if(fabs(ST_OXYCELL_VEGF - OUT_VEGF) < 1e-2){
+        ST_OXYCELL_VEGF_STABLE = true;
     }
     else{
-        ST_VEGF_STABLE_CELL = false;
+        ST_OXYCELL_VEGF_STABLE = false;
     }
 
     return 0;
@@ -133,11 +133,12 @@ void OxyCell::addToEdge(OxyCell *const cell){
 ------------------------------------------------------------------------------*/
 
 void OxyCell::calcConsO2(){
-    if(ST_OXY_DEAD){
+    if(ST_OXYCELL_DEAD){
         IN_CONS_O2 = 0.0;
     }
     else{
-        IN_CONS_O2 = ST_OXY_PO2 * PAR_VMAX_O2 / (PAR_KM_O2 + ST_OXY_PO2);
+        IN_CONS_O2 = ST_OXYCELL_PO2 * PAR_VMAX_O2 / (PAR_KM_O2 +
+                                                     ST_OXYCELL_PO2);
     }
 }
 
@@ -147,9 +148,9 @@ void OxyCell::calcConsO2(){
 ------------------------------------------------------------------------------*/
 
 void OxyCell::calcConsVegf(){
-    if(ST_OXY_NORM_VES || ST_OXY_TUM_VES){
-        IN_CONS_VEGF = ST_OXY_VEGF * PAR_VMAX_VEGF / (PAR_KM_VEGF +
-                                                      ST_OXY_VEGF);
+    if(ST_OXYCELL_NORM_VES || ST_OXYCELL_TUM_VES){
+        IN_CONS_VEGF = ST_OXYCELL_VEGF * PAR_VMAX_VEGF / (PAR_KM_VEGF +
+                                                      ST_OXYCELL_VEGF);
     }
     else{
         IN_CONS_VEGF = 0.0;

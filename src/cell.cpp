@@ -41,8 +41,7 @@ using namespace std;
  *  - doseThres: dose threshold for provoking instantaneous death by apoptosis
  *  (Gy),
  *  - arrestTime: radiation-induced arrest time (h),
- *  - oxy: integer indicating the oxygenation scenario (1, space-and-time
- *  dependent),
+ *  - oxy: oxygenation scenario (1, space-and-time dependent),
  *  - hypNecThres: pO2 hypoxic necrosis thresthold (mmHg),
  *  - parent: pointer to the parent of the Cell, an Tissue.
 ------------------------------------------------------------------------------*/
@@ -60,37 +59,29 @@ Cell::Cell(const int i, const int j, const int l, const bool tumGrowth,
     m_j = j;
     m_l = l;
 
-    ST_FIB      = true;
-    ST_TUM      = false;
-    ST_NORM_VES = false;
-    ST_TUM_VES  = false;
-    ST_VES      = false;
-    ST_HYP_NEC  = false;
-    ST_MIT_CAT  = false;
-    ST_APOP     = false;
-    ST_DEAD     = false;
+    IN_FIB      = false;
+    IN_TUM      = false;
+    IN_NORM_VES = false;
+    IN_TUM_VES  = false;
+    IN_HYP_NEC  = false;
+    IN_MIT_CAT  = false;
+    IN_APOP     = false;
 
-    ST_TIMER = 0.0;
+    IN_TIMER = 0.0;
+    IN_PO2   = 0.0;
+    IN_VEGF  = 0.0;
 
     PAR_TUM_GROWTH = tumGrowth;
     PAR_DOUB_TIME  = doubTime;
+    PAR_LIM_G1S    = cycDur.at(0) * PAR_DOUB_TIME;
+    PAR_LIM_SG2    = PAR_LIM_G1S + cycDur.at(1) * PAR_DOUB_TIME;
+    PAR_LIM_G2M    = PAR_LIM_SG2 + cycDur.at(2) * PAR_DOUB_TIME;
 
-    PAR_LIM_G1S = cycDur.at(0) * PAR_DOUB_TIME;
-    PAR_LIM_SG2 = PAR_LIM_G1S + cycDur.at(1) * PAR_DOUB_TIME;
-    PAR_LIM_G2M = PAR_LIM_SG2 + cycDur.at(2) * PAR_DOUB_TIME;
-
-    ST_G1 = false;
-    ST_S  = false;
-    ST_G2 = false;
-    ST_M  = false;
-    ST_G0 = false;
-
-    PAR_RES            = res;
-    PAR_FIB_DOUB_TIME  = fibDoubTime;
+    PAR_RES           = res;
+    PAR_FIB_DOUB_TIME = fibDoubTime;
 
     PAR_ANG        = ang;
     PAR_ANG_TIME   = angTime;
-    ST_VEGF        = 0.0;
     PAR_VEGF_THRES = vegfThres;
 
     PAR_ALPHA_FIB      = alpha.at(0);
@@ -101,34 +92,21 @@ Cell::Cell(const int i, const int j, const int l, const bool tumGrowth,
     PAR_ALPHA_G0       = alpha.at(5);
     PAR_ALPHA_NORM_VES = alpha.at(6);
     PAR_ALPHA_TUM_VES  = alpha.at(7);
-
-    ST_ALPHA = PAR_ALPHA_FIB;
-
-    PAR_BETA_FIB      = beta.at(0);
-    PAR_BETA_G1       = beta.at(1);
-    PAR_BETA_S        = beta.at(2);
-    PAR_BETA_G2       = beta.at(3);
-    PAR_BETA_M        = beta.at(4);
-    PAR_BETA_G0       = beta.at(5);
-    PAR_BETA_NORM_VES = beta.at(6);
-    PAR_BETA_TUM_VES  = beta.at(7);
-
-    ST_BETA = PAR_BETA_FIB;
-
-    ST_DAM = false;
-
-    PAR_DOSE_THRES  = doseThres;
-    PAR_ARREST_TIME = arrestTime;
-    ST_ARREST = 0.0;
-
-    PAR_M = 3.0;
-    PAR_K = 3.0;
+    PAR_BETA_FIB       = beta.at(0);
+    PAR_BETA_G1        = beta.at(1);
+    PAR_BETA_S         = beta.at(2);
+    PAR_BETA_G2        = beta.at(3);
+    PAR_BETA_M         = beta.at(4);
+    PAR_BETA_G0        = beta.at(5);
+    PAR_BETA_NORM_VES  = beta.at(6);
+    PAR_BETA_TUM_VES   = beta.at(7);
+    PAR_DOSE_THRES     = doseThres;
+    PAR_ARREST_TIME    = arrestTime;
 
     PAR_OXY = oxy;
-    ST_PO2 = 0.0;
+    PAR_M = 3.0;
+    PAR_K = 3.0;
     PAR_HYP_NEC_THRES = hypNecThres;
-
-    ST_ACC_DOSE = 0;
 
     m_parent = parent;
     m_treatment = ((Tissue *)m_parent)->getTreatment();
@@ -154,6 +132,7 @@ int Cell::calcModelOut(){
             4 * ST_NORM_VES + 5 * ST_TUM_VES + 6 * ST_HYP_NEC + 7 * ST_MIT_CAT +
             8 * ST_APOP;
     OUT_CYCLE = ST_G1 + 2 * ST_S + 3 * ST_G2 + 4 * ST_M + 5 * ST_G0;
+
     return 0;
 }
 
@@ -163,15 +142,15 @@ int Cell::calcModelOut(){
 ------------------------------------------------------------------------------*/
 
 int Cell::initModel(){
-    ST_FIB      = !IN_TUM && !IN_NORM_VES && !IN_TUM_VES;
+    ST_FIB      = IN_FIB;
     ST_TUM      = IN_TUM;
     ST_NORM_VES = IN_NORM_VES;
     ST_TUM_VES  = IN_TUM_VES;
     ST_VES      = ST_NORM_VES || ST_TUM_VES;
-    ST_HYP_NEC  = false;
-    ST_MIT_CAT  = false;
-    ST_APOP     = false;
-    ST_DEAD     = ST_HYP_NEC || ST_APOP || ST_MIT_CAT;
+    ST_HYP_NEC  = IN_HYP_NEC;
+    ST_MIT_CAT  = IN_MIT_CAT;
+    ST_APOP     = IN_APOP;
+    ST_DEAD     = ST_HYP_NEC || ST_MIT_CAT || ST_APOP;
 
     setInFib(false);
     setInTum(false);
@@ -198,6 +177,14 @@ int Cell::initModel(){
             ST_M  = ST_TIMER == -4.0;
             ST_G0 = ST_TIMER == -5.0;
         }
+    }
+
+    else{
+        ST_G1 = false;
+        ST_S  = false;
+        ST_G2 = false;
+        ST_M  = false;
+        ST_G0 = false;
     }
 
     if(ST_FIB){
@@ -241,6 +228,7 @@ int Cell::initModel(){
 
     ST_PO2  = IN_PO2;
     ST_VEGF = IN_VEGF;
+
     return 0;
 }
 
@@ -467,6 +455,7 @@ int Cell::updateModel(const double currentTime, const double DT){
         ST_ALPHA = 0.0;
         ST_BETA  = 0.0;
     }
+
     return 0;
 }
 
@@ -485,7 +474,7 @@ void Cell::addToEdge(Cell *const cell){
 
 /*------------------------------------------------------------------------------
  * This function handles the progress in the cycle and potential division of
- *  a healthy cell.
+ * a healthy cell.
  *
  * Inputs:
  *  - DT: simulation timestep (h).
@@ -529,7 +518,7 @@ void Cell::calcHypNec(){
 
 /*------------------------------------------------------------------------------
  * This function handles the progress in the cycle and potential division of
- *  a pre-existing endothelial cell.
+ * a pre-existing endothelial cell.
  *
  * Inputs:
  *  - DT: simulation timestep (h).
@@ -559,8 +548,8 @@ void Cell::calcNormVesProlif(double DT){
 
 
 /*------------------------------------------------------------------------------
- * This function calculates the Oxygen Enhancement Ratio considered of the
- * response to irradiation of a cell.
+ * This function calculates the Oxygen Enhancement Ratio of the response to
+ * irradiation of a cell.
 ------------------------------------------------------------------------------*/
 
 double Cell::calcOER() const{
@@ -678,7 +667,7 @@ void Cell::calcTumGrowth(double DT){
 
 /*------------------------------------------------------------------------------
  * This function handles the progress in the cycle and potential division of
- *  a neo-created endothelial cell.
+ * a neo-created endothelial cell.
  *
  * Inputs:
  *  - DT: simulation timestep (h).

@@ -19,7 +19,7 @@
 #define IN_OXY_PO2  m_inD[0] //pO2 (mmHg)
 
 //State variables
-#define CONSTOXYCELL_NUM_ST_B 6
+#define CONSTOXYCELL_NUM_ST_B 7
 #define CONSTOXYCELL_NUM_ST_I 0
 #define CONSTOXYCELL_NUM_ST_D 2
 

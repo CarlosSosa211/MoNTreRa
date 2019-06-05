@@ -257,7 +257,7 @@ int OxyTissue::updateModel(double currentTime, const double DT){
         ST_TIME_TO_VEGF_STABLE = currentTime;
     }
 
-    if(ST_OXY_STABLE && ST_OXY_VEGF){
+    if(ST_OXY_STABLE && ST_VEGF_STABLE){
         if(PAR_OXYTISSUE_OXY == 1){
             ST_OXY_STABLE  = false;
             ST_VEGF_STABLE = false;
