@@ -130,19 +130,35 @@ void SimThread::run(){
     double constpO2NotVes, constpO2NormVes, constpO2TumVes;
 
     fParam >> oxy;
-    if(oxy == 1 || oxy == 2){
+    switch(oxy){
+    case 1:{
         fParam >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
         fParam >> pO2NormVes >> pO2TumVes >> hypThres;
+        break;
     }
-    else if (oxy == 4){
-        fParam >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes;
+
+    case 2:{
+        fParam >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
+        fParam >> pO2NormVes >> pO2TumVes >> hypThres;
+        break;
+    }
+
+    case 3:{
+        fParam >> constpO2NormVes >> constpO2TumVes >> hypThres;
+        break;
+    }
+
+    case 4:{
+        fParam >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes >>
+                hypThres;
+        break;
+    }
     }
 
     fParam.close();
 
-    std::ifstream fSimParam("../OutputFilesGUI/simParam.dat");
-
     int oxySimTimeStep, simTime, simTimeStep, simType;
+    std::ifstream fSimParam("../OutputFilesGUI/simParam.dat");
 
     fSimParam >> simType >> simTime >> simTimeStep >> oxySimTimeStep;
 
@@ -162,9 +178,7 @@ void SimThread::run(){
                             hypNecThres);
         switch(oxy){
         case 0:{
-            const std::vector<double> inPO2(nrow * ncol * nlayer, 0.0);
-            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2,
-                                        oxy, hypThres);
+            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy);
             coupler = new Coupler(model1, model2);
             sclFac = oxySimTimeStep;
             break;
@@ -191,14 +205,17 @@ void SimThread::run(){
         }
 
         case 3:{
+            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy,
+                                        constpO2NormVes, constpO2TumVes,
+                                        hypThres);
+            coupler = new Coupler(model1, model2);
+            sclFac = oxySimTimeStep;
             break;
         }
 
         case 4:{
-            const int nComp(nrow * ncol * nlayer);
-            std::vector<double> inPO2(nComp, constpO2NotVes);
-
-            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
+            model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy,
+                                        constpO2NormVes, constpO2TumVes,
                                         hypThres, constpO2NotVes);
             coupler = new Coupler(model1, model2);
             sclFac = oxySimTimeStep;
