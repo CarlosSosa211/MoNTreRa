@@ -17,7 +17,6 @@ using namespace std;
  *  of the tissue,
  *  - inTum: vector containing the initial tumour cell configuration,
  *  - inVes: vector containing the initial endothelial cell configuration,
- *  - inPO2: vector containing the initial pO2 values,
  *  - treatment: pointer to the treatment to be considered.
  *
  * Outputs:
@@ -28,7 +27,7 @@ using namespace std;
 void modelTCP(const double *x, double *y, const int nrow, const int ncol,
               const int nlayer, const double cellSize,
               const vector<bool> &inTum, const vector<bool> & inVes,
-              const vector<double> &inPO2, Treatment *const treatment){
+              Treatment *const treatment){
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
@@ -72,18 +71,6 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     k++;
     const double hypNecThres(x[k]);
     k++;
-    double DO2(x[k]);
-    k++;
-    double VmaxO2(x[k]);
-    k++;
-    const double KmO2(x[k]);
-    k++;
-    const double pO2NormVes(x[k]);
-    k++;
-    const double pO2TumVes(x[k]);
-    k++;
-    const double hypThres(x[k]);
-    k++;
 
     cout << "tumGrowth: " << tumGrowth << endl;
     cout << "tumTime: "   << tumTime   << " h" << endl;
@@ -114,16 +101,7 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     cout << "doseThres: "  << doseThres  << " Gy" << endl;
     cout << "arrestTime: " << arrestTime << " h" << endl;
     cout << "oxy: "        << oxy        << endl;
-    if(oxy){
-        cout << "hypNecThres: " << hypNecThres << " mmHg" << endl;
-        cout << "DO2: "         << DO2         << " um^2/ms" << endl;
-        cout << "VmaxO2: "      << VmaxO2      << " mmHg/ms" << endl;
-        cout << "KmO2: "        << KmO2        << " mmHg" << endl;
-        cout << "pO2NormVes: "  << pO2NormVes  << " mmHg" << endl;
-        cout << "pO2TumVes: "   << pO2TumVes   << " mmHg" << endl;
-        cout << "hypThres: "    << hypThres    << " mmHg" << endl;
-    }
-    cout << treatment;
+    cout << "hypNecThres: " << hypNecThres << " mmHg" << endl;
 
     double sclFac;
     Coupler *coupler;
@@ -140,51 +118,116 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
 
     Dvegf    *= oxySimTimeStep;
     VmaxVegf *= oxySimTimeStep;
-    DO2      *= oxySimTimeStep;
-    VmaxO2   *= oxySimTimeStep;
 
     switch(oxy){
     case 0:{
-        const std::vector<double> inPO2(nrow * ncol * nlayer, 0.0);
-        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
-                                    hypThres);
+        cout << treatment;
+
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy);
         coupler = new Coupler(model1, model2);
         sclFac = 1.0;
         break;
     }
 
     case 1:{
+        double DO2(x[k]);
+        k++;
+        double VmaxO2(x[k]);
+        k++;
+        const double KmO2(x[k]);
+        k++;
+        const double pO2NormVes(x[k]);
+        k++;
+        const double pO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+
+        cout << "DO2: "        << DO2        << " um^2/ms" << endl;
+        cout << "VmaxO2: "     << VmaxO2     << " mmHg/ms" << endl;
+        cout << "KmO2: "       << KmO2       << " mmHg" << endl;
+        cout << "pO2NormVes: " << pO2NormVes << " mmHg" << endl;
+        cout << "pO2TumVes: "  << pO2TumVes  << " mmHg" << endl;
+        cout << "hypThres: "   << hypThres   << " mmHg" << endl;
+        cout << treatment;
+
+        DO2      *= oxySimTimeStep;
+        VmaxO2   *= oxySimTimeStep;
+
         model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
                                Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
-                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
-                               hypThres);
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes, hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
         break;
     }
 
     case 2:{
+        double DO2(x[k]);
+        k++;
+        double VmaxO2(x[k]);
+        k++;
+        const double KmO2(x[k]);
+        k++;
+        const double pO2NormVes(x[k]);
+        k++;
+        const double pO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+
+        cout << "DO2: "        << DO2        << " um^2/ms" << endl;
+        cout << "VmaxO2: "     << VmaxO2     << " mmHg/ms" << endl;
+        cout << "KmO2: "       << KmO2       << " mmHg" << endl;
+        cout << "pO2NormVes: " << pO2NormVes << " mmHg" << endl;
+        cout << "pO2TumVes: "  << pO2TumVes  << " mmHg" << endl;
+        cout << "hypThres: "   << hypThres   << " mmHg" << endl;
+        cout << treatment;
+
+        DO2      *= oxySimTimeStep;
+        VmaxO2   *= oxySimTimeStep;
+
         model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
                                Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
-                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
-                               hypThres);
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes, hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
         break;
     }
 
     case 3:{
+        const double constPO2NormVes(x[k]);
+        k++;
+        const double constPO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+        cout << treatment;
+
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy,
+                                    constPO2NormVes, constPO2TumVes, hypThres);
+        coupler = new Coupler(model1, model2);
+        sclFac = oxySimTimeStep;
+
         break;
     }
 
     case 4:{
-        const int nComp(nrow * ncol * nlayer);
-        std::vector<double> inPO2(nComp, 0.0);
+        const double constPO2NotVes(x[k]);
+        k++;
+        const double constPO2NormVes(x[k]);
+        k++;
+        const double constPO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+        cout << treatment;
 
-        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
-                                    hypThres);
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy,
+                                    constPO2NormVes, constPO2TumVes, hypThres,
+                                    constPO2NotVes);
         coupler = new Coupler(model1, model2);
-        sclFac = 1.0;
+        sclFac = oxySimTimeStep;
         break;
     }
     }
@@ -197,7 +240,7 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
 
     sim->initSim();
 
-    double controlled(0.0);
+    bool controlled(false);
 
     const int numIter(simTime / simTimeStep);
     int j(0);
@@ -248,20 +291,19 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
 
 void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
          const vector<string> nFTreatmentTCP, const string nFInTissueDim,
-         const string nFInTum, const string nFInVes, const string nFInPO2){
+         const string nFInTum, const string nFInVes){
     const int K(38), nOut(2);
     bool art(0);
     int nrow, ncol, nlayer;
     double cellSize, tumDens, sigmaTum, vascDens, sigmaVasc;
     vector<bool> inTum, inVes;
-    vector<double> inPO2;
     vector<Treatment> treatment;
 
     readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, art, nrow, ncol, nlayer,
                    cellSize, tumDens, sigmaTum, vascDens, sigmaVasc, treatment);
     if(!art){
-        readInFiles(nFInTissueDim, nFInTum, nFInVes, nFInPO2, nrow, ncol,
-                    nlayer, cellSize, inTum, inVes, inPO2);
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
+                    cellSize, inTum, inVes);
     }
 
     double x[K], y[nOut];
@@ -284,7 +326,7 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
                 createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
                               vascDens, sigmaVasc, inTum, inVes);
             }
-            modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2,
+            modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes,
                      &(treatment[i]));
             nEv++;
             cout << nEv << " out of " << nEvTot <<
