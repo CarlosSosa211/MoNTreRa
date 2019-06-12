@@ -99,6 +99,7 @@ InWindow::InWindow() : QWidget(){
     m_constpO2        = new QDoubleSpinBox(m_param);
     m_constpO2NormVes = new QDoubleSpinBox(m_param);
     m_constpO2TumVes  = new QDoubleSpinBox(m_param);
+    m_constHypThres   = new QDoubleSpinBox(m_param);
 
     m_simTimeL        = new QLabel("Simulation time (h)", m_paramSim);
     m_oxySimTimeL     = new QLabel("Simulation time (ms)", m_paramSim);
@@ -217,6 +218,7 @@ InWindow::InWindow() : QWidget(){
     m_constpO2->setEnabled(false);
     m_constpO2NormVes->setEnabled(false);
     m_constpO2TumVes->setEnabled(false);
+    m_constHypThres->setEnabled(false);
 
     m_simTime->setMaximum(50000);
 
@@ -335,6 +337,7 @@ InWindow::InWindow() : QWidget(){
                                m_constpO2NormVes);
     formLayoutConstOxy->addRow("Tumor vessels constant pO2 (mmHg)",
                                m_constpO2TumVes);
+    formLayoutConstOxy->addRow("Hypoxia threshold (mmHg)", m_constHypThres);
 
     QVBoxLayout *vOxyLayout = new QVBoxLayout;
     vOxyLayout->addWidget(m_paramOxy);
@@ -416,7 +419,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/inConstOxy.dat");
+    loadInData("../InputFiles/in.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -522,7 +525,7 @@ int InWindow::createInFiles(){
 
         fTissueDim.close();
 
-        int ivd, ivd2;
+        int ivd, ivd2, l2;
         int mindim, mindim2, sqrtmin, tumToDist, vesToDist;
         int nrowNcol, nrowNcolNlayer;
         std::vector<int> div;
@@ -537,11 +540,12 @@ int InWindow::createInFiles(){
             mindim2 = mindim * mindim;
             sqrtmin = sqrt(mindim) + 1;
             for(int l(1); l < sqrtmin; l++){
+                l = l * l;
                 if(!(m_nrow->value() % l) && !(m_ncol->value() % l)){
                     div.push_back(l);
-                    diff.push_back(fabs(1.0 / (l * l) - m_vascDens->value()));
+                    diff.push_back(fabs(1.0 / (l2) - m_vascDens->value()));
                     div.push_back(mindim / l);
-                    diff.push_back(fabs(double(l * l) / double(mindim2) -
+                    diff.push_back(fabs(double(l2) / double(mindim2) -
                                         m_vascDens->value()));
                 }
             }
@@ -790,12 +794,8 @@ int InWindow::createInFiles(){
 
     if(m_paramOxy->isChecked()){
         fParam << m_selOxyType->currentIndex() + 1 << std::endl;
-        if(m_selOxyType->currentIndex() + 1 == 4){
-            fParam << m_constpO2->value() << std::endl;
-            fParam << m_constpO2NormVes->value() << std::endl;
-            fParam << m_constpO2TumVes->value() << std::endl;
-        }
-        else{
+        switch(m_selOxyType->currentIndex() + 1){
+        case 1:{
             fParam << m_hypNecThres->value() << std::endl;
             fParam << m_DO2->value() * m_oxySimTimeStep->value() << std::endl;
             fParam << m_VmaxO2->value() * m_oxySimTimeStep->value() <<
@@ -804,8 +804,38 @@ int InWindow::createInFiles(){
             fParam << m_pO2NormVes->value() << std::endl;
             fParam << m_pO2TumVes->value() << std::endl;
             fParam << m_hypThres->value() << std::endl;
+            break;
+        }
+
+        case 2:{
+            fParam << m_hypNecThres->value() << std::endl;
+            fParam << m_DO2->value() * m_oxySimTimeStep->value() << std::endl;
+            fParam << m_VmaxO2->value() * m_oxySimTimeStep->value() <<
+                      std::endl;
+            fParam << m_KmO2->value() << std::endl;
+            fParam << m_pO2NormVes->value() << std::endl;
+            fParam << m_pO2TumVes->value() << std::endl;
+            fParam << m_hypThres->value() << std::endl;
+            break;
+        }
+
+        case 3:{
+            fParam << m_constpO2NormVes->value() << std::endl;
+            fParam << m_constpO2TumVes->value() << std::endl;
+            fParam << m_constHypThres->value() << std::endl;
+            break;
+        }
+
+        case 4:{
+            fParam << m_constpO2->value() << std::endl;
+            fParam << m_constpO2NormVes->value() << std::endl;
+            fParam << m_constpO2TumVes->value() << std::endl;
+            fParam << m_constHypThres->value() << std::endl;
+            break;
+        }
         }
     }
+
     else{
         fParam << 0 << std::endl;
     }
@@ -841,8 +871,9 @@ void InWindow::disable(int oxy){
     m_pO2TumVes->setEnabled(oxyP1 == 1 || oxyP1 == 2);
     m_hypThres->setEnabled(oxyP1 == 1 || oxyP1 == 2);
     m_hypNecThres->setEnabled(oxyP1 == 1 || oxyP1 == 2);
-    m_constpO2NormVes->setEnabled(oxyP1 == 4);
-    m_constpO2TumVes->setEnabled(oxyP1 == 4);
+    m_constpO2NormVes->setEnabled(oxyP1 == 4 || oxyP1 == 3);
+    m_constpO2TumVes->setEnabled(oxyP1 == 4 || oxyP1 == 3);
+    m_constHypThres->setEnabled(oxyP1 == 4 || oxyP1 == 3);
     m_constpO2->setEnabled(oxyP1 == 4);
 }
 
@@ -993,6 +1024,7 @@ int InWindow::loadInData(std::string nFInData){
 
     int oxy;
     double constpO2NotVes(0.0), constpO2NormVes(0.0), constpO2TumVes(0.0);
+    double constHypThres(0.0);
     double DO2(0.0), hypThres(0.0), hypNecThres(0.0);
     double KmO2(0.0), pO2NormVes(0.0), pO2TumVes(0.0), VmaxO2(0.0);
 
@@ -1000,12 +1032,29 @@ int InWindow::loadInData(std::string nFInData){
     m_paramOxy->setChecked(oxy);
     if(oxy){
         m_selOxyType->setCurrentIndex(oxy - 1);
-        if(oxy == 4){
-            fInData >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes;
-        }
-        else{
+        switch(oxy){
+        case 1:{
             fInData >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
             fInData >> pO2NormVes >> pO2TumVes >> hypThres;
+            break;
+        }
+
+        case 2:{
+            fInData >> hypNecThres >> DO2 >> VmaxO2 >> KmO2;
+            fInData >> pO2NormVes >> pO2TumVes >> hypThres;
+            break;
+        }
+
+        case 3:{
+            fInData >> constpO2NormVes >> constpO2TumVes >> constHypThres;
+            break;
+        }
+
+        case 4:{
+            fInData >> constpO2NotVes >> constpO2NormVes >> constpO2TumVes >>
+                    constHypThres;
+            break;
+        }
         }
     }
 
@@ -1019,6 +1068,7 @@ int InWindow::loadInData(std::string nFInData){
     m_constpO2->setValue(constpO2NotVes);
     m_constpO2NormVes->setValue(constpO2NormVes);
     m_constpO2TumVes->setValue(constpO2TumVes);
+    m_constHypThres->setValue(constHypThres);
 
     int oxySimTimeStep, simTime, simTimeStep;
 
@@ -1099,6 +1149,7 @@ int InWindow::simulate(){
     m_constpO2->setEnabled(false);
     m_constpO2NormVes->setEnabled(false);
     m_constpO2TumVes->setEnabled(false);
+    m_constHypThres->setEnabled(false);
     m_paramSim->setEnabled(false);
     m_loadInData->setEnabled(false);
     m_simulate->setEnabled(false);
