@@ -8,8 +8,6 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include <stdlib.h>
-#include <time.h>
 
 #include "tissue.hpp"
 
@@ -75,8 +73,6 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
 
     int k(0);
     double inputTimer, n;
-
-    srand(time(NULL));
 
     for(int l(0); l < m_nlayer; l++){
         for(int i(0); i < m_nrow; i++){
@@ -353,6 +349,7 @@ int Tissue::initModel(){
     ST_DOSE_TO_999 = 0.0;
 
     ST_CONTROLLED = false;
+    ST_DOSE_TO_CONTROL = 0.0;
 
     return 0;
 }
