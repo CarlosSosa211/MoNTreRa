@@ -14,8 +14,7 @@ using namespace std;
  *  - cellSize: length of the side of square cells, corresponding to a voxel
  *  of the tissue,
  *  - inTum: vector containing the initial tumour cell configuration,
- *  - inVes: vector containing the initial endothelial cell configuration,
- *  - inPO2: vector containing the initial pO2 values.
+ *  - inVes: vector containing the initial endothelial cell configuration.
  *
  * Outputs:
  *  - y: array containing the scalar outputs of the model.
@@ -23,7 +22,7 @@ using namespace std;
 
 void model(const double *x, double *y, const int nrow, const int ncol,
            const int nlayer, const double cellSize, const vector<bool> &inTum,
-           const vector<bool> &inVes, const vector<double> &inPO2){
+           const vector<bool> &inVes){
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
@@ -285,7 +284,7 @@ void model(const double *x, const int nrow, const int ncol, const int nlayer,
     sim->simulate(oxySimTimeStep, simTime);
     sim->stop();
 
-    std::ofstream fPO2(nFPO2.c_str());
+    ofstream fPO2(nFPO2.c_str());
 
     for(int i(0); i < model1->getNumComp(); i++){
         fPO2 << model1->getComp()->at(i)->getOutD()[0] << "\t";
@@ -333,11 +332,10 @@ void model(const double *x, const int nrow, const int ncol, const int nlayer,
 
 void model(const double *x, double *y, const int nrow, const int ncol,
            const int nlayer, const double cellSize, const vector<bool> &inTum,
-           const vector<bool> &inVes, const vector<double> &inPO2,
-           const string nFTumDens, const string nFTumVol,
-           const string nFVascDens, const string nFKilledCells,
-           const string nFDeadDens, const string nFCycle,
-           const string nFHypDens, const string nFPO2Stat,
+           const vector<bool> &inVes, const string nFTumDens,
+           const string nFTumVol, const string nFVascDens,
+           const string nFKilledCells, const string nFDeadDens,
+           const string nFCycle, const string nFHypDens, const string nFPO2Stat,
            const string nFVegfStat){
     vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
@@ -384,18 +382,6 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     k++;
     const double hypNecThres(x[k]);
     k++;
-    double DO2(x[k]);
-    k++;
-    double VmaxO2(x[k]);
-    k++;
-    const double KmO2(x[k]);
-    k++;
-    const double pO2NormVes(x[k]);
-    k++;
-    const double pO2TumVes(x[k]);
-    k++;
-    const double hypThres(x[k]);
-    k++;
 
     cout << "tumGrowth: "   << tumGrowth   << endl;
     cout << "tumTime: "     << tumTime     << " h" << endl;
@@ -424,12 +410,6 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     cout << "arrestTime: "  << arrestTime  << " h" << endl;
     cout << "oxy: "         << oxy         << endl;
     cout << "hypNecThres: " << hypNecThres << " mmHg" << endl;
-    cout << "DO2: "         << DO2         << " um^2/ms" << endl;
-    cout << "VmaxO2: "      << VmaxO2      << " mmHg/ms" << endl;
-    cout << "KmO2: "        << KmO2        << " mmHg" << endl;
-    cout << "pO2NormVes: "  << pO2NormVes  << " mmHg" << endl;
-    cout << "pO2TumVes: "   << pO2TumVes   << " mmHg" << endl;
-    cout << "hypThres: "    << hypThres    << " mmHg" << endl;
 
     Treatment *treatment;
     treatment = new Treatment(dose, 80.0, 24.0, 0);
@@ -447,54 +427,118 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     const double oxySimTimeStep(10.0);
     double sclFac;
 
-    DO2      *= oxySimTimeStep;
-    VmaxO2   *= oxySimTimeStep;
     Dvegf    *= oxySimTimeStep;
     VmaxVegf *= oxySimTimeStep;
 
-
     switch(oxy){
     case 0:{
-        const std::vector<double> inPO2(nrow * ncol * nlayer, 0.0);
-        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2,
-                                    oxy, hypThres);
+        cout << treatment;
+
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy);
         coupler = new Coupler(model1, model2);
         sclFac = 1.0;
         break;
     }
 
     case 1:{
+        double DO2(x[k]);
+        k++;
+        double VmaxO2(x[k]);
+        k++;
+        const double KmO2(x[k]);
+        k++;
+        const double pO2NormVes(x[k]);
+        k++;
+        const double pO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+
+        cout << "DO2: "        << DO2        << " um^2/ms" << endl;
+        cout << "VmaxO2: "     << VmaxO2     << " mmHg/ms" << endl;
+        cout << "KmO2: "       << KmO2       << " mmHg" << endl;
+        cout << "pO2NormVes: " << pO2NormVes << " mmHg" << endl;
+        cout << "pO2TumVes: "  << pO2TumVes  << " mmHg" << endl;
+        cout << "hypThres: "   << hypThres   << " mmHg" << endl;
+        cout << treatment;
+
+        DO2      *= oxySimTimeStep;
+        VmaxO2   *= oxySimTimeStep;
+
         model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
                                Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
-                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
-                               hypThres);
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes, hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
         break;
     }
 
     case 2:{
+        double DO2(x[k]);
+        k++;
+        double VmaxO2(x[k]);
+        k++;
+        const double KmO2(x[k]);
+        k++;
+        const double pO2NormVes(x[k]);
+        k++;
+        const double pO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+
+        cout << "DO2: "        << DO2        << " um^2/ms" << endl;
+        cout << "VmaxO2: "     << VmaxO2     << " mmHg/ms" << endl;
+        cout << "KmO2: "       << KmO2       << " mmHg" << endl;
+        cout << "pO2NormVes: " << pO2NormVes << " mmHg" << endl;
+        cout << "pO2TumVes: "  << pO2TumVes  << " mmHg" << endl;
+        cout << "hypThres: "   << hypThres   << " mmHg" << endl;
+        cout << treatment;
+
+        DO2      *= oxySimTimeStep;
+        VmaxO2   *= oxySimTimeStep;
+
         model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang,
                                Dvegf, VmaxVegf, KmVegf, hypVegf, oxy, DO2,
-                               VmaxO2, KmO2, pO2NormVes, pO2TumVes,
-                               hypThres);
+                               VmaxO2, KmO2, pO2NormVes, pO2TumVes, hypThres);
         coupler = new Coupler(model1, model2);
         sclFac = 3.6e6 * simTimeStep / oxySimTimeStep;
         break;
     }
 
     case 3:{
+        const double constPO2NormVes(x[k]);
+        k++;
+        const double constPO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+        cout << treatment;
+
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy,
+                                    constPO2NormVes, constPO2TumVes, hypThres);
+        coupler = new Coupler(model1, model2);
+        sclFac = oxySimTimeStep;
+
         break;
     }
 
     case 4:{
-        const int nComp(nrow * ncol * nlayer);
-        std::vector<double> inPO2(nComp, 0.0);
+        const double constPO2NotVes(x[k]);
+        k++;
+        const double constPO2NormVes(x[k]);
+        k++;
+        const double constPO2TumVes(x[k]);
+        k++;
+        const double hypThres(x[k]);
+        k++;
+        cout << treatment;
 
-        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, inPO2, oxy,
-                                    hypThres);
+        model2 = new ConstOxyTissue(nrow, ncol, nlayer, inVes, oxy,
+                                    constPO2NormVes, constPO2TumVes, hypThres,
+                                    constPO2NotVes);
         coupler = new Coupler(model1, model2);
-        sclFac = 1.0;
+        sclFac = oxySimTimeStep;
         break;
     }
     }
@@ -510,23 +554,23 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     sim->initSim();
 
-    fTumDens     << currentTime << " " << model1->getOutD()[18] << std::endl;
-    fTumVol      << currentTime << " " << model1->getOutD()[19] << std::endl;
+    fTumDens     << currentTime << " " << model1->getOutD()[18] << endl;
+    fTumVol      << currentTime << " " << model1->getOutD()[19] << endl;
     fVascDens    << currentTime << " " << model1->getOutD()[20] <<
                     " " << model1->getOutD()[21] <<
-                    " " << model1->getOutD()[22] << std::endl;
-    fKilledCells << currentTime << " " << model1->getOutD()[23] << std::endl;
-    fHypDens     << currentTime << " " << model2->getOutD()[0] << std::endl;
-    fDeadDens    << currentTime << " " << model1->getOutD()[24] << std::endl;
+                    " " << model1->getOutD()[22] << endl;
+    fKilledCells << currentTime << " " << model1->getOutD()[23] << endl;
+    fHypDens     << currentTime << " " << model2->getOutD()[0] << endl;
+    fDeadDens    << currentTime << " " << model1->getOutD()[24] << endl;
     fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
-                    model2->getOutD()[2] << std::endl;
+                    model2->getOutD()[2] << endl;
     fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
-                    model2->getOutD()[4] << std::endl;
+                    model2->getOutD()[4] << endl;
     fCycle       << currentTime << " " << model1->getOutD()[25] <<
                     " " << model1->getOutD()[26] <<
                     " " << model1->getOutD()[27] <<
                     " " << model1->getOutD()[28] <<
-                    " " << model1->getOutD()[29] << std::endl;
+                    " " << model1->getOutD()[29] << endl;
 
     int numIter(simTime / simTimeStep);
 
@@ -534,28 +578,23 @@ void model(const double *x, double *y, const int nrow, const int ncol,
         currentTime += simTimeStep;
         sim->simulate(currentTime, simTimeStep);
 
-        fTumDens     << currentTime << " " << model1->getOutD()[18] <<
-                        std::endl;
-        fTumVol      << currentTime << " " << model1->getOutD()[19] <<
-                        std::endl;
+        fTumDens     << currentTime << " " << model1->getOutD()[18] << endl;
+        fTumVol      << currentTime << " " << model1->getOutD()[19] << endl;
         fVascDens    << currentTime << " " << model1->getOutD()[20] <<
                         " " << model1->getOutD()[21] <<
-                        " " << model1->getOutD()[22] << std::endl;
-        fKilledCells << currentTime << " " << model1->getOutD()[23] <<
-                        std::endl;
-        fHypDens     << currentTime << " " << model2->getOutD()[0] <<
-                        std::endl;
-        fDeadDens    << currentTime << " " << model1->getOutD()[24] <<
-                        std::endl;
+                        " " << model1->getOutD()[22] << endl;
+        fKilledCells << currentTime << " " << model1->getOutD()[23] << endl;
+        fHypDens     << currentTime << " " << model2->getOutD()[0]  << endl;
+        fDeadDens    << currentTime << " " << model1->getOutD()[24] << endl;
         fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
-                        model2->getOutD()[2] << std::endl;
+                        model2->getOutD()[2] << endl;
         fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
-                        model2->getOutD()[4] << std::endl;
+                        model2->getOutD()[4] << endl;
         fCycle       << currentTime << " " << model1->getOutD()[25] <<
                         " " << model1->getOutD()[26] <<
                         " " << model1->getOutD()[27] <<
                         " " << model1->getOutD()[28] <<
-                        " " << model1->getOutD()[29] << std::endl;
+                        " " << model1->getOutD()[29] << endl;
     }
 
     fTumDens.close();
@@ -642,21 +681,19 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 ------------------------------------------------------------------------------*/
 
 void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
-         const string nFInTissueDim, const string nFInVes,
-         const string nFInPO2){
+         const string nFInTissueDim, const string nFInVes){
     const int K(12), nOut(1);
     bool art(0);
     int nrow, ncol, nlayer;
     double cellSize, vascDens, sigmaVasc;
     vector<bool> inVes;
-    vector<double> inPO2;
 
     readInFilesOxy(nFInTissueOxy, art, nrow, ncol, nlayer, cellSize, vascDens,
                    sigmaVasc);
 
     if(!art){
-        readInFiles(nFInTissueDim, nFInVes, nFInPO2, nrow, ncol, nlayer,
-                    cellSize, inVes, inPO2);
+        readInFiles(nFInTissueDim, nFInVes, nrow, ncol, nlayer,
+                    cellSize, inVes);
     }
 
     double x[K], y[nOut];
@@ -690,5 +727,5 @@ void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
 ------------------------------------------------------------------------------*/
 
 void toyModel(double *x, double *y){
-    y[0] = x[0] + 2.0 * x[1] + x[2] * x[2] + x[3] * x[4];
+    y[0] = x[0] + 2* x[1] + x[2] * x[2] + x[3] * x[4];
 }

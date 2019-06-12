@@ -12,22 +12,21 @@
 
 void model(const double *x, double *y, const int nrow,
            const int ncol, const int nlayer, const double cellSize,
-           const std::vector<bool> &inTum, const std::vector<bool> &inVes,
-           const std::vector<double> &inPO2);
+           const std::vector<bool> &inTum, const std::vector<bool> &inVes);
 void model(const double *x, const int nrow, const int ncol, const int nlayer,
            const double cellSize, const std::vector<bool> &inVes,
-           const std::vector<double> &inPO2, const std::string nFPO2);
+           const std::string nFPO2);
 void model(const double *x, double *y, const int nrow, const int ncol,
            const int nlayer, const double cellSize,
            const std::vector<bool> &inTum, const std::vector<bool> &inVes,
-           const std::vector<double> &inPO2, const std::string nFTumDens,
-           const std::string nFTumVol, const std::string nFVascDens,
-           const std::string nFKilledCells, const std::string nFDeadDens,
-           const std::string nFCycle, const std::string nFHypDens,
-           const std::string nFPO2Stat, const std::string nFVegfStat);
+           const std::string nFTumDens, const std::string nFTumVol,
+           const std::string nFVascDens, const std::string nFKilledCells,
+           const std::string nFDeadDens, const std::string nFCycle,
+           const std::string nFHypDens, const std::string nFPO2Stat,
+           const std::string nFVegfStat);
 void oxy(const int N, const std::string nFInTissueOxy,
          const std::string nFParOxy, const std::string nFInTissueDim = "",
-         const std::string nFInVes = "", const std::string nFInPO2 = "");
+         const std::string nFInVes = "");
 void toyModel(double *x, double *y);
 
 #endif
