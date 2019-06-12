@@ -15,14 +15,14 @@ path = '../../Carlos/Results/Corr/Dose_5Val_5Rep/Tissue';
 % results of simulation considering all biological processes, output files
 % X_1_X.res are used.
 nTissues = 21;
-P = 1;
+P = 5;
 
 fileNames = {'/tumDens','/vascDens', '/vascDens', '/vascDens'...
     '/deadDens', '/pO2Stat', '/pO2Stat'};
 
-outputNames = {'tumour density', 'vascular density'...
-    'pre-existing vascular density', 'neo-created vascular density'...
-    'dead cells density', 'median pO2', 'mean pO2'};
+outputNames = {'Tumour density', 'Vascular density'...
+    'Pre-existing vascular density', 'Neo-created vascular density'...
+    'Dead cells density', 'Median pO2', 'Mean pO2'};
 
 outputCol = [2, 2, 3, 4, 2, 2, 3];
 
@@ -31,6 +31,7 @@ outputCol = [2, 2, 3, 4, 2, 2, 3];
 % tissues.
 
 initVascDens = load('../HistSpec/initVascDens.dat');
+[initVascDens, tissuesVascDens] = sort(initVascDens);
 
 %%
 % This block studies the correlation between two time-dependent outputs
@@ -65,11 +66,11 @@ nTissue = input(['Select one tissue (from 1 to ', num2str(nTissues)...
 
 selOut1 = input(['Select the firt output [tumDens (1), vascDens (2), '...
     'preExVascDens (3), neoCreVascDens (4), deadDens (5),\n'...
-    'pO2Med (6), pO2Mean (7) or quit (0): ']);
+    'pO2Med (6), pO2Mean (7)] or quit (0): ']);
 
 selOut2 = input(['Select the second output [tumDens (1), vascDens (2), '...
     'preExVascDens (3), neoCreVascDens (4), deadDens (5),\n'...
-    'pO2Med (6), pO2Mean (7) or quit (0): ']);
+    'pO2Med (6), pO2Mean (7)] or quit (0): ']);
 
 
 if(nTissue >= 1 && nTissue <= nTissues)
@@ -174,7 +175,8 @@ end
 %%
 pAllDoses = mean(p, 1);
 pAllDosesStd = std(p, 0, 1);
-pAllDoses = permute(pAllDoses, [3, 2, 1]); 
+pAllDoses = permute(pAllDoses, [3, 2, 1]);
+pAllDosesStd = permute(pAllDosesStd, [3, 2, 1]);
 pAllTissues = pAllDoses ./ [initVascDens, initVascDens];
 
 %%
@@ -218,13 +220,16 @@ end
 
 [sortOutput1, ind] = sort(output1);
 sortOutput2 = output2(ind);
-p = polyfit(sortOutput1, sortOutput2, 1);
+p = polyfit(sortOutput1, sortOutput2, 2);
 
 nfig = nfig + 1;
 figure(nfig)
 hold on
 plot(sortOutput1, sortOutput2, '-o')
-plot(sortOutput1, p(1) * sortOutput1 + p(2))
+alpha = 0.2;
+beta = 0.6;
+plot(sortOutput1, sortOutput1.^(5/3))
+% plot(sortOutput1, p(1) * sortOutput1 + p(2))
 hold off
 grid on
 xlabel(char(outputNames(selOut1)))
@@ -242,63 +247,179 @@ selOut2 = input(['Select the second output [tumDens (1), vascDens (2), '...
     'preExVascDens (3), neoCreVascDens (4), deadDens (5),\n'...
     'pO2Med (6), pO2Mean (7) or quit (0): ']);
 
-nTissue = 16;
+meanP = zeros(nTissues, 2);
+stdP = zeros(nTissues, 2);
 
-pathTissue = [path, num2str(nTissue)];
+for nTissue = 1:nTissues
+    pathTissue = [path, num2str(nTissue)];
+    par = load([pathTissue, '/combPar.res']);
+    nCombPar = size(par, 1);
+    
+    meanOutput1 = cell(1, nCombPar);
+    meanOutput2 = cell(1, nCombPar);
+    stdOutput1 = cell(1, nCombPar);
+    stdOutput2 = cell(1, nCombPar);
+    
+    p = zeros(nCombPar, 2);
+    
+    for i = 1:nCombPar
+        for j = 1:P
+            temp1 = load([pathTissue, char(fileNames(selOut1))...
+                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+            temp2 = load([pathTissue, char(fileNames(selOut2))...
+                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+            output1(:, :, j) = temp1(:, [1, outputCol(selOut1)]);
+            output2(:, :, j) = temp2(:, [1, outputCol(selOut2)]);
+        end
+        output1 = mean(output1, 3);
+        output2 = mean(output2, 3);
+        meanOutput1(i) = {output1};
+        meanOutput2(i) = {output2};
+        
+        p(i, :) = polyfit(output1(2:end, 2), output2(2:end, 2), 1);
+    end
+    
+    meanP(nTissue, :) = mean(p, 1);
+    stdP(nTissue, :) = std(p, 0, 1);
+end
+
+for i = 1:nCombPar
+    nfig = nfig + 1;
+    figure(nfig)
+    hold on
+    ax = gca;
+    ax.FontSize = 22;
+    output1 = cell2mat(meanOutput1(i));
+    output2 = cell2mat(meanOutput2(i));
+    plot(output1(2:end, 2), output2(2:end, 2))
+    plot(output1(2:end, 2), meanP(nTissue, 1) * output1(2:end, 2) +...
+        meanP(nTissue, 2))
+    hold off
+    grid on
+    xlabel(char(outputNames(selOut1)), 'FontSize', 22)
+    ylabel(char(outputNames(selOut2)), 'FontSize', 22)
+    title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i))...
+        ' Gy'], 'FontSize', 22)
+    
+    nfig = nfig + 1;
+    figure(nfig)
+    hold on
+    ax = gca;
+    ax.FontSize = 22;
+    plot(output1(2:end, 1), output1(2:end, 2))
+    plot(output2(2:end, 1), output2(2:end, 2))
+    plot(output2(2:end, 1), meanP(nTissue, 1) * output1(2:end, 2) +...
+        meanP(nTissue, 2))
+    hold off
+    grid on
+    xlabel('t (h)', 'FontSize', 22)
+    ylabel(char(outputNames(selOut2)), 'FontSize', 22)
+    title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i))...
+        ' Gy'], 'FontSize', 22)
+    legend({char(outputNames(selOut1)), char(outputNames(selOut2)),...
+        ['Fitted ', char(outputNames(selOut2))]}, 'FontSize', 22)
+    
+end
+
+%%
+% This block fits with a polynomial of degree 1 the time-dependent output 1
+% and output 2. The result is then plotted in a same figure for all the
+% tissues.
+
+selOut1 = input(['Select the firt output [tumDens (1), vascDens (2), '...
+    'preExVascDens (3), neoCreVascDens (4), deadDens (5),\n'...
+    'pO2Med (6), pO2Mean (7) or quit (0): ']);
+
+selOut2 = input(['Select the second output [tumDens (1), vascDens (2), '...
+    'preExVascDens (3), neoCreVascDens (4), deadDens (5),\n'...
+    'pO2Med (6), pO2Mean (7) or quit (0): ']);
+
+pathTissue = [path, '1'];
 par = load([pathTissue, '/combPar.res']);
 nCombPar = size(par, 1);
-
-meanOutput1 = cell(1, nCombPar);
-meanOutput2 = cell(1, nCombPar);
-stdOutput1 = cell(1, nCombPar);
-stdOutput2 = cell(1, nCombPar);
-
 p = zeros(nCombPar, 2);
 
-for i = 1:nCombPar
-    for j = 1:P
-        temp1(:, :, j) = load([pathTissue, char(fileNames(selOut1))...
-            '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
-        temp2(:, :, j) = load([pathTissue, char(fileNames(selOut2))...
-            '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+meanOutput1 = cell(nTissues, nCombPar);
+meanOutput2 = cell(nTissues, nCombPar);
+stdOutput1 = cell(nTissues, nCombPar);
+stdOutput2 = cell(nTissues, nCombPar);
+
+meanP = zeros(nTissues, 2);
+stdP = zeros(nTissues, 2);
+
+nrowPlot = 3;
+ncolPlot = ceil(nTissues / nrowPlot);
+
+for nTissue = 1:nTissues
+    pathTissue = [path, num2str(nTissue)];
+    p = zeros(nCombPar, 2);
+    
+    for i = 1:nCombPar
+        for j = 1:P
+            temp1 = load([pathTissue, char(fileNames(selOut1))...
+                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+            temp2 = load([pathTissue, char(fileNames(selOut2))...
+                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+            output1(:, :, j) = temp1(:, [1, outputCol(selOut1)]);
+            output2(:, :, j) = temp2(:, [1, outputCol(selOut2)]);
+        end
+        output1 = mean(output1, 3);
+        output2 = mean(output2, 3);
+        meanOutput1(nTissue, i) = {output1};
+        meanOutput2(nTissue, i) = {output2};
+        
+        p(i, :) = polyfit(output1(2:end, 2), output2(2:end, 2), 1);
     end
-    temp1 = mean(temp1, 3);
-    temp2 = mean(temp2, 3);
-    meanOutput1(i) = {temp1};
-    meanOutput2(i) = {temp2};
     
-    p(i, :) = polyfit(temp1(2:end, outputCol(selOut1)),...
-        temp2(2:end, outputCol(selOut2)), 1);
+    meanP(nTissue, :) = mean(p, 1);
+    stdP(nTissue, :) = std(p, 0, 1);
 end
 
-meanP = mean(p, 1);
-stdP = std(p, 0, 1);
+%%
+meanTisP = mean(meanP);
+stdTisP = std(meanP);
 
 for i = 1:nCombPar
     nfig = nfig + 1;
     figure(nfig)
-    hold on
-    temp1 = cell2mat(meanOutput1(i));
-    temp2 = cell2mat(meanOutput2(i));
-    plot(temp1(2:end, outputCol(selOut1)), temp2(2:end, outputCol(selOut2)))
-    plot(temp1(2:end, outputCol(selOut1)), meanP(1) *...
-        temp1(2:end, outputCol(selOut1)) + meanP(2))
-    hold off
-    grid on
-    xlabel(char(outputNames(selOut1)))
-    ylabel(char(outputNames(selOut2)))
-    title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i)), ' Gy'])
+    nsubplot = 1;
+    for nTissue = tissuesVascDens'
+        subplot(nrowPlot, ncolPlot, nsubplot)
+        nsubplot = nsubplot + 1;
+        hold on
+        output1 = cell2mat(meanOutput1(nTissue, i));
+        output2 = cell2mat(meanOutput2(nTissue, i));
+        plot(output1(2:end, 2), output2(2:end, 2))
+        plot(output1(2:end, 2), meanTisP(1) * output1(2:end, 2) +...
+            meanTisP(2))
+        hold off
+        grid on
+        xlabel(char(outputNames(selOut1)))
+        ylabel(char(outputNames(selOut2)))
+        title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i))...
+            ' Gy'])
+    end
     
     nfig = nfig + 1;
     figure(nfig)
-    hold on
-    plot(temp2(2:end, 1), temp2(2:end, outputCol(selOut2)))
-    plot(temp2(2:end, 1), meanP(1) * temp1(2:end, outputCol(selOut1)) +...
-        meanP(2))
-    hold off
-    grid on
-    xlabel('t(h)')
-    ylabel(char(outputNames(selOut2)))
-    title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i)), ' Gy'])
+    nsubplot = 1;
+    for nTissue = tissuesVascDens'
+        subplot(nrowPlot, ncolPlot, nsubplot)
+        nsubplot = nsubplot + 1;
+        hold on
+        output1 = cell2mat(meanOutput1(nTissue, i));
+        output2 = cell2mat(meanOutput2(nTissue, i));
+        plot(output1(2:end, 1), output1(2:end, 2))
+        plot(output2(2:end, 1), output2(2:end, 2))
+        plot(output2(2:end, 1), meanTisP(1) * output1(2:end, 2) +...
+            meanTisP(2))
+        hold off
+        grid on
+%         ylim([0, inf])
+        xlabel('t (h)')
+        ylabel(char(outputNames(selOut2)))
+        title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i)), ' Gy'])
+        %         legend({char(outputNames(selOut1)), char(outputNames(selOut2)),...
+        %             ['Fitted ', char(outputNames(selOut2))]})
+    end
 end
-
