@@ -1,6 +1,7 @@
 #!/bin/bash
 rm -rf OutputFiles/
 rm -rf build/
+rm -rf Tissue*/
 mkdir build
 cmake -Bbuild -Hsrc
 cd build
