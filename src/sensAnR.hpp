@@ -6,6 +6,6 @@
 
 void evalR(const int nMethod, const int nModel,
            const std::string nFInTissueDim = "", const std::string nFInTum = "",
-           const std::string nFInVes = "", const std::string nFInPO2 = "");
+           const std::string nFInVes = "");
 
 #endif

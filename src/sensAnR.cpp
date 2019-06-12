@@ -21,7 +21,7 @@ using namespace std;
 ------------------------------------------------------------------------------*/
 
 void evalR(const int nMethod, const int nModel, const string nFInTissueDim,
-           const string nFInTum, const string nFInVes, const string nFInPO2){
+           const string nFInTum, const string nFInVes){
     string nFDim;
 
     switch(nMethod){
@@ -83,8 +83,8 @@ void evalR(const int nMethod, const int nModel, const string nFInTissueDim,
         vector<double> inPO2;
 
         if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
-            readInFiles(nFInTissueDim, nFInTum, nFInVes, nFInPO2, nrow, ncol,
-                        nlayer, cellSize, inTum, inVes, inPO2);
+            readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
+                        cellSize, inTum, inVes);
         }
 
         const int nOut(15);
@@ -109,7 +109,7 @@ void evalR(const int nMethod, const int nModel, const string nFInTissueDim,
             for(int k(0); k < K; k++){
                 fX >> x[k];
             }
-            model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
+            model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes);
             cout << i + 1 << " out of " << nEv << " evaluations of the model" <<
                     endl;
             cout << "---------------------------------------------" << endl;

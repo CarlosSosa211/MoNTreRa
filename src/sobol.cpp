@@ -17,8 +17,7 @@ using namespace std;
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration,
- *  - nFInPO2: name of the file containing the initial pO2 values.
+ *  configuration.
  *
  * Outputs:
  *  - SI: matrix containing the obtained SI values; each row corresponds to an
@@ -36,15 +35,15 @@ using namespace std;
 void sobol(const int K, const int N, const int nOut, const double *x0,
            const double *h, double **SI, double **TSI, double ***SIConv,
            double ***TSIConv, const string nFInTissueDim, const string nFInTum,
-           const string nFInVes, const string nFInPO2){
+           const string nFInVes){
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
     vector<double> inPO2;
 
     if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
-        readInFiles(nFInTissueDim, nFInTum, nFInVes, nFInPO2, nrow, ncol,
-                    nlayer, cellSize, inTum, inVes, inPO2);
+        readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol,
+                    nlayer, cellSize, inTum, inVes);
     }
 
     int nEv(0), nEvTot((K + 2) * N);
@@ -68,13 +67,13 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
 
     for(int i(0); i < N; i++){
         //toyModel(Xa[i], Ya[i]);
-        model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
+        model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
         cout << "---------------------------------------------" << endl;
         //toyModel(Xb[i], Yb[i]);
-        model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
+        model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
@@ -106,7 +105,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         Xc[i][0] = Xb[i][0];
 
         //toyModel(Xc[i], Yc[i]);
-        model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes, inPO2);
+        model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model";
         cout << "---------------------------------------------" << endl;
@@ -154,8 +153,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             Xc[i][k] = Xb[i][k];
 
             //toyModel(Xc[i], Yc[i]);
-            model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes,
-                  inPO2);
+            model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model";
             cout << "---------------------------------------------" << endl;
@@ -274,12 +272,11 @@ void sobolFromFiles(int K){
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration,
- *  - nFInPO2: name of the file containing the initial pO2 values.
+ *  configuration.
 ------------------------------------------------------------------------------*/
 
 void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
-             const string nFInTum, const string nFInVes, const string nFInPO2){
+             const string nFInTum, const string nFInVes){
     const int K(34), NConv(log(N) / log(2.0)), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
@@ -301,7 +298,7 @@ void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
     TSIConv = alloc3D(NConv, nOut, K);
 
     sobol(K, N, nOut, x0, h, SI, TSI, SIConv, TSIConv, nFInTissueDim, nFInTum,
-          nFInVes, nFInPO2);
+          nFInVes);
 
     ofstream fSobolEndTreatTumDens("../OutputFiles/sobolEndTreatTumDens.res");
     ofstream fSobol3MonTumDens("../OutputFiles/sobol3MonTumDens.res");
@@ -319,8 +316,7 @@ void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
     ofstream fSobolRecTumDens("../OutputFiles/sobolRecTumDens.res");
     ofstream fSobolRecTime("../OutputFiles/sobolRecTime.res");
 
-    ofstream fConvSIEndTreatTumDens("../OutputFiles/convSIEndTreatTumDens"
-                                    ".res");
+    ofstream fConvSIEndTreatTumDens("../OutputFiles/convSIEndTreatTumDens.res");
     ofstream fConvTSIEndTreatTumDens("../OutputFiles/convTSIEndTreatTumDens"
                                      ".res");
     ofstream fConvSI3MonTumDens("../OutputFiles/convSI3MonTumDens.res");
