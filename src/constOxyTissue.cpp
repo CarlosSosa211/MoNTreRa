@@ -22,15 +22,14 @@ using namespace std;
  *  - ncol: number of columns of the tissue,
  *  - nlayer: number of layers of the tissue,
  *  - inVes: vector containing the initial endothelial cell configuration,
- *  - inPO2: vector containing the initial pO2 values,
  *  - oxy: oxygenation scenario (0, no oxygenation; 2, space dependent;
  *  3, time dependent, 4 constant),
  *  - hypThres: pO2 hypoxia threshold (mmHg).
 ------------------------------------------------------------------------------*/
 
 ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                               const vector<bool> &inVes,
-                               const vector<double> &inPO2, const int oxy,
+                               const vector<bool> &inVes, const int oxy,
+                               const double pO2NormVes, const double pO2TumVes,
                                const double hypThres, const double pO2NotVes) :
     AbsOxyTissue(CONSTOXYTISSUE_NUM_IN_B, CONSTOXYTISSUE_NUM_IN_I,
                  CONSTOXYTISSUE_NUM_IN_D, CONSTOXYTISSUE_NUM_ST_B,
@@ -44,7 +43,7 @@ ConstOxyTissue::ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
     m_nlayer = nlayer;
 
     for(int k(0); k < m_numComp; k++){
-        m_comp->at(k) = new ConstOxyCell(hypThres, this);
+        m_comp->at(k) = new ConstOxyCell(pO2NormVes, pO2TumVes, hypThres, this);
         ((ConstOxyCell *)m_comp->at(k))->setInNormVes(inVes.at(k));
     }
 

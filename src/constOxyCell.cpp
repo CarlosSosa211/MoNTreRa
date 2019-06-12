@@ -16,20 +16,22 @@ using namespace std;
  * Constructor of the class ConstOxyCell.
  *
  * Inputs:
+ *  - pO2NormVes: fixed pO2 value for pre-existing endothelial cells (mmHg),
+ *  - pO2TumVes: fixed pO2 value for neo-created endothelial cells (mmHg),
  *  - hypThres: pO2 hypoxia threshold (mmHg),
  *  - parent: pointer to the parent of the ConstOxyCell, a ConstOxyTissue.
 ------------------------------------------------------------------------------*/
 
-ConstOxyCell::ConstOxyCell(const double hypThres, Model *const parent) :
-    AbsOxyCell(CONSTOXYCELL_NUM_IN_B, CONSTOXYCELL_NUM_IN_I,
-               CONSTOXYCELL_NUM_IN_D, CONSTOXYCELL_NUM_ST_B,
-               CONSTOXYCELL_NUM_ST_I, CONSTOXYCELL_NUM_ST_D,
-               CONSTOXYCELL_NUM_OUT_B, CONSTOXYCELL_NUM_OUT_I,
-               CONSTOXYCELL_NUM_OUT_D, CONSTOXYCELL_NUM_PAR_B,
-               CONSTOXYCELL_NUM_PAR_I, CONSTOXYCELL_NUM_PAR_D){
-
-
-    PAR_HYP_THRES = hypThres;
+ConstOxyCell::ConstOxyCell(const double pO2NormVes, const double pO2TumVes,
+                           const double hypThres, Model *const parent) :
+    AbsOxyCell(pO2NormVes, pO2TumVes, hypThres, CONSTOXYCELL_NUM_IN_B,
+               CONSTOXYCELL_NUM_IN_I, CONSTOXYCELL_NUM_IN_D,
+               CONSTOXYCELL_NUM_ST_B, CONSTOXYCELL_NUM_ST_I,
+               CONSTOXYCELL_NUM_ST_D, CONSTOXYCELL_NUM_OUT_B,
+               CONSTOXYCELL_NUM_OUT_I, CONSTOXYCELL_NUM_OUT_D,
+               CONSTOXYCELL_NUM_PAR_B, CONSTOXYCELL_NUM_PAR_I,
+               CONSTOXYCELL_NUM_PAR_D){
+    IN_OXY_PO2 = 0.0;
     m_parent = parent;
 }
 

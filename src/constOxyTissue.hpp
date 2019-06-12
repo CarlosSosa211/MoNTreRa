@@ -40,9 +40,9 @@
 class ConstOxyTissue : public AbsOxyTissue{
 public:
     ConstOxyTissue(const int nrow, const int ncol, const int nlayer,
-                   const std::vector<bool> &inVes,
-                   const std::vector<double> &inPO2, const int oxy,
-                   const double hypThres, const double pO2NotVes = 0.0);
+                   const std::vector<bool> &inVes, const int oxy,
+                   const double pO2NormVes = 0.0, const double pO2TumVes = 0.0,
+                   const double hypThres = 0.0, const double pO2NotVes = 0.0);
     virtual ~ConstOxyTissue();
     virtual int initModel();
     virtual int calcModelOut();

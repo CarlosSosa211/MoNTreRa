@@ -14,15 +14,27 @@ using namespace std;
 
 /*------------------------------------------------------------------------------
  * Constructor of the class Cell.
+ *  Inputs:
+ *  - pO2NormVes: fixed pO2 value for pre-existing endothelial cells (mmHg),
+ *  - pO2TumVes: fixed pO2 value for neo-created endothelial cells (mmHg),
+ *  - hypThres: pO2 hypoxia threshold (mmHg).
 ------------------------------------------------------------------------------*/
 
-AbsOxyCell::AbsOxyCell(const int numInB, const int numInI, const int numInD,
-                       const int numStB, const int numStI, const int numStD,
-                       const int numOutB, const int numOutI, const int numOutD,
-                       const int numParB, const int numParI,
-                       const int numParD) :
+AbsOxyCell::AbsOxyCell(const double pO2NormVes, const double pO2TumVes,
+                       const double hypThres, const int numInB,
+                       const int numInI, const int numInD, const int numStB,
+                       const int numStI, const int numStD, const int numOutB,
+                       const int numOutI, const int numOutD, const int numParB,
+                       const int numParI, const int numParD) :
     Model(numInB, numInI, numInD, numStB, numStI, numStD, numOutB, numOutI,
           numOutD, numParB, numParI, numParD, 0){
+    IN_OXYCELL_DEAD     = false;
+    IN_OXYCELL_NORM_VES = false;
+    IN_OXYCELL_TUM_VES  = false;
+
+    PAR_PO2_NORM_VES = pO2NormVes;
+    PAR_PO2_TUM_VES  = pO2TumVes;
+    PAR_HYP_THRES    = hypThres;
 }
 
 

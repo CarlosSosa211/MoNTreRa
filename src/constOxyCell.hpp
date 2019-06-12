@@ -35,7 +35,8 @@
 
 class ConstOxyCell : public AbsOxyCell{
 public :
-    ConstOxyCell(const double hypThres, Model *const parent);
+    ConstOxyCell(const double pO2NormVes, const double pO2TumVes,
+                 const double hypThres, Model *const parent);
     virtual ~ConstOxyCell();
     virtual int updateModel(const double currentTime, const double DT);
     void setInPO2(const double input);

@@ -40,10 +40,12 @@
 
 class AbsOxyCell: public Model{
 public :
-    AbsOxyCell(const int numInB, const int numInI, const int numInD,
-               const int numStB, const int numStI, const int numStD,
-               const int numOutB, const int numOutI, const int numOutD,
-               const int numParB, const int numParI, const int numParD);
+    AbsOxyCell(const double pO2NormVes, const double pO2TumVes,
+               const double hypThres, const int numInB, const int numInI,
+               const int numInD, const int numStB, const int numStI,
+               const int numStD, const int numOutB, const int numOutI,
+               const int numOutD, const int numParB, const int numParI,
+               const int numParD);
     virtual ~AbsOxyCell();
     virtual int calcModelOut();
     virtual int initModel();

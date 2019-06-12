@@ -33,10 +33,15 @@ OxyCell::OxyCell(const bool ang, const double  VmaxVegf, const double KmVegf,
                  const double hypVegf, const double VmaxO2, const double KmO2,
                  const double pO2NormVes, const double pO2TumVes,
                  const double hypThres, Model *const parent) :
-    AbsOxyCell(OXYCELL_NUM_IN_B, OXYCELL_NUM_IN_I, OXYCELL_NUM_IN_D,
-               OXYCELL_NUM_ST_B, OXYCELL_NUM_ST_I, OXYCELL_NUM_ST_D,
-               OXYCELL_NUM_OUT_B, OXYCELL_NUM_OUT_I, OXYCELL_NUM_OUT_D,
-               OXYCELL_NUM_PAR_B, OXYCELL_NUM_PAR_I, OXYCELL_NUM_PAR_D){
+    AbsOxyCell(pO2NormVes, pO2TumVes, hypThres, OXYCELL_NUM_IN_B,
+               OXYCELL_NUM_IN_I, OXYCELL_NUM_IN_D, OXYCELL_NUM_ST_B,
+               OXYCELL_NUM_ST_I, OXYCELL_NUM_ST_D, OXYCELL_NUM_OUT_B,
+               OXYCELL_NUM_OUT_I, OXYCELL_NUM_OUT_D, OXYCELL_NUM_PAR_B,
+               OXYCELL_NUM_PAR_I, OXYCELL_NUM_PAR_D){
+    IN_DIFF_O2   = 0.0;
+    IN_CONS_O2   = 0.0;
+    IN_DIFF_VEGF = 0.0;
+    IN_CONS_VEGF = 0.0;
 
     PAR_OXYCELL_ANG  = ang;
     PAR_VMAX_VEGF    = VmaxVegf;
@@ -45,9 +50,6 @@ OxyCell::OxyCell(const bool ang, const double  VmaxVegf, const double KmVegf,
 
     PAR_VMAX_O2      = VmaxO2;
     PAR_KM_O2        = KmO2;
-    PAR_PO2_NORM_VES = pO2NormVes;
-    PAR_PO2_TUM_VES  = pO2TumVes;
-    PAR_HYP_THRES    = hypThres;
     m_parent = parent;
 
     m_edge = new vector<OxyCell *>((unsigned int)0, 0);
@@ -150,7 +152,7 @@ void OxyCell::calcConsO2(){
 void OxyCell::calcConsVegf(){
     if(ST_OXYCELL_NORM_VES || ST_OXYCELL_TUM_VES){
         IN_CONS_VEGF = ST_OXYCELL_VEGF * PAR_VMAX_VEGF / (PAR_KM_VEGF +
-                                                      ST_OXYCELL_VEGF);
+                                                          ST_OXYCELL_VEGF);
     }
     else{
         IN_CONS_VEGF = 0.0;

@@ -71,11 +71,15 @@ OxyTissue::OxyTissue(const int nrow, const int ncol, const int nlayer,
     PAR_OXYTISSUE_ANG = ang;
     PAR_OXYTISSUE_OXY = oxy;
 
+    int count(0);
     for(int k(0); k < m_numComp; k++){
         m_comp->at(k) = new OxyCell(ang, VmaxVegf, KmVegf, hypVegf, VmaxO2,
                                     KmO2, pO2NormVes, pO2TumVes, hypThres,
                                     this);
         ((OxyCell *)m_comp->at(k))->setInNormVes(inVes.at(k));
+        if(inVes.at(k)){
+            count++;
+        }
     }
 
     m_map = new OxyCell ***[m_nlayer];
@@ -158,6 +162,7 @@ int OxyTissue::initModel(){
     for (int k(0); k < m_numComp; k++){
         ((OxyCell *)(m_comp->at(k)))->initModel();
     }
+
     return 0;
 }
 
@@ -205,6 +210,8 @@ int OxyTissue::updateModel(double currentTime, const double DT){
     int edgeSize;
     double diffO2, diffVegf;
     std::vector<OxyCell *> *edge;
+
+    //  cout << getNumVes() << endl;
 
     if(!ST_OXY_STABLE){
         for(int l(0); l < m_nlayer; l++){
