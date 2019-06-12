@@ -226,6 +226,8 @@ int Cell::initModel(){
         ST_BETA  = 0.0;
     }
 
+    ST_ACC_DOSE = 0.0;
+
     ST_PO2  = IN_PO2;
     ST_VEGF = IN_VEGF;
 
