@@ -7,6 +7,10 @@
 
 #include "startWindow.hpp"
 
+/*------------------------------------------------------------------------------
+ * Constructor of the class StartWindow.
+------------------------------------------------------------------------------*/
+
 StartWindow::StartWindow() : QWidget(){
     m_title        = new QLabel;
     m_sel          = new QGroupBox("Select mode", this);
@@ -46,6 +50,12 @@ StartWindow::StartWindow() : QWidget(){
                                     qApp->desktop()->availableGeometry()));
     show();
 }
+
+
+/*------------------------------------------------------------------------------
+ * This slot goes to the corresponding window (InWindow, OutWindowOxy,
+ * OutWindow or OutWindow3D).
+------------------------------------------------------------------------------*/
 
 void StartWindow::advance(){
     if(m_fixedVal->isChecked()){
