@@ -540,7 +540,7 @@ int InWindow::createInFiles(){
             mindim2 = mindim * mindim;
             sqrtmin = sqrt(mindim) + 1;
             for(int l(1); l < sqrtmin; l++){
-                l = l * l;
+                l2 = l * l;
                 if(!(m_nrow->value() % l) && !(m_ncol->value() % l)){
                     div.push_back(l);
                     diff.push_back(fabs(1.0 / (l2) - m_vascDens->value()));
@@ -559,6 +559,8 @@ int InWindow::createInFiles(){
         else{
             vesToDist = 0;
         }
+
+        std::cout << "IVD " << ivd << " vesToDist " << vesToDist << std::endl;
 
         int halfIvd, halfNrow, halfNcol, halfNlayer;
         int imHalfNrow2, lmHalfNlayer2;
@@ -1087,7 +1089,7 @@ int InWindow::loadInData(std::string nFInData){
 
 
 /*------------------------------------------------------------------------------
- * This function goes to the corresponding output window (OutWindowOxy,
+ * This slot goes to the corresponding output window (OutWindowOxy,
  * OutWindow or OutWindow3D).
  * Inputs:
  *  - simType: simulation type (0, 2D not coupled; 2, 2D coupled; 3,
@@ -1120,7 +1122,7 @@ void InWindow::nextWindow(int simType){
 
 
 /*------------------------------------------------------------------------------
- * This function selects and loads an input file.
+ * This slot selects and loads an input file.
 ------------------------------------------------------------------------------*/
 
 void InWindow::selInDataFile(){
