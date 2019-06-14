@@ -11,18 +11,27 @@ close all
 
 nfig = 0;
 path = '../../Carlos/Results/Corr/Dose_5Val_5Rep/Tissue';
+sim = 1;
 % Simulations were performed using the input files *Res.dat. To study the
 % results of simulation considering all biological processes, output files
 % X_1_X.res are used.
+
+% path = '../../Carlos/Results/Corr/NoHypNec_Dose_5Val_5Rep/Tissue';
+% sim = 0;
+% Simulations were performed using the input files *NoHypNec.dat. To study
+% the results of simulation considering all biological processes, except
+% hypoxic necrosis output files X_0_X.res are used.
+
 nTissues = 21;
 P = 5;
 
 fileNames = {'/tumDens','/vascDens', '/vascDens', '/vascDens'...
     '/deadDens', '/pO2Stat', '/pO2Stat'};
 
-outputNames = {'Tumour density', 'Vascular density'...
-    'Pre-existing vascular density', 'Neo-created vascular density'...
-    'Dead cells density', 'Median pO2', 'Mean pO2'};
+outputNames = {'Tumour density (%)', 'Vascular density (%)'...
+    'Pre-existing vascular density (%)'...
+    'Neo-created vascular density (%)', 'Dead cells density (%)'...
+    'Median pO2 (mmHg)', 'Mean pO2 (mmHg)'};
 
 outputCol = [2, 2, 3, 4, 2, 2, 3];
 
@@ -94,9 +103,11 @@ if(nTissue >= 1 && nTissue <= nTissues)
         clear output1 output2
         for j = 1:P
             temp1 = load([pathTissue, char(fileNames(selOut1)), '_'...
-                num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                num2str(i - 1), '_', num2str(sim), '_', num2str(j - 1)...
+                '.res']);
             temp2 = load([pathTissue, char(fileNames(selOut2)), '_'...
-                num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                num2str(i - 1), '_', num2str(sim), '_', num2str(j - 1)...
+                '.res']);
             output1(:, :, j) = temp1(:, [1, outputCol(selOut1)]);
             output2(:, :, j) = temp2(:, [1, outputCol(selOut2)]);
         end
@@ -142,9 +153,11 @@ if(nTissue == 0)
             clear output1 output2
             for j = 1:P
                 temp1 = load([pathTissue, char(fileNames(selOut1)), '_'...
-                    num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                    num2str(i - 1), '_', num2str(sim), '_'...
+                    num2str(j - 1), '.res']);
                 temp2 = load([pathTissue, char(fileNames(selOut2)), '_'...
-                    num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                    num2str(i - 1), '_', num2str(sim), '_'...
+                    num2str(j - 1), '.res']);
                 output1(:, :, j) = temp1(:, [1, outputCol(selOut1)]);
                 output2(:, :, j) = temp2(:, [1, outputCol(selOut2)]);
             end
@@ -220,20 +233,25 @@ end
 
 [sortOutput1, ind] = sort(output1);
 sortOutput2 = output2(ind);
-p = polyfit(sortOutput1, sortOutput2, 2);
+p = polyfit(sortOutput1, sortOutput2, 3);
 
 nfig = nfig + 1;
 figure(nfig)
 hold on
+ax = gca;
+ax.FontSize = 22;
 plot(sortOutput1, sortOutput2, '-o')
-alpha = 0.2;
-beta = 0.6;
-plot(sortOutput1, sortOutput1.^(5/3))
-% plot(sortOutput1, p(1) * sortOutput1 + p(2))
+xfit = linspace(sortOutput1(1), sortOutput1(end), 100);
+plot(xfit, polyval(p, xfit))
 hold off
 grid on
-xlabel(char(outputNames(selOut1)))
-ylabel(char(outputNames(selOut2)))
+% ylim([0, inf])
+xlabel(char(outputNames(selOut1)), 'FontSize', 22)
+ylabel(char(outputNames(selOut2)), 'FontSize', 22)
+title(['Correlation between initial ', char(outputNames(selOut1))...
+    ' and ', char(outputNames(selOut2)),], 'FontSize', 22)
+legend({char(outputNames(selOut1))...
+    ['Fitted ', char(outputNames(selOut1))]}, 'FontSize', 22)
 
 %%
 % This block fits with a polynomial of degree 1 the time-dependent output 1
@@ -265,9 +283,11 @@ for nTissue = 1:nTissues
     for i = 1:nCombPar
         for j = 1:P
             temp1 = load([pathTissue, char(fileNames(selOut1))...
-                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                '_', num2str(i - 1), '_', num2str(sim), '_'...
+                num2str(j - 1), '.res']);
             temp2 = load([pathTissue, char(fileNames(selOut2))...
-                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                '_', num2str(i - 1), '_', num2str(sim), '_'...
+                num2str(j - 1), '.res']);
             output1(:, :, j) = temp1(:, [1, outputCol(selOut1)]);
             output2(:, :, j) = temp2(:, [1, outputCol(selOut2)]);
         end
@@ -357,9 +377,11 @@ for nTissue = 1:nTissues
     for i = 1:nCombPar
         for j = 1:P
             temp1 = load([pathTissue, char(fileNames(selOut1))...
-                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                '_', num2str(i - 1), '_', num2str(sim), '_'...
+                num2str(j - 1), '.res']);
             temp2 = load([pathTissue, char(fileNames(selOut2))...
-                '_', num2str(i - 1), '_1_', num2str(j - 1), '.res']);
+                '_', num2str(i - 1), '_', num2str(sim), '_'...
+                num2str(j - 1), '.res']);
             output1(:, :, j) = temp1(:, [1, outputCol(selOut1)]);
             output2(:, :, j) = temp2(:, [1, outputCol(selOut2)]);
         end
@@ -415,7 +437,7 @@ for i = 1:nCombPar
             meanTisP(2))
         hold off
         grid on
-%         ylim([0, inf])
+        %         ylim([0, inf])
         xlabel('t (h)')
         ylabel(char(outputNames(selOut2)))
         title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i)), ' Gy'])
