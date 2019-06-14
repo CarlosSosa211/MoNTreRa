@@ -4,9 +4,17 @@
 
 #include "simThread.hpp"
 
+/*------------------------------------------------------------------------------
+ * Constructor of the class SimThread.
+------------------------------------------------------------------------------*/
+
 SimThread::SimThread(QObject *parent) : QThread(parent){
 }
 
+
+/*------------------------------------------------------------------------------
+ * Redefinition of the QThread run method.
+------------------------------------------------------------------------------*/
 
 void SimThread::run(){
     std::ifstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
