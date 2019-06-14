@@ -68,6 +68,7 @@ private:
     QDoubleSpinBox *m_DO2, *m_VmaxO2, *m_KmO2, *m_pO2NormVes, *m_pO2TumVes;
     QDoubleSpinBox *m_hypThres, *m_hypNecThres;
     QDoubleSpinBox *m_constpO2, *m_constpO2NormVes, *m_constpO2TumVes;
+    QDoubleSpinBox *m_constHypThres;
     QLabel *m_simTimeL, *m_oxySimTimeL, *m_simTimeStepL, *m_oxySimTimeStepL;
     QSpinBox *m_simTime, *m_simTimeStep, *m_oxySimTimeStep;
     QPushButton *m_loadInData;
