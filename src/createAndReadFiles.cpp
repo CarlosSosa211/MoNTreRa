@@ -14,12 +14,11 @@ using namespace std;
  *  - tumDens: initial tumour density,
  *  - sigmaTum: initial tumour sigma. A small value (close to 0), indicates that
  *  tumour cells form a cluster at the center of the tissue. For a big value
- *  (close to 1), they appear to follow a uniform distribution.
+ *  (close to 1), they appear to follow a uniform distribution,
  *  - vascDens: initial vascular density,
  *  - sigmaVasc: initial vascular sigma. A small value (close to 0), indicates
  *  that endothelial cells are placed on a regular grid. For a big value
  *  (close to 1), they appear to follow a uniform distribution.
- *  - vascDens: initial vascular density.
  *
  * Outputs:
  *  - inTum: vector containing the initial tumour cell configuration,
@@ -370,6 +369,66 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
     }
 
     for(k = 0; k < nrowNcolNlayer; k++){
+        inVes.push_back(map.at(k).ves);
+    }
+
+    return 0;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function creates the initial configuration of an artificial tissue in
+ * terms of tumour and endothelial cells.
+ *
+ * Inputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - tumDens: initial tumour density,
+ *  - vascDens: initial vascular density.
+ *
+ * Outputs:
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+------------------------------------------------------------------------------*/
+
+int createInFiles(const int nrow, const int ncol, const int nlayer,
+                  const double tumDens, const double vascDens,
+                  vector<bool> &inTum, vector<bool> &inVes){
+    int m, tumToDist, vesToDist;
+    int nrowNcol, nrowNcolNlayer;
+    double n;
+    vector<simpCell> map(nrowNcolNlayer);
+    default_random_engine gen;
+    normal_distribution<double> dist(0, 2.0);
+
+    nrowNcol = nrow * ncol;
+    nrowNcolNlayer = nrowNcol * nlayer;
+    vesToDist = vascDens * nrowNcolNlayer;
+    tumToDist = min(tumDens * nrowNcolNlayer, nrowNcolNlayer - vesToDist);
+
+    while(vesToDist > 0){
+        n = dist(gen);
+        if(n >= 0.0 && n < 1.0){
+            m = n * nrowNcolNlayer;
+            map.at(m).ves = 1;
+            vesToDist--;
+        }
+    }
+
+    while(tumToDist > 0){
+        n = dist(gen);
+        if(n >= 0.0 && n < 1.0){
+            m = n * nrowNcolNlayer;
+            if(!map.at(m).ves){
+                map.at(m).tum = 1;
+                tumToDist--;
+            }
+        }
+    }
+
+    for(int k(0); k < nrowNcolNlayer; k++){
+        inTum.push_back(map.at(k).tum);
         inVes.push_back(map.at(k).ves);
     }
 
