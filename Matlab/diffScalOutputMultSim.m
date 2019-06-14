@@ -14,10 +14,10 @@ close all
 
 nfig = 0;
 path = '../../Carlos/Results/Diff/';
-% pathSim = {'Ang_Dose_5Val_5Rep/', 'Ang_Dose_5Val_5Rep/'...
-%     'Res_Dose_5Val_5Rep/', 'Arrest_Dose_5Val_5Rep/'...
-%     'HypNec_Dose_5Val_5Rep/'};
-% tSim = [1, 0, 0, 0, 0];
+pathSim = {'Ang_Dose_5Val_5Rep/', 'Ang_Dose_5Val_5Rep/'...
+    'Res_Dose_5Val_5Rep/', 'Arrest_Dose_5Val_5Rep/'...
+    'HypNec_Dose_5Val_5Rep/'};
+tSim = [1, 0, 0, 0, 0];
 % pathSim = {'AngRes_Dose_5Val_5Rep/', 'AngRes_Dose_5Val_5Rep/'...
 %     'AngArrest_Dose_5Val_5Rep/', 'ResArrest_Dose_5Val_5Rep/'};
 % tSim = [1, 0, 0, 0];
@@ -25,9 +25,9 @@ path = '../../Carlos/Results/Diff/';
 % tSim = [1, 0];
 % pathSim = {'Ang_Dose_5Val_5Rep/', 'OxyNoAngNoHypNec_Dose_5Val_5Rep/'};
 % tSim = [1, 1];
-pathSim = {'TimeConstantOxy_Dose_5Val_5Rep/'...
-    'TimeConstantOxy_Dose_5Val_5Rep/'};
-tSim = [0, 1];
+% pathSim = {'TimeConstantOxy_Dose_5Val_5Rep/'...
+%     'TimeConstantOxy_Dose_5Val_5Rep/'};
+% tSim = [0, 1];
 nSim = length(tSim);
 
 initVascDens = load('../HistSpec/initVascDens.dat');
@@ -36,14 +36,14 @@ nTissues = 21;
 [initVascDens, tissuesVascDens] = sort(initVascDens);
 nOut = 15;
 
-% simN = {'All processes', 'No angiogenesis', 'No healthy cell division'...
-%     'No arrest', 'No hypoxic necrosis'};
+simN = {'All processes', 'No angiogenesis', 'No healthy cell division'...
+    'No arrest', 'No hypoxic necrosis'};
 % simN = {'All processes', 'No angiogenesis, no healthy cell division'...
 %     'No angiogenesis, no arrest', 'No healthy cell division, no arrest'};
 % simN = {'All processes'...
 %     'No angiogenesis, no healthy cell division, no arrest'};
 % simN = {'All processes', 'No angiogenesis, no hypoxic necrosis'};
-simN = {'All processes', 'Time constant oxygenation'};
+% simN = {'All processes', 'Time constant oxygenation'};
 
 fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
     '/finTumVol.res', '/intTumDens.res', '/killed50.res'...
@@ -221,6 +221,8 @@ end
 hold on
 hBar = bar(meanOut);
 xticks(tDose')
+ax = gca;
+ax.FontSize = 22;
 title(['All tissues - ', char(outputNames(selOut))], 'FontSize', 22)
 xpos = zeros(length(tDose), nSim);
 ypos = zeros(length(tDose), nSim);
