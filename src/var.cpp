@@ -128,6 +128,202 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
 
 
 /*------------------------------------------------------------------------------
+ * This function studies the impact of the initial tumour and vascular
+ * densities, supposing a random uniform distribution. Mean values of ranges are
+ * used for the parameters.
+ *
+ * Inputs:
+ *  - N: number of possible values of each density (N x N combinations, in
+ *  total),
+ *  - P: number of repetitions of each combination,
+ *  - nFDensInt: name of the file containing the intervals of the tumor and
+ *  vascular densities,
+ *  - nFInTissueDim: name of the file containing the dimensions of an artificial
+ *  tissue,
+ *  - nFRefParMean: name of the file containing the mean values of the
+ *  parameters.
+------------------------------------------------------------------------------*/
+
+void varArtTissue(const int N, const int P, const string nFDensInt,
+                  const string nFInTissueDim, const string nFRefParMean){
+    const int K(39), nOut(15);
+    int nrow, ncol, nlayer;
+    double cellSize;
+    readInFiles(nFInTissueDim, nrow, ncol, nlayer, cellSize);
+
+    double tumDensMin, tumDensInt, vascDensMin, vascDensInt;
+    ifstream fDensInt(nFDensInt.c_str());
+
+    fDensInt >> tumDensMin >> tumDensInt;
+    fDensInt >> vascDensMin >> vascDensInt;
+    fDensInt.close();
+
+    tumDensInt  -= tumDensMin;
+    vascDensInt -= vascDensMin;
+
+    double x[K];
+    ifstream fRefParMean(nFRefParMean.c_str());
+
+    for(int k(0); k < K; k++){
+        fRefParMean >> x[k];
+    }
+    fRefParMean.close();
+
+    const int NN(N * N), nEvTot(NN * P), nrowNcolNlayer(nrow * ncol *nlayer);
+    int nEv(0);
+    double tumDens, vascDens;
+    double y[P][nOut], ymean[nOut], ystd[nOut];
+    vector<bool> inTum(nrowNcolNlayer), inVes(nrowNcolNlayer);
+    string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
+    string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
+    ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
+    ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
+    ofstream fFinTumVol("../OutputFiles/finTumVol.res");
+    ofstream fIntTumDens("../OutputFiles/intTumDens.res");
+    ofstream fKilled50("../OutputFiles/killed50.res");
+    ofstream fKilled80("../OutputFiles/killed80.res");
+    ofstream fKilled90("../OutputFiles/killed90.res");
+    ofstream fKilled95("../OutputFiles/killed95.res");
+    ofstream fTimeTo95("../OutputFiles/timeTo95.res");
+    ofstream fKilled99("../OutputFiles/killed99.res");
+    ofstream fTimeTo99("../OutputFiles/timeTo99.res");
+    ofstream fKilled999("../OutputFiles/killed999.res");
+    ofstream fRec("../OutputFiles/rec.res");
+    ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fRecTime("../OutputFiles/recTime.res");
+    ofstream fCombDens("../OutputFiles/combDens.res");
+
+    for(int i(0); i < NN; i++){
+        for(int j(0); j < nOut; j++){
+            ymean[j] = 0.0;
+            ystd[j] = 0.0;
+        }
+
+        tumDens  = tumDensMin + double(rand()) / double(RAND_MAX) * tumDensInt;
+        vascDens = vascDensMin + double(rand()) / double(RAND_MAX) *
+                vascDensInt;
+        cout << "tumDens: " << tumDens << endl;
+        cout << "vascDens: " << vascDens << endl;
+
+        for(int p(0); p < P; p++){
+            nFTumDens     = "../OutputFiles/tumDens_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFTumVol      = "../OutputFiles/tumVol_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFVascDens    = "../OutputFiles/vascDens_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFKilledCells = "../OutputFiles/killedCells_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFDeadDens    = "../OutputFiles/deadDens_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFCycle       = "../OutputFiles/cycle_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFHypDens     = "../OutputFiles/hypDens_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(i) + "_" +
+                    to_string(p) + ".res";
+            createInFiles(nrow, ncol, nlayer, tumDens, vascDens, inTum,
+                          inVes);
+            model(x, y[p], nrow, ncol, nlayer, cellSize, inTum, inVes,
+                  nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens,
+                  nFCycle, nFHypDens, nFPO2Stat, nFVegfStat);
+            nEv++;
+
+            cout << nEv << " out of " << nEvTot <<
+                    " evaluations of the model" << endl;
+            cout << "---------------------------------------------" << endl;
+
+            for(int j(0); j < nOut; j++){
+                ymean[j] += y[p][j];
+            }
+        }
+
+        for(int j(0); j < nOut; j++){
+            ymean[j] /= P;
+        }
+
+        fEndTreatTumDens << ymean[0]  << " ";
+        f3MonTumDens     << ymean[1]  << " ";
+        fFinTumVol       << ymean[2]  << " ";
+        fIntTumDens      << ymean[3]  << " ";
+        fKilled50        << ymean[4]  << " ";
+        fKilled80        << ymean[5]  << " ";
+        fKilled90        << ymean[6]  << " ";
+        fKilled95        << ymean[7]  << " ";
+        fTimeTo95        << ymean[8]  << " ";
+        fKilled99        << ymean[9]  << " ";
+        fTimeTo99        << ymean[10] << " ";
+        fKilled999       << ymean[11] << " ";
+        fRec             << ymean[12] << " ";
+        fRecTumDens      << ymean[13] << " ";
+        fRecTime         << ymean[14] << " ";
+
+        if(P > 1){
+            for(int j(0); j < nOut; j++){
+                for(int p(0); p < P; p++){
+                    ystd[j] += (y[p][j] - ymean[j]) * (y[p][j] - ymean[j]);
+                }
+                ystd[j] = sqrt(ystd[j] / (P - 1.0));
+            }
+
+            fEndTreatTumDens << ystd[0]  << " ";
+            f3MonTumDens     << ystd[1]  << " ";
+            fFinTumVol       << ystd[2]  << " ";
+            fIntTumDens      << ystd[3]  << " ";
+            fKilled50        << ystd[4]  << " ";
+            fKilled80        << ystd[5]  << " ";
+            fKilled90        << ystd[6]  << " ";
+            fKilled95        << ystd[7]  << " ";
+            fTimeTo95        << ystd[8]  << " ";
+            fKilled99        << ystd[9]  << " ";
+            fTimeTo99        << ystd[10] << " ";
+            fKilled999       << ystd[11] << " ";
+            fRec             << ystd[12] << " ";
+            fRecTumDens      << ystd[13] << " ";
+            fRecTime         << ystd[14] << " ";
+        }
+
+        fEndTreatTumDens << endl;
+        f3MonTumDens     << endl;
+        fFinTumVol       << endl;
+        fIntTumDens      << endl;
+        fKilled50        << endl;
+        fKilled80        << endl;
+        fKilled90        << endl;
+        fKilled95        << endl;
+        fTimeTo95        << endl;
+        fKilled99        << endl;
+        fTimeTo99        << endl;
+        fKilled999       << endl;
+        fRec             << endl;
+        fRecTumDens      << endl;
+        fRecTime         << endl;
+
+        fCombDens << tumDens << " " << vascDens << endl;
+    }
+
+    fEndTreatTumDens.close();
+    f3MonTumDens.close();
+    fFinTumVol.close();
+    fIntTumDens.close();
+    fKilled50.close();
+    fKilled80.close();
+    fKilled90.close();
+    fKilled95.close();
+    fTimeTo95.close();
+    fKilled99.close();
+    fTimeTo99.close();
+    fKilled999.close();
+    fRec.close();
+    fRecTumDens.close();
+    fRecTime.close();
+    fCombDens.close();
+}
+
+
+/*------------------------------------------------------------------------------
  * This function studies the impact of varying one or more parameters on both
  * scalar and time-dependent outputs of the model. For the most relevant
  * parameters of the model, several values within their ranges are used. For the
@@ -203,7 +399,8 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
     readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                 cellSize, inTum, inVes);
 
-    int nEv(0), nEvTot(2 * pow(L, nMostRelPar) * P);
+    const int nEvTot(2 * pow(L, nMostRelPar) * P);
+    int nEv(0);
     double y0[P][nOut], y0mean[nOut], y0std[nOut];
     double y1[P][nOut], y1mean[nOut], y1std[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
@@ -301,10 +498,6 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
                     "1_" + to_string(p) + ".res";
             nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(count) +
                     "_" + "1_" + to_string(p) + ".res";
-
-            /*for (int i(0); i < inVes.size(); i++){
-                cout << inVes[i] << endl;
-            }*/
 
             model(x, y1[p], nrow, ncol, nlayer, cellSize, inTum, inVes,
                   nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens,
@@ -525,7 +718,7 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
  *
  * Inputs:
  *  - N: number of random combinations,
- *  - P: number of repetitions for each combination
+ *  - P: number of repetitions for each combination,
  *  - nRefParInt: name of the file containing the reference ranges for all the
  *  parameters,
  *  - nFInTissueDim: name of the file containing the dimensions of a
@@ -542,7 +735,6 @@ void varStoch(const int N, const int P, const string nFRefParInt,
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
-    vector<double> inPO2;
 
     readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                 cellSize, inTum, inVes);
