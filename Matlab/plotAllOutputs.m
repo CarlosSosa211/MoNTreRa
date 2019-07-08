@@ -2,10 +2,14 @@ function plotAllOutputs(path, nTissue)
 global nPar
 global b nfig;
 
-endTreatTumDens = load([path, '/morrisEndTreatTumDens_', num2str(nTissue), '.res']);
-endTreatTumDens(:, 3) = sqrt(endTreatTumDens(:, 1).^2 + endTreatTumDens(:, 2).^2);
-threeMonTumDens = load([path, '/morris3MonTumDens_', num2str(nTissue), '.res']);
-threeMonTumDens(:, 3) = sqrt(threeMonTumDens(:, 1).^2 + threeMonTumDens(:, 2).^2);
+endTreatTumDens = load([path, '/morrisEndTreatTumDens_'...
+    num2str(nTissue), '.res']);
+endTreatTumDens(:, 3) = sqrt(endTreatTumDens(:, 1).^2 +...
+    endTreatTumDens(:, 2).^2);
+threeMonTumDens = load([path, '/morris3MonTumDens_', num2str(nTissue)...
+    '.res']);
+threeMonTumDens(:, 3) = sqrt(threeMonTumDens(:, 1).^2 +...
+    threeMonTumDens(:, 2).^2);
 recTumDens = load([path, '/morrisRecTumDens_', num2str(nTissue), '.res']);
 recTumDens(:, 3) = sqrt(recTumDens(:, 1).^2 + recTumDens(:, 2).^2);
 tumVol = load([path, '/morrisTumVol_', num2str(nTissue), '.res']);
@@ -50,10 +54,12 @@ ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
 set(ax,'XTickLabel', cOut(:, 9));
 ax.YGrid = 'on';
+ax.FontSize = 22;
 ylim([0, inf])
-title(['Tissue ', num2str(nTissue), ' - All outputs'], 'fontsize', 20)
-legend({'Tumour density at the end of treat.', 'Tumour density 3 months after the end of treat.'...
-    'Tumour density at recurrence beginning', 'Final tumour volume',  'Integral of tumour density'...
-    'Time to kill 95%', 'Time to kill 99%', 'Recurrence beginnning time'},...
-    'location', 'northwest', 'fontsize', 20)
+title(['Tissue ', num2str(nTissue), ' - All outputs'], 'fontsize', 22)
+legend({'Tumour density at the end of treat.'...
+    'Tumour density 3 months after the end of treat.'...
+    'Tumour density at recurrence beginning', 'Final tumour volume'...
+    'Integral of tumour density', 'Time to kill 95%', 'Time to kill 99%'...
+    'Recurrence beginnning time'}, 'location', 'northwest', 'fontsize', 22)
 xtickangle(45)
