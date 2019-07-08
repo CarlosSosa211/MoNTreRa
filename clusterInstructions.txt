@@ -1,0 +1,17 @@
+ssh mcastro@129.20.25.215
+password L7$vg9pf
+
+To copy the files:
+sudo scp [-r] source-file mcastro@129.20.25.215:
+
+
+Another possibility copy only one file:
+go to the source-directory
+sftp mcastro@129.20.25.215
+go to the target-directory
+put filename
+bye
+
+
+
+exit
