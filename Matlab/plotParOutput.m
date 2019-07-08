@@ -64,8 +64,10 @@ maxVal = 1.1 * max([reshape(output(par, 1, :), 1, [])...
 plot([0, maxVal], [0, maxVal], '--k')
 hold off
 
-xlabel('\mu*', 'fontsize', 20)
-ylabel('\sigma', 'fontsize', 20)
+xlabel('\mu*', 'fontsize', 22)
+ylabel('\sigma', 'fontsize', 22)
+ax = gca;
+ax.FontSize = 22;
 titleDens = strcat(string(b(par)), ' - ', char(outputNames(selOut)));
 title(titleDens, 'interpreter', 'latex', 'fontsize', 20)
 axis([0, maxVal, 0, maxVal])
