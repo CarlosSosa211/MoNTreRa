@@ -19,11 +19,15 @@ end
 plot([0, 1.1 * max([output(:, 1); output(:, 2)])],...
     [0, 1.1 * max([output(:, 1); output(:, 2)])], '--k')
 legend(b, 'Location', 'bestoutside', 'interpreter', 'latex',...
-    'fontsize', 16)
-xlabel('\mu*')
-ylabel('\sigma')
+    'fontsize', 14)
+% columnlegend(2, b, 'location', 'bestoutside', 'interpreter', 'latex',...
+%     'fontsize', 16)
+xlabel('\mu*', 'fontsize', 22)
+ylabel('\sigma', 'fontsize', 22)
+ax = gca;
+ax.FontSize = 22;
 title(['Tissue ', num2str(n), ' - ', char(outputNames(selOut))],...
-    'fontsize', 20)
+    'fontsize', 22)
 axis([0,  1.1 * max([output(:, 1); output(:, 2)]),...
     0,  1.1 * max([output(:, 1); output(:, 2)])])
 grid on
@@ -39,10 +43,11 @@ ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
 set(ax,'XTickLabel', cOutput(:, 5));
 ax.YGrid = 'on';
+ax.FontSize = 20;
 title(['Tissue ', num2str(n), ' - ', char(outputNames(selOut))],...
-    'fontsize', 20)
+    'fontsize', 22)
 legend({'$\frac{\mu*^2}{\sqrt{\mu*^2 + \sigma^2}}$'...
     '$\sqrt{\mu*^2 + \sigma^2}$'}, 'location', 'northwest',...
-    'interpreter', 'latex', 'fontsize', 20)
+    'interpreter', 'latex', 'fontsize', 22)
 xtickangle(45)
 end
