@@ -50,29 +50,31 @@ plot([0, 1.1 * max([output(:, 1); output(:, 2)])],...
     [0, 1.1 * max([output(:, 1); output(:, 2)])], '--k')
 hold off
 
+ax = gca;
+ax.FontSize = 22;
 switch tissueSet
     case 1
-        title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 20)
+        title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 22)
     case 2
         title(['11 dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 20)
+            'fontsize', 22)
     case 3
         title(['10 non-dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 20)
+            'fontsize', 22)
     case 4
         title(['11 vascularized tissues - ', char(outputNames(selOut))],...
-            'fontsize', 20)
+            'fontsize', 22)
     case 5
         title(['10 non-vascularized tissues - '...
-            char(outputNames(selOut))], 'fontsize', 20)
+            char(outputNames(selOut))], 'fontsize', 22)
 end
 axis([0, 1.1 * max([output(:, 1); output(:, 2)]),...
     0, 1.1 * max([output(:, 1); output(:, 2)])])
 grid on
 legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex',...
     'fontsize', 16)
-xlabel('\mu*', 'fontsize', 20)
-ylabel('\sigma', 'fontsize', 20)
+xlabel('\mu*', 'fontsize', 22)
+ylabel('\sigma', 'fontsize', 22)
 
 nfig = nfig + 1;
 figure(nfig);
@@ -81,23 +83,25 @@ hBar = bar(cell2mat(cOutput(:, 3:4)));
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
 set(ax, 'XTick', 1:nPar)
-set(ax,'XTickLabel', cOutput(:, 9), 'fontsize', 20);
+set(ax,'XTickLabel', cOutput(:, 9), 'fontsize', 22);
 ax.YGrid = 'on';
+ax = gca;
+ax.FontSize = 22;
 switch tissueSet
     case 1
         title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 20)
     case 2
         title(['11 dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 20)
+            'fontsize', 22)
     case 3
         title(['10 non-dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 20)
+            'fontsize', 22)
     case 4
         title(['11 vascularized tissues - ', char(outputNames(selOut))],...
-            'fontsize', 20)
+            'fontsize', 22)
     case 5
         title(['10 non-vascularized tissues - '...
-            char(outputNames(selOut))], 'fontsize', 20)
+            char(outputNames(selOut))], 'fontsize', 22)
 end
 
 xpos = zeros(nPar, 2);
