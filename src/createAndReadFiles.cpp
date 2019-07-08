@@ -252,7 +252,7 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
                   const double vascDens, const double sigmaVasc,
                   vector<bool> &inVes){
     int ivd, ivd2, l2;
-    int mindim, mindim2, sqrtmin, tumToDist, vesToDist;
+    int mindim, mindim2, sqrtmin, vesToDist;
     int nrowNcol, nrowNcolNlayer;
     vector<int> div;
     vector<double> diff;
@@ -277,7 +277,7 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 
         ivd = div.at(min_element(diff.begin(), diff.end()) - diff.begin());
         ivd2 = ivd * ivd;
-        vesToDist = min(nrowNcol / ivd2, nrowNcolNlayer - tumToDist);
+        vesToDist = nrowNcol / ivd2;
     }
 
     else{
@@ -378,7 +378,8 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 
 /*------------------------------------------------------------------------------
  * This function creates the initial configuration of an artificial tissue in
- * terms of tumour and endothelial cells.
+ * terms of tumour and endothelial cells, supposing a random uniform
+ * distribution.
  *
  * Inputs:
  *  - nrow: number of rows of the tissue,
@@ -395,41 +396,39 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 int createInFiles(const int nrow, const int ncol, const int nlayer,
                   const double tumDens, const double vascDens,
                   vector<bool> &inTum, vector<bool> &inVes){
+    const int nrowNcolNlayer(nrow * ncol * nlayer);
     int m, tumToDist, vesToDist;
-    int nrowNcol, nrowNcolNlayer;
     double n;
     vector<simpCell> map(nrowNcolNlayer);
-    default_random_engine gen;
-    normal_distribution<double> dist(0, 2.0);
-
-    nrowNcol = nrow * ncol;
-    nrowNcolNlayer = nrowNcol * nlayer;
     vesToDist = vascDens * nrowNcolNlayer;
-    tumToDist = min(tumDens * nrowNcolNlayer, nrowNcolNlayer - vesToDist);
+    tumToDist = min(int(tumDens * nrowNcolNlayer), nrowNcolNlayer - vesToDist);
+
+    for(int k(0); k < nrowNcolNlayer; k++){
+        map.at(k).tum = 0;
+        map.at(k).ves = 0;
+    }
 
     while(vesToDist > 0){
-        n = dist(gen);
-        if(n >= 0.0 && n < 1.0){
-            m = n * nrowNcolNlayer;
+        n = double(rand()) / double(RAND_MAX);
+        m = n * nrowNcolNlayer;
+        if(!map.at(m).ves){
             map.at(m).ves = 1;
             vesToDist--;
         }
     }
 
     while(tumToDist > 0){
-        n = dist(gen);
-        if(n >= 0.0 && n < 1.0){
-            m = n * nrowNcolNlayer;
-            if(!map.at(m).ves){
-                map.at(m).tum = 1;
-                tumToDist--;
-            }
+        n = double(rand()) / double(RAND_MAX);
+        m = n * nrowNcolNlayer;
+        if(!map.at(m).ves && !map.at(m).tum){
+            map.at(m).tum = 1;
+            tumToDist--;
         }
     }
 
     for(int k(0); k < nrowNcolNlayer; k++){
-        inTum.push_back(map.at(k).tum);
-        inVes.push_back(map.at(k).ves);
+        inTum.at(k) = map.at(k).tum;
+        inVes.at(k) = map.at(k).ves;
     }
 
     return 0;
@@ -522,6 +521,33 @@ void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
         fInVes >> temp;
     }
     fInVes.close();
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function reads the files containing the dimensions and the initial
+ * configuration in terms of endothelial cell of a tissue.
+ *
+ * Inputs:
+ *  - nFInTissueDim: name of the file containing the dimensions of a tissue,
+ *  - nFInVes: name of the file containing the initial endothelial cell
+ *  configuration of a tissue.
+ *
+ * Outputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue.
+------------------------------------------------------------------------------*/
+
+void readInFiles(const string nFInTissueDim, int &nrow, int &ncol, int &nlayer,
+                 double &cellSize){
+    ifstream fInTissueDim(nFInTissueDim.c_str());
+
+    fInTissueDim >> nrow >> ncol >> nlayer;
+    fInTissueDim >> cellSize;
+    fInTissueDim.close();
 }
 
 

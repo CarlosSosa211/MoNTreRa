@@ -28,6 +28,8 @@ void readInFiles(const std::string nFInTissueDim, const std::string nFInTum,
 void readInFiles(const std::string nFInTissueDim, const std::string nFInVes,
                  int &nrow, int &ncol, int &nlayer, double &cellSize,
                  std::vector<bool> &inVes);
+void readInFiles(const std::string nFInTissueDim, int &nrow, int &ncol,
+                 int &nlayer, double &cellSize);
 void readInFilesOxy(const std::string nFInTissueOxy, bool &art, int &nrow,
                     int &ncol, int &nlayer, double &cellSize, double &vascDens,
                     double &sigmaVasc);
