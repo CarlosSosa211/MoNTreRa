@@ -118,8 +118,8 @@ class Tissue : public Model{
 public:
     Tissue(const int nrow, const int ncol, const int nlayer,
            const double cellSize, const std::vector<bool> &inTum,
-           const std::vector<bool> &inVes, const bool tumGrowth,
-           const double doubTime, const int edgeOrder,
+           const std::vector<bool> &inVes, const int edgeOrder,
+           const bool tumGrowth, const double doubTime,
            std::vector<double> cycDur, std::vector<double> cycDistrib,
            const bool res, const double fibDoubTime, const bool ang,
            const double angTime, const double vegfThres,

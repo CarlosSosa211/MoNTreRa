@@ -47,10 +47,11 @@ InWindow::InWindow() : QWidget(){
     for(int i(0); i < 4; i++){
         m_dist.push_back(new QDoubleSpinBox(m_distGroup));
     }
+    m_edgeOrder  = new QSpinBox(m_paramArch);
 
     m_paramTG->setCheckable(true);
     m_doubTime  = new QDoubleSpinBox(m_paramTG);
-    m_edgeOrder  = new QSpinBox(m_paramTG);
+
     m_timeGroup = new QGroupBox("Fraction of duration of each phase",
                                 m_paramTG);
     for(int i(0); i < 4; i++){
@@ -166,11 +167,11 @@ InWindow::InWindow() : QWidget(){
         m_dist.at(i)->setDecimals(3);
         m_dist.at(i)->setSingleStep(0.01);
     }
+    m_edgeOrder->setMaximum(10);
 
     m_doubTime->setMaximum(9999.9);
     m_doubTime->setSingleStep(1.0);
     m_doubTime->setDecimals(1);
-    m_edgeOrder->setMaximum(10);
     for(int i(0); i < 4; i++){
         m_time.at(i)->setMaximum(1.0);
         m_time.at(i)->setDecimals(3);
@@ -254,10 +255,10 @@ InWindow::InWindow() : QWidget(){
     formLayoutArch->addRow(m_artif);
     formLayoutArch->addRow(m_artifGroup);
     formLayoutArch->addRow(m_distGroup);
+    formLayoutArch->addRow("Edge order", m_edgeOrder);
     m_paramArch->setLayout(formLayoutArch);
 
     formLayoutTG->addRow("Doubling time of tumor cells (h)", m_doubTime);
-    formLayoutTG->addRow("Edge order", m_edgeOrder);
     QFormLayout *timeLayout = new QFormLayout;
     timeLayout->addRow("Phase G1", m_time.at(0));
     timeLayout->addRow("Phase S", m_time.at(1));
@@ -748,11 +749,11 @@ int InWindow::createInFiles(){
     for(int i(0); i < 4; i++){
         fParam << m_dist.at(i)->value() << std::endl;
     }
+    fParam << m_edgeOrder->value() << std::endl;
 
     fParam << m_paramTG->isChecked() << std::endl;
     if(m_paramTG->isChecked()){
         fParam << m_doubTime->value() << std::endl;
-        fParam << m_edgeOrder->value() << std::endl;
         for(int i(0); i < 4; i++){
             fParam << m_time.at(i)->value() << std::endl;
         }
@@ -919,6 +920,7 @@ int InWindow::loadInData(std::string nFInData){
     m_vascDens->setValue(vascDens);
     m_sigmaVasc->setValue(sigmaVasc);
 
+    int edgeOrder(0);
     std::vector<double> cycDistrib(4, 0.0);
 
     for(int i(0); i < 4; i++){
@@ -927,16 +929,17 @@ int InWindow::loadInData(std::string nFInData){
     for(int i(0); i < 4; i++){
         m_dist.at(i)->setValue(cycDistrib.at(i));
     }
+    fInData >> edgeOrder;
+    m_edgeOrder->setValue(edgeOrder);
 
     bool tumGrowth;
-    int edgeOrder(0);
     double doubTime(0.0);
     std::vector<double> cycDur(4, 0.0);
 
     fInData >> tumGrowth;
     m_paramTG->setChecked(tumGrowth);
     if(tumGrowth){
-        fInData >> doubTime >> edgeOrder;
+        fInData >> doubTime;
         for(int i(0); i < 4; i++){
             fInData >> cycDur.at(i);
         }
@@ -946,7 +949,6 @@ int InWindow::loadInData(std::string nFInData){
     }
 
     m_doubTime->setValue(doubTime);
-    m_edgeOrder->setValue(edgeOrder);
     for(int i(0); i < 4; i++){
         m_time.at(i)->setValue(cycDur.at(i));
     }

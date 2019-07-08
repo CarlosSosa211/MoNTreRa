@@ -24,9 +24,9 @@ using namespace std;
  *  of the tissue (um),
  *  - inTum: vector containing the initial tumour cell configuration,
  *  - inVes: vector containing the initial endothelial cell configuration,
+ *  - edgeOrder: order of the edge of cells,
  *  - tumGrowth: tumour growth,
  *  - doubTime: duration of the cycle of tumour cells (h),
- *  - edgeOrder: order of the edge of cells,
  *  - cycDur: vector containing the duration fractions of every phase of the
  *  cell cycle,
  *  - cycDistrib: vector containing the initial distribution of tumour cells in
@@ -51,8 +51,8 @@ using namespace std;
 
 Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                const double cellSize, const vector<bool> &inTum,
-               const vector<bool> &inVes, const bool tumGrowth,
-               const double doubTime, const int edgeOrder,
+               const vector<bool> &inVes, const int edgeOrder,
+               const bool tumGrowth, const double doubTime,
                vector<double> cycDur, vector<double> cycDistrib,
                const bool res, const double fibDoubTime, const bool ang,
                const double angTime, const double vegfThres,
@@ -156,24 +156,19 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
             }
 
             else{
-                if(((Cell *)m_comp->at(k))->searchInitSpaceForTum()){
-                    n = double(rand()) / double(RAND_MAX);
-                    if(n < cycDistrib.at(0)){
-                        inputTimer = -1.0;
-                    }
-                    else if(n < cycDistrib.at(0) + cycDistrib.at(1)){
-                        inputTimer = -2.0;
-                    }
-                    else if(n < cycDistrib.at(0) + cycDistrib.at(1) +
-                            cycDistrib.at(2)){
-                        inputTimer = -3.0;
-                    }
-                    else{
-                        inputTimer = -4.0;
-                    }
+                n = double(rand()) / double(RAND_MAX);
+                if(n < cycDistrib.at(0)){
+                    inputTimer = -1.0;
+                }
+                else if(n < cycDistrib.at(0) + cycDistrib.at(1)){
+                    inputTimer = -2.0;
+                }
+                else if(n < cycDistrib.at(0) + cycDistrib.at(1) +
+                        cycDistrib.at(2)){
+                    inputTimer = -3.0;
                 }
                 else{
-                    inputTimer = -5.0;
+                    inputTimer = -4.0;
                 }
             }
         }
@@ -189,7 +184,7 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
         }
 
         else{
-            if(1){
+            if(res){
                 n = double(rand()) / double(RAND_MAX);
                 inputTimer = n * fibDoubTime;
             }
@@ -197,10 +192,10 @@ Tissue::Tissue(const int nrow, const int ncol, const int nlayer,
                 inputTimer = 0.0;
             }
         }
-
         ((Cell *)m_comp->at(k))->setInTimer(inputTimer);
     }
 }
+
 
 /*------------------------------------------------------------------------------
  * Destructor of the class Tissue.

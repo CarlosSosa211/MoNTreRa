@@ -27,17 +27,17 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
     int k(0);
-    const int tumGrowth(x[k] > 0.5);
+    const int edgeOrder(x[k]);
+    k++;
+    const bool tumGrowth(x[k] > 0.5);
     k++;
     const double tumTime(x[k]);
     k++;
-    const int edgeOrder(x[k]);
-    k++;
-    const int res(x[k] > 0.5);
+    const bool res(x[k] > 0.5);
     k++;
     const double fibTime(x[k]);
     k++;
-    const int ang(x[k] > 0.5);
+    const bool ang(x[k] > 0.5);
     k++;
     const double vascTumTime(x[k]);
     k++;
@@ -81,9 +81,9 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     const double hypThres(x[k]);
     k++;
 
+    cout << "edgeOrder: "   << edgeOrder   << endl;
     cout << "tumGrowth: "   << tumGrowth   << endl;
     cout << "tumTime: "     << tumTime     << " h" << endl;
-    cout << "edgeOrder: "   << edgeOrder   << endl;
     cout << "res: "         << res         << endl;
     cout << "fibTime: "     << fibTime     << " h" << endl;
     cout << "ang: "         << ang         << endl;
@@ -122,8 +122,8 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     Tissue *model1;
     OxyTissue *model2;
 
-    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, tumGrowth,
-                        tumTime, edgeOrder, cycDur, cycDistrib, res, fibTime,
+    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, edgeOrder,
+                        tumGrowth, tumTime, cycDur, cycDistrib, res, fibTime,
                         ang, vascTumTime, vegfThres, alpha, beta, treatment,
                         doseThres, arrestTime, oxy, hypNecThres);
 
@@ -225,7 +225,7 @@ void model(const double *x, const int nrow, const int ncol, const int nlayer,
            const double cellSize, const vector<bool> & inVes,
            const string nFPO2){
     int k(0);
-    const int ang(x[k] > 0.5);
+    const bool ang(x[k] > 0.5);
     k++;
     double Dvegf(x[k]);
     k++;
@@ -341,17 +341,17 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
     int k(0);
-    const int tumGrowth(x[k]);
+    const int edgeOrder(x[k]);
+    k++;
+    const bool tumGrowth(x[k]);
     k++;
     const double tumTime(x[k]);
     k++;
-    const int edgeOrder(x[k]);
-    k++;
-    const int res(x[k]);
+    const bool res(x[k]);
     k++;
     const double fibTime(x[k]);
     k++;
-    const int ang(x[k]);
+    const bool ang(x[k]);
     k++;
     const double vascTumTime(x[k]);
     k++;
@@ -383,9 +383,9 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     const double hypNecThres(x[k]);
     k++;
 
+    cout << "edgeOrder: "   << edgeOrder   << endl;
     cout << "tumGrowth: "   << tumGrowth   << endl;
     cout << "tumTime: "     << tumTime     << " h" << endl;
-    cout << "edgeOrder: "   << edgeOrder   << endl;
     cout << "res: "         << res         << endl;
     cout << "fibTime: "     << fibTime     << " h" << endl;
     cout << "ang: "         << ang         << endl;
@@ -418,8 +418,8 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     Tissue *model1;
     AbsOxyTissue *model2;
 
-    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, tumGrowth,
-                        tumTime, edgeOrder, cycDur, cycDistrib, res, fibTime,
+    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, edgeOrder,
+                        tumGrowth, tumTime, cycDur, cycDistrib, res, fibTime,
                         ang, vascTumTime, vegfThres, alpha, beta, treatment,
                         doseThres, arrestTime, oxy, hypNecThres);
 
