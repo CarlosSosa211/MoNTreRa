@@ -66,20 +66,21 @@ void SimThread::run(){
 
     std::ifstream fParam("../OutputFilesGUI/param.dat");
 
+    int edgeOrder;
     std::vector<double> cycDistrib(4);
 
     for(int i(0); i < 4; i++){
         fParam >> cycDistrib.at(i);
     }
+    fParam >> edgeOrder;
 
     bool tumGrowth;
-    int edgeOrder;
     double doubTime;
     std::vector<double> cycDur(4);
 
     fParam >> tumGrowth;
     if(tumGrowth){
-        fParam >> doubTime >> edgeOrder;
+        fParam >> doubTime;
         for(int i(0); i < 4; i++){
             fParam >> cycDur.at(i);
         }
@@ -180,7 +181,7 @@ void SimThread::run(){
         AbsOxyTissue *model2;
 
         model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes,
-                            tumGrowth, doubTime, edgeOrder, cycDur, cycDistrib,
+                            edgeOrder, tumGrowth, doubTime, cycDur, cycDistrib,
                             res, fibDoubTime, ang, angTime, vegfThres, alpha,
                             beta, treatment, doseThres, arrestTime, oxy,
                             hypNecThres);
