@@ -1382,7 +1382,7 @@ void OutWindow::newSim(){
 void OutWindow::play(){
     m_stPlay = !m_stPlay;
     m_play->setIcon(QIcon("../Figures/pause.png"));
-    for(int k(m_timeS->value()); k < m_timeS->maximum(); k++){
+    for(int k(m_timeS->value()); k <= m_timeS->maximum(); k++){
         if(!m_stPlay){
             m_play->setIcon(QIcon("../Figures/play.png"));
             return;
@@ -1408,17 +1408,17 @@ void OutWindow::saveAllMaps(){
         QDir().mkdir("../Figures/tumDens");
         const int K(m_state.size() * m_simTimeStep);
 
-        for(int k(0); K; k += m_simTimeStep){
+        for(int k(0); k < K; k += m_simTimeStep){
             drawMap(m_selMap->currentIndex(), k);
             emit updateSlider(k);
             fileName = QString::number(k);
             fileName = fileName.rightJustified(4, '0');
             fileName = "../Figures/state/" + fileName + ".png";
-            m_map->grab().save(fileName);
-            fileName = QString::number(k);
+            m_pixState->save(fileName);
+            /*fileName = QString::number(k);
             fileName = fileName.rightJustified(4, '0');
             fileName = "../Figures/tumDens/" + fileName + ".png";
-            m_chartView->grab().save(fileName);
+            m_chartView->grab().save(fileName);*/
             qApp->processEvents();
         }
         break;
@@ -1434,7 +1434,7 @@ void OutWindow::saveAllMaps(){
             fileName = QString::number(k);
             fileName = fileName.rightJustified(4, '0');
             fileName = "../Figures/timer/" + fileName + ".png";
-            m_map->grab().save(fileName);
+            m_pixTimer->save(fileName);
             qApp->processEvents();
         }
         break;
@@ -1450,7 +1450,7 @@ void OutWindow::saveAllMaps(){
             fileName = QString::number(k);
             fileName = fileName.rightJustified(4, '0');
             fileName = "../Figures/pO2/" + fileName + ".png";
-            m_map->grab().save(fileName);
+            m_pixPO2->save(fileName);
             qApp->processEvents();
         }
         break;
@@ -1466,7 +1466,7 @@ void OutWindow::saveAllMaps(){
             fileName = QString::number(k);
             fileName = fileName.rightJustified(4, '0');
             fileName = "../Figures/vegf/" + fileName + ".png";
-            m_map->grab().save(fileName);
+            m_pixVegf->save(fileName);
             qApp->processEvents();
         }
         break;
@@ -1513,7 +1513,7 @@ void OutWindow::saveMap(){
                                                     "Images(*.png *.gif *.jpg"
                                                     "*.jpeg)");
     if(!fileName.isEmpty()){
-        m_map->grab().save(fileName);
+        m_map->pixmap()->save(fileName);
     }
 }
 
