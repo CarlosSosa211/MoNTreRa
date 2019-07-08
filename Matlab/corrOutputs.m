@@ -10,17 +10,14 @@ close all
 % - outputCol: the column number of the output in the corresponding files.
 
 nfig = 0;
-path = '../../Carlos/Results/Corr/Dose_5Val_5Rep/Tissue';
-sim = 1;
-% Simulations were performed using the input files *Res.dat. To study the
-% results of simulation considering all biological processes, output files
-% X_1_X.res are used.
 
-% path = '../../Carlos/Results/Corr/NoHypNec_Dose_5Val_5Rep/Tissue';
-% sim = 0;
+path = '../../Carlos/Results/Corr/NoHypNec_Dose_5Val_5Rep/Tissue';
+sim = 0;
 % Simulations were performed using the input files *NoHypNec.dat. To study
 % the results of simulation considering all biological processes, except
-% hypoxic necrosis output files X_0_X.res are used.
+% hypoxic necrosis output files X_0_X.res are used. To study the
+% results of simulation considering all biological processes, output files
+% X_1_X.res are used.
 
 nTissues = 21;
 P = 5;
@@ -320,13 +317,13 @@ for i = 1:nCombPar
     ylabel(char(outputNames(selOut2)), 'FontSize', 22)
     title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i))...
         ' Gy'], 'FontSize', 22)
+    legend({'Data', 'Fit '}, 'FontSize', 22)
     
     nfig = nfig + 1;
     figure(nfig)
     hold on
     ax = gca;
     ax.FontSize = 22;
-    plot(output1(2:end, 1), output1(2:end, 2))
     plot(output2(2:end, 1), output2(2:end, 2))
     plot(output2(2:end, 1), meanP(nTissue, 1) * output1(2:end, 2) +...
         meanP(nTissue, 2))
@@ -336,8 +333,7 @@ for i = 1:nCombPar
     ylabel(char(outputNames(selOut2)), 'FontSize', 22)
     title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i))...
         ' Gy'], 'FontSize', 22)
-    legend({char(outputNames(selOut1)), char(outputNames(selOut2)),...
-        ['Fitted ', char(outputNames(selOut2))]}, 'FontSize', 22)
+    legend({'Data', 'Fit '}, 'FontSize', 22)
     
 end
 
@@ -401,30 +397,49 @@ p1 = polyfit(initVascDens', meanP(:, 1)', deg);
 p2 = polyfit(initVascDens', meanP(:, 2)', deg);
 
 %%
-% meanTisP = mean(meanP);
-% stdTisP = std(meanP);
+nfig = nfig + 1;
+figure(nfig)
+hold on
+plot(initVascDens', meanP(:, 1)', 'o')
+plot(initVascDens', polyval(p1, initVascDens'))
+hold off
+grid on
+xlabel('Initital vascular density')
+ylabel('p1')
+
+nfig = nfig + 1;
+figure(nfig)
+hold on
+plot(initVascDens', meanP(:, 2)', 'o')
+plot(initVascDens', polyval(p2, initVascDens'))
+hold off
+grid on
+xlabel('Initital vascular density')
+ylabel('p2')
+
+%%
 
 for i = 1:nCombPar
-%     nfig = nfig + 1;
-%     figure(nfig)
-%     nsubplot = 1;
-%     for nTissue = 1:nTissues
-%         subplot(nrowPlot, ncolPlot, nsubplot)
-%         nsubplot = nsubplot + 1;
-%         hold on
-%         output1 = cell2mat(meanOutput1(nTissue, i));
-%         output2 = cell2mat(meanOutput2(nTissue, i));
-%         plot(output1(2:end, 2), output2(2:end, 2))
-%         plot(output1(2:end, 2), (p1(1) * initVascDens(nTissue, 1) +...
-%             p1(2)) * output1(2:end, 2) + p2(1) *...
-%             initVascDens(nTissue, 1) + p2(2))
-%         hold off
-%         grid on
-%         xlabel(char(outputNames(selOut1)))
-%         ylabel(char(outputNames(selOut2)))
-%         title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i))...
-%             ' Gy'])
-%     end
+    nfig = nfig + 1;
+    figure(nfig)
+    nsubplot = 1;
+    for nTissue = 1:nTissues
+        subplot(nrowPlot, ncolPlot, nsubplot)
+        nsubplot = nsubplot + 1;
+        hold on
+        output1 = cell2mat(meanOutput1(nTissue, i));
+        output2 = cell2mat(meanOutput2(nTissue, i));
+        plot(output1(2:end, 2), output2(2:end, 2))
+        plot(output1(2:end, 2), (p1(1) * initVascDens(nTissue, 1) +...
+            p1(2)) * output1(2:end, 2) + p2(1) *...
+            initVascDens(nTissue, 1) + p2(2))
+        hold off
+        grid on
+        xlabel(char(outputNames(selOut1)))
+        ylabel(char(outputNames(selOut2)))
+        title(['Tissue ', num2str(nTissue), ' - ', num2str(par(i))...
+            ' Gy'])
+    end
     
     nfig = nfig + 1;
     figure(nfig)
