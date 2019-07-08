@@ -393,6 +393,27 @@ p1 = polyfit(initDens(:, 2)', meanP(:, 1)', deg);
 p2 = polyfit(initDens(:, 2)', meanP(:, 2)', deg);
 
 %%
+nfig = nfig + 1;
+figure(nfig)
+hold on
+plot(initDens(:, 2)', meanP(:, 1)', 'o')
+plot(initDens(:, 2)', polyval(p1, initDens(:, 2)'))
+hold off
+grid on
+xlabel('Initital vascular density')
+ylabel('p1')
+
+nfig = nfig + 1;
+figure(nfig)
+hold on
+plot(initDens(:, 2)', meanP(:, 2)', 'o')
+plot(initDens(:, 2)', polyval(p2, initDens(:, 2)'))
+hold off
+grid on
+xlabel('Initital vascular density')
+ylabel('p2')
+
+%%
 % meanTisP = mean(meanP);
 % stdTisP = std(meanP);
 
