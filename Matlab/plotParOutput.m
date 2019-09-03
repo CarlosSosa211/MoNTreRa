@@ -59,8 +59,9 @@ else
     end
 end
 
-maxVal = 1.1 * max([reshape(output(par, 1, :), 1, [])...
-    reshape(output(par, 2, :), 1, [])]);
+maxValMu = 1.1 * max(reshape(output(par, 1, :), 1, []));
+maxValSigma = 1.1 * max(reshape(output(par, 2, :), 1, []));
+maxVal = max([maxValMu, maxValSigma]);
 plot([0, maxVal], [0, maxVal], '--k')
 hold off
 
@@ -70,7 +71,7 @@ ax = gca;
 ax.FontSize = 22;
 titleDens = strcat(string(b(par)), ' - ', char(outputNames(selOut)));
 title(titleDens, 'interpreter', 'latex', 'fontsize', 20)
-axis([0, maxVal, 0, maxVal])
+axis([0, maxValMu, 0, maxValSigma])
 grid on
 switch tissueSet
     case 1
@@ -78,7 +79,7 @@ switch tissueSet
             'Dense non-vascularized tissues'...
             'Non-dense vascularized tissues'...
             'Non-dense non-vascularized tissues'},...
-            'location', 'northwest', 'fontsize', 20)
+            'location', 'southeast', 'fontsize', 20)
     case 6
         for i = 1:length(varRange)
             leg(i) = string(varRange(i));
