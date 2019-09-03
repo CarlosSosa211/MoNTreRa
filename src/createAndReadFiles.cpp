@@ -530,8 +530,6 @@ void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
  *
  * Inputs:
  *  - nFInTissueDim: name of the file containing the dimensions of a tissue,
- *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration of a tissue.
  *
  * Outputs:
  *  - nrow: number of rows of the tissue,
