@@ -1,6 +1,6 @@
 clear all
 close all
-global nPar
+global nPar nTotPar selPar
 global allTissues
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
@@ -10,12 +10,17 @@ global fileNames outputNames;
 densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
 nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
 
-vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20];
-nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
+% vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20];
+% nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
+vascTissues = [4, 7, 8, 10, 11, 14, 16, 20];
+nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19];
+% vascTissues = [4, 7, 8, 10];
+% nonVascTissues = [1, 2, 5, 6, 9];
 % allTissues = [densTissues, nonDensTissues];
-allTissues = [1, 2, 5, 9, 14, 15, 16, 17, 19];
+allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19, 20];
+% allTissues = [1, 2, 4, 5, 6, 7, 8, 9, 10];
 
-nPar = 39;
+path = '../../Carlos/Results/Morris100_39Par_Cluster';
 b = {'$tum$', '$T_{tum}$', '$N$', '$hea$', '$T_{heal}$', '$ang$'...
     '$T_{end}$', '$D^{VEGF}$', '$V_{max}^{VEGF}$', '$K_M^{VEGF}$'...
     '$\bar{v}$', '$v^{hyp}$', '$\alpha_{heal}$', '$\alpha/\beta_{heal}$'...
@@ -27,29 +32,43 @@ b = {'$tum$', '$T_{tum}$', '$N$', '$hea$', '$T_{heal}$', '$ang$'...
     '$\alpha/\beta_{neoEnd}$', '$d$', '$d_{thres}$', '$T_{arrest}$'...
     '$oxy$', '$pO_2^{nec}$', '$D^{O_2}$', '$V_{max}^{O_2}$'...
     '$K_M^{O_2}$', '$pO_2^{preEnd}$', '$pO_2^{neoEnd}$', '$pO_2^{hyp}$'};
+nTotPar = length(b);
+selPar = ones(1, nTotPar);
+selPar(1) = 0;
+selPar(4) = 0;
+selPar(6) = 0;
+selPar(32) = 0;
 
-% b = {'$T_{tum}$', '$T_{heal}$', '$T_{end}$', '$\bar{v}$'...
-%     '$\alpha_{heal}$', '$\alpha/\beta_{heal}$', '$\alpha_{tumG1}$'...
-%     '$\alpha/\beta_{tumG1}$', '$\alpha_{tumS}$', '$\alpha/\beta_{tumS}$'...
-%     '$\alpha_{tumG2}$', '$\alpha/\beta_{tumG2}$', '$\alpha_{tumM}$'...
-%     '$\alpha/\beta_{tumM}$', '$\alpha_{tumG0}$'...
-%     '$\alpha/\beta_{tumG0}$', '$\alpha_{preEnd}$'...
+% path = '../../Carlos/Results/Morris100_38Par_2Gy_Cluster';
+% b = {'$N$', '$tum$', '$T_{tum}$', '$hea$', '$T_{heal}$', '$ang$'...
+%     '$T_{end}$', '$D^{VEGF}$', '$V_{max}^{VEGF}$', '$K_M^{VEGF}$'...
+%     '$\bar{v}$', '$v^{hyp}$', '$\alpha_{heal}$', '$\alpha/\beta_{heal}$'...
+%     '$\alpha_{tumG1}$', '$\alpha/\beta_{tumG1}$', '$\alpha_{tumS}$'...
+%     '$\alpha/\beta_{tumS}$', '$\alpha_{tumG2}$'...
+%     '$\alpha/\beta_{tumG2}$', '$\alpha_{tumM}$', '$\alpha/\beta_{tumM}$'...
+%     '$\alpha_{tumG0}$', '$\alpha/\beta_{tumG0}$', '$\alpha_{preEnd}$'...
 %     '$\alpha/\beta_{preEnd}$', '$\alpha_{neoEnd}$'...
 %     '$\alpha/\beta_{neoEnd}$', '$d_{thres}$', '$T_{arrest}$'...
-%     '$pO_2^{nec}$', '$d$', '$D^{O_2}$', '$V_{max}^{O_2}$', '$K_M^{O_2}$'...
-%     '$D^{VEGF}$', '$V_{max}^{VEGF}$', '$K_M^{VEGF}$', '$pO_2^{preEnd}$'...
-%     '$pO_2^{neoEnd}$', '$pO_2^{hyp}$', '$v^{hyp}$'};
-color = linspace(0, 1, nPar);
+%     '$oxy$', '$pO_2^{nec}$', '$D^{O_2}$', '$V_{max}^{O_2}$'...
+%     '$K_M^{O_2}$', '$pO_2^{preEnd}$', '$pO_2^{neoEnd}$', '$pO_2^{hyp}$'};
+% nTotPar = length(b);
+% selPar = ones(1, nTotPar);
+% selPar(2) = 0;
+% selPar(4) = 0;
+% selPar(6) = 0;
+% selPar(31) = 0;
 
+% path = uigetdir('../../Carlos/Results');
+% path = '../../Carlos/Results/Morris100_OneAlphaBeta_Tissue4';
+% path = '../../Carlos/Results/Morris100_8OutputsTest';
+
+b = b(selPar == 1);
+nPar = nnz(selPar);
+color = linspace(0, 1, nPar);
 shape = ['o', 's', 'v', 'd'];
 
 nfig = 0;
 quit = 0;
-
-% path = uigetdir('../../Carlos/Results');
-path = '../../Carlos/Results/Morris100_39Par_Cluster';
-% path = '../../Carlos/Results/Morris100_OneAlphaBeta_Tissue4';
-% path = '../../Carlos/Results/Morris100_8OutputsTest';
 
 fileNames = {'EndTreatTumDens', '3MonTumDens'...
     'FinTumVol', 'IntTumDens', 'Killed50'...
@@ -76,7 +95,7 @@ while(~quit)
         'or all of them (-1)]: ']);
     
     if(selOut >= 1 && selOut <= nOut)
-        tissue = input(['Select one tissue (from 1 to 21) or all of'...
+        tissue = input(['Select one tissue (from 1 to 21) or all of '...
             'them (0) or a mean over them (-1): ']);
         if(tissue >= 1 && tissue <= 21)
             plotOutput(path, tissue, selOut)
@@ -89,7 +108,7 @@ while(~quit)
         end
         
     elseif(selOut == -1)
-        tissue = input(['Select one tissue (from 1 to 21) or all of'...
+        tissue = input(['Select one tissue (from 1 to 21) or all of '...
             'them (0) or a mean over them (-1): ']);
         if(tissue >= 1 && tissue <= 21)
             plotAllOutputs(path, tissue)

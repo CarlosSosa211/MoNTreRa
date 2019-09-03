@@ -1,5 +1,5 @@
 function plotMeanOutput(path, selOut)
-global nPar
+global nPar nTotPar selPar
 global allTissues
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
@@ -23,7 +23,7 @@ switch tissueSet
 end
 
 nTissues = length(tTissues);
-output = zeros(nPar, 4, nTissues);
+output = zeros(nTotPar, 4, nTissues);
 
 for i = 1:length(tTissues)
     output(:, 1:2, i) = load([path, '/morris', char(fileNames(selOut))...
@@ -31,6 +31,8 @@ for i = 1:length(tTissues)
     output(:, 4, i) = sqrt(output(:, 1, i).^2 + output(:, 2, i).^2);
     output(:, 3, i) = output(:, 1, i).^2 ./ output(:, 4, i);
 end
+
+output = output(selPar == 1, :, :);
 
 meanOutput = mean(output, 3);
 stdOutput = std(output, [], 3);

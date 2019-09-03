@@ -1,10 +1,11 @@
 function plotOutput(path, n, selOut)
-global nPar
+global nPar selPar
 global b color nfig shape;
 global fileNames outputNames;
 
 output = load([path, '/morris', char(fileNames(selOut)), '_', num2str(n)...
     '.res']);
+output = output(selPar == 1, :);
 output(:, 4) = sqrt(output(:, 1).^2 + output(:, 2).^2);
 output(:, 3) = output(:, 1).^2 ./ output(:, 4);
 
