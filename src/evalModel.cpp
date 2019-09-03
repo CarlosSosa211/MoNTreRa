@@ -58,8 +58,8 @@ void model(const double *x, double *y, const int nrow, const int ncol,
         beta[i]  = alpha[i] / x[k];
         k++;
     }
-    const double dose(x[k]);
-    k++;
+    //const double dose(x[k]);
+    //k++;
     const double doseThres(x[k]);
     k++;
     const double arrestTime(x[k]);
@@ -103,7 +103,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
         cout << beta[i] << " ";
     }
     cout << "Gy^-2" << endl;
-    cout << "dose: "        << dose        << " Gy" << endl;
+    //cout << "dose: "        << dose        << " Gy" << endl;
     cout << "doseThres: "   << doseThres   << " Gy" << endl;
     cout << "arrestTime: "  << arrestTime  << " h" << endl;
     cout << "oxy: "         << oxy         << endl;
@@ -116,11 +116,225 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     cout << "hypThres: "    << hypThres    << " mmHg" << endl;
 
     Treatment *treatment;
-    treatment = new Treatment(dose, 80.0, 24.0, 0);
+    treatment = new Treatment(2.0, 80.0, 24.0, 0);
 
     Coupler *coupler;
     Tissue *model1;
     OxyTissue *model2;
+
+    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, edgeOrder,
+                        tumGrowth, tumTime, cycDur, cycDistrib, res, fibTime,
+                        ang, vascTumTime, vegfThres, alpha, beta, treatment,
+                        doseThres, arrestTime, oxy, hypNecThres);
+
+    const double oxySimTimeStep(10.0);
+
+    Dvegf    *= oxySimTimeStep;
+    VmaxVegf *= oxySimTimeStep;
+    DO2      *= oxySimTimeStep;
+    VmaxO2   *= oxySimTimeStep;
+
+    model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
+                           VmaxVegf, KmVegf, hypVegf, oxy, DO2, VmaxO2, KmO2,
+                           pO2NormVes, pO2TumVes, hypThres);
+
+    coupler = new Coupler(model1, model2);
+
+    const double simTimeStep(6.0);
+    const double sclFac(3.6e6 * simTimeStep / oxySimTimeStep);
+    const double simTime(2160.0);
+    RootSimulator *sim;
+
+    sim = new RootSimulator(coupler, simTimeStep, oxySimTimeStep, sclFac);
+    sim->initSim();
+    sim->simulate(simTimeStep, simTime);
+    sim->stop();
+
+    double endTreatTumDens(model1->getOutD()[0]);
+    double threeMonTumDens(model1->getOutD()[1]);
+    double tumVol(model1->getOutD()[19]);
+    double intTumDens(model1->getOutD()[2]);
+    double killed50(model1->getOutB()[0]);
+    double killed80(model1->getOutB()[1]);
+    double killed90(model1->getOutB()[2]);
+    double killed95(model1->getOutB()[3]);
+    double timeTo95(model1->getOutD()[6]);
+    double killed99(model1->getOutB()[4]);
+    double timeTo99(model1->getOutD()[7]);
+    double killed999(model1->getOutB()[5]);
+    double rec(model1->getOutB()[6]);
+    double recTumDens(model1->getOutD()[16]);
+    double recTime(model1->getOutD()[17]);
+
+    delete treatment;
+    delete model1;
+    delete model2;
+    delete coupler;
+    delete sim;
+
+    cout << "endTreatTumDens: " << endTreatTumDens << endl;
+    cout << "3MonTumDens: "     << threeMonTumDens << endl;
+    cout << "tumVol: "          << tumVol << " mm3" << endl;
+    cout << "intTumDens: "      << intTumDens << endl;
+    cout << "killed50: "        << killed50 << endl;
+    cout << "killed80: "        << killed80 << endl;
+    cout << "killed90: "        << killed90 << endl;
+    cout << "killed95: "        << killed95 << endl;
+    cout << "timeTo95: "        << timeTo95 << " h" << endl;
+    cout << "killed99: "        << killed99 << endl;
+    cout << "timeTo99: "        << timeTo99 << " h" << endl;
+    cout << "killed999: "       << killed999 << endl;
+    cout << "rec: "             << rec << endl;
+    cout << "recTumDens: "      << recTumDens << endl;
+    cout << "recTime: "         << recTime << " h" << endl;
+
+    y[0]  = endTreatTumDens;
+    y[1]  = threeMonTumDens;
+    y[2]  = tumVol;
+    y[3]  = intTumDens;
+    y[4]  = killed50;
+    y[5]  = killed80;
+    y[6]  = killed90;
+    y[7]  = killed95;
+    y[8]  = timeTo95;
+    y[9]  = killed99;
+    y[10] = timeTo99;
+    y[11] = killed999;
+    y[12] = rec;
+    y[13] = recTumDens;
+    y[14] = recTime;
+}
+
+
+/*------------------------------------------------------------------------------
+ * This functions evaluates the model of tumour growth and response to
+ * radiotherapy using an artificial initial tissue to obtain its scalar outputs.
+ *
+ * Inputs:
+ *  - x: array containing the parameters of the model,
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue.
+ *
+ * Outputs:
+ *  - y: array containing the scalar outputs of the model.
+------------------------------------------------------------------------------*/
+
+void model(const double *x, double *y, const int nrow, const int ncol,
+           const int nlayer, const double cellSize){
+    vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
+    vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
+
+    int k(0);
+    const double tumDens(x[k]);
+    k++;
+    const double sigmaTum(x[k]);
+    k++;
+    const double vascDens(x[k]);
+    k++;
+    const double sigmaVasc(x[k]);
+    k++;
+    const int edgeOrder(x[k]);
+    k++;
+    const bool tumGrowth(x[k] > 0.5);
+    k++;
+    const double tumTime(x[k]);
+    k++;
+    const bool res(x[k] > 0.5);
+    k++;
+    const double fibTime(x[k]);
+    k++;
+    const bool ang(x[k] > 0.5);
+    k++;
+    const double vascTumTime(x[k]);
+    k++;
+    double Dvegf(x[k]);
+    k++;
+    double VmaxVegf(x[k]);
+    k++;
+    const double KmVegf(x[k]);
+    k++;
+    const double vegfThres(x[k]);
+    k++;
+    const double hypVegf(x[k]);
+    k++;
+    vector<double> alpha(8), beta(8);
+    for(int i(0); i < 8; i++){
+        alpha[i] = x[k];
+        k++;
+        beta[i]  = alpha[i] / x[k];
+        k++;
+    }
+    const double doseThres(x[k]);
+    k++;
+    const double arrestTime(x[k]);
+    k++;
+    const int oxy(x[k]);
+    k++;
+    const double hypNecThres(x[k]);
+    k++;
+    double DO2(x[k]);
+    k++;
+    double VmaxO2(x[k]);
+    k++;
+    const double KmO2(x[k]);
+    k++;
+    const double pO2NormVes(x[k]);
+    k++;
+    const double pO2TumVes(x[k]);
+    k++;
+    const double hypThres(x[k]);
+    k++;
+
+    cout << "tumDens: "     << tumDens     << endl;
+    cout << "sigmaTum: "    << sigmaTum    << endl;
+    cout << "vascDens: "    << vascDens    << endl;
+    cout << "sigmaVasc: "   << sigmaVasc   << endl;
+    cout << "edgeOrder: "   << edgeOrder   << endl;
+    cout << "tumGrowth: "   << tumGrowth   << endl;
+    cout << "tumTime: "     << tumTime     << " h" << endl;
+    cout << "res: "         << res         << endl;
+    cout << "fibTime: "     << fibTime     << " h" << endl;
+    cout << "ang: "         << ang         << endl;
+    cout << "vascTumTime: " << vascTumTime << " h" << endl;
+    cout << "Dvegf: "       << Dvegf       << " um^2/ms" << endl;
+    cout << "VmaxVegf: "    << VmaxVegf    << " mol/um^3ms" << endl;
+    cout << "KmVegf: "      << KmVegf      << " mol/um^3" << endl;
+    cout << "vegfThres: "   << vegfThres   << " mol/um^3" << endl;
+    cout << "hypVegf: "     << hypVegf     << " mol/um^3" << endl;
+    cout << "alpha: ";
+    for(int i(0); i < 8; i++){
+        cout << alpha[i] << " ";
+    }
+    cout << "Gy^-1" << endl;
+    cout << "beta: ";
+    for(int i(0); i < 8; i++){
+        cout << beta[i] << " ";
+    }
+    cout << "Gy^-2" << endl;
+    cout << "doseThres: "   << doseThres   << " Gy" << endl;
+    cout << "arrestTime: "  << arrestTime  << " h" << endl;
+    cout << "oxy: "         << oxy         << endl;
+    cout << "hypNecThres: " << hypNecThres << " mmHg" << endl;
+    cout << "DO2: "         << DO2         << " um^2/ms" << endl;
+    cout << "VmaxO2: "      << VmaxO2      << " mmHg/ms" << endl;
+    cout << "KmO2: "        << KmO2        << " mmHg" << endl;
+    cout << "pO2NormVes: "  << pO2NormVes  << " mmHg" << endl;
+    cout << "pO2TumVes: "   << pO2TumVes   << " mmHg" << endl;
+    cout << "hypThres: "    << hypThres    << " mmHg" << endl;
+
+    Treatment *treatment;
+    treatment = new Treatment(2.0, 80.0, 24.0, 0);
+
+    Coupler *coupler;
+    Tissue *model1;
+    OxyTissue *model2;
+
+    vector<bool> inTum, inVes;
+    createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum, vascDens, sigmaVasc,
+                  inTum, inVes);
 
     model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, edgeOrder,
                         tumGrowth, tumTime, cycDur, cycDistrib, res, fibTime,

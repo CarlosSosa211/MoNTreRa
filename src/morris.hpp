@@ -13,8 +13,8 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
             const std::string nFInTissueDim = "",
             const std::string nFInTum = "", const std::string nFInVes = "");
 void morrisRT(const int N, const int p, const std::string nFRefParInt,
-              const std::string nFInTissueDim, const std::string nFInTum,
-              const std::string nFInVes);
+              const std::string nFInTissueDim, const std::string nFInTum = "",
+              const std::string nFInVes = "");
 void morrisToy(const int N, const int p, const std::string nFRefParInt);
 void morrisVarRange(const int K, const int kp, const int L,
                     const int N, const int nOut, const int p,

@@ -40,6 +40,9 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
         readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol,
                     nlayer, cellSize, inTum, inVes);
     }
+    else if(!nFInTissueDim.empty()){
+        readInFiles(nFInTissueDim, nrow, ncol, nlayer, cellSize);
+    }
 
     vector<int> vP;
 
@@ -57,6 +60,8 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
     double **B, **Bp;
     double **y;
     double ***elEff;
+    ofstream fMorrisPar("../OutputFiles/morrisPar.res");
+    ofstream fMorrisOut("../OutputFiles/morrisOut.res");
 
     B     = alloc2D(M, K);
     Bp    = alloc2D(M, K);
@@ -94,16 +99,23 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
         for(int m(0); m < M; m++){
             for(int k(0); k < K; k++){
                 Bp[m][k] = x0[k] + B[m][vP[k]] * h[k];
+                fMorrisPar << Bp[m][k] << " ";
             }
+            fMorrisPar << endl;
         }
 
         for(int m(0); m < M; m++){
             //toyModel(Bp[m], y[m]);
-            model(Bp[m], y[m], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            //model(Bp[m], y[m], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            model(Bp[m], y[m], nrow, ncol, nlayer, cellSize);
             nEv++;
             cout << nEv << " out of " << nEvTot <<
                     " evaluations of the model" << endl;
             cout << "---------------------------------------------" << endl;
+            for(int j(0); j < nOut; j++){
+                fMorrisOut << y[m][j] << " ";
+            }
+            fMorrisOut << endl;
         }
 
         for(int m(1); m < M; m++){
@@ -114,6 +126,8 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
             }
         }
     }
+    fMorrisPar.close();
+    fMorrisOut.close();
 
     free2D(B, M);
     free2D(Bp, M);
@@ -154,15 +168,15 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
  *  - nFInTissueDim: name of the file containing the dimensions of a
  *  histological specimen,
  *  - nFInTum: name of the file containing the initial tumour cell
- *  configuration of a tissue,
+ *  configuration of a tissue; by default, it is empty,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration of a tissue.
+ *  configuration of a tissue; by default, it is empty.
 ------------------------------------------------------------------------------*/
 
 void morrisRT(const int N, const int p, const string nFRefParInt,
               const string nFInTissueDim, const string nFInTum,
               const string nFInVes){
-    const int K(39), nOut(15);
+    const int K(42), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
