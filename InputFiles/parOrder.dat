@@ -1,6 +1,7 @@
-0	tumGrowth
-1	TTum
-2	edgeOrder
+0	edgeOrder
+
+1	tumGrowth
+2	TTum
 
 3	res
 4	THeal
