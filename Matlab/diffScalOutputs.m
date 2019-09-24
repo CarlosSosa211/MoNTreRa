@@ -8,8 +8,7 @@ close all
 % - withoutN: the name of the X_0_X simulations
 % - withN: the name of the X_1_X simulations
 % - fileNames: the names of the ouput files,
-% - ouputNames: the names of the outputs,
-% - outputCol: the column number of the output in the corresponding files.
+% - ouputNames: the names of the outputs.
 
 nfig = 0;
 path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
@@ -66,7 +65,7 @@ outputNames = {'tumour density at the end of treat.'...
 %%
 % This block asks the user to select the tissues and the output to be
 % studied. Then, it reads the corresponding files.
-% The following intermidiate variables are considered:
+% The following intermediate variables are considered:
 % - par: a matrix containing the combinations of parameters simulated. Each
 % row corresponds to a simulation and each column, to a parameter,
 % - output: a matrix containing the values of the scalar output(s) in
@@ -74,7 +73,7 @@ outputNames = {'tumour density at the end of treat.'...
 % (1 <= nTissue <= nTissues and 1 <= selOut <= nOut), each row
 % corresponds to a combination of parameters. The first column corresponds
 % to the mean values for nRep repetitions of X_0_X simulations; the second
-% one, to the mean values of X_1_X simulations; the third one, two the std
+% one, to the mean values of X_1_X simulations; the third one, to the std
 % values of X_0_X simulations and the fourth one, to the std values of
 % X_1_X simulations. For the single tissue - multiple outputs case
 % (1 <= nTissue <= nTissues and selOut = 0), each layer correponds to an
@@ -386,7 +385,7 @@ else
 end
 
 %%
-% This block plots for, all the values of dose, the mean and std of the
+% This block plots, for all the values of dose, the mean and std of the
 % selected output for simulations X_0_X and X_1_1 as a function of the
 % tissue
 
