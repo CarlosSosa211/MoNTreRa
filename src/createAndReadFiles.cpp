@@ -223,8 +223,8 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
     }
 
     for(k = 0; k < nrowNcolNlayer; k++){
-        inTum.push_back(map.at(k).tum);
-        inVes.push_back(map.at(k).ves);
+        inTum.at(k) = map.at(k).tum;
+        inVes.at(k) = map.at(k).ves;
     }
 
     return 0;
