@@ -400,21 +400,25 @@ p2 = polyfit(initVascDens', meanP(:, 2)', deg);
 nfig = nfig + 1;
 figure(nfig)
 hold on
-plot(initVascDens', meanP(:, 1)', 'o')
-plot(initVascDens', polyval(p1, initVascDens'))
+ax = gca;
+ax.FontSize = 22;
+plot(initVascDens', meanP(:, 1)', 'o', 'Linewidth', 2)
+plot(initVascDens', polyval(p1, initVascDens'), 'Linewidth', 2)
 hold off
 grid on
-xlabel('Initital vascular density')
+xlabel('Initital vascular density (%)')
 ylabel('p1')
 
 nfig = nfig + 1;
 figure(nfig)
 hold on
-plot(initVascDens', meanP(:, 2)', 'o')
-plot(initVascDens', polyval(p2, initVascDens'))
+ax = gca;
+ax.FontSize = 22;
+plot(initVascDens', meanP(:, 2)', 'o', 'Linewidth', 2)
+plot(initVascDens', polyval(p2, initVascDens'), 'Linewidth', 2)
 hold off
 grid on
-xlabel('Initital vascular density')
+xlabel('Initital vascular density (%)')
 ylabel('p2')
 
 %%
@@ -427,12 +431,14 @@ for i = 1:nCombPar
         subplot(nrowPlot, ncolPlot, nsubplot)
         nsubplot = nsubplot + 1;
         hold on
+        ax = gca;
+        ax.FontSize = 22;
         output1 = cell2mat(meanOutput1(nTissue, i));
         output2 = cell2mat(meanOutput2(nTissue, i));
-        plot(output1(2:end, 2), output2(2:end, 2))
+        plot(output1(2:end, 2), output2(2:end, 2), 'Linewidth', 2)
         plot(output1(2:end, 2), (p1(1) * initVascDens(nTissue, 1) +...
             p1(2)) * output1(2:end, 2) + p2(1) *...
-            initVascDens(nTissue, 1) + p2(2))
+            initVascDens(nTissue, 1) + p2(2), 'Linewidth', 2)
         hold off
         grid on
         xlabel(char(outputNames(selOut1)))
@@ -448,6 +454,8 @@ for i = 1:nCombPar
         subplot(nrowPlot, ncolPlot, nsubplot)
         nsubplot = nsubplot + 1;
         hold on
+        ax = gca;
+        ax.FontSize = 22;
         output1 = cell2mat(meanOutput1(nTissue, i));
         output2 = cell2mat(meanOutput2(nTissue, i));
         plot(output2(2:end, 1), output2(2:end, 2))
