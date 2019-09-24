@@ -14,15 +14,15 @@ close all
 
 nfig = 0;
 path = '../../Carlos/Results/Diff/';
-pathSim = {'Ang_Dose_5Val_5Rep/', 'Ang_Dose_5Val_5Rep/'...
-    'Res_Dose_5Val_5Rep/', 'Arrest_Dose_5Val_5Rep/'...
-    'HypNec_Dose_5Val_5Rep/'};
-tSim = [1, 0, 0, 0, 0];
+% pathSim = {'Ang_Dose_5Val_5Rep/', 'Ang_Dose_5Val_5Rep/'...
+%     'Res_Dose_5Val_5Rep/', 'Arrest_Dose_5Val_5Rep/'...
+%     'HypNec_Dose_5Val_5Rep/'};
+% tSim = [1, 0, 0, 0, 0];
 % pathSim = {'AngRes_Dose_5Val_5Rep/', 'AngRes_Dose_5Val_5Rep/'...
 %     'AngArrest_Dose_5Val_5Rep/', 'ResArrest_Dose_5Val_5Rep/'};
 % tSim = [1, 0, 0, 0];
-% pathSim = {'Ang_Dose_5Val_5Rep/', 'ArrestNoAngNoRes_Dose_5Val_5Rep/'};
-% tSim = [1, 0];
+pathSim = {'Ang_Dose_5Val_5Rep/', 'ArrestNoAngNoRes_Dose_5Val_5Rep/'};
+tSim = [1, 0];
 % pathSim = {'Ang_Dose_5Val_5Rep/', 'OxyNoAngNoHypNec_Dose_5Val_5Rep/'};
 % tSim = [1, 1];
 % pathSim = {'TimeConstantOxy_Dose_5Val_5Rep/'...
@@ -36,12 +36,13 @@ nTissues = 21;
 [initVascDens, tissuesVascDens] = sort(initVascDens);
 nOut = 15;
 
-simN = {'All processes', 'No angiogenesis', 'No healthy cell division'...
-    'No arrest', 'No hypoxic necrosis'};
+% simN = {'All processes', 'No angiogenesis', 'No healthy cell division'...
+%     'No cycle arrest', 'No hypoxic necrosis'};
 % simN = {'All processes', 'No angiogenesis, no healthy cell division'...
-%     'No angiogenesis, no arrest', 'No healthy cell division, no arrest'};
-% simN = {'All processes'...
-%     'No angiogenesis, no healthy cell division, no arrest'};
+%     'No angiogenesis, no cycle arrest'...
+%     'No healthy cell division, no cycle arrest'};
+simN = {'All processes'...
+    'No angiogenesis, no healthy cell division, no cycle arrest'};
 % simN = {'All processes', 'No angiogenesis, no hypoxic necrosis'};
 % simN = {'All processes', 'Time constant oxygenation'};
 
@@ -157,6 +158,9 @@ elseif(nTissue == -1)
 end
 
 %%
+% This block plots, for all the values of dose, the selected output as a
+% function of the tissue, sorted by initial vascular density
+
 meanDose = zeros(length(tDose), nTissues, nSim);
 stdDose = zeros(length(tDose), nTissues, nSim);
 
@@ -203,6 +207,8 @@ for i = 1:length(tDose)
 end
 
 %%
+% This block plots the selected output as a function of the dose
+
 nfig = nfig + 1;
 figure(nfig)
 
@@ -240,8 +246,55 @@ legend(simN, 'location', 'northeast', 'FontSize', 22)
 xlabel('Dose (Gy)', 'FontSize', 22)
 ylabel(char(outputNames(selOut)), 'FontSize', 22)
 
+%%
+% This block plots, for all the values of dose, the selected output as a
+% function of the initial vascular density
+
+meanDose = zeros(length(tDose), nTissues, nSim);
+stdDose = zeros(length(tDose), nTissues, nSim);
+
+for i = 1:length(tDose)
+    for j = 1:nTissues
+        for k = 1:nSim
+            meanDose(i, j, k) = output(par(:, colDose) == tDose(i),...
+                1 + tSim(k), j, k);
+            stdDose(i, j, k) = output(par(:, colDose) == tDose(i),...
+                3 + tSim(k), j, k);
+        end
+        
+    end
+end
+
+for i = 1:length(tDose)
+    nfig = nfig + 1;
+    figure(nfig)
+    ax = gca;
+    ax.FontSize = 22;
+    ax = gca;
+    hold on
+    for j = 1:nSim
+        plot(initVascDens', permute(meanDose(i, tissuesVascDens, j),...
+            [2, 3, 1]), '-o', 'Linewidth', 4, 'Markersize', 6)
+    end
+    for j = 1:nSim
+        errorbar(initVascDens', permute(meanDose(i, tissuesVascDens, j),...
+            [2, 3, 1]), permute(stdDose(i, tissuesVascDens, j),...
+            [2, 3, 1]), '.k', 'Markersize', 10)
+    end
+    hold off
+    ylim([0, inf])
+    grid on
+    title(['All tissues - ', char(outputNames(selOut)), ' - '...
+        num2str(tDose(i)), ' Gy'], 'FontSize', 22)
+    xlabel('Initial vascular density (%)', 'FontSize', 22)
+    ylabel(char(outputNames(selOut)), 'FontSize', 22)
+    legend(simN, 'location', 'southeast', 'FontSize', 22)
+end
 
 %%
+% This block plots, for all the values of dose, the relative difference of
+% the selected output as a function of the initial vascular density
+
 meanDose = zeros(length(tDose), nTissues, nSim);
 stdDose = zeros(length(tDose), nTissues, nSim);
 
@@ -276,7 +329,7 @@ for i = 1:length(tDose)
     title(['All tissues - ', 'Relative difference in ',...
         char(outputNames(selOut)), ' - ', num2str(tDose(i)), ' Gy'],...
         'FontSize', 22)
-    xlabel('Vascular density (%)', 'FontSize', 22)
+    xlabel('Initial vascular density (%)', 'FontSize', 22)
     ylabel(['Relative difference in ', char(outputNames(selOut)),],...
         'FontSize', 22)
     legend(simN(2:end), 'location', 'northeast', 'FontSize', 22)
