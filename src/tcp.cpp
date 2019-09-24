@@ -32,11 +32,11 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
 
     int k(0);
+    const int edgeOrder(x[k]);
+    k++;
     const int tumGrowth(x[k]);
     k++;
     const double tumTime(x[k]);
-    k++;
-    const int edgeOrder(x[k]);
     k++;
     const int res(x[k]);
     k++;
@@ -72,9 +72,9 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     const double hypNecThres(x[k]);
     k++;
 
+    cout << "edgeOrder: " << edgeOrder << endl;
     cout << "tumGrowth: " << tumGrowth << endl;
     cout << "tumTime: "   << tumTime   << " h" << endl;
-    cout << "edgeOrder: " << edgeOrder << endl;
     cout << "res: "       << res       << endl;
     if(res){
         cout << "fibTime: " << fibTime << " h" << endl;
@@ -108,8 +108,8 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
     Tissue *model1;
     AbsOxyTissue *model2;
 
-    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, tumGrowth,
-                        tumTime, edgeOrder, cycDur, cycDistrib, res, fibTime,
+    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, edgeOrder,
+                        tumGrowth, tumTime, cycDur, cycDistrib, res, fibTime,
                         ang, vascTumTime, vegfThres, alpha, beta, treatment,
                         doseThres, arrestTime, oxy, hypNecThres);
 
