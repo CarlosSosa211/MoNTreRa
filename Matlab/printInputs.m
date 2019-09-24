@@ -47,45 +47,67 @@ tTissueDim = [101, 62, 1;
     113, 64, 1;
     125, 71, 1];
 
-sel = input(['Select tissue (from 1 to ',num2str(size(tTissueName,1)),') ']);
-tissueName = tTissueName{sel};
-nrow = tTissueDim(sel, 2);
-ncol = tTissueDim(sel, 1);
-nlayer = tTissueDim(sel, 3);
-img = imread(['HistSpec/', tissueName, '.png']);
+tInMeanPO2 = [2.8938;
+    1.64498;
+    3.74087;
+    4.17229;
+    0.965818;
+    1.54683;
+    7.99946;
+    9.13819;
+    1.549;
+    8.24183;
+    5.69837;
+    5.59666;
+    15.9823;
+    3.92892;
+    1.07323;
+    6.78375;
+    3.94353;
+    22.0491;
+    2.4124;
+    17.2706;
+    2.56198];
 
-fid = fopen('tissueDim.dat', 'w');
-fprintf(fid, '%i\n%i\n%i\n', nrow, ncol, nlayer);
-fclose(fid);
+% sel = input(['Select tissue (from 1 to ',num2str(size(tTissueName,1)),') ']);
+% tissueName = tTissueName{sel};
+% nrow = tTissueDim(sel, 2);
+% ncol = tTissueDim(sel, 1);
+% nlayer = tTissueDim(sel, 3);
+% img = imread(['HistSpec/', tissueName, '.png']);
 
-img = imresize(img, [nrow, ncol]);
-imgB = img(:, :, 3);
+% fid = fopen('tissueDim.dat', 'w');
+% fprintf(fid, '%i\n%i\n%i\n', nrow, ncol, nlayer);
+% fclose(fid);
 
-initVes = imgB >= 0 & imgB < 80;
-fid = fopen('inVes.dat', 'w');
-for k = 1:nlayer
-    for i = 1:nrow
-        for j = 1:ncol
-            fprintf(fid, '%f\n', initVes(i, j));
-        end
-    end
-end
-fclose(fid);
-
-initTum = imgB > 80 & imgB < 200;
-fid = fopen('inTum.dat', 'w');
-for k = 1:nlayer
-    for i = 1:nrow
-        for j = 1:ncol
-            if(k == ceil(nlayer / 2))
-                fprintf(fid, '%f\n', initTum(i, j));
-            else
-                fprintf(fid, '%f\n', 0);
-            end
-        end
-    end
-end
-fclose(fid);
+% img = imresize(img, [nrow, ncol]);
+% imgB = img(:, :, 3);
+%
+% initVes = imgB >= 0 & imgB < 80;
+% fid = fopen('inVes.dat', 'w');
+% for k = 1:nlayer
+%     for i = 1:nrow
+%         for j = 1:ncol
+%             fprintf(fid, '%f\n', initVes(i, j));
+%         end
+%     end
+% end
+% fclose(fid);
+%
+% initTum = imgB > 80 & imgB < 200;
+% fid = fopen('inTum.dat', 'w');
+% for k = 1:nlayer
+%     for i = 1:nrow
+%         for j = 1:ncol
+%             if(k == ceil(nlayer / 2))
+%                 fprintf(fid, '%f\n', initTum(i, j));
+%             else
+%                 fprintf(fid, '%f\n', 0);
+%             end
+%         end
+%     end
+% end
+% fclose(fid);
 
 % PO2 = load(['initPO2/', tissueName, '.dat']);
 % n3 = size(PO2, 1);
@@ -99,3 +121,19 @@ fclose(fid);
 %     end
 % end
 % fclose(fid);
+
+
+for sel = 1:21
+    nrow = tTissueDim(sel, 2);
+    ncol = tTissueDim(sel, 1);
+    nlayer = tTissueDim(sel, 3);
+    fid = fopen(['inPO2', num2str(sel), '.dat'], 'w');
+    for k = 1:nlayer
+        for i = 1:nrow
+            for j = 1:ncol
+                fprintf(fid, '%f\n', tInMeanPO2(sel));
+            end
+        end
+    end
+    fclose(fid);
+end
