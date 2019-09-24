@@ -7,7 +7,7 @@ global b color nfig shape;
 global fileNames outputNames;
 
 tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), '...
-    'vascularized (4) or non-vascularized (5) tissues]: ']);
+    'vascularised (4) or non-vascularised (5) tissues]: ']);
 
 switch tissueSet
     case 1
@@ -48,8 +48,12 @@ for i = 1 : size(output, 1)
     scatter(meanOutput(i,1), meanOutput(i,2), 500, color(i), 'filled',...
         shape(mod(i, length(shape)) + 1))
 end
-plot([0, 1.1 * max([output(:, 1); output(:, 2)])],...
-    [0, 1.1 * max([output(:, 1); output(:, 2)])], '--k')
+
+maxValMu = 1.1 * max(meanOutput(:, 1));
+maxValSigma = 1.1 * max(meanOutput(:, 2));
+maxVal = max([maxValMu, maxValSigma]);
+plot([0, maxVal], [0, maxVal], '--k')
+
 hold off
 
 ax = gca;
@@ -64,14 +68,13 @@ switch tissueSet
         title(['10 non-dense tissues - ', char(outputNames(selOut))],...
             'fontsize', 22)
     case 4
-        title(['11 vascularized tissues - ', char(outputNames(selOut))],...
+        title(['11 vascularised tissues - ', char(outputNames(selOut))],...
             'fontsize', 22)
     case 5
-        title(['10 non-vascularized tissues - '...
+        title(['10 non-vascularised tissues - '...
             char(outputNames(selOut))], 'fontsize', 22)
 end
-axis([0, 1.1 * max([output(:, 1); output(:, 2)]),...
-    0, 1.1 * max([output(:, 1); output(:, 2)])])
+axis([0, maxValMu, 0, maxValSigma])
 grid on
 legend(b, 'Location', 'bestoutside', 'Interpreter', 'Latex',...
     'fontsize', 16)
@@ -99,10 +102,10 @@ switch tissueSet
         title(['10 non-dense tissues - ', char(outputNames(selOut))],...
             'fontsize', 22)
     case 4
-        title(['11 vascularized tissues - ', char(outputNames(selOut))],...
+        title(['11 vascularised tissues - ', char(outputNames(selOut))],...
             'fontsize', 22)
     case 5
-        title(['10 non-vascularized tissues - '...
+        title(['10 non-vascularised tissues - '...
             char(outputNames(selOut))], 'fontsize', 22)
 end
 
