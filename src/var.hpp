@@ -14,8 +14,11 @@
 void var1ParRange(const int kp, const int L, const std::string nRefParInt,
                   const std::string nFInTissueDim, const std::string nFInTum,
                   const std::string nFInVes);
-void varArtTissue(const int N, const int P, const std::string nFDensInt,
+void varArtTissue(const int P, const std::string nFArt,
                   const std::string nFInTissueDimn,
+                  const std::string nFRefParMean);
+void varArtTissue(const int N, const int P, const std::string nFDensInt,
+                  const std::string nFInTissueDim,
                   const std::string nFRefParMean);
 void varErr(const std::string nFVarPar, const std::string nFMostRelPar,
             const std::string nFLeastPar, const std::string nFInTissueDim,
