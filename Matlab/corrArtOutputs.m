@@ -11,10 +11,10 @@ close all
 
 nfig = 0;
 
-path = '../../Carlos/Results/Corr/Art_NoHypNec_2Gy_5Val_5Rep/';
-% path = '../../Carlos/Results/Corr/Art_2Gy_5Val_5Rep/';
+% path = '../../Carlos/Results/Corr/Art_NoHypNec_2Gy_5Val_5Rep/';
+path = '../../Carlos/Results/Corr/Art_2Gy_5Val_5Rep/';
 % Simulations were performed using the input file refParMeanRT.dat.
-nTissues = 30;
+nTissues = 100;
 P = 5;
 
 fileNames = {'/tumDens','/vascDens', '/vascDens', '/vascDens'...
@@ -31,8 +31,8 @@ outputCol = [2, 2, 3, 4, 2, 2, 3];
 % This block loads the initial vascular densities values for all the
 % artificial tissues.
 
-initDens = load([path, 'combDens.res']);
-initDens = initDens(1:30, :);
+initDens = 100 * load([path, 'combDens.res']);
+initDens = initDens(1:nTissues, :);
 initTumDens = initDens(:, 1);
 initVascDens = initDens(:, 2);
 [initTumDens, tissuesTumDens] = sort(initTumDens);
@@ -396,21 +396,25 @@ p2 = polyfit(initDens(:, 2)', meanP(:, 2)', deg);
 nfig = nfig + 1;
 figure(nfig)
 hold on
-plot(initDens(:, 2)', meanP(:, 1)', 'o')
-plot(initDens(:, 2)', polyval(p1, initDens(:, 2)'))
+ax = gca;
+ax.FontSize = 22;
+plot(initDens(:, 2)', meanP(:, 1)', 'o', 'Linewidth', 2)
+plot(initDens(:, 2)', polyval(p1, initDens(:, 2)'), 'Linewidth', 2)
 hold off
 grid on
-xlabel('Initital vascular density')
+xlabel('Initital vascular density (%)')
 ylabel('p1')
 
 nfig = nfig + 1;
 figure(nfig)
 hold on
-plot(initDens(:, 2)', meanP(:, 2)', 'o')
-plot(initDens(:, 2)', polyval(p2, initDens(:, 2)'))
+ax = gca;
+ax.FontSize = 22;
+plot(initDens(:, 2)', meanP(:, 2)', 'o', 'Linewidth', 2)
+plot(initDens(:, 2)', polyval(p2, initDens(:, 2)'), 'Linewidth', 2)
 hold off
 grid on
-xlabel('Initital vascular density')
+xlabel('Initital vascular density (%)')
 ylabel('p2')
 
 %%
@@ -425,6 +429,8 @@ for i = 1:nCombPar
         subplot(nrowPlot, ncolPlot, nsubplot)
         nsubplot = nsubplot + 1;
         hold on
+        ax = gca;
+        ax.FontSize = 22;
         output1 = cell2mat(meanOutput1(nTissue, i));
         output2 = cell2mat(meanOutput2(nTissue, i));
         plot(output1(2:end, 2), output2(2:end, 2))
@@ -445,6 +451,8 @@ for i = 1:nCombPar
         subplot(nrowPlot, ncolPlot, nsubplot)
         nsubplot = nsubplot + 1;
         hold on
+        ax = gca;
+        ax.FontSize = 22;
         output1 = cell2mat(meanOutput1(nTissue, i));
         output2 = cell2mat(meanOutput2(nTissue, i));
         plot(output2(2:end, 1), output2(2:end, 2))
