@@ -7,21 +7,45 @@ global vascTissues nonVascTissues;
 global b color nfig shape;
 global fileNames outputNames;
 
-densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
-nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
-
+% densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
+% nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
 % vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20];
 % nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
-vascTissues = [4, 7, 8, 10, 11, 14, 16, 20];
-nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19];
-% vascTissues = [4, 7, 8, 10];
-% nonVascTissues = [1, 2, 5, 6, 9];
 % allTissues = [densTissues, nonDensTissues];
-allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19, 20];
-% allTissues = [1, 2, 4, 5, 6, 7, 8, 9, 10];
 
-path = '../../Carlos/Results/Morris100_39Par_Cluster';
-b = {'$tum$', '$T_{tum}$', '$N$', '$hea$', '$T_{heal}$', '$ang$'...
+% densTissues = [1, 2, 5, 6, 8, 9, 11, 19, 20];
+% nonDensTissues = [3, 4, 7, 10, 14, 15, 16, 17];
+% vascTissues = [4, 7, 8, 10, 11, 14, 16, 20];
+% nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19];
+% allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19, 20];
+
+densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 21];
+nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17];
+vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16];
+nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
+allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21];
+
+% path = '../../Carlos/Results/Morris100_39Par_Cluster';
+% b = {'$tum$', '$T_{tum}$', '$N$', '$hea$', '$T_{heal}$', '$ang$'...
+%     '$T_{end}$', '$D^{VEGF}$', '$V_{max}^{VEGF}$', '$K_M^{VEGF}$'...
+%     '$\bar{v}$', '$v^{hyp}$', '$\alpha_{heal}$', '$\alpha/\beta_{heal}$'...
+%     '$\alpha_{tumG1}$', '$\alpha/\beta_{tumG1}$', '$\alpha_{tumS}$'...
+%     '$\alpha/\beta_{tumS}$', '$\alpha_{tumG2}$'...
+%     '$\alpha/\beta_{tumG2}$', '$\alpha_{tumM}$', '$\alpha/\beta_{tumM}$'...
+%     '$\alpha_{tumG0}$', '$\alpha/\beta_{tumG0}$', '$\alpha_{preEnd}$'...
+%     '$\alpha/\beta_{preEnd}$', '$\alpha_{neoEnd}$'...
+%     '$\alpha/\beta_{neoEnd}$', '$d$', '$d_{thres}$', '$T_{arrest}$'...
+%     '$oxy$', '$pO_2^{nec}$', '$D^{O_2}$', '$V_{max}^{O_2}$'...
+%     '$K_M^{O_2}$', '$pO_2^{preEnd}$', '$pO_2^{neoEnd}$', '$pO_2^{hyp}$'};
+% nTotPar = length(b);
+% selPar = ones(1, nTotPar);
+% selPar(1) = 0;
+% selPar(4) = 0;
+% selPar(6) = 0;
+% selPar(32) = 0;
+
+path = '../../Carlos/Results/Morris100_38Par_2Gy_Cluster';
+b = {'$N$', '$tum$', '$T_{tum}$', '$hea$', '$T_{heal}$', '$ang$'...
     '$T_{end}$', '$D^{VEGF}$', '$V_{max}^{VEGF}$', '$K_M^{VEGF}$'...
     '$\bar{v}$', '$v^{hyp}$', '$\alpha_{heal}$', '$\alpha/\beta_{heal}$'...
     '$\alpha_{tumG1}$', '$\alpha/\beta_{tumG1}$', '$\alpha_{tumS}$'...
@@ -29,18 +53,19 @@ b = {'$tum$', '$T_{tum}$', '$N$', '$hea$', '$T_{heal}$', '$ang$'...
     '$\alpha/\beta_{tumG2}$', '$\alpha_{tumM}$', '$\alpha/\beta_{tumM}$'...
     '$\alpha_{tumG0}$', '$\alpha/\beta_{tumG0}$', '$\alpha_{preEnd}$'...
     '$\alpha/\beta_{preEnd}$', '$\alpha_{neoEnd}$'...
-    '$\alpha/\beta_{neoEnd}$', '$d$', '$d_{thres}$', '$T_{arrest}$'...
+    '$\alpha/\beta_{neoEnd}$', '$d_{thres}$', '$T_{arrest}$'...
     '$oxy$', '$pO_2^{nec}$', '$D^{O_2}$', '$V_{max}^{O_2}$'...
     '$K_M^{O_2}$', '$pO_2^{preEnd}$', '$pO_2^{neoEnd}$', '$pO_2^{hyp}$'};
 nTotPar = length(b);
 selPar = ones(1, nTotPar);
-selPar(1) = 0;
+selPar(2) = 0;
 selPar(4) = 0;
 selPar(6) = 0;
-selPar(32) = 0;
+selPar(31) = 0;
 
-% path = '../../Carlos/Results/Morris100_38Par_2Gy_Cluster';
-% b = {'$N$', '$tum$', '$T_{tum}$', '$hea$', '$T_{heal}$', '$ang$'...
+% path = '../../Carlos/Results/Morris100_42ParArtTissues';
+% b = {'$d_{tum}$', '$\sigma_{tum}$', '$d_{vasc}$', '$\sigma_{vasc}$'...
+%     '$N$', '$tum$', '$T_{tum}$', '$hea$', '$T_{heal}$', '$ang$'...
 %     '$T_{end}$', '$D^{VEGF}$', '$V_{max}^{VEGF}$', '$K_M^{VEGF}$'...
 %     '$\bar{v}$', '$v^{hyp}$', '$\alpha_{heal}$', '$\alpha/\beta_{heal}$'...
 %     '$\alpha_{tumG1}$', '$\alpha/\beta_{tumG1}$', '$\alpha_{tumS}$'...
@@ -53,10 +78,11 @@ selPar(32) = 0;
 %     '$K_M^{O_2}$', '$pO_2^{preEnd}$', '$pO_2^{neoEnd}$', '$pO_2^{hyp}$'};
 % nTotPar = length(b);
 % selPar = ones(1, nTotPar);
-% selPar(2) = 0;
-% selPar(4) = 0;
 % selPar(6) = 0;
-% selPar(31) = 0;
+% selPar(8) = 0;
+% selPar(10) = 0;
+% selPar(35) = 0;
+
 
 % path = uigetdir('../../Carlos/Results');
 % path = '../../Carlos/Results/Morris100_OneAlphaBeta_Tissue4';
