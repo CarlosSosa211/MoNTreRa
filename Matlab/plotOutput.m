@@ -17,8 +17,12 @@ for i = 1 : nPar
     scatter(output(i,1), output(i,2), 200, color(i), 'filled',...
         shape(mod(i, length(shape)) + 1))
 end
-plot([0, 1.1 * max([output(:, 1); output(:, 2)])],...
-    [0, 1.1 * max([output(:, 1); output(:, 2)])], '--k')
+
+maxValMu = 1.1 * max(output(:, 1));
+maxValSigma = 1.1 * max(output(:, 2));
+maxVal = max([maxValMu, maxValSigma]);
+plot([0, maxVal], [0, maxVal], '--k')
+
 legend(b, 'Location', 'bestoutside', 'interpreter', 'latex',...
     'fontsize', 14)
 % columnlegend(2, b, 'location', 'bestoutside', 'interpreter', 'latex',...
@@ -29,8 +33,7 @@ ax = gca;
 ax.FontSize = 22;
 title(['Tissue ', num2str(n), ' - ', char(outputNames(selOut))],...
     'fontsize', 22)
-axis([0,  1.1 * max([output(:, 1); output(:, 2)]),...
-    0,  1.1 * max([output(:, 1); output(:, 2)])])
+axis([0, maxValMu, 0, maxValSigma])
 grid on
 hold off
 
