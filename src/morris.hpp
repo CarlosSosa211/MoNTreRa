@@ -12,6 +12,7 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
             const double *x0, const double *h, double **mu, double **sigma,
             const std::string nFInTissueDim = "",
             const std::string nFInTum = "", const std::string nFInVes = "");
+void morrisFromFiles(const int N, const int p);
 void morrisRT(const int N, const int p, const std::string nFRefParInt,
               const std::string nFInTissueDim, const std::string nFInTum = "",
               const std::string nFInVes = "");

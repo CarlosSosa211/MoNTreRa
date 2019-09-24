@@ -61,6 +61,7 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
     double **y;
     double ***elEff;
     ofstream fMorrisPar("../OutputFiles/morrisPar.res");
+    ofstream fMorrisVarPar("../OutputFiles/morrisVarPar.res");
     ofstream fMorrisOut("../OutputFiles/morrisOut.res");
 
     B     = alloc2D(M, K);
@@ -120,12 +121,14 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
 
         for(int m(1); m < M; m++){
             diffk = find(vP.begin(), vP.end(), m - 1) - vP.begin();
+            fMorrisVarPar << diffk << endl;
             for(int j(0); j < nOut; j++){
                 elEff[j][diffk][n] = fabs(_delta * (y[m][j] - y[m - 1][j]));
                 mu[j][diffk] += elEff[j][diffk][n];
             }
         }
     }
+    fMorrisVarPar.close();
     fMorrisPar.close();
     fMorrisOut.close();
 
@@ -153,6 +156,157 @@ void morris(const int K, const int L, const int N, const int nOut, const int p,
     }
 
     free3D(elEff, nOut, K);
+}
+
+
+/*------------------------------------------------------------------------------
+ * This functions performs a Morris analysis of the model of tumour
+ * growth and response to radiotherapy and write in files the obtained results.
+ *
+ * Inputs:
+ *  - N: number of repetitions.
+------------------------------------------------------------------------------*/
+void morrisFromFiles(const int N, const int p){
+    const int K(42), M(K + 1), nOut(15);
+    const double _pm1(1.0 / (p - 1.0));
+    const double delta(0.5 * _pm1 * p);
+    const double _delta(1.0 / delta);
+    double ***X, ***Y;
+
+    X = alloc3D(N, M, K);
+    Y = alloc3D(N, M, nOut);
+
+    ifstream fX("../OutputFiles/morrisPar.res");
+    ifstream fY("../OutputFiles/morrisOut.res");
+
+    for(int n(0); n < N; n++){
+        for(int m(0); m < M; m++){
+            for(int k(0); k < K; k++){
+                fX >> X[n][m][k];
+            }
+            for(int j(0); j < nOut; j++){
+                fY >> Y[n][m][j];
+            }
+        }
+    }
+    fX.close();
+    fY.close();
+
+    double ***elEff;
+
+    elEff = alloc3D(nOut, K, N);
+
+    double **mu, **sigma;
+
+    mu    = alloc2D(nOut, K);
+    sigma = alloc2D(nOut, K);
+    for(int j(0); j < nOut; j++){
+        for(int k(0); k < K; k++){
+            mu[j][k]    = 0.0;
+            sigma[j][k] = 0.0;
+        }
+    }
+    bool diff(false);
+    int diffk(0);
+
+    int constk[] = {5, 7, 9, 34};
+    int countConstk(0);
+    for(int n(0); n < N; n++){
+        countConstk = 0;
+        for(int m(1); m < M; m++){
+            diffk = 0;
+            diff = X[n][m][diffk] != X[n][m - 1][diffk];
+            while(diff == false && diffk < K){
+                diffk++;
+                diff = X[n][m][diffk] != X[n][m - 1][diffk];
+            }
+            if(!diff){
+                diffk = constk[countConstk];
+                countConstk++;
+
+            }
+            for(int j(0); j < nOut; j++){
+                elEff[j][diffk][n] = fabs(_delta * (Y[n][m][j] -
+                                                    Y[n][m - 1][j]));
+                mu[j][diffk] += elEff[j][diffk][n];
+            }
+        }
+    }
+    free3D(X, N, M);
+    free3D(Y, N, M);
+    for(int k(0); k < K; k++){
+        for(int j(0); j < nOut; j++){
+            mu[j][k] /= N;
+        }
+    }
+    for(int k(0); k < K; k++){
+        for(int n(0); n < N; n++){
+            for(int j(0); j < nOut; j++){
+                sigma[j][k] += (elEff[j][k][n] - mu[j][k]) *
+                        (elEff[j][k][n] - mu[j][k]);
+            }
+        }
+
+        for(int j(0); j < nOut; j++){
+            sigma[j][k] = sqrt(sigma[j][k] / (N - 1.0));
+        }
+    }
+
+    free3D(elEff, nOut, K);
+
+    ofstream fMorrisEndTreatTumDens("../OutputFiles/morrisEndTreatTumDens.res");
+    ofstream fMorris3MonTumDens("../OutputFiles/morris3MonTumDens.res");
+    ofstream fMorrisTumVol("../OutputFiles/morrisTumVol.res");
+    ofstream fMorrisIntTumDens("../OutputFiles/morrisIntTumDens.res");
+    ofstream fMorrisKilled50("../OutputFiles/morrisKilled50.res");
+    ofstream fMorrisKilled80("../OutputFiles/morrisKilled80.res");
+    ofstream fMorrisKilled90("../OutputFiles/morrisKilled90.res");
+    ofstream fMorrisKilled95("../OutputFiles/morrisKilled95.res");
+    ofstream fMorrisTimeTo95("../OutputFiles/morrisTimeTo95.res");
+    ofstream fMorrisKilled99("../OutputFiles/morrisKilled99.res");
+    ofstream fMorrisTimeTo99("../OutputFiles/morrisTimeTo99.res");
+    ofstream fMorrisKilled999("../OutputFiles/morrisKilled999.res");
+    ofstream fMorrisRec("../OutputFiles/morrisRec.res");
+    ofstream fMorrisRecTumDens("../OutputFiles/morrisRecTumDens.res");
+    ofstream fMorrisRecTime("../OutputFiles/morrisRecTime.res");
+
+    for(int k(0); k < K; k++){
+        fMorrisEndTreatTumDens << mu[0][k]  << " " << sigma[0][k]  << endl;
+        fMorris3MonTumDens     << mu[1][k]  << " " << sigma[1][k]  << endl;
+        fMorrisTumVol          << mu[2][k]  << " " << sigma[2][k]  << endl;
+        fMorrisIntTumDens      << mu[3][k]  << " " << sigma[3][k]  << endl;
+        fMorrisKilled50        << mu[4][k]  << " " << sigma[4][k]  << endl;
+        fMorrisKilled80        << mu[5][k]  << " " << sigma[5][k]  << endl;
+        fMorrisKilled90        << mu[6][k]  << " " << sigma[6][k]  << endl;
+        fMorrisKilled95        << mu[7][k]  << " " << sigma[7][k]  << endl;
+        fMorrisTimeTo95        << mu[8][k]  << " " << sigma[8][k]  << endl;
+        fMorrisKilled99        << mu[9][k]  << " " << sigma[9][k]  << endl;
+        fMorrisTimeTo99        << mu[10][k] << " " << sigma[10][k] << endl;
+        fMorrisKilled999       << mu[11][k] << " " << sigma[11][k] << endl;
+        fMorrisRec             << mu[12][k] << " " << sigma[12][k] << endl;
+        fMorrisRecTumDens      << mu[13][k] << " " << sigma[13][k] << endl;
+        fMorrisRecTime         << mu[14][k] << " " << sigma[14][k] << endl;
+    }
+
+    fMorrisEndTreatTumDens.close();
+    fMorris3MonTumDens.close();
+    fMorrisTumVol.close();
+    fMorrisIntTumDens.close();
+    fMorrisKilled50.close();
+    fMorrisKilled80.close();
+    fMorrisKilled90.close();
+    fMorrisKilled95.close();
+    fMorrisTimeTo95.close();
+    fMorrisKilled99.close();
+    fMorrisTimeTo99.close();
+    fMorrisKilled999.close();
+    fMorrisRec.close();
+    fMorrisRecTumDens.close();
+    fMorrisRecTime.close();
+
+    free2D(mu, nOut);
+    free2D(sigma, nOut);
+
 }
 
 
