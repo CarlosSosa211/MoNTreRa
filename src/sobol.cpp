@@ -195,6 +195,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
     free2D(Yc, N);
 }
 
+
 /*------------------------------------------------------------------------------
  * This function performs a Sobol analysis using outputs already calculated and
  * read from files.
@@ -203,7 +204,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
  *  - K: number of parameters.
 ------------------------------------------------------------------------------*/
 
-void sobolFromFiles(int K){
+void sobolFromFiles(const int K){
     int N;
     vector<double> Ya, Yb, Yc;
 
