@@ -232,6 +232,148 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 
 
 /*------------------------------------------------------------------------------
+ * This function creates the initial configuration of an artificial tissue in
+ * terms of tumour and endothelial cells, supposing a random uniform
+ * distribution of the latter.
+ *
+ * Inputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - tumDens: initial tumour density,
+ *  - sigmaTum: initial tumour sigma. A small value (close to 0), indicates that
+ *  tumour cells form a cluster at the center of the tissue. For a big value
+ *  (close to 1), they appear to follow a uniform distribution,
+ *  - vascDens: initial vascular density.
+ *
+ * Outputs:
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+------------------------------------------------------------------------------*/
+
+int createInFiles(const int nrow, const int ncol, const int nlayer,
+                  const double tumDens, const double sigmaTum,
+                  const double vascDens, vector<bool> &inTum,
+                  vector<bool> &inVes){
+    const int nrowNcol(nrow * ncol), nrowNcolNlayer(nrowNcol * nlayer);
+    int m, tumToDist, vesToDist;
+    double n;
+    vector<simpCell> map(nrowNcolNlayer);
+
+    vesToDist = vascDens * nrowNcolNlayer;
+    tumToDist = min(int(tumDens * nrowNcolNlayer), nrowNcolNlayer - vesToDist);
+
+    int halfNrow, halfNcol, halfNlayer;
+    int imHalfNrow2, lmHalfNlayer2;
+    int lnrowNcol;
+    double R;
+
+    halfNrow = 0.5 * nrow;
+    halfNcol = 0.5 * ncol;
+    halfNlayer = 0.5 * nlayer;
+    R = sqrt(halfNrow * halfNrow + halfNcol * halfNcol + halfNlayer *
+             halfNlayer);
+
+    int k(0);
+    for(int l(0); l < nlayer; l++){
+        lmHalfNlayer2 = (l - halfNlayer) * (l - halfNlayer);
+        lnrowNcol = l * nrowNcol;
+        for(int i(0); i < nrow; i++){
+            imHalfNrow2 = (i - halfNrow) * (i - halfNrow);
+            for(int j(0); j < ncol; j++){
+                map.at(k).r = sqrt(lmHalfNlayer2 + imHalfNrow2 +
+                                   (j - halfNcol) * (j - halfNcol)) / R;
+                map.at(k).k = k;
+                map.at(k).tum = 0;
+                map.at(k).ves = 0;
+                k++;
+            }
+        }
+    }
+
+    sort(map.begin(), map.end(), compR);
+
+    default_random_engine gen;
+    normal_distribution<double> distTum(0, sigmaTum);
+    bool tooBigTumDens(tumDens > 0.9);
+    bool tooSmallSigmaTum(sigmaTum < 0.15);
+
+    if(!tooBigTumDens && !tooSmallSigmaTum){
+        while(tumToDist > 0){
+            n = distTum(gen);
+            if(n >= 0.0 && n < 1.0){
+                m = n * nrowNcolNlayer;
+                if(!map.at(m).tum){
+                    map.at(m).tum = 1;
+                    tumToDist--;
+                }
+            }
+        }
+    }
+
+    else if(tooBigTumDens){
+        for(int k(0); k < map.size(); k++){
+            map.at(k).tum = 1;
+        }
+        reverse(map.begin(), map.end());
+        int tumToRemove(nrowNcolNlayer - tumToDist);
+        while(tumToRemove > 0){
+            n = distTum(gen);
+            if(n >= 0.0 && n < 1.0){
+                m = n * nrowNcolNlayer;
+                if(map.at(m).tum){
+                    map.at(m).tum = 0;
+                    tumToRemove--;
+                }
+            }
+        }
+    }
+
+    else{
+        bool cond;
+        while(tumToDist > 0){
+            n = distTum(gen);
+            if(n >= 0.0 && n < 1.0){
+                m = n * nrowNcolNlayer;
+                cond = true;
+                while(cond){
+                    if(!map.at(m).tum){
+                        map.at(m).tum = 1;
+                        tumToDist--;
+                        cond = false;
+                    }
+                    else{
+                        m++;
+                    }
+                    if(m == nrowNcolNlayer){
+                        m = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    sort(map.begin(), map.end(), compK);
+
+    while(vesToDist > 0){
+        n = double(rand()) / double(RAND_MAX);
+        m = n * nrowNcolNlayer;
+        if(!map.at(m).ves && !map.at(m).tum){
+            map.at(m).ves = 1;
+            vesToDist--;
+        }
+    }
+
+    for(k = 0; k < nrowNcolNlayer; k++){
+        inTum.at(k) = map.at(k).tum;
+        inVes.at(k) = map.at(k).ves;
+    }
+
+    return 0;
+}
+
+
+/*------------------------------------------------------------------------------
  * This function creates the initial configuration of a tissue in terms of
  * endothelial cells. It is supposed to contain no tumour cells.
  *
