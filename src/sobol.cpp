@@ -39,7 +39,6 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
-    vector<double> inPO2;
 
     if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
         readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol,
@@ -49,6 +48,10 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
     int nEv(0), nEvTot((K + 2) * N);
     double **Xa, **Xb, **Xc;
     double **Ya, **Yb, **Yc;
+    ofstream fXa("../OutputFiles/Xa.res");
+    ofstream fXb("../OutputFiles/Xb.res");
+    ofstream fYa("../OutputFiles/Ya.res");
+    ofstream fYb("../OutputFiles/Yb.res");
 
     Xa = alloc2D(N, K);
     Xb = alloc2D(N, K);
@@ -62,8 +65,14 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         for(int k(0); k < K; k++){
             Xa[i][k] = x0[k] + (double)(rand()) / (double)(RAND_MAX) * h[k];
             Xb[i][k] = x0[k] + (double)(rand()) / (double)(RAND_MAX) * h[k];
+            fXa << Xa[i][k] << " ";
+            fXb << Xb[i][k] << " ";
         }
+        fXa << endl;
+        fXb << endl;
     }
+    fXa.close();
+    fXb.close();
 
     for(int i(0); i < N; i++){
         //toyModel(Xa[i], Ya[i]);
@@ -72,13 +81,24 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
         cout << "---------------------------------------------" << endl;
+        for(int j(0); j < nOut; j++){
+            fYa << Ya[i][j] << " ";
+        }
+        fYa << endl;
+
         //toyModel(Xb[i], Yb[i]);
         model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
         cout << "---------------------------------------------" << endl;
+        for(int j(0); j < nOut; j++){
+            fYb << Yb[i][j] << " ";
+        }
+        fYb << endl;
     }
+    fYa.close();
+    fYb.close();
 
     int iConv(0), nConv;
     double alpha[nOut], beta[nOut], sigma2[nOut], f0[nOut];
@@ -101,14 +121,24 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         sigma2[j] = 0.0;
     }
 
+    ofstream fXc("../OutputFiles/Xc0.res");
+    ofstream fYc("../OutputFiles/Yc0.res");
+
     for(int i(0); i < N; i++){
         Xc[i][0] = Xb[i][0];
-
+        for(int k(0); k < K; k++){
+            fXc << Xc[i][k] << " ";
+        }
+        fXc << endl;
         //toyModel(Xc[i], Yc[i]);
         model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model";
         cout << "---------------------------------------------" << endl;
+        for(int j(0); j < nOut; j++){
+            fYc << Yc[i][j] << " ";
+        }
+        fYc << endl;
 
         for(int j(0); j < nOut; j++){
             alpha[j]  += Yb[i][j] * Yc[i][j];
@@ -138,6 +168,10 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
     }
 
     for(int k(1); k < K; k++){
+        fXc.close();
+        fYc.close();
+        fXc.open("../OutputFiles/Xc" + to_string(k) + ".res");
+        fYc.open("../OutputFiles/Yc" + to_string(k) + ".res");
         iConv = 0;
         nConv = 2;
 
@@ -151,12 +185,20 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         for(int i(0); i < N; i++){
             Xc[i][k - 1] = Xa[i][k - 1];
             Xc[i][k] = Xb[i][k];
+            for(int k(0); k < K; k++){
+                fXc << Xc[i][k] << " ";
+            }
+            fXc << endl;
 
             //toyModel(Xc[i], Yc[i]);
             model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model";
             cout << "---------------------------------------------" << endl;
+            for(int j(0); j < nOut; j++){
+                fYc << Yc[i][j] << " ";
+            }
+            fYc << endl;
 
             for(int j(0); j < nOut; j++){
                 alpha[j]  += Yb[i][j] * Yc[i][j];
@@ -186,6 +228,9 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         }
     }
 
+    fXc.close();
+    fYc.close();
+
     free2D(Xa, N);
     free2D(Xb, N);
     free2D(Xc, N);
@@ -204,60 +249,118 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
  *  - K: number of parameters.
 ------------------------------------------------------------------------------*/
 
-void sobolFromFiles(const int K){
-    int N;
-    vector<double> Ya, Yb, Yc;
+void sobolFromFiles(){
+    int K, N, nOut;
+    double **Ya, **Yb, **Yc;
 
-    ifstream fYa("../OutputSobol/Ya.txt");
-    double temp;
-    fYa >> temp;
-    while(!fYa.eof()){
-        Ya.push_back(temp);
-        fYa >> temp;
+    ifstream fSobolPar("../OutputFiles/sobolPar.res");
+    fSobolPar >> K >> N >> nOut;
+    fSobolPar.close();
+
+    Ya = alloc2D(N, nOut);
+    Yb = alloc2D(N, nOut);
+    Yc = alloc2D(N, nOut);
+
+    ifstream fYa("../OutputFiles/Ya.res");
+    for(int i(0); i < N; i++){
+        for(int j(0); j < nOut; j++){
+            fYa >> Ya[i][j];
+        }
     }
     fYa.close();
 
-    N = Ya.size();
-
-    ifstream fYb("../OutputSobol/Yb.txt");
-    fYb >> temp;
-    while(!fYb.eof()){
-        Yb.push_back(temp);
-        fYb >> temp;
+    ifstream fYb("../OutputFiles/Yb.res");
+    for(int i(0); i < N; i++){
+        for(int j(0); j < nOut; j++){
+            fYb >> Yb[i][j];
+        }
     }
     fYb.close();
 
     double alpha, beta, sigma2, f0;
-    vector<double> SI(K), TSI(K);
-    ofstream fSens("../OutputFiles/sobol.res");
+    double **SI, **TSI;
+    SI  = alloc2D(nOut, K);
+    TSI = alloc2D(nOut, K);
 
-    fSens << K << endl;
+    ofstream fSobolEndTreatTumDens("../OutputFiles/sobolEndTreatTumDens.res");
+    ofstream fSobol3MonTumDens("../OutputFiles/sobol3MonTumDens.res");
+    ofstream fSobolTumVol("../OutputFiles/sobolTumVol.res");
+    ofstream fSobolIntTumDens("../OutputFiles/sobolIntTumDens.res");
+    ofstream fSobolKilled50("../OutputFiles/sobolKilled50.res");
+    ofstream fSobolKilled80("../OutputFiles/sobolKilled80.res");
+    ofstream fSobolKilled90("../OutputFiles/sobolKilled90.res");
+    ofstream fSobolKilled95("../OutputFiles/sobolKilled95.res");
+    ofstream fSobolTimeTo95("../OutputFiles/sobolTimeTo95.res");
+    ofstream fSobolKilled99("../OutputFiles/sobolKilled99.res");
+    ofstream fSobolTimeTo99("../OutputFiles/sobolTimeTo99.res");
+    ofstream fSobolKilled999("../OutputFiles/sobolKilled999.res");
+    ofstream fSobolRec("../OutputFiles/sobolRec.res");
+    ofstream fSobolRecTumDens("../OutputFiles/sobolRecTumDens.res");
+    ofstream fSobolRecTime("../OutputFiles/sobolRecTime.res");
 
     for(int k(0); k < K; k++){
-        ifstream fYc("../OutputSobol/Yc" + to_string(k) + ".txt");
-        Yc.resize(N);
-        alpha = 0.0;
-        beta = 0.0;
-        sigma2 = 0.0;
-        f0 = 0.0;
+        ifstream fYc("../OutputFiles/Yc" + to_string(k) + ".res");
         for(int i(0); i < N; i++){
-            fYc >> Yc[i];
-            alpha += Yb[i] * Yc[i];
-            beta += (Ya[i] - Yc[i]) * (Ya[i] - Yc[i]);
-            f0 += Yb[i] + Yc[i];
-            sigma2 += Yb[i] * Yb[i] + Yc[i] * Yc[i];
+            for(int j(0); j < nOut; j++){
+                fYc >> Yc[i][j];
+            }
         }
-        alpha /= N;
-        f0 /= 2.0 * N;
-        sigma2 /= 2.0 * N;
-        sigma2 -= f0 * f0;
-        SI[k] = (alpha - f0 * f0) / sigma2;
-        TSI[k] = beta / (2.0 * N * sigma2);
-        fSens << SI[k] << " " << TSI[k] << endl;
+        fYc.close();
+
+        for(int j(0); j < nOut; j++){
+            alpha  = 0.0;
+            beta   = 0.0;
+            sigma2 = 0.0;
+            f0     = 0.0;
+
+            for(int i(0); i < N; i++){
+                alpha  += Yb[i][j] * Yc[i][j];
+                beta   += (Ya[i][j] - Yc[i][j]) * (Ya[i][j] - Yc[i][j]);
+                f0     += Yb[i][j] + Yc[i][j];
+                sigma2 += Yb[i][j] * Yb[i][j] + Yc[i][j] * Yc[i][j];
+            }
+
+            alpha  /= N;
+            f0     /= 2.0 * N;
+            sigma2 /= 2.0 * N;
+            sigma2 -= f0 * f0;
+            SI[j][k]  = (alpha - f0 * f0) / sigma2;
+            TSI[j][k] = beta / (2.0 * N * sigma2);
+        }
+
+        fSobolEndTreatTumDens << SI[0][k]  << " " << TSI[0][k]  << endl;
+        fSobol3MonTumDens     << SI[1][k]  << " " << TSI[1][k]  << endl;
+        fSobolTumVol          << SI[2][k]  << " " << TSI[2][k]  << endl;
+        fSobolIntTumDens      << SI[3][k]  << " " << TSI[3][k]  << endl;
+        fSobolKilled50        << SI[4][k]  << " " << TSI[4][k]  << endl;
+        fSobolKilled80        << SI[5][k]  << " " << TSI[5][k]  << endl;
+        fSobolKilled90        << SI[6][k]  << " " << TSI[6][k]  << endl;
+        fSobolKilled95        << SI[7][k]  << " " << TSI[7][k]  << endl;
+        fSobolTimeTo95        << SI[8][k]  << " " << TSI[8][k]  << endl;
+        fSobolKilled99        << SI[9][k]  << " " << TSI[9][k]  << endl;
+        fSobolTimeTo99        << SI[10][k] << " " << TSI[10][k] << endl;
+        fSobolKilled999       << SI[11][k] << " " << TSI[11][k] << endl;
+        fSobolRec             << SI[12][k] << " " << TSI[12][k] << endl;
+        fSobolRecTumDens      << SI[13][k] << " " << TSI[13][k] << endl;
+        fSobolRecTime         << SI[14][k] << " " << TSI[14][k] << endl;
         fYc.close();
     }
 
-    fSens.close();
+    fSobolEndTreatTumDens.close();
+    fSobol3MonTumDens.close();
+    fSobolTumVol.close();
+    fSobolIntTumDens.close();
+    fSobolKilled50.close();
+    fSobolKilled80.close();
+    fSobolKilled90.close();
+    fSobolKilled95.close();
+    fSobolTimeTo95.close();
+    fSobolKilled99.close();
+    fSobolTimeTo99.close();
+    fSobolKilled999.close();
+    fSobolRec.close();
+    fSobolRecTumDens.close();
+    fSobolRecTime.close();
 }
 
 /*------------------------------------------------------------------------------
@@ -278,7 +381,7 @@ void sobolFromFiles(const int K){
 
 void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
              const string nFInTum, const string nFInVes){
-    const int K(34), NConv(log(N) / log(2.0)), nOut(15);
+    const int K(38), NConv(log(N) / log(2.0)), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
