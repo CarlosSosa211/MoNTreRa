@@ -29,6 +29,10 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 void oxy(const int N, const std::string nFInTissueOxy,
          const std::string nFParOxy, const std::string nFInTissueDim = "",
          const std::string nFInVes = "");
+void reducedModel(const double *x, double *y, const int nrow,
+                  const int ncol, const int nlayer, const double cellSize,
+                  const std::vector<bool> &inTum,
+                  const std::vector<bool> &inVes);
 void toyModel(double *x, double *y);
 
 #endif

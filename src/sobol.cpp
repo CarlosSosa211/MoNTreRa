@@ -76,7 +76,8 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
 
     for(int i(0); i < N; i++){
         //toyModel(Xa[i], Ya[i]);
-        model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        //model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
@@ -87,7 +88,8 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         fYa << endl;
 
         //toyModel(Xb[i], Yb[i]);
-        model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        //model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
@@ -131,7 +133,8 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         }
         fXc << endl;
         //toyModel(Xc[i], Yc[i]);
-        model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        //model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model";
         cout << "---------------------------------------------" << endl;
@@ -191,7 +194,9 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             fXc << endl;
 
             //toyModel(Xc[i], Yc[i]);
-            model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            //model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum,
+                         inVes);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model";
             cout << "---------------------------------------------" << endl;
@@ -381,7 +386,7 @@ void sobolFromFiles(){
 
 void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
              const string nFInTum, const string nFInVes){
-    const int K(38), NConv(log(N) / log(2.0)), nOut(15);
+    const int K(12), NConv(log(N) / log(2.0)), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 

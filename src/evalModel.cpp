@@ -1,4 +1,4 @@
-#include "evalModel.hpp"
+﻿#include "evalModel.hpp"
 
 using namespace std;
 
@@ -927,6 +927,209 @@ void oxy(const int N, const string nFInTissueOxy, const string nFParOxy,
         cout << j + 1 << " out of " << N << " evaluations of the model" << endl;
         cout << "---------------------------------------------" << endl;
     }
+}
+
+
+/*------------------------------------------------------------------------------
+ * This functions evaluates the reduced model of tumour growth and response to
+ * radiotherapy to obtain its scalar outputs.
+ *
+ * Inputs:
+ *  - x: array containing the parameters of the model,
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+ *
+ * Outputs:
+ *  - y: array containing the scalar outputs of the model.
+------------------------------------------------------------------------------*/
+
+void reducedModel(const double *x, double *y, const int nrow, const int ncol,
+                  const int nlayer, const double cellSize,
+                  const vector<bool> &inTum, const vector<bool> &inVes){
+    vector<double> cycDistrib = {0.6, 0.25, 0.075, 0.075};
+    vector<double> cycDur = {0.55, 0.2, 0.15, 0.1};
+
+    int k(0);
+
+    const double tumTime(x[k]);
+    k++;
+    vector<double> alpha(8), beta(8);
+    alpha[1] = x[k];
+    k++;
+    beta[1]  = x[k];
+    k++;
+    alpha[2] = x[k];
+    k++;
+    alpha[3] = x[k];
+    k++;
+    alpha[4] = x[k];
+    k++;
+    const double arrestTime(x[k]);
+    k++;
+    const double hypNecThres(x[k]);
+    k++;
+    double DO2(x[k]);
+    k++;
+    double VmaxO2(x[k]);
+    k++;
+    const double KmO2(x[k]);
+    k++;
+    const double pO2NormVes(x[k]);
+    k++;
+
+    const int edgeOrder(1);
+    const bool tumGrowth(true);
+    const bool res(true);
+    const double fibTime(1130);
+    const bool ang(true);
+    const double vascTumTime(2400);
+    double Dvegf(2);
+    double VmaxVegf(6.38e-3);
+    const double KmVegf(2.5);
+    const double vegfThres(15);
+    const double hypVegf(20);
+    alpha[0] = 0.001;
+    beta[0]  = 5.5;
+    beta[2]  = 5.5;
+    beta[3]  = 5.5;
+    beta[4]  = 5.5;
+    alpha[5] = 0.15;
+    beta[5] = 5.5;
+    alpha[6] = 0.001;
+    beta[6] = 5.5;
+    alpha[7] = 0.001;
+    beta[7] = 5.5;
+    const double doseThres(8);
+    const double hypThres(5);
+    const int oxy(1);
+    const double pO2TumVes(42);
+
+    cout << "edgeOrder: "   << edgeOrder   << endl;
+    cout << "tumGrowth: "   << tumGrowth   << endl;
+    cout << "tumTime: "     << tumTime     << " h" << endl;
+    cout << "res: "         << res         << endl;
+    cout << "fibTime: "     << fibTime     << " h" << endl;
+    cout << "ang: "         << ang         << endl;
+    cout << "vascTumTime: " << vascTumTime << " h" << endl;
+    cout << "Dvegf: "       << Dvegf       << " um^2/ms" << endl;
+    cout << "VmaxVegf: "    << VmaxVegf    << " mol/um^3ms" << endl;
+    cout << "KmVegf: "      << KmVegf      << " mol/um^3" << endl;
+    cout << "vegfThres: "   << vegfThres   << " mol/um^3" << endl;
+    cout << "hypVegf: "     << hypVegf     << " mol/um^3" << endl;
+    cout << "alpha: ";
+    for(int i(0); i < 8; i++){
+        cout << alpha[i] << " ";
+    }
+    cout << "Gy^-1" << endl;
+    cout << "beta: ";
+    for(int i(0); i < 8; i++){
+        cout << beta[i] << " ";
+    }
+    cout << "Gy^-2" << endl;
+    cout << "doseThres: "   << doseThres   << " Gy" << endl;
+    cout << "arrestTime: "  << arrestTime  << " h" << endl;
+    cout << "oxy: "         << oxy         << endl;
+    cout << "hypNecThres: " << hypNecThres << " mmHg" << endl;
+    cout << "DO2: "         << DO2         << " um^2/ms" << endl;
+    cout << "VmaxO2: "      << VmaxO2      << " mmHg/ms" << endl;
+    cout << "KmO2: "        << KmO2        << " mmHg" << endl;
+    cout << "pO2NormVes: "  << pO2NormVes  << " mmHg" << endl;
+    cout << "pO2TumVes: "   << pO2TumVes   << " mmHg" << endl;
+    cout << "hypThres: "    << hypThres    << " mmHg" << endl;
+
+    Treatment *treatment;
+    treatment = new Treatment(2.0, 80.0, 24.0, 0);
+
+    Coupler *coupler;
+    Tissue *model1;
+    OxyTissue *model2;
+
+    model1 = new Tissue(nrow, ncol, nlayer, cellSize, inTum, inVes, edgeOrder,
+                        tumGrowth, tumTime, cycDur, cycDistrib, res, fibTime,
+                        ang, vascTumTime, vegfThres, alpha, beta, treatment,
+                        doseThres, arrestTime, oxy, hypNecThres);
+
+    const double oxySimTimeStep(10.0);
+
+    Dvegf    *= oxySimTimeStep;
+    VmaxVegf *= oxySimTimeStep;
+    DO2      *= oxySimTimeStep;
+    VmaxO2   *= oxySimTimeStep;
+
+    model2 = new OxyTissue(nrow, ncol, nlayer, cellSize, inVes, ang, Dvegf,
+                           VmaxVegf, KmVegf, hypVegf, oxy, DO2, VmaxO2, KmO2,
+                           pO2NormVes, pO2TumVes, hypThres);
+
+    coupler = new Coupler(model1, model2);
+
+    const double simTimeStep(6.0);
+    const double sclFac(3.6e6 * simTimeStep / oxySimTimeStep);
+    const double simTime(2160.0);
+    RootSimulator *sim;
+
+    sim = new RootSimulator(coupler, simTimeStep, oxySimTimeStep, sclFac);
+    sim->initSim();
+    sim->simulate(simTimeStep, simTime);
+    sim->stop();
+
+    double endTreatTumDens(model1->getOutD()[0]);
+    double threeMonTumDens(model1->getOutD()[1]);
+    double tumVol(model1->getOutD()[19]);
+    double intTumDens(model1->getOutD()[2]);
+    double killed50(model1->getOutB()[0]);
+    double killed80(model1->getOutB()[1]);
+    double killed90(model1->getOutB()[2]);
+    double killed95(model1->getOutB()[3]);
+    double timeTo95(model1->getOutD()[6]);
+    double killed99(model1->getOutB()[4]);
+    double timeTo99(model1->getOutD()[7]);
+    double killed999(model1->getOutB()[5]);
+    double rec(model1->getOutB()[6]);
+    double recTumDens(model1->getOutD()[16]);
+    double recTime(model1->getOutD()[17]);
+
+    delete treatment;
+    delete model1;
+    delete model2;
+    delete coupler;
+    delete sim;
+
+    cout << "endTreatTumDens: " << endTreatTumDens << endl;
+    cout << "3MonTumDens: "     << threeMonTumDens << endl;
+    cout << "tumVol: "          << tumVol << " mm3" << endl;
+    cout << "intTumDens: "      << intTumDens << endl;
+    cout << "killed50: "        << killed50 << endl;
+    cout << "killed80: "        << killed80 << endl;
+    cout << "killed90: "        << killed90 << endl;
+    cout << "killed95: "        << killed95 << endl;
+    cout << "timeTo95: "        << timeTo95 << " h" << endl;
+    cout << "killed99: "        << killed99 << endl;
+    cout << "timeTo99: "        << timeTo99 << " h" << endl;
+    cout << "killed999: "       << killed999 << endl;
+    cout << "rec: "             << rec << endl;
+    cout << "recTumDens: "      << recTumDens << endl;
+    cout << "recTime: "         << recTime << " h" << endl;
+
+    y[0]  = endTreatTumDens;
+    y[1]  = threeMonTumDens;
+    y[2]  = tumVol;
+    y[3]  = intTumDens;
+    y[4]  = killed50;
+    y[5]  = killed80;
+    y[6]  = killed90;
+    y[7]  = killed95;
+    y[8]  = timeTo95;
+    y[9]  = killed99;
+    y[10] = timeTo99;
+    y[11] = killed999;
+    y[12] = rec;
+    y[13] = recTumDens;
+    y[14] = recTime;
 }
 
 
