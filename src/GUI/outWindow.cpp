@@ -20,7 +20,7 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     m_white      = QColor(255, 255, 255);
     m_blueTum    = QColor(46, 165, 225);
     m_red        = QColor(192, 0, 0);
-    m_redTum     = QColor(153, 0, 51);
+    m_redTum     = QColor(237, 125, 49);
     m_black      = QColor(56, 56, 56);
     m_blueTumDam = QColor(0, 32, 96);
     m_blueG1     = QColor(46, 165, 225);
