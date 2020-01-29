@@ -48,7 +48,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
     int nEv(0), nEvTot((K + 2) * N);
     double **Xa, **Xb, **Xc;
     double **Ya, **Yb, **Yc;
-    ofstream fXa("../OutputFiles/Xa.res");
+    /*ofstream fXa("../OutputFiles/Xa.res");
     ofstream fXb("../OutputFiles/Xb.res");
     ofstream fYa("../OutputFiles/Ya.res");
     ofstream fYb("../OutputFiles/Yb.res");
@@ -72,9 +72,41 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         fXb << endl;
     }
     fXa.close();
+    fXb.close();*/
+
+    ifstream fXa("../OutputFiles/Xa.res");
+    ifstream fXb("../OutputFiles/Xb.res");
+    ifstream fYa("../OutputFiles/Ya.res");
+    ifstream fYb("../OutputFiles/Yb.res");
+
+    Xa = alloc2D(N, K);
+    Xb = alloc2D(N, K);
+    Xc = alloc2D(N, K);
+
+    Ya = alloc2D(N, nOut);
+    Yb = alloc2D(N, nOut);
+    Yc = alloc2D(N, nOut);
+
+    for(int i(0); i < N; i++){
+        for(int k(0); k < K; k++){
+            fXa >> Xa[i][k];
+            fXb >> Xb[i][k];
+        }
+    }
+    fXa.close();
     fXb.close();
 
     for(int i(0); i < N; i++){
+        for(int j(0); j < nOut; j++){
+            fYa >> Ya[i][j];
+            fYb >> Yb[i][j];
+        }
+    }
+
+    fYa.close();
+    fYb.close();
+
+    /*for(int i(0); i < N; i++){
         //toyModel(Xa[i], Ya[i]);
         //model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
@@ -89,7 +121,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
 
         //toyModel(Xb[i], Yb[i]);
         //model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
-        reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        reducedModel(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
@@ -100,7 +132,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         fYb << endl;
     }
     fYa.close();
-    fYb.close();
+    fYb.close();*/
 
     int iConv(0), nConv;
     double alpha[nOut], beta[nOut], sigma2[nOut], f0[nOut];
@@ -116,7 +148,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
 
     nConv = 2;
 
-    for(int j(0); j < nOut; j++){
+    /*for(int j(0); j < nOut; j++){
         alpha[j]  = 0.0;
         beta[j]   = 0.0;
         f0[j]     = 0.0;
@@ -134,7 +166,7 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         fXc << endl;
         //toyModel(Xc[i], Yc[i]);
         //model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
-        reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        reducedModel(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model";
         cout << "---------------------------------------------" << endl;
@@ -161,18 +193,18 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             iConv++;
             nConv *= 2;
         }
-    }
+    }*/
 
-    for(int j(0); j < nOut; j++){
+    /*for(int j(0); j < nOut; j++){
         f02 = 0.25 * _N * _N * f0[j] * f0[j];
         sigma2[j] = 0.5 * _N * sigma2[j] - f02;
         SI[j][0] = (_N * alpha[j] - f02) / sigma2[j];
         TSI[j][0] = 0.5 * _N *  beta[j] / sigma2[j];
-    }
+    }*/
 
-    for(int k(1); k < K; k++){
-        fXc.close();
-        fYc.close();
+    ofstream fXc;
+    ofstream fYc;
+    for(int k(16); k < K; k++){
         fXc.open("../OutputFiles/Xc" + to_string(k) + ".res");
         fYc.open("../OutputFiles/Yc" + to_string(k) + ".res");
         iConv = 0;
@@ -194,9 +226,9 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             fXc << endl;
 
             //toyModel(Xc[i], Yc[i]);
-            //model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
-            reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum,
-                         inVes);
+            model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            /*reducedModel(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum,
+                         inVes);*/
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model";
             cout << "---------------------------------------------" << endl;
@@ -231,10 +263,10 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             SI[j][k]  = (_N * alpha[j] - f02) / sigma2[j];
             TSI[j][k] = 0.5 * _N *  beta[j] / sigma2[j];
         }
+        fXc.close();
+        fYc.close();
     }
 
-    fXc.close();
-    fYc.close();
 
     free2D(Xa, N);
     free2D(Xb, N);
@@ -386,7 +418,7 @@ void sobolFromFiles(){
 
 void sobolRT(const int N, const string nFRefParInt, const string nFInTissueDim,
              const string nFInTum, const string nFInVes){
-    const int K(12), NConv(log(N) / log(2.0)), nOut(15);
+    const int K(38), NConv(log(N) / log(2.0)), nOut(15);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
