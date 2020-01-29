@@ -18,11 +18,11 @@ path = '../../Carlos/Results/Diff/';
 %     'Res_Dose_5Val_5Rep/', 'Arrest_Dose_5Val_5Rep/'...
 %     'HypNec_Dose_5Val_5Rep/'};
 % tSim = [1, 0, 0, 0, 0];
-% pathSim = {'AngRes_Dose_5Val_5Rep/', 'AngRes_Dose_5Val_5Rep/'...
-%     'AngArrest_Dose_5Val_5Rep/', 'ResArrest_Dose_5Val_5Rep/'};
-% tSim = [1, 0, 0, 0];
-pathSim = {'Ang_Dose_5Val_5Rep/', 'ArrestNoAngNoRes_Dose_5Val_5Rep/'};
-tSim = [1, 0];
+pathSim = {'AngRes_Dose_5Val_5Rep/', 'AngRes_Dose_5Val_5Rep/'...
+    'AngArrest_Dose_5Val_5Rep/', 'ResArrest_Dose_5Val_5Rep/'};
+tSim = [1, 0, 0, 0];
+% pathSim = {'Ang_Dose_5Val_5Rep/', 'ArrestNoAngNoRes_Dose_5Val_5Rep/'};
+% tSim = [1, 0];
 % pathSim = {'Ang_Dose_5Val_5Rep/', 'OxyNoAngNoHypNec_Dose_5Val_5Rep/'};
 % tSim = [1, 1];
 % pathSim = {'TimeConstantOxy_Dose_5Val_5Rep/'...
@@ -38,29 +38,30 @@ nOut = 15;
 
 % simN = {'All processes', 'No angiogenesis', 'No healthy cell division'...
 %     'No cycle arrest', 'No hypoxic necrosis'};
-% simN = {'All processes', 'No angiogenesis, no healthy cell division'...
-%     'No angiogenesis, no cycle arrest'...
-%     'No healthy cell division, no cycle arrest'};
-simN = {'All processes'...
-    'No angiogenesis, no healthy cell division, no cycle arrest'};
+simN = {'All processes', 'No angiogenesis, no healthy cell division'...
+    'No angiogenesis, no cycle arrest'...
+    'No healthy cell division, no cycle arrest'};
+% simN = {'All processes'...
+%     ['No angiogenesis,', newline, 'no healthy cell division,'...
+%     newline, 'no cycle arrest']};
 % simN = {'All processes', 'No angiogenesis, no hypoxic necrosis'};
 % simN = {'All processes', 'Time constant oxygenation'};
 
-fileNames = {'/endTreatTumDens.res', '/3MonTumDens.res'...
-    '/finTumVol.res', '/intTumDens.res', '/killed50.res'...
-    '/killed80.res', '/killed90.res', '/killed95.res', '/killed99.res'...
-    '/killed999.res', '/timeTo95.res', '/timeTo99.res', '/rec.res'...
-    '/recTumDens.res', '/recTime.res'};
+fileNames = {'endTreatTumDens.res', '3MonTumDens.res'...
+    'finTumVol.res', 'intTumDens.res', 'killed50.res'...
+    'killed80.res', 'killed90.res', 'killed95.res', 'killed99.res'...
+    'killed999.res', 'timeTo95.res', 'timeTo99.res', 'rec.res'...
+    'recTumDens.res', 'recTime.res'};
 
-outputNames = {'Tumour density at the end of treat.'...
-    'Tumour density 3 months after the beginning of treat.'...
-    'Final tumour volume', 'Integral of tumour density'...
-    '50% of tumour cells killed', '80% of tumour cells killed'...
-    '90% of tumour cells killed', '95% of tumour cells killed'...
-    '99% of tumour cells killed', '99.9% of tumour cells killed'...
-    'Time to kill 95% of tumour cells'...
-    'Time to kill 99% of tumour cells', 'Recurrence'...
-    'Tumour density at recurrence', 'Recurrence time'};
+outputNames = {'Tumor density at the end of treat.'...
+    'Tumor density 3 months after the beginning of treat.'...
+    'Final tumor volume', 'Integral of tumor density'...
+    '50% of tumor cells killed', '80% of tumor cells killed'...
+    '90% of tumor cells killed', '95% of tumor cells killed'...
+    '99% of tumor cells killed', '99.9% of tumor cells killed'...
+    'Time to kill 95% of tumor cells'...
+    'Time to kill 99% of tumor cells', 'Recurrence'...
+    'Tumor density at recurrence', 'Recurrence time'};
 
 %%
 % This block asks the user to select the tissues and the output to be
@@ -96,7 +97,7 @@ if(nTissue >= 1 && nTissue <= nTissues)
     if(selOut >= 1 && selOut <= nOut)
         for j = 1:nSim
             pathTissue = [path, char(pathSim(j)), '/Tissue'...
-                num2str(nTissue)];
+                num2str(nTissue),'/'];
             par = load([pathTissue, '/combPar.res']);
             colDose = 1;
             output(:, :, j) = load([pathTissue, char(fileNames(selOut))]);
@@ -105,7 +106,7 @@ if(nTissue >= 1 && nTissue <= nTissues)
     elseif(selOut == -1)
         for j = 1:nSim
             pathTissue = [path, char(pathSim(j)), '/Tissue'...
-                num2str(nTissue)];
+                num2str(nTissue),'/'];
             par = load([pathTissue, '/combPar.res']);
             colDose = 1;
             for i = 1:length(fileNames)
@@ -125,7 +126,8 @@ elseif(nTissue == 0)
     
     for j = 1:nSim
         for i = 1:nTissues
-            pathTissue = [path, char(pathSim(j)), '/Tissue' num2str(i)];
+            pathTissue = [path, char(pathSim(j)), '/Tissue' num2str(i)...
+                ,'/'];
             par(:, :, i, j) = load([pathTissue, '/combPar.res']);
             output(:, :, i, j) = load([pathTissue,...
                 char(fileNames(selOut))]);
@@ -145,7 +147,7 @@ elseif(nTissue == -1)
     for j = 1:nSim
         for i = 1:nTissues
             pathTissue = [path, char(pathSim(j)), '/Tissue',...
-                num2str(i)];
+                num2str(i), '/'];
             par(:, :, i, j) = load([pathTissue, '/combPar.res']);
             output(:, :, i, j) = load([pathTissue,...
                 char(fileNames(selOut))]);
@@ -185,9 +187,9 @@ for i = 1:length(tDose)
     xticks(1:nTissues)
     xticklabels(num2cell(tissuesVascDens))
     ax = gca;
-    ax.FontSize = 22;
+    ax.FontSize = 42;
     title(['All tissues - ', char(outputNames(selOut)), ' - '...
-        num2str(tDose(i)), ' Gy'], 'FontSize', 22)
+        num2str(tDose(i)), ' Gy'], 'FontSize', 42)
     
     xpos = zeros(nTissues, nSim);
     ypos = zeros(nTissues, nSim);
@@ -203,7 +205,7 @@ for i = 1:length(tDose)
     grid on
     legend(simN, 'location', 'northeast', 'FontSize', 22)
     xlabel('Tissue', 'FontSize', 22)
-    ylabel(char(outputNames(selOut)), 'FontSize', 22)
+    ylabel(char(outputNames(selOut)), 'FontSize', 42)
 end
 
 %%
@@ -266,15 +268,15 @@ for i = 1:length(tDose)
 end
 
 for i = 1:length(tDose)
-    nfig = nfig + 1;
-    figure(nfig)
+    % nfig = nfig + 1;
+    % figure(nfig);
+    fig = figure('position', get(0, 'screensize'));
     ax = gca;
-    ax.FontSize = 22;
-    ax = gca;
+    ax.FontSize = 42;
     hold on
     for j = 1:nSim
         plot(initVascDens', permute(meanDose(i, tissuesVascDens, j),...
-            [2, 3, 1]), '-o', 'Linewidth', 4, 'Markersize', 6)
+            [2, 3, 1]), '-o', 'Linewidth', 6, 'Markersize', 6)
     end
     for j = 1:nSim
         errorbar(initVascDens', permute(meanDose(i, tissuesVascDens, j),...
@@ -285,10 +287,23 @@ for i = 1:length(tDose)
     ylim([0, inf])
     grid on
     title(['All tissues - ', char(outputNames(selOut)), ' - '...
-        num2str(tDose(i)), ' Gy'], 'FontSize', 22)
-    xlabel('Initial vascular density (%)', 'FontSize', 22)
-    ylabel(char(outputNames(selOut)), 'FontSize', 22)
-    legend(simN, 'location', 'southeast', 'FontSize', 22)
+        num2str(tDose(i)), ' Gy'], 'FontSize', 42)
+    xlabel('Initial vascular density (%)', 'FontSize', 42)
+    ylabel(char(outputNames(selOut)), 'FontSize', 42)
+    legend(simN, 'location', 'southeast', 'FontSize', 42)
+    outerpos = ax.OuterPosition;
+    ti = ax.TightInset;
+    left = outerpos(1) + ti(1);
+    bottom = outerpos(2) + ti(2);
+    ax_width = outerpos(3) - ti(1) - ti(3);
+    ax_height = outerpos(4) - ti(2) - ti(4);
+    ax.Position = [left bottom ax_width ax_height];
+    set(fig, 'units', 'inches')
+    pos = get(fig, 'position');
+    set(fig, 'paperPositionMode', 'auto', 'paperUnits', 'Inches',...
+        'paperSize', [pos(3), pos(4)])
+    print(fig, [char(fileNames(selOut)), num2str(tDose(i)), 'Gy.pdf'],...
+        '-dpdf', '-r0')
 end
 
 %%
