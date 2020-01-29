@@ -1,17 +1,17 @@
 clear all
 close all
-global nPar nTotPar selPar
+global nPar nImpPar nTotPar selPar
 global allTissues
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
-global b color nfig shape;
+global b color colorbar nfig shape;
 global fileNames outputNames;
 
-% densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
-% nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
-% vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20];
-% nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
-% allTissues = [densTissues, nonDensTissues];
+densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
+nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
+vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20];
+nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
+allTissues = [densTissues, nonDensTissues];
 
 % densTissues = [1, 2, 5, 6, 8, 9, 11, 19, 20];
 % nonDensTissues = [3, 4, 7, 10, 14, 15, 16, 17];
@@ -19,11 +19,17 @@ global fileNames outputNames;
 % nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19];
 % allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19, 20];
 
-densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 21];
-nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17];
-vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16];
-nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
-allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21];
+green = [153, 255, 102];
+darkGreen = [127, 207, 127];
+lightGreen = [205, 255, 105];
+blue = [127, 185, 225];
+red = [255, 124, 128];
+darkRed = [232, 136, 136];
+lightRed = [255, 101, 152];
+orange = [255, 174, 101];
+gray = [173, 185, 202];
+darkPurple = [160, 120, 196];
+lightPurple = [146, 141, 251];
 
 % path = '../../Carlos/Results/Morris100_39Par_Cluster';
 % b = {'$tum$', '$T_{tum}$', '$N$', '$hea$', '$T_{heal}$', '$ang$'...
@@ -56,6 +62,14 @@ b = {'$N$', '$tum$', '$T_{tum}$', '$hea$', '$T_{heal}$', '$ang$'...
     '$\alpha/\beta_{neoEnd}$', '$d_{thres}$', '$T_{arrest}$'...
     '$oxy$', '$pO_2^{nec}$', '$D^{O_2}$', '$V_{max}^{O_2}$'...
     '$K_M^{O_2}$', '$pO_2^{preEnd}$', '$pO_2^{neoEnd}$', '$pO_2^{hyp}$'};
+colorbar = [blue; blue; blue; orange; orange; red; lightRed; darkRed;
+    darkRed; darkRed; darkRed; darkRed; lightPurple; lightPurple;
+    lightPurple; lightPurple; lightPurple; lightPurple; lightPurple;
+    lightPurple; lightPurple; lightPurple; lightPurple; lightPurple; 
+    lightPurple; lightPurple; lightPurple; lightPurple; lightPurple; 
+    darkPurple; green; darkGreen; lightGreen; lightGreen; lightGreen;
+    lightGreen; lightGreen; lightGreen; darkRed];
+
 nTotPar = length(b);
 selPar = ones(1, nTotPar);
 selPar(2) = 0;
@@ -83,14 +97,15 @@ selPar(31) = 0;
 % selPar(10) = 0;
 % selPar(35) = 0;
 
-
 % path = uigetdir('../../Carlos/Results');
 % path = '../../Carlos/Results/Morris100_OneAlphaBeta_Tissue4';
 % path = '../../Carlos/Results/Morris100_8OutputsTest';
 
 b = b(selPar == 1);
 nPar = nnz(selPar);
+nImpPar = nPar;
 color = linspace(0, 1, nPar);
+colorbar = colorbar(selPar == 1, :)./255;
 shape = ['o', 's', 'v', 'd'];
 
 nfig = 0;
@@ -101,15 +116,15 @@ fileNames = {'EndTreatTumDens', '3MonTumDens'...
     'Killed80', 'Killed90', 'Killed95', 'Killed99'...
     'Killed999', 'TimeTo95', 'TimeTo99', 'Rec'...
     'RecTumDens', 'RecTime'};
-outputNames = {'Tumour density at the end of treat.'...
-    'Tumour density 3 months after the end of treat.'...
-    'Final tumour volume', 'Integral of tumour density'...
-    '50% of tumour cells killed', '80% of tumour cells killed'...
-    '90% of tumour cells killed', '95% of tumour cells killed'...
-    '99% of tumour cells killed', '99.9% of tumour cells killed'...
-    'Time to kill 95% of tumour cells'...
-    'Time to kill 99% of tumour cells', 'Recurrence'...
-    'Tumour density at recurrence', 'Recurrence time'};
+outputNames = {'Tumor density at the end of treat.'...
+    'Tumor density at t = 12 weeks'...
+    'Final tumor volume', 'Integral of tumor density'...
+    '50% of tumor cells killed', '80% of tumor cells killed'...
+    '90% of tumor cells killed', '95% of tumor cells killed'...
+    '99% of tumor cells killed', '99.9% of tumor cells killed'...
+    'Time to kill 95% of tumor cells'...
+    'Time to kill 99% of tumor cells', 'Recurrence'...
+    'Tumor density at recurrence', 'Recurrence time'};
 nOut = 15;
 
 while(~quit)
