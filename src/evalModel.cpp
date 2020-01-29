@@ -757,7 +757,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     }
     }
 
-    const double simTime(2160.0);
+    const double simTime(3600.0);
     RootSimulator *sim;
     sim = new RootSimulator(coupler, simTimeStep, oxySimTimeStep, sclFac);
     double currentTime(0.0);
