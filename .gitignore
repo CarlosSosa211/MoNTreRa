@@ -1,6 +1,7 @@
 build*/
 OutputFiles*/
 *~
+~.pdf
 src/GUI/RT.pro.user
 InputFiles/X.dat
 InputFiles/inTum.dat
