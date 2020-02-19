@@ -2,7 +2,9 @@ build*/
 OutputFiles*/
 *~
 *.pdf
+*.svg
 src/GUI/RT.pro.user
+Figures/state/
 InputFiles/X.dat
 InputFiles/inTum.dat
 InputFiles/inVes.dat
