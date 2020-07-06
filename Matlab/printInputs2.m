@@ -59,3 +59,26 @@ for k = 1:nlayer
     end
 end
 fclose(fid);
+
+%%
+
+tissuePar = load('../InputFiles/tumAreaDensADC.dat');
+totalDose = load('../InputFiles/totalDose.dat');
+
+nTissues = size(tissuePar, 1);
+
+for i = 1: nTissues
+    fid = fopen(['../Khemara/tissuePar_', num2str(i),...
+        '.dat'], 'w');
+    fprintf(fid, '20.0\n%.1f\n%.2f\n0.05', tissuePar(i, 1) * 1e4,...
+        tissuePar(i, 2));
+    fclose(fid);
+    
+        fid = fopen(['../Khemara/treatment_', num2str(i),...
+        '.dat'], 'w');
+    fprintf(fid, '2.0\n%.1f\n24.0\n0', totalDose(i));
+    fclose(fid);
+end
+
+
+
