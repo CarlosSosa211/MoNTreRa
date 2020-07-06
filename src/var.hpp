@@ -10,6 +10,7 @@
 
 #include "alloc.hpp"
 #include "evalModel.hpp"
+#include "treatment.hpp"
 
 void var1ParRange(const int kp, const int L, const std::string nRefParInt,
                   const std::string nFInTissueDim, const std::string nFInTum,
@@ -31,6 +32,8 @@ void varErr(const std::string nFVarPar, const std::string nFMostRelPar,
 void varParFromFiles(const std::vector<std::string> nFPar,
                      const std::string nFInTissueDim,
                      const std::string nFInTum, const std::string nFInVes);
+void varParFromFiles(const std::string nFInTissuePar, const std::string nFPar,
+                     const std::string nFTreatment);
 void varStoch(const int N, const int P, const std::string nFRefParInt,
               const std::string nFInTissueDim, const std::string nFInTum,
               const std::string nFInVes);

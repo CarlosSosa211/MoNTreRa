@@ -1144,6 +1144,116 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
 
 
 /*------------------------------------------------------------------------------
+ * This function compares the scalar output values obtained for two or more
+ * evaluations of the model using parameters defined in input files.
+ *
+ * Inputs:
+ *  - nFPar: vector with the names of the files containing the values of the
+ *  parameters of the model,
+ *  - nFInTissuePar: name of the file containing the parameters of an
+ *  artificial tissue,
+------------------------------------------------------------------------------*/
+
+void varParFromFiles(const string nFInTissuePar, const string nFPar,
+                     const string nFTreatment){
+    const int K(38), nOut(15);
+    double x[K], y[nOut];
+    string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
+    string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
+    ofstream fEndTreatTumDens, f3MonTumDens, fFinTumVol, fIntTumDens;
+    ofstream fKilled50, fKilled80, fKilled90, fKilled95, fKilled99, fKilled999;
+    ofstream fTimeTo95, fTimeTo99;
+    ofstream fRec, fRecTumDens, fRecTime;
+
+    int nrow, ncol, nlayer;
+    double cellSize, tumArea, tumDens, vascDens;
+    vector<bool> inTum, inVes;
+    Treatment treatment;
+
+    readInFiles(nFInTissuePar, nFTreatment, cellSize, tumArea, tumDens,
+                vascDens, treatment);
+    createInFiles(cellSize, tumArea, tumDens, vascDens, nrow, ncol, nlayer,
+                  inTum, inVes);
+
+    cout << "cell size: " << cellSize << endl;
+    cout << "tumor area: " << tumArea << endl;
+    cout << "tumor density in the tumor area: " << tumDens << endl;
+    cout << "vascular density: " << vascDens << endl;
+    cout << "nrow: " << nrow << endl;
+    cout << "ncol: " << ncol << endl;
+    cout << "nlayer: " << nlayer << endl;
+
+    ifstream fPar(nFPar.c_str());
+    for(int k(0); k < K; k++){
+        fPar >> x[k];
+    }
+    fPar.close();
+
+    nFTumDens     = "../OutputFiles/tumDens.res";
+    nFTumVol      = "../OutputFiles/tumVol.res";
+    nFVascDens    = "../OutputFiles/vascDens.res";
+    nFKilledCells = "../OutputFiles/killedCells.res";
+    nFDeadDens    = "../OutputFiles/deadDens.res";
+    nFCycle       = "../OutputFiles/cycle.res";
+    nFHypDens     = "../OutputFiles/hypDens.res";
+    nFPO2Stat     = "../OutputFiles/pO2Stat.res";
+    nFVegfStat    = "../OutputFiles/vegfStat.res";
+
+    fEndTreatTumDens.open("../OutputFiles/endTreatTumDens.res");
+    f3MonTumDens.open("../OutputFiles/3MonTumDens.res");
+    fFinTumVol.open("../OutputFiles/finTumVol.res");
+    fIntTumDens.open("../OutputFiles/intTumDens.res");
+    fKilled50.open("../OutputFiles/killed50.res");
+    fKilled80.open("../OutputFiles/killed80.res");
+    fKilled90.open("../OutputFiles/killed90.res");
+    fKilled95.open("../OutputFiles/killed95.res");
+    fTimeTo95.open("../OutputFiles/timeTo95.res");
+    fKilled99.open("../OutputFiles/killed99.res");
+    fTimeTo99.open("../OutputFiles/timeTo99.res");
+    fKilled999.open("../OutputFiles/killed99.res");
+    fRec.open("../OutputFiles/rec.res");
+    fRecTumDens.open("../OutputFiles/recTumDens.res");
+    fRecTime.open("../OutputFiles/recTime.res");
+
+    model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, &treatment,
+          nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens, nFCycle,
+          nFHypDens, nFPO2Stat, nFVegfStat);
+
+    fEndTreatTumDens << y[0];
+    f3MonTumDens     << y[1];
+    fFinTumVol       << y[2];
+    fIntTumDens      << y[3];
+    fKilled50        << y[4];
+    fKilled80        << y[5];
+    fKilled90        << y[6];
+    fKilled95        << y[7];
+    fTimeTo95        << y[8];
+    fKilled99        << y[9];
+    fTimeTo99        << y[10];
+    fKilled999       << y[11];
+    fRec             << y[12];
+    fRecTumDens      << y[13];
+    fRecTime         << y[14];
+
+    fEndTreatTumDens.close();
+    f3MonTumDens.close();
+    fFinTumVol.close();
+    fIntTumDens.close();
+    fKilled50.close();
+    fKilled80.close();
+    fKilled90.close();
+    fKilled95.close();
+    fTimeTo95.close();
+    fKilled99.close();
+    fTimeTo99.close();
+    fKilled999.close();
+    fRec.close();
+    fRecTumDens.close();
+    fRecTime.close();
+    cout << "---------------------------------------------" << endl;
+}
+
+/*------------------------------------------------------------------------------
  * This function evaluates the model for random combinations of the values of
  * the parameters within their ranges. The scalar ouptuts are calculated.
  *
