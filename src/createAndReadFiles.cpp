@@ -576,6 +576,109 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
     return 0;
 }
 
+/*------------------------------------------------------------------------------
+ * This function creates the initial configuration of an artificial tissue in
+ * terms of tumour and endothelial cells, supposing a random uniform
+ * distribution for the latter.
+ *
+ * Inputs:
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - tumArea: initial tumour area,
+ *  - tumDens: initial tumour density in the vascular area,
+ *  - vascDens: initial vascular density.
+ *
+ * Outputs:
+ *  - nrow: number of rows of the tissue,
+ *  - ncol: number of columns of the tissue,
+ *  - nlayer: number of layers of the tissue,
+ *  - inTum: vector containing the initial tumour cell configuration,
+ *  - inVes: vector containing the initial endothelial cell configuration.
+------------------------------------------------------------------------------*/
+int createInFiles(const double cellSize, const double tumArea,
+                  const double tumDens, const double vascDens, int &nrow,
+                  int &ncol, int &nlayer, vector<bool> &inTum,
+                  vector<bool> &inVes){
+    const int r(sqrt(tumArea / M_PI) / cellSize);
+    int m, tumToDist, vesToDist;
+    double n;
+
+    nrow = 3 * r;
+    ncol = 3 * r;
+    nlayer = 1;
+
+    const int nrowNcol(nrow * ncol), nrowNcolNlayer(nrowNcol * nlayer);
+    int halfNrow, halfNcol, halfNlayer;
+    int imHalfNrow2, lmHalfNlayer2;
+    int lnrowNcol;
+    double R;
+    vector<simpCell> map(nrowNcolNlayer);
+
+    halfNrow = 0.5 * nrow;
+    halfNcol = 0.5 * ncol;
+    halfNlayer = 0.5 * nlayer;
+    R = sqrt(halfNrow * halfNrow + halfNcol * halfNcol + halfNlayer *
+             halfNlayer);
+
+    int k(0);
+    for(int l(0); l < nlayer; l++){
+        lmHalfNlayer2 = (l - halfNlayer) * (l - halfNlayer);
+        lnrowNcol = l * nrowNcol;
+        for(int i(0); i < nrow; i++){
+            imHalfNrow2 = (i - halfNrow) * (i - halfNrow);
+            for(int j(0); j < ncol; j++){
+                map.at(k).r = sqrt(lmHalfNlayer2 + imHalfNrow2 +
+                                   (j - halfNcol) * (j - halfNcol)) / R;
+                map.at(k).k = k;
+                map.at(k).tum = 0;
+                map.at(k).ves = 0;
+                k++;
+            }
+        }
+    }
+
+    sort(map.begin(), map.end(), compR);
+
+
+    int nCellsTumArea(tumArea / (cellSize * cellSize));
+    vesToDist = vascDens * nrowNcolNlayer;
+    tumToDist = min(int(nCellsTumArea * tumDens),
+                    nrowNcolNlayer - vesToDist);
+
+    default_random_engine gen;
+    normal_distribution<double> distTum(0, 0.33);
+
+    while(tumToDist > 0){
+        n = distTum(gen);
+        if(n >= 0.0 && n < 1.0){
+            m = n * nCellsTumArea;
+            if(!map.at(m).tum){
+                map.at(m).tum = 1;
+                tumToDist--;
+            }
+        }
+    }
+
+    sort(map.begin(), map.end(), compK);
+
+    while(vesToDist > 0){
+        n = double(rand()) / double(RAND_MAX);
+        m = n * nrowNcolNlayer;
+        if(!map.at(m).ves && !map.at(m).tum){
+            map.at(m).ves = 1;
+            vesToDist--;
+        }
+    }
+
+    inTum.resize(nrowNcolNlayer);
+    inVes.resize(nrowNcolNlayer);
+
+    for(k = 0; k < nrowNcolNlayer; k++){
+        inTum.at(k) = map.at(k).tum;
+        inVes.at(k) = map.at(k).ves;
+    }
+    return 0;
+}
 
 /*------------------------------------------------------------------------------
  * This function reads the files containing the dimensions and the initial
@@ -667,8 +770,7 @@ void readInFiles(const string nFInTissueDim, const string nFInVes, int &nrow,
 
 
 /*------------------------------------------------------------------------------
- * This function reads the files containing the dimensions and the initial
- * configuration in terms of endothelial cell of a tissue.
+ * This function reads the files containing the dimensions of a tissue.
  *
  * Inputs:
  *  - nFInTissueDim: name of the file containing the dimensions of a tissue,
@@ -688,6 +790,36 @@ void readInFiles(const string nFInTissueDim, int &nrow, int &ncol, int &nlayer,
     fInTissueDim >> nrow >> ncol >> nlayer;
     fInTissueDim >> cellSize;
     fInTissueDim.close();
+}
+
+
+/*------------------------------------------------------------------------------
+ * This function reads the files containing the dimensions of a tissue.
+ *
+ * Inputs:
+ *  - nFInTissuePar: name of the file containing the dimensions of a tissue,
+ *  - nFInTreatment: name of the files containing the treatment.
+ *
+ * Outputs:
+ *  - cellSize: length of the side of square cells, corresponding to a voxel
+ *  of the tissue,
+ *  - tumArea: initial tumour area,
+ *  - tumDens: initial tumour density in the vascular area,
+ *  - vascDens: initial vascular density.
+------------------------------------------------------------------------------*/
+void readInFiles(const string nFInTissuePar, const string nFTreatment,
+                 double &cellSize, double &tumArea, double &tumDens,
+                 double &vascDens, Treatment &treatment){
+
+    ifstream fInTissuePar(nFInTissuePar.c_str());
+    fInTissuePar >> cellSize >> tumArea >> tumDens >> vascDens;
+    fInTissuePar.close();
+
+    double fraction, totalDose, interval;
+    int schedule;
+    ifstream fTreatmentTCP(nFTreatment.c_str());
+    fTreatmentTCP >> fraction >> totalDose >> interval >> schedule;;
+    treatment = Treatment(fraction, totalDose, interval, schedule);
 }
 
 

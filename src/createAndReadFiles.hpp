@@ -25,6 +25,10 @@ int createInFiles(const int nrow, const int ncol, const int nlayer,
 int createInFiles(const int nrow, const int ncol, const int nlayer,
                   const double tumDens, const double vascDens,
                   std::vector<bool> &inTum, std::vector<bool> &inVes);
+int createInFiles(const double cellSize, const double tumArea,
+                  const double tumDens, const double vascDens, int &nrow,
+                  int &ncol, int &nlayer, std::vector<bool> &inTum,
+                  std::vector<bool> &inVes);
 void readInFiles(const std::string nFInTissueDim, const std::string nFInTum,
                  const std::string nFInVes, int &nrow, int &ncol, int &nlayer,
                  double &cellSize, std::vector<bool> &inTum,
@@ -34,6 +38,9 @@ void readInFiles(const std::string nFInTissueDim, const std::string nFInVes,
                  std::vector<bool> &inVes);
 void readInFiles(const std::string nFInTissueDim, int &nrow, int &ncol,
                  int &nlayer, double &cellSize);
+void readInFiles(const std::string nFInTissuePar, const std::string nFTreatment,
+                 double &cellSize, double &tumArea, double &tumDens,
+                 double &vascDens, Treatment &Treatment);
 void readInFilesOxy(const std::string nFInTissueOxy, bool &art, int &nrow,
                     int &ncol, int &nlayer, double &cellSize, double &vascDens,
                     double &sigmaVasc);

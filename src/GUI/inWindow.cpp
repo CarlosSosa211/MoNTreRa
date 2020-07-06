@@ -153,7 +153,7 @@ InWindow::InWindow() : QWidget(){
     m_ncol->setMaximum(999);
     m_nlayer->setMaximum(999);
     m_cellSize->setMaximum(30.0);
-    m_tumDens->setMaximum(1.0);
+    m_tumDens->setMaximum(1e7);
     m_tumDens->setSingleStep(0.01);
     m_sigmaTum->setMaximum(2.0);
     m_sigmaTum->setSingleStep(0.01);
@@ -517,7 +517,77 @@ int InWindow::createInFiles(){
     }
 
     else{
-        std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
+        const int r(sqrt(m_tumDens->value() / M_PI) / m_cellSize->value());
+        int m, tumToDist, vesToDist;
+        double n;
+
+        int nrow(3 * r), ncol(3 * r), nlayer(1);
+
+        const int nrowNcol(nrow * ncol), nrowNcolNlayer(nrowNcol * nlayer);
+        int halfNrow, halfNcol, halfNlayer;
+        int imHalfNrow2, lmHalfNlayer2;
+        int lnrowNcol;
+        double R;
+        std::vector<simpCell> map(nrowNcolNlayer);
+
+        halfNrow = 0.5 * nrow;
+        halfNcol = 0.5 * ncol;
+        halfNlayer = 0.5 * nlayer;
+        R = sqrt(halfNrow * halfNrow + halfNcol * halfNcol + halfNlayer *
+                 halfNlayer);
+
+        int k(0);
+        for(int l(0); l < nlayer; l++){
+            lmHalfNlayer2 = (l - halfNlayer) * (l - halfNlayer);
+            lnrowNcol = l * nrowNcol;
+            for(int i(0); i < nrow; i++){
+                imHalfNrow2 = (i - halfNrow) * (i - halfNrow);
+                for(int j(0); j < ncol; j++){
+                    map.at(k).r = sqrt(lmHalfNlayer2 + imHalfNrow2 +
+                                       (j - halfNcol) * (j - halfNcol)) / R;
+                    map.at(k).k = k;
+                    map.at(k).tum = 0;
+                    map.at(k).ves = 0;
+                    k++;
+                }
+            }
+        }
+
+        std::sort(map.begin(), map.end(), compR);
+
+        int nCellsTumArea(int(m_tumDens->value() /
+                              (m_cellSize->value() * m_cellSize->value())));
+
+        vesToDist = m_vascDens->value() * nrowNcolNlayer;
+        tumToDist = std::min(int(nCellsTumArea * m_sigmaTum->value()),
+                             nrowNcolNlayer - vesToDist);
+
+        std::default_random_engine gen;
+        std::normal_distribution<double> distTum(0, 0.33);
+
+        while(tumToDist > 0){
+            n = distTum(gen);
+            if(n >= 0.0 && n < 1.0){
+                m = n * nCellsTumArea;
+                if(!map.at(m).tum){
+                    map.at(m).tum = 1;
+                    tumToDist--;
+                }
+            }
+        }
+
+        std::sort(map.begin(), map.end(), compK);
+
+        while(vesToDist > 0){
+            n = double(rand()) / double(RAND_MAX);
+            m = n * nrowNcolNlayer;
+            if(!map.at(m).ves && !map.at(m).tum){
+                map.at(m).ves = 1;
+                vesToDist--;
+            }
+        }
+
+        /*std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
 
         fTissueDim << m_nrow->value() << std::endl;
         fTissueDim << m_ncol->value() << std::endl;
@@ -560,8 +630,6 @@ int InWindow::createInFiles(){
         else{
             vesToDist = 0;
         }
-
-        std::cout << "IVD " << ivd << " vesToDist " << vesToDist << std::endl;
 
         int halfIvd, halfNrow, halfNcol, halfNlayer;
         int imHalfNrow2, lmHalfNlayer2;
@@ -729,7 +797,16 @@ int InWindow::createInFiles(){
                     map.at(l * nrowNcol + k).tum = 0;
                 }
             }
-        }
+        }*/
+
+        std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
+
+        fTissueDim << nrow << std::endl;
+        fTissueDim << ncol << std::endl;
+        fTissueDim << nlayer << std::endl;
+        fTissueDim << m_cellSize->value() << std::endl;
+
+        fTissueDim.close();
 
         std::ofstream fInTum("inTum.dat"), fInVes("inVes.dat");
 
