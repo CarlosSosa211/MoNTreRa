@@ -14,6 +14,7 @@
 
 class Treatment{
 public:
+  Treatment();
   Treatment(const double fraction, const double totalDose,
 	    const double interval, const int schedule);
   ~Treatment();

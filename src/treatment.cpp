@@ -12,6 +12,23 @@
 using namespace std;
 
 /*------------------------------------------------------------------------------
+ * Default constructor of the class Treatment.
+ *
+ * Inputs:
+ *  - fraction: dose per fraction (Gy),
+ *  - totalDose: total dose (Gy),
+ *  - interval: interval between two sessions (h),
+ *  - schedule: irradiation schedule (0, Mon-Fri; 1, Mon-Sund).
+------------------------------------------------------------------------------*/
+
+Treatment::Treatment(){
+    m_fraction = 0.0;
+    m_interval = 0.0;
+    m_totalDose = 0.0;
+    m_scheDescrip = "Mon-Fri";
+}
+
+/*------------------------------------------------------------------------------
  * Constructor of the class Treatment.
  *
  * Inputs:
