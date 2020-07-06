@@ -73,9 +73,13 @@ int Coupler::updateModel(const double currentTime, const double DT){
         for(int k(0); k < getModel1()->getNumComp(); k++){
             ((Cell *)getModel1()->getComp()->at(k))->
                     setInPO2(getModel2()->getComp()->at(k)->getOutD()[0]);
-
             ((Cell *)getModel1()->getComp()->at(k))->
                     setInVegf(getModel2()->getComp()->at(k)->getOutD()[1]);
+
+            /*((Cell *)getModel1()->getComp()->at(k))->
+                    setInPO2(getModel2()->getOutD()[2]);
+            ((Cell *)getModel1()->getComp()->at(k))->
+                    setInVegf(getModel2()->getOutD()[4]);*/
 
             ((AbsOxyCell *)getModel2()->getComp()->at(k))->
                     setInNormVes(((Cell *)getModel1()->getComp()->at(k))->
