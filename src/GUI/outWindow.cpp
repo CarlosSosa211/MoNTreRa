@@ -46,18 +46,19 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     m_sDash->append(0.0, 100.0);
     m_sDash->setPen(QPen(Qt::DashLine));
 
-    std::ifstream fEndTreatTime((nFOutData + "/endTreatTumDens.res").c_str());
+//    std::ifstream fEndTreatTime((nFOutData + "/endTreatTumDens.res").c_str());
 
-    if(!fEndTreatTime.is_open()){
-        QMessageBox::critical(this, "Error", "Problem while opening "
-                                             "endTreatTumDens.res");
-    }
+//    if(!fEndTreatTime.is_open()){
+//        QMessageBox::critical(this, "Error", "Problem while opening "
+//                                             "endTreatTumDens.res");
+//    }
 
-    else{
-        fEndTreatTime >> m_endTreatTime;
-        fEndTreatTime.close();
-    }
+//    else{
+//        fEndTreatTime >> m_endTreatTime;
+//        fEndTreatTime.close();
+//    }
 
+    m_endTreatTime = 1440.0;
 
 
     std::ifstream fRec((nFOutData + "/rec.res").c_str());

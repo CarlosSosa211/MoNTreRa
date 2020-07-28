@@ -81,6 +81,12 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     const double hypThres(x[k]);
     k++;
 
+    cout << "nrow: "        << nrow        << endl;
+    cout << "ncol: "        << ncol        << endl;
+    cout << "nlayer: "      << nlayer      << endl;
+    cout << "cellSize: "    << cellSize    << endl;
+    cout << "edgeOrder: "   << edgeOrder   << endl;
+    cout << "tumGrowth: "   << tumGrowth   << endl;
     cout << "edgeOrder: "   << edgeOrder   << endl;
     cout << "tumGrowth: "   << tumGrowth   << endl;
     cout << "tumTime: "     << tumTime     << " h" << endl;
@@ -150,21 +156,26 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     sim->simulate(simTimeStep, simTime);
     sim->stop();
 
-    double endTreatTumDens(model1->getOutD()[0]);
-    double threeMonTumDens(model1->getOutD()[1]);
-    double tumVol(model1->getOutD()[19]);
-    double intTumDens(model1->getOutD()[2]);
+    double eightWTumDens(model1->getOutD()[0]);
+    double twelveWTumDens(model1->getOutD()[1]);
+    double eightWTumVol(model1->getOutD()[2]);
+    double twelveWTumVol(model1->getOutD()[3]);
+    double eightWIntTumDens(model1->getOutD()[4]);
+    double twelveWIntTumDens(model1->getOutD()[5]);
+    double eightWIntTumVol(model1->getOutD()[6]);
+    double twelveWIntTumVol(model1->getOutD()[7]);
     double killed50(model1->getOutB()[0]);
     double killed80(model1->getOutB()[1]);
     double killed90(model1->getOutB()[2]);
     double killed95(model1->getOutB()[3]);
-    double timeTo95(model1->getOutD()[6]);
+    double timeTo95(model1->getOutD()[11]);
     double killed99(model1->getOutB()[4]);
-    double timeTo99(model1->getOutD()[7]);
+    double timeTo99(model1->getOutD()[12]);
     double killed999(model1->getOutB()[5]);
     double rec(model1->getOutB()[6]);
-    double recTumDens(model1->getOutD()[16]);
-    double recTime(model1->getOutD()[17]);
+    double recTumDens(model1->getOutD()[21]);
+    double recTumVol(model1->getOutD()[22]);
+    double recTime(model1->getOutD()[23]);
 
     delete treatment;
     delete model1;
@@ -172,37 +183,47 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     delete coupler;
     delete sim;
 
-    cout << "endTreatTumDens: " << endTreatTumDens << endl;
-    cout << "3MonTumDens: "     << threeMonTumDens << endl;
-    cout << "tumVol: "          << tumVol << " mm3" << endl;
-    cout << "intTumDens: "      << intTumDens << endl;
-    cout << "killed50: "        << killed50 << endl;
-    cout << "killed80: "        << killed80 << endl;
-    cout << "killed90: "        << killed90 << endl;
-    cout << "killed95: "        << killed95 << endl;
-    cout << "timeTo95: "        << timeTo95 << " h" << endl;
-    cout << "killed99: "        << killed99 << endl;
-    cout << "timeTo99: "        << timeTo99 << " h" << endl;
-    cout << "killed999: "       << killed999 << endl;
-    cout << "rec: "             << rec << endl;
-    cout << "recTumDens: "      << recTumDens << endl;
-    cout << "recTime: "         << recTime << " h" << endl;
+    cout << "8wTumDens: "     << eightWTumDens  << endl;
+    cout << "12wTumDens: "    << twelveWTumDens << endl;
+    cout << "8wTumVol: "      << eightWTumVol  << " mm3" << endl;
+    cout << "12wTumVol: "     << twelveWTumVol << " mm3" << endl;
+    cout << "8wIntTumDens: "  << eightWIntTumDens << endl;
+    cout << "12wIntTumDens: " << twelveWIntTumDens << endl;
+    cout << "8wIntTumVol: "   << eightWIntTumVol << " mm3" << endl;
+    cout << "12wIntTumVol: "  << twelveWIntTumVol << " mm3" << endl;
+    cout << "killed50: "      << killed50 << endl;
+    cout << "killed80: "      << killed80 << endl;
+    cout << "killed90: "      << killed90 << endl;
+    cout << "killed95: "      << killed95 << endl;
+    cout << "timeTo95: "      << timeTo95 << " h" << endl;
+    cout << "killed99: "      << killed99 << endl;
+    cout << "timeTo99: "      << timeTo99 << " h" << endl;
+    cout << "killed999: "     << killed999 << endl;
+    cout << "rec: "           << rec << endl;
+    cout << "recTumDens: "    << recTumDens << endl;
+    cout << "recTumVol: "     << recTumVol << " mm3" << endl;
+    cout << "recTime: "       << recTime << " h" << endl;
 
-    y[0]  = endTreatTumDens;
-    y[1]  = threeMonTumDens;
-    y[2]  = tumVol;
-    y[3]  = intTumDens;
-    y[4]  = killed50;
-    y[5]  = killed80;
-    y[6]  = killed90;
-    y[7]  = killed95;
-    y[8]  = timeTo95;
-    y[9]  = killed99;
-    y[10] = timeTo99;
-    y[11] = killed999;
-    y[12] = rec;
-    y[13] = recTumDens;
-    y[14] = recTime;
+    y[0]  = eightWTumDens;
+    y[1]  = twelveWTumDens;
+    y[2]  = eightWTumVol;
+    y[3]  = twelveWTumVol;
+    y[4]  = eightWIntTumDens;
+    y[5]  = twelveWIntTumDens;
+    y[6]  = eightWIntTumVol;
+    y[7]  = twelveWIntTumVol;
+    y[8]  = killed50;
+    y[9]  = killed80;
+    y[10] = killed90;
+    y[11] = killed95;
+    y[12] = timeTo95;
+    y[13] = killed99;
+    y[14] = timeTo99;
+    y[15] = killed999;
+    y[16] = rec;
+    y[17] = recTumDens;
+    y[18] = recTumVol;
+    y[19] = recTime;
 }
 
 
@@ -364,21 +385,26 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     sim->simulate(simTimeStep, simTime);
     sim->stop();
 
-    double endTreatTumDens(model1->getOutD()[0]);
-    double threeMonTumDens(model1->getOutD()[1]);
-    double tumVol(model1->getOutD()[19]);
-    double intTumDens(model1->getOutD()[2]);
+    double eightWTumDens(model1->getOutD()[0]);
+    double twelveWTumDens(model1->getOutD()[1]);
+    double eightWTumVol(model1->getOutD()[2]);
+    double twelveWTumVol(model1->getOutD()[3]);
+    double eightWIntTumDens(model1->getOutD()[4]);
+    double twelveWIntTumDens(model1->getOutD()[5]);
+    double eightWIntTumVol(model1->getOutD()[6]);
+    double twelveWIntTumVol(model1->getOutD()[7]);
     double killed50(model1->getOutB()[0]);
     double killed80(model1->getOutB()[1]);
     double killed90(model1->getOutB()[2]);
     double killed95(model1->getOutB()[3]);
-    double timeTo95(model1->getOutD()[6]);
+    double timeTo95(model1->getOutD()[11]);
     double killed99(model1->getOutB()[4]);
-    double timeTo99(model1->getOutD()[7]);
+    double timeTo99(model1->getOutD()[12]);
     double killed999(model1->getOutB()[5]);
     double rec(model1->getOutB()[6]);
-    double recTumDens(model1->getOutD()[16]);
-    double recTime(model1->getOutD()[17]);
+    double recTumDens(model1->getOutD()[21]);
+    double recTumVol(model1->getOutD()[22]);
+    double recTime(model1->getOutD()[23]);
 
     delete treatment;
     delete model1;
@@ -386,37 +412,47 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     delete coupler;
     delete sim;
 
-    cout << "endTreatTumDens: " << endTreatTumDens << endl;
-    cout << "3MonTumDens: "     << threeMonTumDens << endl;
-    cout << "tumVol: "          << tumVol << " mm3" << endl;
-    cout << "intTumDens: "      << intTumDens << endl;
-    cout << "killed50: "        << killed50 << endl;
-    cout << "killed80: "        << killed80 << endl;
-    cout << "killed90: "        << killed90 << endl;
-    cout << "killed95: "        << killed95 << endl;
-    cout << "timeTo95: "        << timeTo95 << " h" << endl;
-    cout << "killed99: "        << killed99 << endl;
-    cout << "timeTo99: "        << timeTo99 << " h" << endl;
-    cout << "killed999: "       << killed999 << endl;
-    cout << "rec: "             << rec << endl;
-    cout << "recTumDens: "      << recTumDens << endl;
-    cout << "recTime: "         << recTime << " h" << endl;
+    cout << "8wTumDens: "     << eightWTumDens  << endl;
+    cout << "12wTumDens: "    << twelveWTumDens << endl;
+    cout << "8wTumVol: "      << eightWTumVol  << " mm3" << endl;
+    cout << "12wTumVol: "     << twelveWTumVol << " mm3" << endl;
+    cout << "8wIntTumDens: "  << eightWIntTumDens << endl;
+    cout << "12wIntTumDens: " << twelveWIntTumDens << endl;
+    cout << "8wIntTumVol: "   << eightWIntTumVol << " mm3" << endl;
+    cout << "12wIntTumVol: "  << twelveWIntTumVol << " mm3" << endl;
+    cout << "killed50: "      << killed50 << endl;
+    cout << "killed80: "      << killed80 << endl;
+    cout << "killed90: "      << killed90 << endl;
+    cout << "killed95: "      << killed95 << endl;
+    cout << "timeTo95: "      << timeTo95 << " h" << endl;
+    cout << "killed99: "      << killed99 << endl;
+    cout << "timeTo99: "      << timeTo99 << " h" << endl;
+    cout << "killed999: "     << killed999 << endl;
+    cout << "rec: "           << rec << endl;
+    cout << "recTumDens: "    << recTumDens << endl;
+    cout << "recTumVol: "     << recTumVol << " mm3" << endl;
+    cout << "recTime: "       << recTime << " h" << endl;
 
-    y[0]  = endTreatTumDens;
-    y[1]  = threeMonTumDens;
-    y[2]  = tumVol;
-    y[3]  = intTumDens;
-    y[4]  = killed50;
-    y[5]  = killed80;
-    y[6]  = killed90;
-    y[7]  = killed95;
-    y[8]  = timeTo95;
-    y[9]  = killed99;
-    y[10] = timeTo99;
-    y[11] = killed999;
-    y[12] = rec;
-    y[13] = recTumDens;
-    y[14] = recTime;
+    y[0]  = eightWTumDens;
+    y[1]  = twelveWTumDens;
+    y[2]  = eightWTumVol;
+    y[3]  = twelveWTumVol;
+    y[4]  = eightWIntTumDens;
+    y[5]  = twelveWIntTumDens;
+    y[6]  = eightWIntTumVol;
+    y[7]  = twelveWIntTumVol;
+    y[8]  = killed50;
+    y[9]  = killed80;
+    y[10] = killed90;
+    y[11] = killed95;
+    y[12] = timeTo95;
+    y[13] = killed99;
+    y[14] = timeTo99;
+    y[15] = killed999;
+    y[16] = rec;
+    y[17] = recTumDens;
+    y[18] = recTumVol;
+    y[19] = recTime;
 }
 
 
@@ -768,23 +804,23 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     sim->initSim();
 
-    fTumDens     << currentTime << " " << model1->getOutD()[18] << endl;
-    fTumVol      << currentTime << " " << model1->getOutD()[19] << endl;
-    fVascDens    << currentTime << " " << model1->getOutD()[20] <<
-                    " " << model1->getOutD()[21] <<
-                    " " << model1->getOutD()[22] << endl;
-    fKilledCells << currentTime << " " << model1->getOutD()[23] << endl;
+    fTumDens     << currentTime << " " << model1->getOutD()[24] << endl;
+    fTumVol      << currentTime << " " << model1->getOutD()[25] << endl;
+    fVascDens    << currentTime << " " << model1->getOutD()[26] <<
+                    " " << model1->getOutD()[27] <<
+                    " " << model1->getOutD()[28] << endl;
+    fKilledCells << currentTime << " " << model1->getOutD()[29] << endl;
     fHypDens     << currentTime << " " << model2->getOutD()[0] << endl;
-    fDeadDens    << currentTime << " " << model1->getOutD()[24] << endl;
+    fDeadDens    << currentTime << " " << model1->getOutD()[30] << endl;
     fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
                     model2->getOutD()[2] << endl;
     fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
                     model2->getOutD()[4] << endl;
-    fCycle       << currentTime << " " << model1->getOutD()[25] <<
-                    " " << model1->getOutD()[26] <<
-                    " " << model1->getOutD()[27] <<
-                    " " << model1->getOutD()[28] <<
-                    " " << model1->getOutD()[29] << endl;
+    fCycle       << currentTime << " " << model1->getOutD()[31] <<
+                    " " << model1->getOutD()[32] <<
+                    " " << model1->getOutD()[33] <<
+                    " " << model1->getOutD()[34] <<
+                    " " << model1->getOutD()[35] << endl;
 
     int numIter(simTime / simTimeStep);
 
@@ -792,23 +828,23 @@ void model(const double *x, double *y, const int nrow, const int ncol,
         currentTime += simTimeStep;
         sim->simulate(currentTime, simTimeStep);
 
-        fTumDens     << currentTime << " " << model1->getOutD()[18] << endl;
-        fTumVol      << currentTime << " " << model1->getOutD()[19] << endl;
-        fVascDens    << currentTime << " " << model1->getOutD()[20] <<
-                        " " << model1->getOutD()[21] <<
-                        " " << model1->getOutD()[22] << endl;
-        fKilledCells << currentTime << " " << model1->getOutD()[23] << endl;
+        fTumDens     << currentTime << " " << model1->getOutD()[24] << endl;
+        fTumVol      << currentTime << " " << model1->getOutD()[25] << endl;
+        fVascDens    << currentTime << " " << model1->getOutD()[26] <<
+                        " " << model1->getOutD()[27] <<
+                        " " << model1->getOutD()[28] << endl;
+        fKilledCells << currentTime << " " << model1->getOutD()[29] << endl;
         fHypDens     << currentTime << " " << model2->getOutD()[0]  << endl;
-        fDeadDens    << currentTime << " " << model1->getOutD()[24] << endl;
+        fDeadDens    << currentTime << " " << model1->getOutD()[30] << endl;
         fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
                         model2->getOutD()[2] << endl;
         fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
                         model2->getOutD()[4] << endl;
-        fCycle       << currentTime << " " << model1->getOutD()[25] <<
-                        " " << model1->getOutD()[26] <<
-                        " " << model1->getOutD()[27] <<
-                        " " << model1->getOutD()[28] <<
-                        " " << model1->getOutD()[29] << endl;
+        fCycle       << currentTime << " " << model1->getOutD()[31] <<
+                        " " << model1->getOutD()[32] <<
+                        " " << model1->getOutD()[33] <<
+                        " " << model1->getOutD()[34] <<
+                        " " << model1->getOutD()[35] << endl;
     }
 
     fTumDens.close();
@@ -822,21 +858,26 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     sim->stop();
 
-    double endTreatTumDens(model1->getOutD()[0]);
-    double threeMonTumDens(model1->getOutD()[1]);
-    double tumVol(model1->getOutD()[19]);
-    double intTumDens(model1->getOutD()[2]);
+    double eightWTumDens(model1->getOutD()[0]);
+    double twelveWTumDens(model1->getOutD()[1]);
+    double eightWTumVol(model1->getOutD()[2]);
+    double twelveWTumVol(model1->getOutD()[3]);
+    double eightWIntTumDens(model1->getOutD()[4]);
+    double twelveWIntTumDens(model1->getOutD()[5]);
+    double eightWIntTumVol(model1->getOutD()[6]);
+    double twelveWIntTumVol(model1->getOutD()[7]);
     double killed50(model1->getOutB()[0]);
     double killed80(model1->getOutB()[1]);
     double killed90(model1->getOutB()[2]);
     double killed95(model1->getOutB()[3]);
-    double timeTo95(model1->getOutD()[6]);
+    double timeTo95(model1->getOutD()[11]);
     double killed99(model1->getOutB()[4]);
-    double timeTo99(model1->getOutD()[7]);
+    double timeTo99(model1->getOutD()[12]);
     double killed999(model1->getOutB()[5]);
     double rec(model1->getOutB()[6]);
-    double recTumDens(model1->getOutD()[16]);
-    double recTime(model1->getOutD()[17]);
+    double recTumDens(model1->getOutD()[21]);
+    double recTumVol(model1->getOutD()[22]);
+    double recTime(model1->getOutD()[23]);
 
     delete treatment;
     delete model1;
@@ -844,37 +885,47 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     delete coupler;
     delete sim;
 
-    cout << "endTreatTumDens: " << endTreatTumDens << endl;
-    cout << "3MonTumDens: "     << threeMonTumDens << endl;
-    cout << "tumVol: "          << tumVol << " mm3" << endl;
-    cout << "intTumDens: "      << intTumDens << endl;
-    cout << "killed50: "        << killed50 << endl;
-    cout << "killed80: "        << killed80 << endl;
-    cout << "killed90: "        << killed90 << endl;
-    cout << "killed95: "        << killed95 << endl;
-    cout << "timeTo95: "        << timeTo95 << " h" << endl;
-    cout << "killed99: "        << killed99 << endl;
-    cout << "timeTo99: "        << timeTo99 << " h" << endl;
-    cout << "killed999: "       << killed999 << endl;
-    cout << "rec: "             << rec << endl;
-    cout << "recTumDens: "      << recTumDens << endl;
-    cout << "recTime: "         << recTime << " h" << endl;
+    cout << "8wTumDens: "     << eightWTumDens  << endl;
+    cout << "12wTumDens: "    << twelveWTumDens << endl;
+    cout << "8wTumVol: "      << eightWTumVol  << " mm3" << endl;
+    cout << "12wTumVol: "     << twelveWTumVol << " mm3" << endl;
+    cout << "8wIntTumDens: "  << eightWIntTumDens << endl;
+    cout << "12wIntTumDens: " << twelveWIntTumDens << endl;
+    cout << "8wIntTumVol: "   << eightWIntTumVol << " mm3" << endl;
+    cout << "12wIntTumVol: "  << twelveWIntTumVol << " mm3" << endl;
+    cout << "killed50: "      << killed50 << endl;
+    cout << "killed80: "      << killed80 << endl;
+    cout << "killed90: "      << killed90 << endl;
+    cout << "killed95: "      << killed95 << endl;
+    cout << "timeTo95: "      << timeTo95 << " h" << endl;
+    cout << "killed99: "      << killed99 << endl;
+    cout << "timeTo99: "      << timeTo99 << " h" << endl;
+    cout << "killed999: "     << killed999 << endl;
+    cout << "rec: "           << rec << endl;
+    cout << "recTumDens: "    << recTumDens << endl;
+    cout << "recTumVol: "     << recTumVol << " mm3" << endl;
+    cout << "recTime: "       << recTime << " h" << endl;
 
-    y[0]  = endTreatTumDens;
-    y[1]  = threeMonTumDens;
-    y[2]  = tumVol;
-    y[3]  = intTumDens;
-    y[4]  = killed50;
-    y[5]  = killed80;
-    y[6]  = killed90;
-    y[7]  = killed95;
-    y[8]  = timeTo95;
-    y[9]  = killed99;
-    y[10] = timeTo99;
-    y[11] = killed999;
-    y[12] = rec;
-    y[13] = recTumDens;
-    y[14] = recTime;
+    y[0]  = eightWTumDens;
+    y[1]  = twelveWTumDens;
+    y[2]  = eightWTumVol;
+    y[3]  = twelveWTumVol;
+    y[4]  = eightWIntTumDens;
+    y[5]  = twelveWIntTumDens;
+    y[6]  = eightWIntTumVol;
+    y[7]  = twelveWIntTumVol;
+    y[8]  = killed50;
+    y[9]  = killed80;
+    y[10] = killed90;
+    y[11] = killed95;
+    y[12] = timeTo95;
+    y[13] = killed99;
+    y[14] = timeTo99;
+    y[15] = killed999;
+    y[16] = rec;
+    y[17] = recTumDens;
+    y[18] = recTumVol;
+    y[19] = recTime;
 }
 
 
@@ -1122,7 +1173,7 @@ void model(const double *x, double *y, const int nrow, const int ncol,
     }
     }
 
-    const double simTime(3600.0);
+    const double simTime(1440.0);
     RootSimulator *sim;
     sim = new RootSimulator(coupler, simTimeStep, oxySimTimeStep, sclFac);
     double currentTime(0.0);
@@ -1133,23 +1184,23 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     sim->initSim();
 
-    fTumDens     << currentTime << " " << model1->getOutD()[18] << endl;
-    fTumVol      << currentTime << " " << model1->getOutD()[19] << endl;
-    fVascDens    << currentTime << " " << model1->getOutD()[20] <<
-                    " " << model1->getOutD()[21] <<
-                    " " << model1->getOutD()[22] << endl;
-    fKilledCells << currentTime << " " << model1->getOutD()[23] << endl;
+    fTumDens     << currentTime << " " << model1->getOutD()[24] << endl;
+    fTumVol      << currentTime << " " << model1->getOutD()[25] << endl;
+    fVascDens    << currentTime << " " << model1->getOutD()[26] <<
+                    " " << model1->getOutD()[27] <<
+                    " " << model1->getOutD()[28] << endl;
+    fKilledCells << currentTime << " " << model1->getOutD()[29] << endl;
     fHypDens     << currentTime << " " << model2->getOutD()[0] << endl;
-    fDeadDens    << currentTime << " " << model1->getOutD()[24] << endl;
+    fDeadDens    << currentTime << " " << model1->getOutD()[30] << endl;
     fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
                     model2->getOutD()[2] << endl;
     fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
                     model2->getOutD()[4] << endl;
-    fCycle       << currentTime << " " << model1->getOutD()[25] <<
-                    " " << model1->getOutD()[26] <<
-                    " " << model1->getOutD()[27] <<
-                    " " << model1->getOutD()[28] <<
-                    " " << model1->getOutD()[29] << endl;
+    fCycle       << currentTime << " " << model1->getOutD()[31] <<
+                    " " << model1->getOutD()[32] <<
+                    " " << model1->getOutD()[33] <<
+                    " " << model1->getOutD()[34] <<
+                    " " << model1->getOutD()[35] << endl;
 
     int numIter(simTime / simTimeStep);
 
@@ -1157,23 +1208,23 @@ void model(const double *x, double *y, const int nrow, const int ncol,
         currentTime += simTimeStep;
         sim->simulate(currentTime, simTimeStep);
 
-        fTumDens     << currentTime << " " << model1->getOutD()[18] << endl;
-        fTumVol      << currentTime << " " << model1->getOutD()[19] << endl;
-        fVascDens    << currentTime << " " << model1->getOutD()[20] <<
-                        " " << model1->getOutD()[21] <<
-                        " " << model1->getOutD()[22] << endl;
-        fKilledCells << currentTime << " " << model1->getOutD()[23] << endl;
+        fTumDens     << currentTime << " " << model1->getOutD()[24] << endl;
+        fTumVol      << currentTime << " " << model1->getOutD()[25] << endl;
+        fVascDens    << currentTime << " " << model1->getOutD()[26] <<
+                        " " << model1->getOutD()[27] <<
+                        " " << model1->getOutD()[28] << endl;
+        fKilledCells << currentTime << " " << model1->getOutD()[29] << endl;
         fHypDens     << currentTime << " " << model2->getOutD()[0]  << endl;
-        fDeadDens    << currentTime << " " << model1->getOutD()[24] << endl;
+        fDeadDens    << currentTime << " " << model1->getOutD()[30] << endl;
         fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
                         model2->getOutD()[2] << endl;
         fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
                         model2->getOutD()[4] << endl;
-        fCycle       << currentTime << " " << model1->getOutD()[25] <<
-                        " " << model1->getOutD()[26] <<
-                        " " << model1->getOutD()[27] <<
-                        " " << model1->getOutD()[28] <<
-                        " " << model1->getOutD()[29] << endl;
+        fCycle       << currentTime << " " << model1->getOutD()[31] <<
+                        " " << model1->getOutD()[32] <<
+                        " " << model1->getOutD()[33] <<
+                        " " << model1->getOutD()[34] <<
+                        " " << model1->getOutD()[35] << endl;
     }
 
     fTumDens.close();
@@ -1187,58 +1238,73 @@ void model(const double *x, double *y, const int nrow, const int ncol,
 
     sim->stop();
 
-    double endTreatTumDens(model1->getOutD()[0]);
-    double threeMonTumDens(model1->getOutD()[1]);
-    double tumVol(model1->getOutD()[19]);
-    double intTumDens(model1->getOutD()[2]);
+    double eightWTumDens(model1->getOutD()[0]);
+    double twelveWTumDens(model1->getOutD()[1]);
+    double eightWTumVol(model1->getOutD()[2]);
+    double twelveWTumVol(model1->getOutD()[3]);
+    double eightWIntTumDens(model1->getOutD()[4]);
+    double twelveWIntTumDens(model1->getOutD()[5]);
+    double eightWIntTumVol(model1->getOutD()[6]);
+    double twelveWIntTumVol(model1->getOutD()[7]);
     double killed50(model1->getOutB()[0]);
     double killed80(model1->getOutB()[1]);
     double killed90(model1->getOutB()[2]);
     double killed95(model1->getOutB()[3]);
-    double timeTo95(model1->getOutD()[6]);
+    double timeTo95(model1->getOutD()[11]);
     double killed99(model1->getOutB()[4]);
-    double timeTo99(model1->getOutD()[7]);
+    double timeTo99(model1->getOutD()[12]);
     double killed999(model1->getOutB()[5]);
     double rec(model1->getOutB()[6]);
-    double recTumDens(model1->getOutD()[16]);
-    double recTime(model1->getOutD()[17]);
+    double recTumDens(model1->getOutD()[21]);
+    double recTumVol(model1->getOutD()[22]);
+    double recTime(model1->getOutD()[23]);
 
     delete model1;
     delete model2;
     delete coupler;
     delete sim;
 
-    cout << "endTreatTumDens: " << endTreatTumDens << endl;
-    cout << "3MonTumDens: "     << threeMonTumDens << endl;
-    cout << "tumVol: "          << tumVol << " mm3" << endl;
-    cout << "intTumDens: "      << intTumDens << endl;
-    cout << "killed50: "        << killed50 << endl;
-    cout << "killed80: "        << killed80 << endl;
-    cout << "killed90: "        << killed90 << endl;
-    cout << "killed95: "        << killed95 << endl;
-    cout << "timeTo95: "        << timeTo95 << " h" << endl;
-    cout << "killed99: "        << killed99 << endl;
-    cout << "timeTo99: "        << timeTo99 << " h" << endl;
-    cout << "killed999: "       << killed999 << endl;
-    cout << "rec: "             << rec << endl;
-    cout << "recTumDens: "      << recTumDens << endl;
-    cout << "recTime: "         << recTime << " h" << endl;
+    cout << "8wTumDens: "     << eightWTumDens  << endl;
+    cout << "12wTumDens: "    << twelveWTumDens << endl;
+    cout << "8wTumVol: "      << eightWTumVol  << " mm3" << endl;
+    cout << "12wTumVol: "     << twelveWTumVol << " mm3" << endl;
+    cout << "8wIntTumDens: "  << eightWIntTumDens << endl;
+    cout << "12wIntTumDens: " << twelveWIntTumDens << endl;
+    cout << "8wIntTumVol: "   << eightWIntTumVol << " mm3" << endl;
+    cout << "12wIntTumVol: "  << twelveWIntTumVol << " mm3" << endl;
+    cout << "killed50: "      << killed50 << endl;
+    cout << "killed80: "      << killed80 << endl;
+    cout << "killed90: "      << killed90 << endl;
+    cout << "killed95: "      << killed95 << endl;
+    cout << "timeTo95: "      << timeTo95 << " h" << endl;
+    cout << "killed99: "      << killed99 << endl;
+    cout << "timeTo99: "      << timeTo99 << " h" << endl;
+    cout << "killed999: "     << killed999 << endl;
+    cout << "rec: "           << rec << endl;
+    cout << "recTumDens: "    << recTumDens << endl;
+    cout << "recTumVol: "     << recTumVol << " mm3" << endl;
+    cout << "recTime: "       << recTime << " h" << endl;
 
-    y[0]  = endTreatTumDens;
-    y[1]  = threeMonTumDens;
-    y[2]  = tumVol;
-    y[3]  = intTumDens;
-    y[4]  = killed50;
-    y[5]  = killed80;
-    y[6]  = killed90;
-    y[7]  = killed95;
-    y[8]  = timeTo95;
-    y[9]  = killed99;
-    y[10] = timeTo99;
-    y[11] = killed999;
-    y[12] = rec;
-    y[13] = recTumDens;
-    y[14] = recTime;
+    y[0]  = eightWTumDens;
+    y[1]  = twelveWTumDens;
+    y[2]  = eightWTumVol;
+    y[3]  = twelveWTumVol;
+    y[4]  = eightWIntTumDens;
+    y[5]  = twelveWIntTumDens;
+    y[6]  = eightWIntTumVol;
+    y[7]  = twelveWIntTumVol;
+    y[8]  = killed50;
+    y[9]  = killed80;
+    y[10] = killed90;
+    y[11] = killed95;
+    y[12] = timeTo95;
+    y[13] = killed99;
+    y[14] = timeTo99;
+    y[15] = killed999;
+    y[16] = rec;
+    y[17] = recTumDens;
+    y[18] = recTumVol;
+    y[19] = recTime;
 }
 
 /*------------------------------------------------------------------------------
@@ -1440,21 +1506,26 @@ void reducedModel(const double *x, double *y, const int nrow, const int ncol,
     sim->simulate(simTimeStep, simTime);
     sim->stop();
 
-    double endTreatTumDens(model1->getOutD()[0]);
-    double threeMonTumDens(model1->getOutD()[1]);
-    double tumVol(model1->getOutD()[19]);
-    double intTumDens(model1->getOutD()[2]);
+    double eightWTumDens(model1->getOutD()[0]);
+    double twelveWTumDens(model1->getOutD()[1]);
+    double eightWTumVol(model1->getOutD()[2]);
+    double twelveWTumVol(model1->getOutD()[3]);
+    double eightWIntTumDens(model1->getOutD()[4]);
+    double twelveWIntTumDens(model1->getOutD()[5]);
+    double eightWIntTumVol(model1->getOutD()[6]);
+    double twelveWIntTumVol(model1->getOutD()[7]);
     double killed50(model1->getOutB()[0]);
     double killed80(model1->getOutB()[1]);
     double killed90(model1->getOutB()[2]);
     double killed95(model1->getOutB()[3]);
-    double timeTo95(model1->getOutD()[6]);
+    double timeTo95(model1->getOutD()[11]);
     double killed99(model1->getOutB()[4]);
-    double timeTo99(model1->getOutD()[7]);
+    double timeTo99(model1->getOutD()[12]);
     double killed999(model1->getOutB()[5]);
     double rec(model1->getOutB()[6]);
-    double recTumDens(model1->getOutD()[16]);
-    double recTime(model1->getOutD()[17]);
+    double recTumDens(model1->getOutD()[21]);
+    double recTumVol(model1->getOutD()[22]);
+    double recTime(model1->getOutD()[23]);
 
     delete treatment;
     delete model1;
@@ -1462,37 +1533,47 @@ void reducedModel(const double *x, double *y, const int nrow, const int ncol,
     delete coupler;
     delete sim;
 
-    cout << "endTreatTumDens: " << endTreatTumDens << endl;
-    cout << "3MonTumDens: "     << threeMonTumDens << endl;
-    cout << "tumVol: "          << tumVol << " mm3" << endl;
-    cout << "intTumDens: "      << intTumDens << endl;
-    cout << "killed50: "        << killed50 << endl;
-    cout << "killed80: "        << killed80 << endl;
-    cout << "killed90: "        << killed90 << endl;
-    cout << "killed95: "        << killed95 << endl;
-    cout << "timeTo95: "        << timeTo95 << " h" << endl;
-    cout << "killed99: "        << killed99 << endl;
-    cout << "timeTo99: "        << timeTo99 << " h" << endl;
-    cout << "killed999: "       << killed999 << endl;
-    cout << "rec: "             << rec << endl;
-    cout << "recTumDens: "      << recTumDens << endl;
-    cout << "recTime: "         << recTime << " h" << endl;
+    cout << "8wTumDens: "     << eightWTumDens  << endl;
+    cout << "12wTumDens: "    << twelveWTumDens << endl;
+    cout << "8wTumVol: "      << eightWTumVol  << " mm3" << endl;
+    cout << "12wTumVol: "     << twelveWTumVol << " mm3" << endl;
+    cout << "8wIntTumDens: "  << eightWIntTumDens << endl;
+    cout << "12wIntTumDens: " << twelveWIntTumDens << endl;
+    cout << "8wIntTumVol: "   << eightWIntTumVol << " mm3" << endl;
+    cout << "12wIntTumVol: "  << twelveWIntTumVol << " mm3" << endl;
+    cout << "killed50: "      << killed50 << endl;
+    cout << "killed80: "      << killed80 << endl;
+    cout << "killed90: "      << killed90 << endl;
+    cout << "killed95: "      << killed95 << endl;
+    cout << "timeTo95: "      << timeTo95 << " h" << endl;
+    cout << "killed99: "      << killed99 << endl;
+    cout << "timeTo99: "      << timeTo99 << " h" << endl;
+    cout << "killed999: "     << killed999 << endl;
+    cout << "rec: "           << rec << endl;
+    cout << "recTumDens: "    << recTumDens << endl;
+    cout << "recTumVol: "     << recTumVol << " mm3" << endl;
+    cout << "recTime: "       << recTime << " h" << endl;
 
-    y[0]  = endTreatTumDens;
-    y[1]  = threeMonTumDens;
-    y[2]  = tumVol;
-    y[3]  = intTumDens;
-    y[4]  = killed50;
-    y[5]  = killed80;
-    y[6]  = killed90;
-    y[7]  = killed95;
-    y[8]  = timeTo95;
-    y[9]  = killed99;
-    y[10] = timeTo99;
-    y[11] = killed999;
-    y[12] = rec;
-    y[13] = recTumDens;
-    y[14] = recTime;
+    y[0]  = eightWTumDens;
+    y[1]  = twelveWTumDens;
+    y[2]  = eightWTumVol;
+    y[3]  = twelveWTumVol;
+    y[4]  = eightWIntTumDens;
+    y[5]  = twelveWIntTumDens;
+    y[6]  = eightWIntTumVol;
+    y[7]  = twelveWIntTumVol;
+    y[8]  = killed50;
+    y[9]  = killed80;
+    y[10] = killed90;
+    y[11] = killed95;
+    y[12] = timeTo95;
+    y[13] = killed99;
+    y[14] = timeTo99;
+    y[15] = killed999;
+    y[16] = rec;
+    y[17] = recTumDens;
+    y[18] = recTumVol;
+    y[19] = recTime;
 }
 
 

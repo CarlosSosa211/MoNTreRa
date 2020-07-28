@@ -45,15 +45,16 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
     readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                 cellSize, inTum, inVes);
 
-    const int nOut(15);
+    const int nOut(20);
     const double delta(h[kp] / (L - 1));
     double y[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fEndTreatTumDens, f3MonTumDens, fFinTumVol, fIntTumDens;
+    ofstream f8wTumDens, f12wTumDens, f8wTumVol, f12wTumVol;
+    ofstream f8wIntTumDens, f12wIntTumDens, f8wIntTumVol, f12wIntTumVol;
     ofstream fKilled50, fKilled80, fKilled90, fKilled95, fKilled99, fKilled999;
     ofstream fTimeTo95, fTimeTo99;
-    ofstream fRec, fRecTumDens, fRecTime;
+    ofstream fRec, fRecTumDens, fRecTumVol, fRecTime;
 
     for(int i(0); i < L; i++){
         nFTumDens     = "../OutputFiles/tumDens_" + to_string(i) + ".res";
@@ -66,12 +67,22 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
         nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(i) + ".res";
         nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(i) + ".res";
 
-        fEndTreatTumDens.open("../OutputFiles/endTreatTumDens_" + to_string(i) +
+        f8wTumDens.open("../OutputFiles/8wTumDens_" + to_string(i) +
                               ".res");
-        f3MonTumDens.open("../OutputFiles/3MonTumDens_" + to_string(i) +
+        f12wTumDens.open("../OutputFiles/12wTumDens_" + to_string(i) +
                           ".res");
-        fFinTumVol.open("../OutputFiles/finTumVol_" + to_string(i) + ".res");
-        fIntTumDens.open("../OutputFiles/intTumDens_" + to_string(i) + ".res");
+        f8wTumVol.open("../OutputFiles/8wTumVol_" + to_string(i) +
+                              ".res");
+        f12wTumVol.open("../OutputFiles/12wTumVol_" + to_string(i) +
+                          ".res");
+        f8wIntTumDens.open("../OutputFiles/8wIntTumDens_" + to_string(i) +
+                              ".res");
+        f12wIntTumDens.open("../OutputFiles/12wIntTumDens_" + to_string(i) +
+                          ".res");
+        f8wIntTumVol.open("../OutputFiles/8wIntTumVol_" + to_string(i) +
+                              ".res");
+        f12wIntTumVol.open("../OutputFiles/12wIntTumVol_" + to_string(i) +
+                          ".res");
         fKilled50.open("../OutputFiles/killed50_" + to_string(i) + ".res");
         fKilled80.open("../OutputFiles/killed80_" + to_string(i) + ".res");
         fKilled90.open("../OutputFiles/killed90_" + to_string(i) + ".res");
@@ -82,32 +93,42 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
         fKilled999.open("../OutputFiles/killed999_" + to_string(i) + ".res");
         fRec.open("../OutputFiles/rec_" + to_string(i) + ".res");
         fRecTumDens.open("../OutputFiles/recTumDens_" + to_string(i) + ".res");
+        fRecTumVol.open("../OutputFiles/recTumVol_" + to_string(i) + ".res");
         fRecTime.open("../OutputFiles/recTime_" + to_string(i) + ".res");
 
         model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
               nFTumVol, nFVascDens, nFKilledCells, nFDeadDens, nFCycle,
               nFHypDens, nFPO2Stat, nFVegfStat);
 
-        fEndTreatTumDens << y[0];
-        f3MonTumDens     << y[1];
-        fFinTumVol       << y[2];
-        fIntTumDens      << y[3];
-        fKilled50        << y[4];
-        fKilled80        << y[5];
-        fKilled90        << y[6];
-        fKilled95        << y[7];
-        fTimeTo95        << y[8];
-        fKilled99        << y[9];
-        fTimeTo99        << y[10];
-        fKilled999       << y[11];
-        fRec             << y[12];
-        fRecTumDens      << y[13];
-        fRecTime         << y[14];
+        f8wTumDens     << y[0];
+        f12wTumDens    << y[1];
+        f8wTumVol      << y[2];
+        f12wTumVol     << y[3];
+        f8wIntTumDens  << y[4];
+        f12wIntTumDens << y[5];
+        f8wIntTumVol   << y[6];
+        f12wIntTumVol  << y[7];
+        fKilled50      << y[8];
+        fKilled80      << y[9];
+        fKilled90      << y[10];
+        fKilled95      << y[11];
+        fTimeTo95      << y[12];
+        fKilled99      << y[13];
+        fTimeTo99      << y[14];
+        fKilled999     << y[15];
+        fRec           << y[16];
+        fRecTumDens    << y[17];
+        fRecTumVol     << y[18];
+        fRecTime       << y[19];
 
-        fEndTreatTumDens.close();
-        f3MonTumDens.close();
-        fFinTumVol.close();
-        fIntTumDens.close();
+        f8wTumDens.close();
+        f12wTumDens.close();
+        f8wTumVol.close();
+        f12wTumVol.close();
+        f8wIntTumDens.close();
+        f12wIntTumDens.close();
+        f8wIntTumVol.close();
+        f12wIntTumVol.close();
         fKilled50.close();
         fKilled80.close();
         fKilled90.close();
@@ -118,6 +139,8 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
         fKilled999.close();
         fRec.close();
         fRecTumDens.close();
+        fRecTumVol.close();
+        fRecTime.close(););
         fRecTime.close();
 
         cout << i + 1 << " out of " << L << " evaluations of the model" << endl;
@@ -143,7 +166,7 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
 
 void varArtTissue(const int P, const string nFArt,
                   const string nFInTissueDim, const string nFRefParMean){
-    const int K(39), nOut(15);
+    const int K(39), nOut(20);
     int nrow, ncol, nlayer;
     double cellSize;
     readInFiles(nFInTissueDim, nrow, ncol, nlayer, cellSize);
@@ -184,10 +207,14 @@ void varArtTissue(const int P, const string nFArt,
     vector<bool> inTum(nrowNcolNlayer), inVes(nrowNcolNlayer);
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
-    ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
-    ofstream fFinTumVol("../OutputFiles/finTumVol.res");
-    ofstream fIntTumDens("../OutputFiles/intTumDens.res");
+    ofstream f8wTumDens("../OutputFiles/8wTumDens.res");
+    ofstream f12wTumDens("../OutputFiles/12wTumDens.res");
+    ofstream f8wTumVol("../OutputFiles/8wTumVol.res");
+    ofstream f12wTumVol("../OutputFiles/12wTumVol.res");
+    ofstream f8wIntTumDens("../OutputFiles/8wIntTumDens.res");
+    ofstream f12wIntTumDens("../OutputFiles/12wIntTumDens.res");
+    ofstream f8wIntTumVol("../OutputFiles/8wIntTumVol.res");
+    ofstream f12wIntTumVol("../OutputFiles/12wIntTumVol.res");
     ofstream fKilled50("../OutputFiles/killed50.res");
     ofstream fKilled80("../OutputFiles/killed80.res");
     ofstream fKilled90("../OutputFiles/killed90.res");
@@ -198,6 +225,7 @@ void varArtTissue(const int P, const string nFArt,
     ofstream fKilled999("../OutputFiles/killed999.res");
     ofstream fRec("../OutputFiles/rec.res");
     ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fRecTumVol("../OutputFiles/recTumVol.res");
     ofstream fRecTime("../OutputFiles/recTime.res");
     ofstream fComb("../OutputFiles/comb.res");
 
@@ -254,21 +282,26 @@ void varArtTissue(const int P, const string nFArt,
                         ymean[j] /= P;
                     }
 
-                    fEndTreatTumDens << ymean[0]  << " ";
-                    f3MonTumDens     << ymean[1]  << " ";
-                    fFinTumVol       << ymean[2]  << " ";
-                    fIntTumDens      << ymean[3]  << " ";
-                    fKilled50        << ymean[4]  << " ";
-                    fKilled80        << ymean[5]  << " ";
-                    fKilled90        << ymean[6]  << " ";
-                    fKilled95        << ymean[7]  << " ";
-                    fTimeTo95        << ymean[8]  << " ";
-                    fKilled99        << ymean[9]  << " ";
-                    fTimeTo99        << ymean[10] << " ";
-                    fKilled999       << ymean[11] << " ";
-                    fRec             << ymean[12] << " ";
-                    fRecTumDens      << ymean[13] << " ";
-                    fRecTime         << ymean[14] << " ";
+                    f8wTumDens     << ymean[0]   << " ";
+                    f12wTumDens    << ymean[1]   << " ";
+                    f8wTumVol      << ymean[2]   << " ";
+                    f12wTumVol     << ymean[3]   << " ";
+                    f8wIntTumDens  << ymean[4]   << " ";
+                    f12wIntTumDens << ymean[5]   << " ";
+                    f8wIntTumVol   << ymean[6]   << " ";
+                    f12wIntTumVol  << ymean[7]   << " ";
+                    fKilled50      << ymean[8]   << " ";
+                    fKilled80      << ymean[9]   << " ";
+                    fKilled90      << ymean[10]  << " ";
+                    fKilled95      << ymean[11]  << " ";
+                    fTimeTo95      << ymean[12]  << " ";
+                    fKilled99      << ymean[13]  << " ";
+                    fTimeTo99      << ymean[14]  << " ";
+                    fKilled999     << ymean[15]  << " ";
+                    fRec           << ymean[16]  << " ";
+                    fRecTumDens    << ymean[17]  << " ";
+                    fRecTumVol     << ymean[18]  << " ";
+                    fRecTime       << ymean[19]  << " ";
 
                     if(P > 1){
                         for(int j(0); j < nOut; j++){
@@ -279,38 +312,48 @@ void varArtTissue(const int P, const string nFArt,
                             ystd[j] = sqrt(ystd[j] / (P - 1.0));
                         }
 
-                        fEndTreatTumDens << ystd[0]  << " ";
-                        f3MonTumDens     << ystd[1]  << " ";
-                        fFinTumVol       << ystd[2]  << " ";
-                        fIntTumDens      << ystd[3]  << " ";
-                        fKilled50        << ystd[4]  << " ";
-                        fKilled80        << ystd[5]  << " ";
-                        fKilled90        << ystd[6]  << " ";
-                        fKilled95        << ystd[7]  << " ";
-                        fTimeTo95        << ystd[8]  << " ";
-                        fKilled99        << ystd[9]  << " ";
-                        fTimeTo99        << ystd[10] << " ";
-                        fKilled999       << ystd[11] << " ";
-                        fRec             << ystd[12] << " ";
-                        fRecTumDens      << ystd[13] << " ";
-                        fRecTime         << ystd[14] << " ";
+                        f8wTumDens     << ystd[0]   << " ";
+                        f12wTumDens    << ystd[1]   << " ";
+                        f8wTumVol      << ystd[2]   << " ";
+                        f12wTumVol     << ystd[3]   << " ";
+                        f8wIntTumDens  << ystd[4]   << " ";
+                        f12wIntTumDens << ystd[5]   << " ";
+                        f8wIntTumVol   << ystd[6]   << " ";
+                        f12wIntTumVol  << ystd[7]   << " ";
+                        fKilled50      << ystd[8]   << " ";
+                        fKilled80      << ystd[9]   << " ";
+                        fKilled90      << ystd[10]  << " ";
+                        fKilled95      << ystd[11]  << " ";
+                        fTimeTo95      << ystd[12]  << " ";
+                        fKilled99      << ystd[13]  << " ";
+                        fTimeTo99      << ystd[14]  << " ";
+                        fKilled999     << ystd[15]  << " ";
+                        fRec           << ystd[16]  << " ";
+                        fRecTumDens    << ystd[17]  << " ";
+                        fRecTumVol     << ystd[18]  << " ";
+                        fRecTime       << ystd[19]  << " ";
                     }
 
-                    fEndTreatTumDens << endl;
-                    f3MonTumDens     << endl;
-                    fFinTumVol       << endl;
-                    fIntTumDens      << endl;
-                    fKilled50        << endl;
-                    fKilled80        << endl;
-                    fKilled90        << endl;
-                    fKilled95        << endl;
-                    fTimeTo95        << endl;
-                    fKilled99        << endl;
-                    fTimeTo99        << endl;
-                    fKilled999       << endl;
-                    fRec             << endl;
-                    fRecTumDens      << endl;
-                    fRecTime         << endl;
+                    f8wTumDens     << endl;
+                    f12wTumDens    << endl;
+                    f8wTumVol      << endl;
+                    f12wTumVol     << endl;
+                    f8wIntTumDens  << endl;
+                    f12wIntTumDens << endl;
+                    f8wIntTumVol   << endl;
+                    f12wIntTumVol  << endl;
+                    fKilled50      << endl;
+                    fKilled80      << endl;
+                    fKilled90      << endl;
+                    fKilled95      << endl;
+                    fTimeTo95      << endl;
+                    fKilled99      << endl;
+                    fTimeTo99      << endl;
+                    fKilled999     << endl;
+                    fRec           << endl;
+                    fRecTumDens    << endl;
+                    fRecTumVol     << endl;
+                    fRecTime       << endl;
 
                     fComb << tumDens[iTumDens]     << " " <<
                              sigmaTum[iSigmaTum]   << " " <<
@@ -322,10 +365,14 @@ void varArtTissue(const int P, const string nFArt,
         }
     }
 
-    fEndTreatTumDens.close();
-    f3MonTumDens.close();
-    fFinTumVol.close();
-    fIntTumDens.close();
+    f8wTumDens.close();
+    f12wTumDens.close();
+    f8wTumVol.close();
+    f12wTumVol.close();
+    f8wIntTumDens.close();
+    f12wIntTumDens.close();
+    f8wIntTumVol.close();
+    f12wIntTumVol.close();
     fKilled50.close();
     fKilled80.close();
     fKilled90.close();
@@ -336,6 +383,8 @@ void varArtTissue(const int P, const string nFArt,
     fKilled999.close();
     fRec.close();
     fRecTumDens.close();
+    fRecTumVol.close();
+    fRecTime.close(););
     fRecTime.close();
     fComb.close();
 }
@@ -360,7 +409,7 @@ void varArtTissue(const int P, const string nFArt,
 
 void varArtTissue(const int N, const int P, const string nFDensInt,
                   const string nFInTissueDim, const string nFRefParMean){
-    const int K(39), nOut(15);
+    const int K(39), nOut(20);
     int nrow, ncol, nlayer;
     double cellSize;
     readInFiles(nFInTissueDim, nrow, ncol, nlayer, cellSize);
@@ -391,10 +440,14 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     vector<bool> inTum(nrowNcolNlayer), inVes(nrowNcolNlayer);
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
-    ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
-    ofstream fFinTumVol("../OutputFiles/finTumVol.res");
-    ofstream fIntTumDens("../OutputFiles/intTumDens.res");
+    ofstream f8wTumDens("../OutputFiles/8wTumDens.res");
+    ofstream f12wTumDens("../OutputFiles/12wTumDens.res");
+    ofstream f8wTumVol("../OutputFiles/8wTumVol.res");
+    ofstream f12wTumVol("../OutputFiles/12wTumVol.res");
+    ofstream f8wIntTumDens("../OutputFiles/8wIntTumDens.res");
+    ofstream f12wIntTumDens("../OutputFiles/12wIntTumDens.res");
+    ofstream f8wIntTumVol("../OutputFiles/8wIntTumVol.res");
+    ofstream f12wIntTumVol("../OutputFiles/12wIntTumVol.res");
     ofstream fKilled50("../OutputFiles/killed50.res");
     ofstream fKilled80("../OutputFiles/killed80.res");
     ofstream fKilled90("../OutputFiles/killed90.res");
@@ -405,6 +458,7 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     ofstream fKilled999("../OutputFiles/killed999.res");
     ofstream fRec("../OutputFiles/rec.res");
     ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fRecTumVol("../OutputFiles/recTumVol.res");
     ofstream fRecTime("../OutputFiles/recTime.res");
     ofstream fCombDens("../OutputFiles/combDens.res");
 
@@ -456,21 +510,26 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
                 ymean[j] /= P;
             }
 
-            fEndTreatTumDens << ymean[0]  << " ";
-            f3MonTumDens     << ymean[1]  << " ";
-            fFinTumVol       << ymean[2]  << " ";
-            fIntTumDens      << ymean[3]  << " ";
-            fKilled50        << ymean[4]  << " ";
-            fKilled80        << ymean[5]  << " ";
-            fKilled90        << ymean[6]  << " ";
-            fKilled95        << ymean[7]  << " ";
-            fTimeTo95        << ymean[8]  << " ";
-            fKilled99        << ymean[9]  << " ";
-            fTimeTo99        << ymean[10] << " ";
-            fKilled999       << ymean[11] << " ";
-            fRec             << ymean[12] << " ";
-            fRecTumDens      << ymean[13] << " ";
-            fRecTime         << ymean[14] << " ";
+            f8wTumDens     << ymean[0]   << " ";
+            f12wTumDens    << ymean[1]   << " ";
+            f8wTumVol      << ymean[2]   << " ";
+            f12wTumVol     << ymean[3]   << " ";
+            f8wIntTumDens  << ymean[4]   << " ";
+            f12wIntTumDens << ymean[5]   << " ";
+            f8wIntTumVol   << ymean[6]   << " ";
+            f12wIntTumVol  << ymean[7]   << " ";
+            fKilled50      << ymean[8]   << " ";
+            fKilled80      << ymean[9]   << " ";
+            fKilled90      << ymean[10]  << " ";
+            fKilled95      << ymean[11]  << " ";
+            fTimeTo95      << ymean[12]  << " ";
+            fKilled99      << ymean[13]  << " ";
+            fTimeTo99      << ymean[14]  << " ";
+            fKilled999     << ymean[15]  << " ";
+            fRec           << ymean[16]  << " ";
+            fRecTumDens    << ymean[17]  << " ";
+            fRecTumVol     << ymean[18]  << " ";
+            fRecTime       << ymean[19]  << " ";
 
             if(P > 1){
                 for(int j(0); j < nOut; j++){
@@ -480,38 +539,48 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
                     ystd[j] = sqrt(ystd[j] / (P - 1.0));
                 }
 
-                fEndTreatTumDens << ystd[0]  << " ";
-                f3MonTumDens     << ystd[1]  << " ";
-                fFinTumVol       << ystd[2]  << " ";
-                fIntTumDens      << ystd[3]  << " ";
-                fKilled50        << ystd[4]  << " ";
-                fKilled80        << ystd[5]  << " ";
-                fKilled90        << ystd[6]  << " ";
-                fKilled95        << ystd[7]  << " ";
-                fTimeTo95        << ystd[8]  << " ";
-                fKilled99        << ystd[9]  << " ";
-                fTimeTo99        << ystd[10] << " ";
-                fKilled999       << ystd[11] << " ";
-                fRec             << ystd[12] << " ";
-                fRecTumDens      << ystd[13] << " ";
-                fRecTime         << ystd[14] << " ";
+                f8wTumDens     << ystd[0]   << " ";
+                f12wTumDens    << ystd[1]   << " ";
+                f8wTumVol      << ystd[2]   << " ";
+                f12wTumVol     << ystd[3]   << " ";
+                f8wIntTumDens  << ystd[4]   << " ";
+                f12wIntTumDens << ystd[5]   << " ";
+                f8wIntTumVol   << ystd[6]   << " ";
+                f12wIntTumVol  << ystd[7]   << " ";
+                fKilled50      << ystd[8]   << " ";
+                fKilled80      << ystd[9]   << " ";
+                fKilled90      << ystd[10]  << " ";
+                fKilled95      << ystd[11]  << " ";
+                fTimeTo95      << ystd[12]  << " ";
+                fKilled99      << ystd[13]  << " ";
+                fTimeTo99      << ystd[14]  << " ";
+                fKilled999     << ystd[15]  << " ";
+                fRec           << ystd[16]  << " ";
+                fRecTumDens    << ystd[17]  << " ";
+                fRecTumVol     << ystd[18]  << " ";
+                fRecTime       << ystd[19]  << " ";
             }
 
-            fEndTreatTumDens << endl;
-            f3MonTumDens     << endl;
-            fFinTumVol       << endl;
-            fIntTumDens      << endl;
-            fKilled50        << endl;
-            fKilled80        << endl;
-            fKilled90        << endl;
-            fKilled95        << endl;
-            fTimeTo95        << endl;
-            fKilled99        << endl;
-            fTimeTo99        << endl;
-            fKilled999       << endl;
-            fRec             << endl;
-            fRecTumDens      << endl;
-            fRecTime         << endl;
+            f8wTumDens     << endl;
+            f12wTumDens    << endl;
+            f8wTumVol      << endl;
+            f12wTumVol     << endl;
+            f8wIntTumDens  << endl;
+            f12wIntTumDens << endl;
+            f8wIntTumVol   << endl;
+            f12wIntTumVol  << endl;
+            fKilled50      << endl;
+            fKilled80      << endl;
+            fKilled90      << endl;
+            fKilled95      << endl;
+            fTimeTo95      << endl;
+            fKilled99      << endl;
+            fTimeTo99      << endl;
+            fKilled999     << endl;
+            fRec           << endl;
+            fRecTumDens    << endl;
+            fRecTumVol     << endl;
+            fRecTime       << endl;
 
             fCombDens << tumDens << " " << vascDens << endl;
             vascDens += hVascDens;
@@ -520,10 +589,14 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
         tumDens += hTumDens;
     }
 
-    fEndTreatTumDens.close();
-    f3MonTumDens.close();
-    fFinTumVol.close();
-    fIntTumDens.close();
+    f8wTumDens.close();
+    f12wTumDens.close();
+    f8wTumVol.close();
+    f12wTumVol.close();
+    f8wIntTumDens.close();
+    f12wIntTumDens.close();
+    f8wIntTumVol.close();
+    f12wIntTumVol.close();
     fKilled50.close();
     fKilled80.close();
     fKilled90.close();
@@ -534,6 +607,8 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     fKilled999.close();
     fRec.close();
     fRecTumDens.close();
+    fRecTumVol.close();
+    fRecTime.close(););
     fRecTime.close();
     fCombDens.close();
 }
@@ -561,7 +636,7 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
 void varArtTissue(const int N, const int P, const string nFDensInt,
                   const string nFSigmaTumInt, const string nFInTissueDim,
                   const string nFRefParMean){
-    const int K(39), nOut(15);
+    const int K(39), nOut(20);
     int nrow, ncol, nlayer;
     double cellSize;
     readInFiles(nFInTissueDim, nrow, ncol, nlayer, cellSize);
@@ -599,10 +674,14 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     vector<bool> inTum(nrowNcolNlayer), inVes(nrowNcolNlayer);
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
-    ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
-    ofstream fFinTumVol("../OutputFiles/finTumVol.res");
-    ofstream fIntTumDens("../OutputFiles/intTumDens.res");
+    ofstream f8wTumDens("../OutputFiles/8wTumDens.res");
+    ofstream f12wTumDens("../OutputFiles/12wTumDens.res");
+    ofstream f8wTumVol("../OutputFiles/8wTumVol.res");
+    ofstream f12wTumVol("../OutputFiles/12wTumVol.res");
+    ofstream f8wIntTumDens("../OutputFiles/8wIntTumDens.res");
+    ofstream f12wIntTumDens("../OutputFiles/12wIntTumDens.res");
+    ofstream f8wIntTumVol("../OutputFiles/8wIntTumVol.res");
+    ofstream f12wIntTumVol("../OutputFiles/12wIntTumVol.res");
     ofstream fKilled50("../OutputFiles/killed50.res");
     ofstream fKilled80("../OutputFiles/killed80.res");
     ofstream fKilled90("../OutputFiles/killed90.res");
@@ -613,6 +692,7 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     ofstream fKilled999("../OutputFiles/killed999.res");
     ofstream fRec("../OutputFiles/rec.res");
     ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fRecTumVol("../OutputFiles/recTumVol.res");
     ofstream fRecTime("../OutputFiles/recTime.res");
     ofstream fCombDens("../OutputFiles/combDens.res");
 
@@ -667,21 +747,26 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
                     ymean[j] /= P;
                 }
 
-                fEndTreatTumDens << ymean[0]  << " ";
-                f3MonTumDens     << ymean[1]  << " ";
-                fFinTumVol       << ymean[2]  << " ";
-                fIntTumDens      << ymean[3]  << " ";
-                fKilled50        << ymean[4]  << " ";
-                fKilled80        << ymean[5]  << " ";
-                fKilled90        << ymean[6]  << " ";
-                fKilled95        << ymean[7]  << " ";
-                fTimeTo95        << ymean[8]  << " ";
-                fKilled99        << ymean[9]  << " ";
-                fTimeTo99        << ymean[10] << " ";
-                fKilled999       << ymean[11] << " ";
-                fRec             << ymean[12] << " ";
-                fRecTumDens      << ymean[13] << " ";
-                fRecTime         << ymean[14] << " ";
+                f8wTumDens     << ymean[0]   << " ";
+                f12wTumDens    << ymean[1]   << " ";
+                f8wTumVol      << ymean[2]   << " ";
+                f12wTumVol     << ymean[3]   << " ";
+                f8wIntTumDens  << ymean[4]   << " ";
+                f12wIntTumDens << ymean[5]   << " ";
+                f8wIntTumVol   << ymean[6]   << " ";
+                f12wIntTumVol  << ymean[7]   << " ";
+                fKilled50      << ymean[8]   << " ";
+                fKilled80      << ymean[9]   << " ";
+                fKilled90      << ymean[10]  << " ";
+                fKilled95      << ymean[11]  << " ";
+                fTimeTo95      << ymean[12]  << " ";
+                fKilled99      << ymean[13]  << " ";
+                fTimeTo99      << ymean[14]  << " ";
+                fKilled999     << ymean[15]  << " ";
+                fRec           << ymean[16]  << " ";
+                fRecTumDens    << ymean[17]  << " ";
+                fRecTumVol     << ymean[18]  << " ";
+                fRecTime       << ymean[19]  << " ";
 
                 if(P > 1){
                     for(int j(0); j < nOut; j++){
@@ -692,38 +777,48 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
                         ystd[j] = sqrt(ystd[j] / (P - 1.0));
                     }
 
-                    fEndTreatTumDens << ystd[0]  << " ";
-                    f3MonTumDens     << ystd[1]  << " ";
-                    fFinTumVol       << ystd[2]  << " ";
-                    fIntTumDens      << ystd[3]  << " ";
-                    fKilled50        << ystd[4]  << " ";
-                    fKilled80        << ystd[5]  << " ";
-                    fKilled90        << ystd[6]  << " ";
-                    fKilled95        << ystd[7]  << " ";
-                    fTimeTo95        << ystd[8]  << " ";
-                    fKilled99        << ystd[9]  << " ";
-                    fTimeTo99        << ystd[10] << " ";
-                    fKilled999       << ystd[11] << " ";
-                    fRec             << ystd[12] << " ";
-                    fRecTumDens      << ystd[13] << " ";
-                    fRecTime         << ystd[14] << " ";
+                    f8wTumDens     << ystd[0]   << " ";
+                    f12wTumDens    << ystd[1]   << " ";
+                    f8wTumVol      << ystd[2]   << " ";
+                    f12wTumVol     << ystd[3]   << " ";
+                    f8wIntTumDens  << ystd[4]   << " ";
+                    f12wIntTumDens << ystd[5]   << " ";
+                    f8wIntTumVol   << ystd[6]   << " ";
+                    f12wIntTumVol  << ystd[7]   << " ";
+                    fKilled50      << ystd[8]   << " ";
+                    fKilled80      << ystd[9]   << " ";
+                    fKilled90      << ystd[10]  << " ";
+                    fKilled95      << ystd[11]  << " ";
+                    fTimeTo95      << ystd[12]  << " ";
+                    fKilled99      << ystd[13]  << " ";
+                    fTimeTo99      << ystd[14]  << " ";
+                    fKilled999     << ystd[15]  << " ";
+                    fRec           << ystd[16]  << " ";
+                    fRecTumDens    << ystd[17]  << " ";
+                    fRecTumVol     << ystd[18]  << " ";
+                    fRecTime       << ystd[19]  << " ";
                 }
 
-                fEndTreatTumDens << endl;
-                f3MonTumDens     << endl;
-                fFinTumVol       << endl;
-                fIntTumDens      << endl;
-                fKilled50        << endl;
-                fKilled80        << endl;
-                fKilled90        << endl;
-                fKilled95        << endl;
-                fTimeTo95        << endl;
-                fKilled99        << endl;
-                fTimeTo99        << endl;
-                fKilled999       << endl;
-                fRec             << endl;
-                fRecTumDens      << endl;
-                fRecTime         << endl;
+                f8wTumDens     << endl;
+                f12wTumDens    << endl;
+                f8wTumVol      << endl;
+                f12wTumVol     << endl;
+                f8wIntTumDens  << endl;
+                f12wIntTumDens << endl;
+                f8wIntTumVol   << endl;
+                f12wIntTumVol  << endl;
+                fKilled50      << endl;
+                fKilled80      << endl;
+                fKilled90      << endl;
+                fKilled95      << endl;
+                fTimeTo95      << endl;
+                fKilled99      << endl;
+                fTimeTo99      << endl;
+                fKilled999     << endl;
+                fRec           << endl;
+                fRecTumDens    << endl;
+                fRecTumVol     << endl;
+                fRecTime       << endl;
 
                 fCombDens << tumDens << " " <<  sigmaTum << " " << vascDens <<
                              endl;
@@ -735,10 +830,14 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
         tumDens += hTumDens;
     }
 
-    fEndTreatTumDens.close();
-    f3MonTumDens.close();
-    fFinTumVol.close();
-    fIntTumDens.close();
+    f8wTumDens.close();
+    f12wTumDens.close();
+    f8wTumVol.close();
+    f12wTumVol.close();
+    f8wIntTumDens.close();
+    f12wIntTumDens.close();
+    f8wIntTumVol.close();
+    f12wIntTumVol.close();
     fKilled50.close();
     fKilled80.close();
     fKilled90.close();
@@ -749,6 +848,8 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     fKilled999.close();
     fRec.close();
     fRecTumDens.close();
+    fRecTumVol.close();
+    fRecTime.close(););
     fRecTime.close();
     fCombDens.close();
 }
@@ -781,7 +882,7 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
             const string nFLeastPar, const string nFInTissueDim,
             const string nFInTum, const string nFInVes,
             const int L, const int P){
-    const int K(39), nOut(15);
+    const int K(39), nOut(20);
     int nLeastRelPar, nMostRelPar, nVarPar;
 
     ifstream fMostRelPar(nFMostRelPar.c_str());
@@ -836,10 +937,14 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
     double y1[P][nOut], y1mean[nOut], y1std[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
-    ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
-    ofstream fFinTumVol("../OutputFiles/finTumVol.res");
-    ofstream fIntTumDens("../OutputFiles/intTumDens.res");
+    ofstream f8wTumDens("../OutputFiles/8wTumDens.res");
+    ofstream f12wTumDens("../OutputFiles/12wTumDens.res");
+    ofstream f8wTumVol("../OutputFiles/8wTumVol.res");
+    ofstream f12wTumVol("../OutputFiles/12wTumVol.res");
+    ofstream f8wIntTumDens("../OutputFiles/8wIntTumDens.res");
+    ofstream f12wIntTumDens("../OutputFiles/12wIntTumDens.res");
+    ofstream f8wIntTumVol("../OutputFiles/8wIntTumVol.res");
+    ofstream f12wIntTumVol("../OutputFiles/12wIntTumVol.res");
     ofstream fKilled50("../OutputFiles/killed50.res");
     ofstream fKilled80("../OutputFiles/killed80.res");
     ofstream fKilled90("../OutputFiles/killed90.res");
@@ -850,6 +955,7 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
     ofstream fKilled999("../OutputFiles/killed999.res");
     ofstream fRec("../OutputFiles/rec.res");
     ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fRecTumVol("../OutputFiles/recTumVol.res");
     ofstream fRecTime("../OutputFiles/recTime.res");
     ofstream fCombPar("../OutputFiles/combPar.res");
 
@@ -949,21 +1055,27 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
             y1mean[j] /= P;
         }
 
-        fEndTreatTumDens << y0mean[0]  << " " << y1mean[0]  << " ";
-        f3MonTumDens     << y0mean[1]  << " " << y1mean[1]  << " ";
-        fFinTumVol       << y0mean[2]  << " " << y1mean[2]  << " ";
-        fIntTumDens      << y0mean[3]  << " " << y1mean[3]  << " ";
-        fKilled50        << y0mean[4]  << " " << y1mean[4]  << " ";
-        fKilled80        << y0mean[5]  << " " << y1mean[5]  << " ";
-        fKilled90        << y0mean[6]  << " " << y1mean[6]  << " ";
-        fKilled95        << y0mean[7]  << " " << y1mean[7]  << " ";
-        fTimeTo95        << y0mean[8]  << " " << y1mean[8]  << " ";
-        fKilled99        << y0mean[9]  << " " << y1mean[9]  << " ";
-        fTimeTo99        << y0mean[10] << " " << y1mean[10] << " ";
-        fKilled999       << y0mean[11] << " " << y1mean[11] << " ";
-        fRec             << y0mean[12] << " " << y1mean[12] << " ";
-        fRecTumDens      << y0mean[13] << " " << y1mean[13] << " ";
-        fRecTime         << y0mean[14] << " " << y1mean[14] << " ";
+        f8wTumDens     << y0mean[0]   << " " << y1mean[0]    << " ";
+        f12wTumDens    << y0mean[1]   << " " << y1mean[1]    << " ";
+        f8wTumVol      << y0mean[2]   << " " << y1mean[2]    << " ";
+        f12wTumVol     << y0mean[3]   << " " << y1mean[3]    << " ";
+        f8wIntTumDens  << y0mean[4]   << " " << y1mean[4]    << " ";
+        f12wIntTumDens << y0mean[5]   << " " << y1mean[5]    << " ";
+        f8wIntTumVol   << y0mean[6]   << " " << y1mean[6]    << " ";
+        f12wIntTumVol  << y0mean[7]   << " " << y1mean[7]    << " ";
+        fKilled50      << y0mean[8]   << " " << y1mean[8]    << " ";
+        fKilled80      << y0mean[9]   << " " << y1mean[9]    << " ";
+        fKilled90      << y0mean[10]  << " " << y1mean[10]   << " ";
+        fKilled95      << y0mean[11]  << " " << y1mean[11]   << " ";
+        fTimeTo95      << y0mean[12]  << " " << y1mean[12]   << " ";
+        fKilled99      << y0mean[13]  << " " << y1mean[13]   << " ";
+        fTimeTo99      << y0mean[14]  << " " << y1mean[14]   << " ";
+        fKilled999     << y0mean[15]  << " " << y1mean[15]   << " ";
+        fRec           << y0mean[16]  << " " << y1mean[16]   << " ";
+        fRecTumDens    << y0mean[17]  << " " << y1mean[17]   << " ";
+        fRecTumVol     << y0mean[18]  << " " << y1mean[18]   << " ";
+        fRecTime       << y0mean[19]  << " " << y1mean[19]   << " ";
+
 
         if(P > 1){
             for(int j(0); j < nOut; j++){
@@ -975,38 +1087,48 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
                 y1std[j] = sqrt(y1std[j] / (P - 1.0));
             }
 
-            fEndTreatTumDens << y0std[0]  << " " << y1std[0];
-            f3MonTumDens     << y0std[1]  << " " << y1std[1];
-            fFinTumVol       << y0std[2]  << " " << y1std[2];
-            fIntTumDens      << y0std[3]  << " " << y1std[3];
-            fKilled50        << y0std[4]  << " " << y1std[4];
-            fKilled80        << y0std[5]  << " " << y1std[5];
-            fKilled90        << y0std[6]  << " " << y1std[6];
-            fKilled95        << y0std[7]  << " " << y1std[7];
-            fTimeTo95        << y0std[8]  << " " << y1std[8];
-            fKilled99        << y0std[9]  << " " << y1std[9];
-            fTimeTo99        << y0std[10] << " " << y1std[10];
-            fKilled999       << y0std[11] << " " << y1std[11];
-            fRec             << y0std[12] << " " << y1std[12];
-            fRecTumDens      << y0std[13] << " " << y1std[13];
-            fRecTime         << y0std[14] << " " << y1std[14];
+            f8wTumDens     << y0std[0]   << " " << y1std[0]    << " ";
+            f12wTumDens    << y0std[1]   << " " << y1std[1]    << " ";
+            f8wTumVol      << y0std[2]   << " " << y1std[2]    << " ";
+            f12wTumVol     << y0std[3]   << " " << y1std[3]    << " ";
+            f8wIntTumDens  << y0std[4]   << " " << y1std[4]    << " ";
+            f12wIntTumDens << y0std[5]   << " " << y1std[5]    << " ";
+            f8wIntTumVol   << y0std[6]   << " " << y1std[6]    << " ";
+            f12wIntTumVol  << y0std[7]   << " " << y1std[7]    << " ";
+            fKilled50      << y0std[8]   << " " << y1std[8]    << " ";
+            fKilled80      << y0std[9]   << " " << y1std[9]    << " ";
+            fKilled90      << y0std[10]  << " " << y1std[10]   << " ";
+            fKilled95      << y0std[11]  << " " << y1std[11]   << " ";
+            fTimeTo95      << y0std[12]  << " " << y1std[12]   << " ";
+            fKilled99      << y0std[13]  << " " << y1std[13]   << " ";
+            fTimeTo99      << y0std[14]  << " " << y1std[14]   << " ";
+            fKilled999     << y0std[15]  << " " << y1std[15]   << " ";
+            fRec           << y0std[16]  << " " << y1std[16]   << " ";
+            fRecTumDens    << y0std[17]  << " " << y1std[17]   << " ";
+            fRecTumVol     << y0std[18]  << " " << y1std[18]   << " ";
+            fRecTime       << y0std[19]  << " " << y1std[19]   << " ";
         }
 
-        fEndTreatTumDens << endl;
-        f3MonTumDens     << endl;
-        fFinTumVol       << endl;
-        fIntTumDens      << endl;
-        fKilled50        << endl;
-        fKilled80        << endl;
-        fKilled90        << endl;
-        fKilled95        << endl;
-        fTimeTo95        << endl;
-        fKilled99        << endl;
-        fTimeTo99        << endl;
-        fKilled999       << endl;
-        fRec             << endl;
-        fRecTumDens      << endl;
-        fRecTime         << endl;
+        f8wTumDens     << endl;
+        f12wTumDens    << endl;
+        f8wTumVol      << endl;
+        f12wTumVol     << endl;
+        f8wIntTumDens  << endl;
+        f12wIntTumDens << endl;
+        f8wIntTumVol   << endl;
+        f12wIntTumVol  << endl;
+        fKilled50      << endl;
+        fKilled80      << endl;
+        fKilled90      << endl;
+        fKilled95      << endl;
+        fTimeTo95      << endl;
+        fKilled99      << endl;
+        fTimeTo99      << endl;
+        fKilled999     << endl;
+        fRec           << endl;
+        fRecTumDens    << endl;
+        fRecTumVol     << endl;
+        fRecTime       << endl;
 
         for (int j(0); j < nMostRelPar; j ++){
             fCombPar << x[Xi[j]] << " ";
@@ -1014,10 +1136,14 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
         fCombPar << endl;
     }
 
-    fEndTreatTumDens.close();
-    f3MonTumDens.close();
-    fFinTumVol.close();
-    fIntTumDens.close();
+    f8wTumDens.close();
+    f12wTumDens.close();
+    f8wTumVol.close();
+    f12wTumVol.close();
+    f8wIntTumDens.close();
+    f12wIntTumDens.close();
+    f8wIntTumVol.close();
+    f12wIntTumVol.close();
     fKilled50.close();
     fKilled80.close();
     fKilled90.close();
@@ -1028,6 +1154,8 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
     fKilled999.close();
     fRec.close();
     fRecTumDens.close();
+    fRecTumVol.close();
+    fRecTime.close(););
     fRecTime.close();
     fCombPar.close();
 }
@@ -1050,14 +1178,15 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
 
 void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
                      const string nFInTum, const string nFInVes){
-    const int K(39), L(nFPar.size()), nOut(15);
+    const int K(38), L(nFPar.size()), nOut(20);
     double x[K], y[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fEndTreatTumDens, f3MonTumDens, fFinTumVol, fIntTumDens;
+    ofstream f8wTumDens, f12wTumDens, f8wTumVol, f12wTumVol;
+    ofstream f8wIntTumDens, f12wIntTumDens, f8wIntTumVol, f12wIntTumVol;
     ofstream fKilled50, fKilled80, fKilled90, fKilled95, fKilled99, fKilled999;
     ofstream fTimeTo95, fTimeTo99;
-    ofstream fRec, fRecTumDens, fRecTime;
+    ofstream fRec, fRecTumDens, fRecTumVol, fRecTime;
 
     int nrow, ncol, nlayer;
     double cellSize;
@@ -1083,12 +1212,22 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
         nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(i) + ".res";
         nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(i) + ".res";
 
-        fEndTreatTumDens.open("../OutputFiles/endTreatTumDens_" + to_string(i) +
+        f8wTumDens.open("../OutputFiles/8wTumDens_" + to_string(i) +
                               ".res");
-        f3MonTumDens.open("../OutputFiles/3MonTumDens_" + to_string(i) +
+        f12wTumDens.open("../OutputFiles/12wTumDens_" + to_string(i) +
                           ".res");
-        fFinTumVol.open("../OutputFiles/finTumVol_" + to_string(i) + ".res");
-        fIntTumDens.open("../OutputFiles/intTumDens_" + to_string(i) + ".res");
+        f8wTumVol.open("../OutputFiles/8wTumVol_" + to_string(i) +
+                              ".res");
+        f12wTumVol.open("../OutputFiles/12wTumVol_" + to_string(i) +
+                          ".res");
+        f8wIntTumDens.open("../OutputFiles/8wIntTumDens_" + to_string(i) +
+                              ".res");
+        f12wIntTumDens.open("../OutputFiles/12wIntTumDens_" + to_string(i) +
+                          ".res");
+        f8wIntTumVol.open("../OutputFiles/8wIntTumVol_" + to_string(i) +
+                              ".res");
+        f12wIntTumVol.open("../OutputFiles/12wIntTumVol_" + to_string(i) +
+                          ".res");
         fKilled50.open("../OutputFiles/killed50_" + to_string(i) + ".res");
         fKilled80.open("../OutputFiles/killed80_" + to_string(i) + ".res");
         fKilled90.open("../OutputFiles/killed90_" + to_string(i) + ".res");
@@ -1096,35 +1235,45 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
         fTimeTo95.open("../OutputFiles/timeTo95_" + to_string(i) + ".res");
         fKilled99.open("../OutputFiles/killed99_" + to_string(i) + ".res");
         fTimeTo99.open("../OutputFiles/timeTo99_" + to_string(i) + ".res");
-        fKilled999.open("../OutputFiles/killed99_" + to_string(i) + ".res");
+        fKilled999.open("../OutputFiles/killed999_" + to_string(i) + ".res");
         fRec.open("../OutputFiles/rec_" + to_string(i) + ".res");
         fRecTumDens.open("../OutputFiles/recTumDens_" + to_string(i) + ".res");
+        fRecTumVol.open("../OutputFiles/recTumVol_" + to_string(i) + ".res");
         fRecTime.open("../OutputFiles/recTime_" + to_string(i) + ".res");
 
         model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
               nFTumVol, nFVascDens, nFKilledCells, nFDeadDens, nFCycle,
               nFHypDens, nFPO2Stat, nFVegfStat);
 
-        fEndTreatTumDens << y[0];
-        f3MonTumDens     << y[1];
-        fFinTumVol       << y[2];
-        fIntTumDens      << y[3];
-        fKilled50        << y[4];
-        fKilled80        << y[5];
-        fKilled90        << y[6];
-        fKilled95        << y[7];
-        fTimeTo95        << y[8];
-        fKilled99        << y[9];
-        fTimeTo99        << y[10];
-        fKilled999       << y[11];
-        fRec             << y[12];
-        fRecTumDens      << y[13];
-        fRecTime         << y[14];
+        f8wTumDens     << y[0];
+        f12wTumDens    << y[1];
+        f8wTumVol      << y[2];
+        f12wTumVol     << y[3];
+        f8wIntTumDens  << y[4];
+        f12wIntTumDens << y[5];
+        f8wIntTumVol   << y[6];
+        f12wIntTumVol  << y[7];
+        fKilled50      << y[8];
+        fKilled80      << y[9];
+        fKilled90      << y[10];
+        fKilled95      << y[11];
+        fTimeTo95      << y[12];
+        fKilled99      << y[13];
+        fTimeTo99      << y[14];
+        fKilled999     << y[15];
+        fRec           << y[16];
+        fRecTumDens    << y[17];
+        fRecTumVol     << y[18];
+        fRecTime       << y[19];
 
-        fEndTreatTumDens.close();
-        f3MonTumDens.close();
-        fFinTumVol.close();
-        fIntTumDens.close();
+        f8wTumDens.close();
+        f12wTumDens.close();
+        f8wTumVol.close();
+        f12wTumVol.close();
+        f8wIntTumDens.close();
+        f12wIntTumDens.close();
+        f8wIntTumVol.close();
+        f12wIntTumVol.close();
         fKilled50.close();
         fKilled80.close();
         fKilled90.close();
@@ -1135,6 +1284,8 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
         fKilled999.close();
         fRec.close();
         fRecTumDens.close();
+        fRecTumVol.close();
+        fRecTime.close(););
         fRecTime.close();
 
         cout << i + 1 << " out of " << L << " evaluations of the model" << endl;
@@ -1156,14 +1307,10 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
 
 void varParFromFiles(const string nFInTissuePar, const string nFPar,
                      const string nFTreatment){
-    const int K(38), nOut(15);
+    const int K(38), nOut(20);
     double x[K], y[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
-    ofstream fEndTreatTumDens, f3MonTumDens, fFinTumVol, fIntTumDens;
-    ofstream fKilled50, fKilled80, fKilled90, fKilled95, fKilled99, fKilled999;
-    ofstream fTimeTo95, fTimeTo99;
-    ofstream fRec, fRecTumDens, fRecTime;
 
     int nrow, ncol, nlayer;
     double cellSize, tumArea, tumDens, vascDens;
@@ -1199,46 +1346,62 @@ void varParFromFiles(const string nFInTissuePar, const string nFPar,
     nFPO2Stat     = "../OutputFiles/pO2Stat.res";
     nFVegfStat    = "../OutputFiles/vegfStat.res";
 
-    fEndTreatTumDens.open("../OutputFiles/endTreatTumDens.res");
-    f3MonTumDens.open("../OutputFiles/3MonTumDens.res");
-    fFinTumVol.open("../OutputFiles/finTumVol.res");
-    fIntTumDens.open("../OutputFiles/intTumDens.res");
-    fKilled50.open("../OutputFiles/killed50.res");
-    fKilled80.open("../OutputFiles/killed80.res");
-    fKilled90.open("../OutputFiles/killed90.res");
-    fKilled95.open("../OutputFiles/killed95.res");
-    fTimeTo95.open("../OutputFiles/timeTo95.res");
-    fKilled99.open("../OutputFiles/killed99.res");
-    fTimeTo99.open("../OutputFiles/timeTo99.res");
-    fKilled999.open("../OutputFiles/killed99.res");
-    fRec.open("../OutputFiles/rec.res");
-    fRecTumDens.open("../OutputFiles/recTumDens.res");
-    fRecTime.open("../OutputFiles/recTime.res");
-
     model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, &treatment,
           nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens, nFCycle,
           nFHypDens, nFPO2Stat, nFVegfStat);
 
-    fEndTreatTumDens << y[0];
-    f3MonTumDens     << y[1];
-    fFinTumVol       << y[2];
-    fIntTumDens      << y[3];
-    fKilled50        << y[4];
-    fKilled80        << y[5];
-    fKilled90        << y[6];
-    fKilled95        << y[7];
-    fTimeTo95        << y[8];
-    fKilled99        << y[9];
-    fTimeTo99        << y[10];
-    fKilled999       << y[11];
-    fRec             << y[12];
-    fRecTumDens      << y[13];
-    fRecTime         << y[14];
 
-    fEndTreatTumDens.close();
-    f3MonTumDens.close();
-    fFinTumVol.close();
-    fIntTumDens.close();
+
+    ofstream f8wTumDens("../OutputFiles/8wTumDens.res");
+    ofstream f12wTumDens("../OutputFiles/12wTumDens.res");
+    ofstream f8wTumVol("../OutputFiles/8wTumVol.res");
+    ofstream f12wTumVol("../OutputFiles/12wTumVol.res");
+    ofstream f8wIntTumDens("../OutputFiles/8wIntTumDens.res");
+    ofstream f12wIntTumDens("../OutputFiles/12wIntTumDens.res");
+    ofstream f8wIntTumVol("../OutputFiles/8wIntTumVol.res");
+    ofstream f12wIntTumVol("../OutputFiles/12wIntTumVol.res");
+    ofstream fKilled50("../OutputFiles/killed50.res");
+    ofstream fKilled80("../OutputFiles/killed80.res");
+    ofstream fKilled90("../OutputFiles/killed90.res");
+    ofstream fKilled95("../OutputFiles/killed95.res");
+    ofstream fTimeTo95("../OutputFiles/timeTo95.res");
+    ofstream fKilled99("../OutputFiles/killed99.res");
+    ofstream fTimeTo99("../OutputFiles/timeTo99.res");
+    ofstream fKilled999("../OutputFiles/killed999.res");
+    ofstream fRec("../OutputFiles/rec.res");
+    ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fRecTumVol("../OutputFiles/recTumVol.res");
+    ofstream fRecTime("../OutputFiles/recTime.res");
+
+    f8wTumDens     << y[0];
+    f12wTumDens    << y[1];
+    f8wTumVol      << y[2];
+    f12wTumVol     << y[3];
+    f8wIntTumDens  << y[4];
+    f12wIntTumDens << y[5];
+    f8wIntTumVol   << y[6];
+    f12wIntTumVol  << y[7];
+    fKilled50      << y[8];
+    fKilled80      << y[9];
+    fKilled90      << y[10];
+    fKilled95      << y[11];
+    fTimeTo95      << y[12];
+    fKilled99      << y[13];
+    fTimeTo99      << y[14];
+    fKilled999     << y[15];
+    fRec           << y[16];
+    fRecTumDens    << y[17];
+    fRecTumVol     << y[18];
+    fRecTime       << y[19];
+
+    f8wTumDens.close();
+    f12wTumDens.close();
+    f8wTumVol.close();
+    f12wTumVol.close();
+    f8wIntTumDens.close();
+    f12wIntTumDens.close();
+    f8wIntTumVol.close();
+    f12wIntTumVol.close();
     fKilled50.close();
     fKilled80.close();
     fKilled90.close();
@@ -1249,6 +1412,7 @@ void varParFromFiles(const string nFInTissuePar, const string nFPar,
     fKilled999.close();
     fRec.close();
     fRecTumDens.close();
+    fRecTumVol.close();
     fRecTime.close();
     cout << "---------------------------------------------" << endl;
 }
@@ -1280,7 +1444,7 @@ void varStoch(const int N, const int P, const string nFRefParInt,
     readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                 cellSize, inTum, inVes);
 
-    const int K(39), nOut(15);
+    const int K(39), nOut(20);
     double h[K], x0[K];
     ifstream fRefParInt(nFRefParInt.c_str());
 
@@ -1315,10 +1479,14 @@ void varStoch(const int N, const int P, const string nFRefParInt,
     int nEv(0);
     const int nEvTot(N * P);
 
-    ofstream fEndTreatTumDens("../OutputFiles/endTreatTumDens.res");
-    ofstream f3MonTumDens("../OutputFiles/3MonTumDens.res");
-    ofstream fFinTumVol("../OutputFiles/finTumVol.res");
-    ofstream fIntTumDens("../OutputFiles/intTumDens.res");
+    ofstream f8wTumDens("../OutputFiles/8wTumDens.res");
+    ofstream f12wTumDens("../OutputFiles/12wTumDens.res");
+    ofstream f8wTumVol("../OutputFiles/8wTumVol.res");
+    ofstream f12wTumVol("../OutputFiles/12wTumVol.res");
+    ofstream f8wIntTumDens("../OutputFiles/8wIntTumDens.res");
+    ofstream f12wIntTumDens("../OutputFiles/12wIntTumDens.res");
+    ofstream f8wIntTumVol("../OutputFiles/8wIntTumVol.res");
+    ofstream f12wIntTumVol("../OutputFiles/12wIntTumVol.res");
     ofstream fKilled50("../OutputFiles/killed50.res");
     ofstream fKilled80("../OutputFiles/killed80.res");
     ofstream fKilled90("../OutputFiles/killed90.res");
@@ -1329,6 +1497,7 @@ void varStoch(const int N, const int P, const string nFRefParInt,
     ofstream fKilled999("../OutputFiles/killed999.res");
     ofstream fRec("../OutputFiles/rec.res");
     ofstream fRecTumDens("../OutputFiles/recTumDens.res");
+    ofstream fRecTumVol("../OutputFiles/recTumVol.res");
     ofstream fRecTime("../OutputFiles/recTime.res");
 
     for(int i(0); i < N; i++){
@@ -1339,44 +1508,58 @@ void varStoch(const int N, const int P, const string nFRefParInt,
                     " evaluations of the model" << endl;
             cout << "---------------------------------------------" << endl;
 
-            fEndTreatTumDens << Y[l][i][0]  << " ";
-            f3MonTumDens     << Y[l][i][1]  << " ";
-            fFinTumVol       << Y[l][i][2]  << " ";
-            fIntTumDens      << Y[l][i][3]  << " ";
-            fKilled50        << Y[l][i][4]  << " ";
-            fKilled80        << Y[l][i][5]  << " ";
-            fKilled90        << Y[l][i][6]  << " ";
-            fKilled95        << Y[l][i][7]  << " ";
-            fTimeTo95        << Y[l][i][8]  << " ";
-            fKilled99        << Y[l][i][9]  << " ";
-            fTimeTo99        << Y[l][i][10] << " ";
-            fKilled999       << Y[l][i][11] << " ";
-            fRec             << Y[l][i][12] << " ";
-            fRecTumDens      << Y[l][i][13] << " ";
-            fRecTime         << Y[l][i][14] << " ";
+            f8wTumDens     << Y[l][i][0]  << " ";
+            f12wTumDens    << Y[l][i][1]  << " ";
+            f8wTumVol      << Y[l][i][2]  << " ";
+            f12wTumVol     << Y[l][i][3]  << " ";
+            f8wIntTumDens  << Y[l][i][4]  << " ";
+            f12wIntTumDens << Y[l][i][5]  << " ";
+            f8wIntTumVol   << Y[l][i][6]  << " ";
+            f12wIntTumVol  << Y[l][i][7]  << " ";
+            fKilled50      << Y[l][i][8]  << " ";
+            fKilled80      << Y[l][i][9]  << " ";
+            fKilled90      << Y[l][i][10] << " ";
+            fKilled95      << Y[l][i][11] << " ";
+            fTimeTo95      << Y[l][i][12] << " ";
+            fKilled99      << Y[l][i][13] << " ";
+            fTimeTo99      << Y[l][i][14] << " ";
+            fKilled999     << Y[l][i][15] << " ";
+            fRec           << Y[l][i][16] << " ";
+            fRecTumDens    << Y[l][i][17] << " ";
+            fRecTumVol     << Y[l][i][18] << " ";
+            fRecTime       << Y[l][i][19] << " ";
         }
 
-        fEndTreatTumDens << endl;
-        f3MonTumDens     << endl;
-        fFinTumVol       << endl;
-        fIntTumDens      << endl;
-        fKilled50        << endl;
-        fKilled80        << endl;
-        fKilled90        << endl;
-        fKilled95        << endl;
-        fTimeTo95        << endl;
-        fKilled99        << endl;
-        fTimeTo99        << endl;
-        fKilled999       << endl;
-        fRec             << endl;
-        fRecTumDens      << endl;
-        fRecTime         << endl;
+        f8wTumDens     << endl;
+        f12wTumDens    << endl;
+        f8wTumVol      << endl;
+        f12wTumVol     << endl;
+        f8wIntTumDens  << endl;
+        f12wIntTumDens << endl;
+        f8wIntTumVol   << endl;
+        f12wIntTumVol  << endl;
+        fKilled50      << endl;
+        fKilled80      << endl;
+        fKilled90      << endl;
+        fKilled95      << endl;
+        fTimeTo95      << endl;
+        fKilled99      << endl;
+        fTimeTo99      << endl;
+        fKilled999     << endl;
+        fRec           << endl;
+        fRecTumDens    << endl;
+        fRecTumVol     << endl;
+        fRecTime       << endl;
     }
 
-    fEndTreatTumDens.close();
-    f3MonTumDens.close();
-    fFinTumVol.close();
-    fIntTumDens.close();
+    f8wTumDens.close();
+    f12wTumDens.close();
+    f8wTumVol.close();
+    f12wTumVol.close();
+    f8wIntTumDens.close();
+    f12wIntTumDens.close();
+    f8wIntTumVol.close();
+    f12wIntTumVol.close();
     fKilled50.close();
     fKilled80.close();
     fKilled90.close();
@@ -1387,6 +1570,8 @@ void varStoch(const int N, const int P, const string nFRefParInt,
     fKilled999.close();
     fRec.close();
     fRecTumDens.close();
+    fRecTumVol.close();
+    fRecTime.close(););
     fRecTime.close();
 
     free2D(X, N);

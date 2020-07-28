@@ -670,6 +670,16 @@ int createInFiles(const double cellSize, const double tumArea,
         }
     }
 
+//    while(vesToDist > 0){
+//        n = double(rand()) / double(RAND_MAX);
+//        m = n * nrowNcolNlayer;
+//        if(!map.at(m).ves){
+//            map.at(m).ves = 1;
+//            map.at(m).tum = 0;
+//            vesToDist--;
+//        }
+//    }
+
     inTum.resize(nrowNcolNlayer);
     inVes.resize(nrowNcolNlayer);
 

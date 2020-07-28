@@ -253,29 +253,28 @@ void SimThread::run(){
         std::ofstream fPO2("../OutputFilesGUI/po2.res");
         std::ofstream fVEGF("../OutputFilesGUI/vegf.res");
 
-        fTumDens     << currentTime << " " << model1->getOutD()[18] <<
+        fTumDens     << currentTime << " " << model1->getOutD()[24] <<
                         std::endl;
-        fTumVol      << currentTime << " " << model1->getOutD()[19] <<
+        fTumVol      << currentTime << " " << model1->getOutD()[25] <<
                         std::endl;
-        fVascDens    << currentTime << " " << model1->getOutD()[20] <<
-                        " " << model1->getOutD()[21] <<
-                        " " << model1->getOutD()[22] << std::endl;
-        fKilledCells << currentTime << " " << model1->getOutD()[23] <<
+        fVascDens    << currentTime << " " << model1->getOutD()[26] <<
+                        " " << model1->getOutD()[27] <<
+                        " " << model1->getOutD()[28] << std::endl;
+        fKilledCells << currentTime << " " << model1->getOutD()[29] <<
                         std::endl;
-        fHypDens     << currentTime << " " << model2->getOutD()[0] << std::endl;
-        fDeadDens    << currentTime << " " << model1->getOutD()[24] <<
+        fHypDens     << currentTime << " " << model2->getOutD()[0]  <<
                         std::endl;
-        fPO2Stat     << currentTime << " " <<
-                        coupler->getModel2()->getOutD()[1] << " " <<
-                        coupler->getModel2()->getOutD()[2] << std::endl;
-        fVEGFStat    << currentTime << " " <<
-                        coupler->getModel2()->getOutD()[3] << " " <<
-                        coupler->getModel2()->getOutD()[4] << std::endl;
-        fCycle       << currentTime << " " << model1->getOutD()[25] << " " <<
-                        model1->getOutD()[26] << " " <<
-                        model1->getOutD()[27] << " " <<
-                        model1->getOutD()[28] << " " <<
-                        model1->getOutD()[29] << std::endl;
+        fDeadDens    << currentTime << " " << model1->getOutD()[30] <<
+                        std::endl;
+        fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
+                        model2->getOutD()[2] << std::endl;
+        fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
+                        model2->getOutD()[4] << std::endl;
+        fCycle       << currentTime << " " << model1->getOutD()[31] <<
+                        " " << model1->getOutD()[32] <<
+                        " " << model1->getOutD()[33] <<
+                        " " << model1->getOutD()[34] <<
+                        " " << model1->getOutD()[35] << std::endl;
 
         for(int i(0); i < model1->getNumComp(); i++){
             fState << model1->getComp()->at(i)->getOutI()[0] << "\t";
@@ -293,28 +292,28 @@ void SimThread::run(){
             currentTime += simTimeStep;
             sim->simulate(currentTime, simTimeStep);
 
-            fTumDens     << currentTime << " " << model1->getOutD()[18] <<
+            fTumDens     << currentTime << " " << model1->getOutD()[24] <<
                             std::endl;
-            fTumVol      << currentTime << " " << model1->getOutD()[19] <<
+            fTumVol      << currentTime << " " << model1->getOutD()[25] <<
                             std::endl;
-            fVascDens    << currentTime << " " << model1->getOutD()[20] <<
-                            " " << model1->getOutD()[21] <<
-                            " " << model1->getOutD()[22] << std::endl;
-            fKilledCells << currentTime << " " << model1->getOutD()[23] <<
+            fVascDens    << currentTime << " " << model1->getOutD()[26] <<
+                            " " << model1->getOutD()[27] <<
+                            " " << model1->getOutD()[28] << std::endl;
+            fKilledCells << currentTime << " " << model1->getOutD()[29] <<
                             std::endl;
-            fHypDens     << currentTime << " " << model2->getOutD()[0] <<
+            fHypDens     << currentTime << " " << model2->getOutD()[0]  <<
                             std::endl;
-            fDeadDens    << currentTime << " " << model1->getOutD()[24] <<
+            fDeadDens    << currentTime << " " << model1->getOutD()[30] <<
                             std::endl;
             fPO2Stat     << currentTime << " " << model2->getOutD()[1] << " " <<
                             model2->getOutD()[2] << std::endl;
             fVEGFStat    << currentTime << " " << model2->getOutD()[3] << " " <<
                             model2->getOutD()[4] << std::endl;
-            fCycle       << currentTime << " " << model1->getOutD()[25] <<
-                            " " << model1->getOutD()[26] <<
-                            " " << model1->getOutD()[27] <<
-                            " " << model1->getOutD()[28] <<
-                            " " << model1->getOutD()[29] << std::endl;
+            fCycle       << currentTime << " " << model1->getOutD()[31] <<
+                            " " << model1->getOutD()[32] <<
+                            " " << model1->getOutD()[33] <<
+                            " " << model1->getOutD()[34] <<
+                            " " << model1->getOutD()[35] << std::endl;
 
             for(int i(0); i < model1->getNumComp(); i++){
                 fState << model1->getComp()->at(i)->getOutI()[0] << "\t";
@@ -351,7 +350,7 @@ void SimThread::run(){
 
         std::ofstream fIntTumDens("../OutputFilesGUI/intTumDens.res");
 
-        fIntTumDens << currentTime << " " << model1->getOutD()[2] << std::endl;
+        fIntTumDens << currentTime << " " << model1->getOutD()[4] << std::endl;
         fIntTumDens.close();
 
         std::ofstream fPercKilled("../OutputFilesGUI/percKilled.res");
@@ -360,23 +359,22 @@ void SimThread::run(){
 
         for(int i(0); i < 6; i++){
             fPercKilled << perc[i] << " " << model1->getOutB()[0 + i]
-                        << " " << model1->getOutD()[3 + i]
-                        << " " << model1->getOutD()[9 + i] << std::endl;
+                        << " " << model1->getOutD()[17 + i]
+                        << " " << model1->getOutD()[23 + i] << std::endl;
         }
 
         fPercKilled.close();
 
-        std::ofstream fEndTreatTumDens("../OutputFilesGUI/endTreatTumDens.res");
-        fEndTreatTumDens << treatment->getDuration() << " " <<
-                            model1->getOutD()[0] << std::endl;
-        fEndTreatTumDens.close();
+        std::ofstream f8wTumDens("../OutputFilesGUI/8wTumDens.res");
+        f8wTumDens << 1440.0 << " " << model1->getOutD()[6] << std::endl;
+        f8wTumDens.close();
 
-        std::ofstream f3MonTumDens("../OutputFilesGUI/3MonTumDens.res");
-        f3MonTumDens << 2160.0 << " " << model1->getOutD()[1] << std::endl;
-        f3MonTumDens.close();
+        std::ofstream f12wTumDens("../OutputFilesGUI/12wTumDens.res");
+        f12wTumDens << 2160.0 << " " << model1->getOutD()[7] << std::endl;
+        f12wTumDens.close();
 
         std::ofstream fRec("../OutputFilesGUI/rec.res");
-        fRec << model1->getOutB()[6] << " " << model1->getOutD()[17] <<
+        fRec << model1->getOutB()[6] << " " << model1->getOutD()[14] <<
                                         " " << model1->getOutD()[16] <<
                                         std::endl;
         fRec.close();

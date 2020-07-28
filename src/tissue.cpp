@@ -217,13 +217,21 @@ int Tissue::calcModelOut(){
         (m_comp->at(k))->calcModelOut();
     }
 
-    OUT_TUM_DENS           = ST_TUM_DENS;
-    OUT_END_TREAT_TUM_DENS = ST_END_TREAT_TUM_DENS;
-    OUT_3MON_TUM_DENS      = ST_3MON_TUM_DENS;
-    OUT_INT_TUM_DENS       = ST_INT_TUM_DENS;
+    OUT_TUM_DENS         = ST_TUM_DENS;
+    OUT_8W_TUM_DENS      = ST_8W_TUM_DENS;
+    OUT_12W_TUM_DENS     = ST_12W_TUM_DENS;
+    OUT_TUM_VOL          = ST_TUM_VOL;
+    OUT_8W_TUM_VOL       = ST_8W_TUM_VOL;
+    OUT_12W_TUM_VOL      = ST_12W_TUM_VOL;
+
+    OUT_8W_INT_TUM_DENS  = ST_8W_INT_TUM_DENS;
+    OUT_12W_INT_TUM_DENS = ST_12W_INT_TUM_DENS;
+    OUT_8W_INT_TUM_VOL   = ST_8W_INT_TUM_VOL;
+    OUT_12W_INT_TUM_VOL  = ST_12W_INT_TUM_VOL;
 
     OUT_REC          = ST_REC;
     OUT_REC_TUM_DENS = ST_REC_TUM_DENS;
+    OUT_REC_TUM_VOL  = ST_REC_TUM_VOL;
     OUT_REC_TIME     = ST_REC_TIME;
 
     if(PAR_INIT_TUM_DENS){
@@ -279,15 +287,6 @@ int Tissue::calcModelOut(){
     OUT_CONTROLLED      = ST_CONTROLLED;
     OUT_DOSE_TO_CONTROL = ST_DOSE_TO_CONTROL;
 
-    if(m_nlayer == 1){
-        /*OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(numTum * m_cellSize *
-                                                     m_cellSize, 1.5);*/
-        OUT_TUM_VOL = numTum * m_cellSize * m_cellSize;
-    }
-    else{
-        OUT_TUM_VOL = numTum * m_cellSize * m_cellSize * m_cellSize;
-    }
-
     return 0;
 }
 
@@ -306,11 +305,27 @@ int Tissue::initModel(){
     PAR_INIT_TUM_DENS = double(getNumTum()) * _numComp100;
     PAR_INIT_VES_DENS = double(getNumVes()) * _numComp100;
 
-    ST_TUM_DENS           = PAR_INIT_TUM_DENS;
-    ST_PREV_TUM_DENS      = PAR_INIT_TUM_DENS;
-    ST_INT_TUM_DENS       = 0.0;
-    ST_END_TREAT_TUM_DENS = 0.0;
-    ST_3MON_TUM_DENS      = 0.0;
+    if(m_nlayer == 1){
+        /*PAR_INIT_TUM_DENS = 4.0 / (3.0 * sqrt(M_PI)) * pow(double(getNumTum()) *
+         m_cellSize * m_cellSize, 1.5);*/
+        PAR_INIT_TUM_VOL = double(getNumTum()) * m_cellSize * m_cellSize;
+    }
+    else{
+        PAR_INIT_TUM_VOL = double(getNumTum()) * m_cellSize * m_cellSize *
+                m_cellSize;
+    }
+
+    ST_TUM_DENS      = PAR_INIT_TUM_DENS;
+    ST_PREV_TUM_DENS = PAR_INIT_TUM_DENS;
+    ST_INT_TUM_DENS  = 0.0;
+    ST_TUM_VOL       = PAR_INIT_TUM_VOL;
+    ST_PREV_TUM_VOL  = PAR_INIT_TUM_VOL;
+    ST_INT_TUM_VOL   = 0.0;
+
+    ST_8W_TUM_DENS  = 0.0;
+    ST_12W_TUM_DENS = 0.0;
+    ST_8W_TUM_VOL   = 0.0;
+    ST_12W_TUM_VOL  = 0.0;
 
     ST_VES_DENS      = double(getNumVes()) * _numComp100;
     ST_NORM_VES_DENS = double(getNumNormVes()) * _numComp100;
@@ -377,9 +392,21 @@ int Tissue::updateModel(const double currentTime, const double DT){
     }
 
     double _numComp100(1.0 / double(m_numComp) * 100.0);
+
     ST_PREV_TUM_DENS = ST_TUM_DENS;
     ST_TUM_DENS      = double(getNumTum()) * _numComp100;
     ST_INT_TUM_DENS += 0.5 * DT * (ST_PREV_TUM_DENS + ST_TUM_DENS);
+
+    ST_PREV_TUM_VOL = ST_TUM_VOL;
+    if(m_nlayer == 1){
+        /*OUT_TUM_VOL = 4.0 / (3.0 * sqrt(M_PI)) * pow(double(getNumTum()) *
+         m_cellSize * m_cellSize, 1.5);*/
+        ST_TUM_VOL = double(getNumTum()) * m_cellSize * m_cellSize;
+    }
+    else{
+        ST_TUM_VOL = double(getNumTum()) * m_cellSize * m_cellSize * m_cellSize;
+    }
+    ST_INT_TUM_VOL += 0.5 * DT * (ST_PREV_TUM_VOL + ST_TUM_VOL);
 
     ST_VES_DENS      = double(getNumVes()) * _numComp100;
     ST_NORM_VES_DENS = double(getNumNormVes()) * _numComp100;
@@ -388,24 +415,34 @@ int Tissue::updateModel(const double currentTime, const double DT){
     ST_DEAD_DENS  = double(getNumDead()) * _numComp100;
 
     if(m_treatment){
-        if(currentTime <= m_treatment->getDuration()){
-            ST_END_TREAT_TUM_DENS = ST_TUM_DENS;
-        }
-        else if(!ST_REC && ST_TUM_DENS > ST_PREV_TUM_DENS){
+        if(currentTime > m_treatment->getDuration() && !ST_REC &&
+                ST_TUM_DENS > ST_PREV_TUM_DENS){
             if(!ST_COUNT_REC){
                 ST_REC_TUM_DENS = ST_TUM_DENS;
+                ST_REC_TUM_VOL = ST_TUM_VOL;
                 ST_REC_TIME = currentTime;
             }
             ST_COUNT_REC ++;
-            if(ST_COUNT_REC = 10){
+            if(ST_COUNT_REC == 10){
                 ST_REC = true;
             }
         }
         else{
             ST_COUNT_REC = 0;
         }
+
+        if(currentTime <= 1440.0){
+            ST_8W_TUM_DENS     = ST_TUM_DENS;
+            ST_8W_TUM_VOL      = ST_TUM_VOL;
+            ST_8W_INT_TUM_DENS = ST_INT_TUM_DENS;
+            ST_8W_INT_TUM_VOL  = ST_INT_TUM_VOL;
+        }
+
         if(currentTime <= 2160.0){
-            ST_3MON_TUM_DENS = ST_TUM_DENS;
+            ST_12W_TUM_DENS     = ST_TUM_DENS;
+            ST_12W_TUM_VOL      = ST_TUM_VOL;
+            ST_12W_INT_TUM_DENS = ST_INT_TUM_DENS;
+            ST_12W_INT_TUM_VOL  = ST_INT_TUM_VOL;
         }
 
         double tumSurv;
