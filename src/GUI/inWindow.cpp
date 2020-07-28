@@ -576,16 +576,33 @@ int InWindow::createInFiles(){
             }
         }
 
-        std::sort(map.begin(), map.end(), compK);
+        //        std::sort(map.begin(), map.end(), compK);
+        std::reverse(map.begin(),map.end());
+
+        std::normal_distribution<double> distVes(0, 0.5);
+
+//        while(vesToDist > 0){
+//            n = double(rand()) / double(RAND_MAX);
+//            m = n * nrowNcolNlayer;
+//            if(!map.at(m).ves && !map.at(m).tum){
+//                map.at(m).ves = 1;
+//                vesToDist--;
+//            }
+//        }
 
         while(vesToDist > 0){
-            n = double(rand()) / double(RAND_MAX);
-            m = n * nrowNcolNlayer;
-            if(!map.at(m).ves && !map.at(m).tum){
-                map.at(m).ves = 1;
-                vesToDist--;
+            n = distVes(gen);
+            if(n >= 0.0 && n < 1.0){
+                m = n * nrowNcolNlayer;
+                if(!map.at(m).ves){
+                    map.at(m).ves = 1;
+                    map.at(m).tum = 0;
+                    vesToDist--;
+                }
             }
         }
+
+        std::sort(map.begin(), map.end(), compK);
 
         /*std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
 
