@@ -1,7 +1,9 @@
 build*/
 OutputFiles*/
 *~
+*.avi
 *.pdf
+*.png
 *.svg
 src/GUI/RT.pro.user
 Figures/state/
@@ -15,3 +17,4 @@ R/.Rhistory
 R/.RData
 Matlab/test*
 R/test*
+Recurrence/
