@@ -140,7 +140,7 @@ void var1ParRange(const int kp, const int L, const string nRefParInt,
         fRec.close();
         fRecTumDens.close();
         fRecTumVol.close();
-        fRecTime.close(););
+        fRecTime.close();
         fRecTime.close();
 
         cout << i + 1 << " out of " << L << " evaluations of the model" << endl;
@@ -384,7 +384,7 @@ void varArtTissue(const int P, const string nFArt,
     fRec.close();
     fRecTumDens.close();
     fRecTumVol.close();
-    fRecTime.close(););
+    fRecTime.close();
     fRecTime.close();
     fComb.close();
 }
@@ -608,7 +608,7 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     fRec.close();
     fRecTumDens.close();
     fRecTumVol.close();
-    fRecTime.close(););
+    fRecTime.close();
     fRecTime.close();
     fCombDens.close();
 }
@@ -849,7 +849,7 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     fRec.close();
     fRecTumDens.close();
     fRecTumVol.close();
-    fRecTime.close(););
+    fRecTime.close();
     fRecTime.close();
     fCombDens.close();
 }
@@ -1155,7 +1155,7 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
     fRec.close();
     fRecTumDens.close();
     fRecTumVol.close();
-    fRecTime.close(););
+    fRecTime.close();
     fRecTime.close();
     fCombPar.close();
 }
@@ -1285,7 +1285,7 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
         fRec.close();
         fRecTumDens.close();
         fRecTumVol.close();
-        fRecTime.close(););
+        fRecTime.close();
         fRecTime.close();
 
         cout << i + 1 << " out of " << L << " evaluations of the model" << endl;
@@ -1317,8 +1317,8 @@ void varParFromFiles(const string nFInTissuePar, const string nFPar,
     vector<bool> inTum, inVes;
     Treatment treatment;
 
-    readInFiles(nFInTissuePar, nFTreatment, cellSize, tumArea, tumDens,
-                vascDens, treatment);
+    readInFiles(nFInTissuePar, cellSize, tumArea, tumDens, vascDens,
+                nFTreatment, treatment);
     createInFiles(cellSize, tumArea, tumDens, vascDens, nrow, ncol, nlayer,
                   inTum, inVes);
 
@@ -1571,7 +1571,7 @@ void varStoch(const int N, const int P, const string nFRefParInt,
     fRec.close();
     fRecTumDens.close();
     fRecTumVol.close();
-    fRecTime.close(););
+    fRecTime.close();
     fRecTime.close();
 
     free2D(X, N);

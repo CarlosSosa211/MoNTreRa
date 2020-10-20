@@ -11,6 +11,8 @@
 #include "simpcell.hpp"
 #include "treatment.hpp"
 
+static Treatment treat;
+
 int createInFiles(const int nrow, const int ncol, const int nlayer,
                   const double tumDens, const double sigmaTum,
                   const double vascDens, const double sigmaVasc,
@@ -38,9 +40,10 @@ void readInFiles(const std::string nFInTissueDim, const std::string nFInVes,
                  std::vector<bool> &inVes);
 void readInFiles(const std::string nFInTissueDim, int &nrow, int &ncol,
                  int &nlayer, double &cellSize);
-void readInFiles(const std::string nFInTissuePar, const std::string nFTreatment,
-                 double &cellSize, double &tumArea, double &tumDens,
-                 double &vascDens, Treatment &Treatment);
+void readInFiles(const std::string nFInTissuePar, double &cellSize,
+                 double &tumArea, double &tumDens, double &vascDens,
+                 const std::string nFTreatment = "",
+                 Treatment &Treatment = treat);
 void readInFilesOxy(const std::string nFInTissueOxy, bool &art, int &nrow,
                     int &ncol, int &nlayer, double &cellSize, double &vascDens,
                     double &sigmaVasc);
@@ -49,5 +52,6 @@ void readInFilesTCP(const std::string nFInTissueTCP,
                     int &nrow, int &ncol, int &nlayer, double &cellSize,
                     double &tumDens, double &sigmaTum, double &vascDens,
                     double &sigmaVasc, std::vector<Treatment> &treatment);
+void writeInFiles(const std::string nFInTissuePar);
 
 #endif

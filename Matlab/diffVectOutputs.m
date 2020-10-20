@@ -11,9 +11,9 @@ close all
 % - outputCol: the column number of the output in the corresponding files.
 
 nfig = 0;
-% path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
+path = '../../Carlos/Results/Diff/Ang_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/Res_Dose_5Val_5Rep/Tissue';
-path = '../../Carlos/Results/Diff/Arrest_Dose_5Val_5Rep/Tissue';
+% path = '../../Carlos/Results/Diff/Arrest_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/HypNec_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/Oxy_Dose_5Val_5Rep/Tissue';
 % path = '../../Carlos/Results/Diff/AngRes_Dose_5Val_5Rep/Tissue';
@@ -25,12 +25,12 @@ nTissues = 21;
 nOut = 16;
 P = 5;
 
-% withoutN = 'No angiogenesis';
-% withN = 'Angiogenesis';
+withoutN = 'No angiogenesis';
+withN = 'Angiogenesis';
 % withoutN = 'No healthy cell division';
 % withN = 'Healthy cell division';
-withoutN = 'No arrest';
-withN = 'Arrest';
+% withoutN = 'No arrest';
+% withN = 'Arrest';
 % withoutN = 'No hypoxic necrosis';
 % withN = 'Hypoxic necrosis';
 % withoutN = 'No oxyegenation (no hypoxic necrosis)';

@@ -603,8 +603,8 @@ int createInFiles(const double cellSize, const double tumArea,
     int m, tumToDist, vesToDist;
     double n;
 
-    nrow = 3 * r;
-    ncol = 3 * r;
+    nrow = 2.5 * r;
+    ncol = 2.5 * r;
     nlayer = 1;
 
     const int nrowNcol(nrow * ncol), nrowNcolNlayer(nrowNcol * nlayer);
@@ -659,7 +659,9 @@ int createInFiles(const double cellSize, const double tumArea,
         }
     }
 
-    sort(map.begin(), map.end(), compK);
+    //    sort(map.begin(), map.end(), compK);
+    //    reverse(map.begin(),map.end());
+    std::normal_distribution<double> distVes(0, 1.0);
 
     while(vesToDist > 0){
         n = double(rand()) / double(RAND_MAX);
@@ -670,15 +672,29 @@ int createInFiles(const double cellSize, const double tumArea,
         }
     }
 
-//    while(vesToDist > 0){
-//        n = double(rand()) / double(RAND_MAX);
-//        m = n * nrowNcolNlayer;
-//        if(!map.at(m).ves){
-//            map.at(m).ves = 1;
-//            map.at(m).tum = 0;
-//            vesToDist--;
-//        }
-//    }
+    //    while(vesToDist > 0){
+    //        n = double(rand()) / double(RAND_MAX);
+    //        m = n * nrowNcolNlayer;
+    //        if(!map.at(m).ves){
+    //            map.at(m).ves = 1;
+    //            map.at(m).tum = 0;
+    //            vesToDist--;
+    //        }
+    //    }
+
+    //    while(vesToDist > 0){
+    //        n = distVes(gen);
+    //        if(n >= 0.0 && n < 1.0){
+    //            m = n * nrowNcolNlayer;
+    //            if(!map.at(m).ves){
+    //                map.at(m).ves = 1;
+    //                map.at(m).tum = 0;
+    //                vesToDist--;
+    //            }
+    //        }
+    //    }
+
+    std::sort(map.begin(), map.end(), compK);
 
     inTum.resize(nrowNcolNlayer);
     inVes.resize(nrowNcolNlayer);
@@ -817,19 +833,21 @@ void readInFiles(const string nFInTissueDim, int &nrow, int &ncol, int &nlayer,
  *  - tumDens: initial tumour density in the vascular area,
  *  - vascDens: initial vascular density.
 ------------------------------------------------------------------------------*/
-void readInFiles(const string nFInTissuePar, const string nFTreatment,
-                 double &cellSize, double &tumArea, double &tumDens,
-                 double &vascDens, Treatment &treatment){
+void readInFiles(const string nFInTissuePar, double &cellSize, double &tumArea,
+                 double &tumDens, double &vascDens, const string nFTreatment,
+                 Treatment &treatment){
 
     ifstream fInTissuePar(nFInTissuePar.c_str());
     fInTissuePar >> cellSize >> tumArea >> tumDens >> vascDens;
     fInTissuePar.close();
 
-    double fraction, totalDose, interval;
-    int schedule;
-    ifstream fTreatmentTCP(nFTreatment.c_str());
-    fTreatmentTCP >> fraction >> totalDose >> interval >> schedule;;
-    treatment = Treatment(fraction, totalDose, interval, schedule);
+    if(!nFTreatment.empty()){
+        double fraction, totalDose, interval;
+        int schedule;
+        ifstream fTreatmentTCP(nFTreatment.c_str());
+        fTreatmentTCP >> fraction >> totalDose >> interval >> schedule;
+        treatment = Treatment(fraction, totalDose, interval, schedule);
+    }
 }
 
 
@@ -921,4 +939,35 @@ void readInFilesTCP(const string nFInTissueTCP,
         treatment.push_back(Treatment(fraction, totalDose, interval, schedule));
         fTreatmentTCP.close();
     }
+}
+
+void writeInFiles(const string nFInTissuePar){
+    int nrow, ncol, nlayer;
+    double cellSize, tumArea, tumDens, vascDens;
+    vector<bool> inTum, inVes;
+
+    readInFiles(nFInTissuePar, cellSize, tumArea, tumDens, vascDens);
+    createInFiles(cellSize, tumArea, tumDens, vascDens, nrow, ncol, nlayer,
+                  inTum, inVes);
+
+    ofstream fInTissueDim("../InputFiles/tissueDimRec.dat");
+
+    fInTissueDim << nrow << endl;
+    fInTissueDim << ncol << endl;
+    fInTissueDim << nlayer << endl;
+    fInTissueDim << cellSize << endl;
+    fInTissueDim.close();
+
+    int nrowNcolNlayer(nrow * ncol * nlayer);
+    ofstream fInTum("../InputFiles/inTumRec.dat");
+    ofstream fInVes("../InputFiles/inVesRec.dat");
+
+    for(int k(0); k < nrowNcolNlayer; k++){
+        fInTum << inTum.at(k) << endl;
+        fInVes << inVes.at(k) << endl;
+    }
+
+    fInTum.close();
+    fInVes.close();
+
 }

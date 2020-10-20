@@ -60,22 +60,22 @@ hold off
 
 ax = gca;
 ax.FontSize = 42;
-switch tissueSet
-    case 1
-        title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 42)
-    case 2
-        title(['11 dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 42)
-    case 3
-        title(['10 non-dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 42)
-    case 4
-        title(['11 vascularised tissues - ', char(outputNames(selOut))],...
-            'fontsize', 42)
-    case 5
-        title(['10 non-vascularised tissues - '...
-            char(outputNames(selOut))], 'fontsize', 42)
-end
+% switch tissueSet
+%     case 1
+%         title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 42)
+%     case 2
+%         title(['11 dense tissues - ', char(outputNames(selOut))],...
+%             'fontsize', 42)
+%     case 3
+%         title(['10 non-dense tissues - ', char(outputNames(selOut))],...
+%             'fontsize', 42)
+%     case 4
+%         title(['11 vascularised tissues - ', char(outputNames(selOut))],...
+%             'fontsize', 42)
+%     case 5
+%         title(['10 non-vascularised tissues - '...
+%             char(outputNames(selOut))], 'fontsize', 42)
+% end
 axis([0, maxValMu, 0, maxValSigma])
 grid on
 legend(flip(cOutput(nPar - nImpPar + 1:nPar, 9)), 'Location',...
@@ -114,22 +114,22 @@ ax.YGrid = 'on';
 ax = gca;
 ax.FontSize = 32;
 ylabel('Euclidean distance to the origin')
-switch tissueSet
-    case 1
-        title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 42)
-    case 2
-        title(['11 dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 42)
-    case 3
-        title(['10 non-dense tissues - ', char(outputNames(selOut))],...
-            'fontsize', 42)
-    case 4
-        title(['11 vascularised tissues - ', char(outputNames(selOut))],...
-            'fontsize', 42)
-    case 5
-        title(['10 non-vascularised tissues - '...
-            char(outputNames(selOut))], 'fontsize', 42)
-end
+% switch tissueSet
+%     case 1
+%         title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 42)
+%     case 2
+%         title(['11 dense tissues - ', char(outputNames(selOut))],...
+%             'fontsize', 42)
+%     case 3
+%         title(['10 non-dense tissues - ', char(outputNames(selOut))],...
+%             'fontsize', 42)
+%     case 4
+%         title(['11 vascularised tissues - ', char(outputNames(selOut))],...
+%             'fontsize', 42)
+%     case 5
+%         title(['10 non-vascularised tissues - '...
+%             char(outputNames(selOut))], 'fontsize', 42)
+% end
 
 % xpos = zeros(nImpPar, 2);
 % ypos = zeros(nImpPar, 2);
@@ -147,6 +147,14 @@ ypos = hBar.YData;
 errorbar(xpos, ypos, cell2mat(cOutput(end - nImpPar + 1:end, 8)),...
     '.k', 'Linewidth', 2)
 
+xpos = hBar.XData;
+ypos = hBar.YData;
+
+plot(xpos([1:3, 8]), ypos([1:3, 8]), 'h', 'markerSize', 20,...
+    'markerFaceColor', [0.8500 0.3250 0.0980])
+% plot(xpos(1:4), ypos(1:4), 'h', 'markerSize', 20,...
+%     'markerFaceColor', [0.8500 0.3250 0.0980])
+
 % dthresi =  find(strcmp(cOutput(end - nImpPar + 1:end,9), '$d_{thres}$'));
 % if dthresi
 %     dthrespos = 0.5 * (xpos(dthresi, 2) + xpos(dthresi + 1, 1));
@@ -155,7 +163,7 @@ errorbar(xpos, ypos, cell2mat(cOutput(end - nImpPar + 1:end, 8)),...
 %         'Linewidth', 2)
 % end
 
-dthresi =  find(strcmp(cOutput(end - nImpPar + 1:end,9), '$d_{thres}$'));
+dthresi =  find(strcmp(cOutput(end - nImpPar + 1:end,9), '$\alpha/\beta_{heal}$'));
 if dthresi
     dthrespos = 0.5 * (xpos(dthresi - 1) + xpos(dthresi));
     plot([dthrespos, dthrespos],...

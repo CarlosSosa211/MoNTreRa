@@ -6,7 +6,8 @@ nfig = 0;
 
 % path = '../../Carlos/Results/Var_TTum_2Gy_noHypNec';
 % path = '../../Carlos/Results/Var_d_noHypNec';
-path = '../../Carlos/Results/Var_ang';
+% path = '../../Carlos/Results/Var_ang';
+path = '../OutputFiles';
 p = 2;
 
 %%

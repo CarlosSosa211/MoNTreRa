@@ -2,6 +2,7 @@ import numpy as np
 from statsmodels.distributions.empirical_distribution import ECDF
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+import scipy.stats as stats
 
 #%%
 def fsigmoid(x, a, b):
@@ -19,10 +20,14 @@ lightRed = [255/255, 101/255, 152/255]
 orange = [255/255, 174/255, 101/255]
 gray = [173/255, 185/255, 202/255]
 darkPurple = [160/255, 120/255, 196/255]
-lightPurple = [146/255, 141/255, 251/255]
+#lightPurple = [146/255, 141/255, 251/255]
+lightPurple = [124/255, 169/255, 184/255]
 redOrange = [255/255, 149/255, 114/255]
 redPurple = [207/255, 122/255, 162/255]
+redGreen = [230/255, 190/255, 117/255]
+redBlue = [191/255, 155/255, 177/255]
 orangePurple = [207/255, 147/255, 148/255]
+greenBlue = [166/255, 220/255, 165/255]
 brown = [168/255, 120/255, 110/255]
 #%%
 plt.rcParams.update({'font.size': 32})
@@ -170,17 +175,126 @@ plt.legend(["1 Gy", "2 Gy", "3 Gy", "4 Gy", "5 Gy"])
 #%%
 plt.close('all')
 plt.rcParams.update({'font.size': 32})
+path = "../../Carlos/Results/TCP/Histo_10/Tissue"
+tissuesNames = ["All tissues", "Gleason 6", "Gleason 7", "Gleason 8"]
+td = [1, 2, 3, 4, 5]
+#td = [2]
+allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 13, 15, 16, 17, 18, 19, 20]
+tissuesG6 = [4, 5]
+tissuesG7 = [6, 7, 8, 13, 15, 16, 17, 18, 19, 20]
+tissuesG8 = [1, 2, 3]
+tissues = [allTissues, tissuesG6, tissuesG7, tissuesG8]
+P = 10
+tcp50 = np.zeros([len(td), len(tissues)])
+tcolor = ['tab:gray', green, orange, red]
+tpos = [-0.15, -0.05, 0.05, 0.15]
+
+figTcp50, axTcp50 = plt.subplots();
+    
+for k, eld in enumerate(td):
+    figTcp, axTcp = plt.subplots();
+    for i, elt in enumerate(tissues):
+        tcp = np.zeros(len(elt) * P)
+        for j, eltt in enumerate(elt):
+            pathTissue = path + str(eltt) + "/"
+            with open(pathTissue + "doseToControl_" + str(eld) +
+                      "Gy.res", 'r') as fTcp: 
+                        tcp[j * P:(j + 1) * P] = np.fromstring(fTcp.read(), 
+                           dtype = float, sep = ' ')
+        ecdf = ECDF(tcp[np.nonzero(tcp)])    
+        #axTcp.plot(ecdf.x, ecdf.y, color = tcolor[i], linewidth = 2)
+        popt, pcov = curve_fit(fsigmoid, ecdf.x[1:], ecdf.y[1:], p0 = [1, 50])
+        sigmoid = np.zeros(301)
+        x = list(range(301))
+        for j in range(301):
+            sigmoid[j] = fsigmoid(x[j], popt[0], popt[1])
+        axTcp.plot(x, sigmoid, color = tcolor[i], linewidth = 6)
+        tcp50[k, i] = ecdf.x[ecdf.y > 0.5][0]
+        axTcp50.bar(eld + tpos[i], tcp50[k, i], width = 0.1, color = tcolor[i])
+        
+#    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
+#          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.set(xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.grid(True)
+    axTcp.legend(tissuesNames, loc = 'upper left')
+    
+    axTcp50.set(title = "TCP50", xlabel = "Dose per session (Gy)", 
+               ylabel = "Total dose to TCP50 (Gy)")
+    axTcp50.grid(True)
+    axTcp50.set_axisbelow(True)
+    axTcp50.legend(tissuesNames)
+
+#%%
+plt.close('all')
+plt.rcParams.update({'font.size': 32})
+path = "../../Carlos/Results/TCP/Histo_10_NoHypNec/Tissue"
+tissuesNames = ["All", "Dense", "Non-dense",
+                "Vascularized", "Non-vascularized"]
+td = [1, 2, 3, 4, 5]
+#td = [2]
+allTissues = list(range(1, 22))
+densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21]
+nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18]
+vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20]
+nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21]
+tissues = [allTissues, densTissues, nonDensTissues, vascTissues, nonVascTissues]
+P = 10
+tcp50 = np.zeros([len(td), len(tissues)])
+tcolor = ['tab:gray', darkPurple, lightPurple, darkRed, lightRed]
+tpos = [-0.2, -0.1, 0., 0.1, 0.2]
+
+figTcp50, axTcp50 = plt.subplots();
+    
+for k, eld in enumerate(td):
+    figTcp, axTcp = plt.subplots();
+    for i, elt in enumerate(tissues):
+        tcp = np.zeros(len(elt) * P)
+        for j, eltt in enumerate(elt):
+            pathTissue = path + str(eltt) + "/"
+            with open(pathTissue + "doseToControl_" + str(eld) +
+                      "Gy.res", 'r') as fTcp: 
+                        tcp[j * P:(j + 1) * P] = np.fromstring(fTcp.read(), 
+                           dtype = float, sep = ' ')
+        ecdf = ECDF(tcp[np.nonzero(tcp)])    
+        #axTcp.plot(ecdf.x, ecdf.y, color = tcolor[i], linewidth = 2)
+        popt, pcov = curve_fit(fsigmoid, ecdf.x[1:], ecdf.y[1:], p0 = [1, 150])
+        sigmoid = np.zeros(301)
+        x = list(range(301))
+        for j in range(301):
+            sigmoid[j] = fsigmoid(x[j], popt[0], popt[1])
+        axTcp.plot(x, sigmoid, color = tcolor[i], linewidth = 6)
+        tcp50[k, i] = ecdf.x[ecdf.y > 0.5][0]
+        axTcp50.bar(eld + tpos[i], tcp50[k, i], width = 0.1, color = tcolor[i])
+        
+#    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
+#          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.set(xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 300])
+    axTcp.grid(True)
+    axTcp.legend(tissuesNames, loc = 'upper left')
+    
+    axTcp50.set(title = "TCP50", xlabel = "Dose per session (Gy)", 
+               ylabel = "Total dose to TCP50 (Gy)")
+    axTcp50.grid(True)
+    axTcp50.set_axisbelow(True)
+    axTcp50.legend(tissuesNames)
+    
+#%%
+plt.close('all')
+plt.rcParams.update({'font.size': 32})
 path = "../../Carlos/Results/"
 process = ["TCP/Histo_10/", "TCP/Histo_10_NoAng/", "TCP/Histo_10_NoRes/",
-           "TCP/Histo_10_NoArrest/", "TCP/Histo_10_NoHypNec/"]
-processNames = ["All processes", "No angiogenesis", "No healthy cell division",
-                "No cycle arrest", "No hypoxic necrosis"]
-td = [1, 2, 3, 4, 5]
+           "TCP/Histo_10_NoArrest/", "TCP/Histo_10_NoRadSensHealEnd/"]
+processNames = ["All mechanisms (AM)", "AM except angiogenesis",
+                "AM except healthy cell\ndivision", "AM except cycle arrest",
+                "AM except response to\nirradiation "
+                "of healthy and\nendothelial cells"]
+#td = [1, 2, 3, 4, 5]
+td = [2]
 nTissues = 21
 P = 10
-tcp = np.zeros(nTissues * P)
+tcp = np.zeros([nTissues * P, len(process)])
 tcp50 = np.zeros([len(td), len(process)])
-tcolor = ['tab:gray', red, orange, darkPurple, darkGreen]
+tcolor = ['tab:gray', red, orange, lightPurple, darkPurple]
 tpos = [-0.2, -0.1, 0.0, 0.1, 0.2]
 
 figTcp50, axTcp50 = plt.subplots();
@@ -193,9 +307,9 @@ for k, eld in enumerate(td):
             pathTissue = pathProcess + "Tissue" + str(j + 1) + "/"
             with open(pathTissue + "doseToControl_" +
                       str(eld) + "Gy.res", 'r') as fTcp: 
-                        tcp[j * P:(j + 1) * P] = np.fromstring(fTcp.read(), 
+                        tcp[j * P:(j + 1) * P, i] = np.fromstring(fTcp.read(), 
                            dtype = float, sep = ' ')
-        ecdf = ECDF(tcp[np.nonzero(tcp)])    
+        ecdf = ECDF(tcp[np.nonzero(tcp[:, i]), i].ravel())    
         #axTcp.plot(ecdf.x, ecdf.y, color = tcolor[i], linewidth = 2)
         popt, pcov = curve_fit(fsigmoid, ecdf.x[1:], ecdf.y[1:], p0 = [1, 50])
         sigmoid = np.zeros(101)
@@ -206,8 +320,10 @@ for k, eld in enumerate(td):
         tcp50[k, i] = ecdf.x[ecdf.y > 0.5][0]
         axTcp50.bar(eld + tpos[i], tcp50[k, i], width = 0.1, color = tcolor[i])
         
-    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
-          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+        print(popt)
+#    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
+#          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.set(xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
     axTcp.grid(True)
     axTcp.legend(processNames)
     figTcp.savefig("TCP1Pro" + str(eld) + "Gy.pdf", bbox_inches="tight")
@@ -218,22 +334,45 @@ for k, eld in enumerate(td):
     axTcp50.set_axisbelow(True)
     axTcp50.legend(processNames)
     
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 1])
+    print("AM except angiogenesis", p)
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 2])
+    print("AM except healthy cell division", p)
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 3])
+    print("AM except cycle arrest", p)
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 4])
+    print("AM except response to irradiation"
+          "of healthy and endothelial cells", p)    
+
 #%%
 plt.close('all')
-plt.rcParams.update({'font.size': 32})
+plt.rcParams.update({'font.size': 24})
 path = "../../Carlos/Results/"
 process = ["TCP/Histo_10/", "TCP/Histo_10_NoAngNoRes/", 
-           "TCP/Histo_10_NoAngNoArrest/", "TCP/Histo_10_NoResNoArrest/"]
-processNames = ["All processes", "No angiogenesis,\nno healthy cell division",
-                "No angiogenesis,\nno cycle arrest",
-                "No healthy cell division,\nno cycle arrest"]
-td = [1, 2, 3, 4, 5]
+           "TCP/Histo_10_NoAngNoArrest/",
+           "TCP/Histo_10_NoAngNoRadSensHealEnd/",
+           "TCP/Histo_10_NoResNoArrest/",
+           "TCP/Histo_10_NoResNoRadSensHealEnd/",
+           "TCP/Histo_10_NoArrestNoRadSensHealEnd/",]
+processNames = ["All mechanisms (AM)",
+                "AM except angiogenesis \nand healthy cell division",
+                "AM except angiogenesis \nand cycle arrest",
+                "AM except angiogenesis and\nresponse to irradiation of\n"
+                "healthy and endothelial cells",
+                "AM except healthy cell \ndivision and cycle arrest",
+                "AM except healthy cell \ndivision and response to" 
+                "\nirradiation of healthy and\nendothelial cells",
+                "AM except cycle arrest and\nresponse to irradiation of\n"
+                "healthy and endothelial cells"]
+#td = [1, 2, 3, 4, 5]
+td = [2]
 nTissues = 21
 P = 10
-tcp = np.zeros(nTissues * P)
+tcp = np.zeros([nTissues * P, len(process)])
 tcp50 = np.zeros([len(td), len(process)])
-tcolor = ['tab:gray', redOrange, redPurple, orangePurple]
-tpos = [-0.15, -0.05, 0.05, 0.15]
+tcolor = ['tab:gray', redPurple, redOrange, greenBlue, redGreen, orangePurple,
+          redBlue]
+tpos = [-0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3]
 
 figTcp50, axTcp50 = plt.subplots();
     
@@ -245,9 +384,9 @@ for k, eld in enumerate(td):
             pathTissue = pathProcess + "Tissue" + str(j + 1) + "/"
             with open(pathTissue + "doseToControl_" +
                       str(eld) + "Gy.res", 'r') as fTcp: 
-                        tcp[j * P:(j + 1) * P] = np.fromstring(fTcp.read(), 
+                        tcp[j * P:(j + 1) * P, i] = np.fromstring(fTcp.read(), 
                            dtype = float, sep = ' ')
-        ecdf = ECDF(tcp[np.nonzero(tcp)])    
+        ecdf = ECDF(tcp[np.nonzero(tcp[:, i]), i].ravel())    
         #axTcp.plot(ecdf.x, ecdf.y, color = tcolor[i], linewidth = 2)
         popt, pcov = curve_fit(fsigmoid, ecdf.x[1:], ecdf.y[1:], p0 = [1, 50])
         sigmoid = np.zeros(101)
@@ -258,8 +397,79 @@ for k, eld in enumerate(td):
         tcp50[k, i] = ecdf.x[ecdf.y > 0.5][0]
         axTcp50.bar(eld + tpos[i], tcp50[k, i], width = 0.1, color = tcolor[i])
         
-    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
-          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+        print(popt)
+#    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
+#          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.set(xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.grid(True)
+    axTcp.legend(processNames, loc = 'upper left')
+    
+    axTcp50.set(title = "TCP50", xlabel = "Dose per session (Gy)", 
+               ylabel = "Total dose to TCP50 (Gy)")
+    axTcp50.grid(True)
+    axTcp50.set_axisbelow(True)
+    axTcp50.legend(processNames)
+
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 1])
+    print( "AM except angiogenesis and healthy cell division", p)
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 2])
+    print("AM except angiogenesis and cycle arrest", p)
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 3])
+    print("AM except healthy cell division and cycle arrest", p)
+
+#%%
+plt.close('all')
+plt.rcParams.update({'font.size': 24})
+path = "../../Carlos/Results/"
+process = ["TCP/Histo_10/", "TCP/Histo_10_NoAngNoResNoArrest/", 
+           "TCP/Histo_10_NoAngNoResNoRadSensHealEnd/",
+           "TCP/Histo_10_NoAngNoArrestNoRadSensHealEnd/",
+           "TCP/Histo_10_NoResNoArrestNoRadSensHealEnd/"]
+processNames = ["All mechanisms (AM)",
+                "AM except angiogenesis, \nhealthy cell division and\n"
+                "cycle arrest",
+                "AM except angiogenesis, \nhealthy cell division and\n"
+                "response to irradiation of\nhealthy and endothelial cells",
+                "AM except angiogenesis, \ncycle arrest and response\n"
+                "to irradiation of healthy\nand endothelial cells",
+                "AM except healthy cell\ndivision, cycle arrest and\n"
+                "response to irradiation of\nhealthy and endothelial cells"]
+#td = [1, 2, 3, 4, 5]
+td = [2]
+nTissues = 21
+P = 10
+tcp = np.zeros([nTissues * P, len(process)])
+tcp50 = np.zeros([len(td), len(process)])
+tcolor = ['tab:gray', redPurple, redOrange, greenBlue, redGreen]
+tpos = [-0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3]
+
+figTcp50, axTcp50 = plt.subplots();
+    
+for k, eld in enumerate(td):
+    figTcp, axTcp = plt.subplots();
+    for i, elp in enumerate(process):
+        pathProcess = path + elp
+        for j in range(nTissues):
+            pathTissue = pathProcess + "Tissue" + str(j + 1) + "/"
+            with open(pathTissue + "doseToControl_" +
+                      str(eld) + "Gy.res", 'r') as fTcp: 
+                        tcp[j * P:(j + 1) * P, i] = np.fromstring(fTcp.read(), 
+                           dtype = float, sep = ' ')
+        ecdf = ECDF(tcp[np.nonzero(tcp[:, i]), i].ravel())    
+        #axTcp.plot(ecdf.x, ecdf.y, color = tcolor[i], linewidth = 2)
+        popt, pcov = curve_fit(fsigmoid, ecdf.x[1:], ecdf.y[1:], p0 = [1, 50])
+        sigmoid = np.zeros(101)
+        x = list(range(101))
+        for j in range(101):
+            sigmoid[j] = fsigmoid(x[j], popt[0], popt[1])
+        axTcp.plot(x, sigmoid, color = tcolor[i], linewidth = 6)
+        tcp50[k, i] = ecdf.x[ecdf.y > 0.5][0]
+        axTcp50.bar(eld + tpos[i], tcp50[k, i], width = 0.1, color = tcolor[i])
+        
+        print(popt)
+#    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
+#          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.set(xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
     axTcp.grid(True)
     axTcp.legend(processNames, loc = 'upper left')
     
@@ -273,13 +483,16 @@ for k, eld in enumerate(td):
 plt.close('all')
 plt.rcParams.update({'font.size': 32})
 path = "../../Carlos/Results/"
-process = ["TCP/Histo_10/", "TCP/Histo_10_NoAngNoResNoArrest/"]
-processNames = ["All processes",
-                "No angiogenesis,\nno healthy cell division,\nno cycle arrest"]
-td = [1, 2, 3, 4, 5]
+process = ["TCP/Histo_10/", "TCP/Histo_10_NoAngNoResNoArrestNoRadSensHealEnd/"]
+processNames = ["All mechanisms (AM)",
+                "AM except angiogenesis,\nhealthy cell division,\n"
+                "cycle arrest and response\nto irradiation of healthy\nand "
+                "endothelial cells"]
+#td = [1, 2, 3, 4, 5]
+td = [2]
 nTissues = 21
 P = 10
-tcp = np.zeros(nTissues * P)
+tcp = np.zeros([nTissues * P, len(process)])
 tcp50 = np.zeros([len(td), len(process)])
 tcolor = ['tab:gray', brown]
 tpos = [-0.05, 0.05]
@@ -294,9 +507,9 @@ for k, eld in enumerate(td):
             pathTissue = pathProcess + "Tissue" + str(j + 1) + "/"
             with open(pathTissue + "doseToControl_" +
                       str(eld) + "Gy.res", 'r') as fTcp: 
-                        tcp[j * P:(j + 1) * P] = np.fromstring(fTcp.read(), 
+                        tcp[j * P:(j + 1) * P, i] = np.fromstring(fTcp.read(), 
                            dtype = float, sep = ' ')
-        ecdf = ECDF(tcp[np.nonzero(tcp)])    
+        ecdf = ECDF(tcp[np.nonzero(tcp[:, i]), i].ravel())    
         #axTcp.plot(ecdf.x, ecdf.y, color = tcolor[i], linewidth = 2)
         popt, pcov = curve_fit(fsigmoid, ecdf.x[1:], ecdf.y[1:], p0 = [1, 50])
         sigmoid = np.zeros(101)
@@ -307,8 +520,11 @@ for k, eld in enumerate(td):
         tcp50[k, i] = ecdf.x[ecdf.y > 0.5][0]
         axTcp50.bar(eld + tpos[i], tcp50[k, i], width = 0.1, color = tcolor[i])
         
-    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
-          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+       
+        print(popt)
+#    axTcp.set(title = "Tumor control probability (" + str(eld) + " Gy)", 
+#          xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
+    axTcp.set(xlabel = "Total dose (Gy)", ylabel = "TCP", xlim = [0, 100])
     axTcp.grid(True)
     axTcp.legend(processNames, loc = 'upper left')
     
@@ -317,6 +533,10 @@ for k, eld in enumerate(td):
     axTcp50.grid(True)
     axTcp50.set_axisbelow(True)
     axTcp50.legend(processNames)
+    
+    _, p = stats.wilcoxon(tcp[:, 0], tcp[:, 1])
+    print( "AM except angiogenesis, healthy cell division, cycle arrest"
+          "and response to irradiation of healthy and endothelial cells", p)
         
 #%%
 plt.close('all')

@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <math.h>
@@ -15,7 +15,7 @@
 #include "inWindow.hpp"
 
 /*------------------------------------------------------------------------------
- * Constructor of the class InWindow.
+ * Constructor of the class InWindow.c
 ------------------------------------------------------------------------------*/
 
 InWindow::InWindow() : QWidget(){
@@ -420,7 +420,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/in.dat");
+    loadInData("../InputFiles/inRed.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -521,7 +521,7 @@ int InWindow::createInFiles(){
         int m, tumToDist, vesToDist;
         double n;
 
-        int nrow(3 * r), ncol(3 * r), nlayer(1);
+        int nrow(2.5 * r), ncol(2.5 * r), nlayer(1);
 
         const int nrowNcol(nrow * ncol), nrowNcolNlayer(nrowNcol * nlayer);
         int halfNrow, halfNcol, halfNlayer;
@@ -576,31 +576,31 @@ int InWindow::createInFiles(){
             }
         }
 
-        //        std::sort(map.begin(), map.end(), compK);
+        //std::sort(map.begin(), map.end(), compK);
         std::reverse(map.begin(),map.end());
 
-        std::normal_distribution<double> distVes(0, 0.5);
-
-//        while(vesToDist > 0){
-//            n = double(rand()) / double(RAND_MAX);
-//            m = n * nrowNcolNlayer;
-//            if(!map.at(m).ves && !map.at(m).tum){
-//                map.at(m).ves = 1;
-//                vesToDist--;
-//            }
-//        }
+        std::normal_distribution<double> distVes(0, m_sigmaVasc->value());
 
         while(vesToDist > 0){
-            n = distVes(gen);
-            if(n >= 0.0 && n < 1.0){
-                m = n * nrowNcolNlayer;
-                if(!map.at(m).ves){
-                    map.at(m).ves = 1;
-                    map.at(m).tum = 0;
-                    vesToDist--;
-                }
+            n = double(rand()) / double(RAND_MAX);
+            m = n * nrowNcolNlayer;
+            if(!map.at(m).ves && !map.at(m).tum){
+                map.at(m).ves = 1;
+                vesToDist--;
             }
         }
+
+//        while(vesToDist > 0){
+//            n = distVes(gen);
+//            if(n >= 0.0 && n < 1.0){
+//                m = n * (nrowNcolNlayer - 0.1 * nCellsTumArea);
+//                if(!map.at(m).ves){
+//                    map.at(m).ves = 1;
+//                    map.at(m).tum = 0;
+//                    vesToDist--;
+//                }
+//            }
+//        }
 
         std::sort(map.begin(), map.end(), compK);
 

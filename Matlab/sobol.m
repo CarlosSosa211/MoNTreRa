@@ -31,7 +31,7 @@ gray = [173, 185, 202];
 darkPurple = [160, 120, 196];
 lightPurple = [146, 141, 251];
 
-% path = '../../Carlos/Results/Sobol1000_38Par';
+% path = '../../Carlos/Results/Sobol/1000_38Par';
 % b = {'$N$', '$tum$', '$T_{tum}$', '$hea$', '$T_{heal}$', '$ang$'...
 %     '$T_{end}$', '$D^{VEGF}$', '$V_{max}^{VEGF}$', '$K_M^{VEGF}$'...
 %     '$\bar{v}$', '$v^{hyp}$', '$\alpha_{heal}$', '$\alpha/\beta_{heal}$'...
@@ -50,12 +50,12 @@ lightPurple = [146, 141, 251];
 % selPar(6) = 0;
 % selPar(32) = 0;
 
-% path = '../../Carlos/Results/Sobol1000_38Par_2Gy';
+% path = '../../Carlos/Results/Sobol/1000_38Par_2Gy';
 % b = {'$N$', '$tum$', '$T_{tum}$', '$hea$'};
 % nTotPar = length(b);
 % selPar = ones(1, nTotPar);
 
-path = '../../Carlos/Results/Sobol1000_12Par_2Gy';
+path = '../../Carlos/Results/Sobol/1000_12Par_2Gy';
 b = {'$T_{tum}$', '$\alpha_{tumG1}$', '$\alpha/\beta_{tumG1}$'...
     '$\alpha_{tumS}$', '$\alpha_{tumG2}$', '$\alpha_{tumM}$'...
     '$T_{arrest}$', '$pO_2^{nec}$', '$D^{O_2}$', '$V_{max}^{O_2}$'...
@@ -66,7 +66,7 @@ colorbar = [blue; lightPurple; lightPurple;
 nTotPar = length(b);
 selPar = ones(1, nTotPar);
 
-% path = uigetdir('../../Carlos/Results');
+% path = uigetdir('../../Carlos/Results/Sobol');
 
 b = b(selPar == 1);
 nPar = nnz(selPar);

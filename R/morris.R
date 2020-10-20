@@ -1,7 +1,12 @@
 library(sensitivity)
 boundaries <- read.delim("../InputFiles/refParIntRT.dat", header = FALSE)
-nFactors <- 34
-nLevels <- 20
+nFactors <- 39
+nLevels <- c(rep(20, nFactors))
+nLevels[1] <- 2
+nLevels[3] <- 2
+nLevels[4] <- 2
+nLevels[6] <- 2
+nLevels[32] <- 2
 nRep <- 100
 
 Morris <- morris(model = NULL, factors = nFactors, r = nRep,
@@ -30,7 +35,9 @@ yTimeTo95        <- unlist(read.delim("../OutputFiles/YTimeTo95.res", header = F
 yTimeTo99        <- unlist(read.delim("../OutputFiles/YTimeTo99.res", header = FALSE))
 yRecTime         <- unlist(read.delim("../OutputFiles/YRecTime.res", header = FALSE))
 
-tell(Morris, yEndTreatTumDens)
+y <- unlist(read.delim("../OutputFiles/Y.res", header = FALSE))
+
+tell(Morris, y)
 
 mu.star <- apply(Morris$ee, 2, function(Morris) mean(abs(Morris)))
 sigma <- apply(Morris$ee, 2, sd)

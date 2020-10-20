@@ -1,6 +1,6 @@
 function plotOutput(path, n, selOut)
 global nPar selPar
-global b color nfig shape;
+global b color colorbar nfig shape;
 global fileNames outputNames;
 
 output = load([path, '/morris', char(fileNames(selOut)), '_', num2str(n)...
@@ -38,9 +38,11 @@ grid on
 hold off
 
 cOutput = [num2cell(output), b'];
-cOutput = sortrows(cOutput, 4);
+cOutput = sortrows(cOutput, 4, 'descend');
+
 nfig = nfig + 1;
 figure(nfig);
+
 bar(cell2mat(cOutput(:, 3:4)))
 ax = gca;
 ax.TickLabelInterpreter = 'latex';

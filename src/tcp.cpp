@@ -254,7 +254,7 @@ void modelTCP(const double *x, double *y, const int nrow, const int ncol,
 
     sim->stop();
 
-    const double doseToControl(model1->getOutD()[15]);
+    const double doseToControl(model1->getOutD()[20]);
 
     delete model1;
     delete model2;

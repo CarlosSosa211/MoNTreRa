@@ -19,11 +19,14 @@
 OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     m_white      = QColor(255, 255, 255);
     m_blueTum    = QColor(46, 165, 225);
+    //m_blueTum    = QColor(127, 185, 225);
     m_red        = QColor(192, 0, 0);
+    //m_red        = QColor(255, 124, 128);
     //m_redTum     = QColor(237, 125, 49);
     m_redTum     = QColor(153, 0, 51);
     m_black      = QColor(56, 56, 56);
     m_blueTumDam = QColor(0, 32, 96);
+    //m_blueTumDam = QColor(84, 136, 154);
     m_blueG1     = QColor(46, 165, 225);
     m_green      = QColor(156, 204, 88);
     m_orange     = QColor(246, 161, 27);
@@ -31,6 +34,7 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     m_redG0      = QColor(187, 81, 51);
     m_yellowNec  = QColor(127, 96, 0);
     m_brownMit   = QColor(132, 60, 12);
+    //m_brownMit   = QColor(168, 120, 110);
     m_greenApop  = QColor(56, 87, 35);
 
     m_selChartGroup = new QGroupBox("Select a chart", this);
