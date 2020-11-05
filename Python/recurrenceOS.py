@@ -7,7 +7,7 @@ import numpy as np
 import scipy.stats as stats
 import seaborn as sns
 from statannot import add_stat_annotation
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import LinearSVC
@@ -117,8 +117,13 @@ dataOS = pd.read_csv(path + 'dataSMOTE.csv')
 dataOS.insert(loc = 0, column = 'ID', value = 0)
 dataOS.insert(loc = len(dataOS.columns), column = 'init_tum_area', value = 0)
 dataOS.insert(loc = len(dataOS.columns), column = '8w_tum_area', value = 0)
-initTumVol = np.loadtxt(path + 'TTum330_alphaG1120_ADCT2w_syn/initTumVol.res')
-eightwTumVol = np.loadtxt(path + 'TTum330_alphaG1120_ADCT2w_syn/8wTumVol.res')
+dataOS.insert(loc = len(dataOS.columns), column = '8w_tum_area_norm', value = 0)
+dataOS.insert(loc = len(dataOS.columns), column = '8w_int_tum_area', value = 0)
+dataOS.insert(loc = len(dataOS.columns), column = '8w_int_tum_area_norm', value = 0)
+
+initTumVol = np.loadtxt(path + 'TTum330_alphaG1120_syn/initTumVol.res')
+eightwTumVol = np.loadtxt(path + 'TTum330_alphaG1120_syn/8wTumVol.res')
+eightwIntTumVol = np.loadtxt(path + 'TTum330_alphaG1120_syn/8wIntTumVol.res')
 for i in range(76) :
     tissuei = dataOS.index[(dataOS['tum_vol'] == dataOS.at[i, 'tum_vol']) &
                         (dataOS['ADC_ave'] == dataOS.at[i, 'ADC_ave']) &
@@ -126,11 +131,18 @@ for i in range(76) :
     dataOS.at[tissuei, 'ID'] = i + 1
     dataOS.at[tissuei, 'init_tum_area'] = initTumVol[i]
     dataOS.at[tissuei, '8w_tum_area'] = eightwTumVol[i]
+    dataOS.at[tissuei, '8w_int_tum_area'] = eightwIntTumVol[i]
 
-initTumVolSyn = np.loadtxt(path + 'TTum330_alphaG1120_ADCT2w_syn/initTumVolSyn.res')
-eightwTumVolSyn = np.loadtxt(path + 'TTum330_alphaG1120_ADCT2w_syn/8wTumVolSyn.res')
+initTumVolSyn = np.loadtxt(path + 'TTum330_alphaG1120_syn/initTumVolSyn.res')
+eightwTumVolSyn = np.loadtxt(path + 'TTum330_alphaG1120_syn/8wTumVolSyn.res')
+eightwIntTumVolSyn = np.loadtxt(path + 'TTum330_alphaG1120_syn/8wIntTumVolSyn.res')
+
 dataOS.at[dataOS.index[(dataOS['syn'] == 1)].to_list(), 'init_tum_area'] = initTumVolSyn
 dataOS.at[dataOS.index[(dataOS['syn'] == 1)].to_list(), '8w_tum_area'] = eightwTumVolSyn
+dataOS.at[dataOS.index[(dataOS['syn'] == 1)].to_list(), '8w_int_tum_area'] = eightwIntTumVolSyn
+
+dataOS['8w_tum_area_norm'] = dataOS['8w_tum_area'] / dataOS['init_tum_area'] 
+dataOS['8w_int_tum_area_norm'] =  dataOS['8w_int_tum_area'] / (dataOS['init_tum_area'] * 2160) 
 
 #%%
 N = 100
@@ -219,11 +231,11 @@ for j in range(N) :
 #        mean_tprK[j, 0, 3] = 0.0
         
         xtrain = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
-                            (dataOS['test'] == 0) & (dataOS['syn'] == 0)][['8w_tum_area']].to_numpy()
+                            (dataOS['test'] == 0) & (dataOS['syn'] == 0)][['8w_tum_area_norm']].to_numpy()
         ytrain = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
                             (dataOS['test'] == 0) & (dataOS['syn'] == 0)]['bio_rec'].to_numpy().ravel()
         xtest = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
-                            (dataOS['test'] == 1)][['8w_tum_area']].to_numpy()
+                            (dataOS['test'] == 1)][['8w_tum_area_norm']].to_numpy()
         ytest = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
                             (dataOS['test'] == 1)]['bio_rec'].to_numpy().ravel()
         logReg.fit(xtrain, ytrain)
@@ -233,11 +245,11 @@ for j in range(N) :
         mean_tprK[j, 0, 2] = 0.0
         
         xtrain = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
-                            (dataOS['test'] == 0)][['8w_tum_area']].to_numpy()
+                            (dataOS['test'] == 0)][['8w_tum_area_norm']].to_numpy()
         ytrain = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
                             (dataOS['test'] == 0)]['bio_rec'].to_numpy().ravel()
         xtest = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
-                            (dataOS['test'] == 1)][['8w_tum_area']].to_numpy()
+                            (dataOS['test'] == 1)][['8w_tum_area_norm']].to_numpy()
         ytest = dataOS.loc[(dataOS['rep'] == j) & (dataOS['fold'] == k) &
                             (dataOS['test'] == 1)]['bio_rec'].to_numpy().ravel()
         logReg.fit(xtrain, ytrain)
@@ -251,7 +263,7 @@ mean_tprK[:, -1, :] = 1.0
 auc_ = np.trapz(mean_tprK, mean_fpr, axis = 1) 
     
 mean_tprN = np.mean(mean_tprK, axis = 0)
-std_tprN = np.std(mean_tprK, axis = 0)
+std_tprN = np.std(mean_tprK, axis = 0, ddof = 1)
 level = 0.95
 dof = K - 1
 
@@ -261,7 +273,7 @@ tcolor = [red, orange, blue, green]
 
 for i in range(4) :
     ax.plot(mean_fpr, mean_tprN[:, i], linewidth = 6, color = tcolor[i])
-    ci = stats.t.interval(level, dof, mean_tprN[:, i], std_tprN[:, i])
+    ci = stats.t.interval(level, dof, mean_tprN[:, i], std_tprN[:, i] / np.sqrt(N))
     ax.fill_between(mean_fpr, ci[0], ci[1], color = tcolor[i],
                     alpha = 0.1)
 
@@ -272,16 +284,16 @@ std_auc = np.std(auc_, axis = 0)
 
 ax.legend(["Imaging parameters\n(AUC = %0.2f $\pm$ %0.2f)" %
            (mean_auc[0], std_auc[0]),
-           "Imaging parameters with SMOTE\n(AUC = %0.2f $\pm$ %0.2f)" %
+           "Imaging parameters\nwith SMOTE\n(AUC = %0.2f $\pm$ %0.2f)" %
            (mean_auc[1], std_auc[1]),
-           "Tum. area at 8 w.\n(AUC = %0.2f $\pm$ %0.2f)" % 
+           "Norm. int. of tum. area\nup to 8 w.\n(AUC = %0.2f $\pm$ %0.2f)" % 
            (mean_auc[2], std_auc[2]),
-           "Tum. area at 8 w. with SMOTE\n(AUC = %0.2f $\pm$ %0.2f)" %
+           "Norm. int. of tum. area\nup to 8 w. with SMOTE\n(AUC = %0.2f $\pm$ %0.2f)" %
            (mean_auc[3], std_auc[3])],
            loc = 'lower right')
 
 auc_ = pd.DataFrame(data = auc_, columns = ['im_feat.', 'im_feat._SMOTE',
-                                            '8w_tum_area', '8w_tum_area_SMOTE'])
+                                            '8w_int_tum_area_norm', '8w_int_tum_area_norm_SMOTE'])
 print('Mean AUC')
 print(auc_.mean(axis = 0))
 
@@ -460,25 +472,26 @@ N = 1000
 K = 3
 #logReg = LogisticRegression()
 #logReg = LinearSVC()
-logReg = MLPClassifier(activation = 'logistic', max_iter = 1000)
+logReg = RandomForestClassifier()
+#logReg = MLPClassifier(activation = 'logistic', max_iter = 1000)
 
-#data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
+#tx = data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
 #            'T2w_contrast_mean']]
 
 tx = [data[['tum_vol', 'ADC_ave', 'T2w_ave', 'total_dose']],
       data[['tum_area_from_vol', 'dens_ADCT2w', 'total_dose']],
-      data[['init_tum_area_tumVolADCT2w', 'total_dose']],
-      data[['TTum330_alphaG1120_ADCT2w_norm']]]
+      data[['init_tum_area', 'total_dose']],
+      data[['TTum330_alphaG1120_norm']]]
 
-#tx = [data[['TTum260_alphaG1120_ADCT2w']],
-#      data[['TTum330_alphaG1120_ADCT2w']],
-#      data[['TTum360_alphaG1120_ADCT2w']],
-#      data[['TTum400_alphaG1120_ADCT2w']]]
+#tx = [data[['TTum260_alphaG1120']],
+#      data[['TTum330_alphaG1120']],
+#      data[['TTum360_alphaG1120']],
+#      data[['TTum400_alphaG1120']]]
 
-#tx = [data[['TTum330_alphaG1090_ADCT2w']],
-#      data[['TTum330_alphaG1120_ADCT2w']],
-#      data[['TTum330_ADCT2w']],
-#      data[['TTum330_alphaG1223_ADCT2w']]]
+#tx = [data[['TTum330_alphaG1090']],
+#      data[['TTum330_alphaG1120']],
+#      data[['TTum330']],
+#      data[['TTum330_alphaG1223']]]
 
 y = data[['bio_rec']].to_numpy().ravel() 
 
@@ -491,16 +504,16 @@ for j in range(N) :
         cv = StratifiedKFold(n_splits = K, shuffle = True)
         for i, x in enumerate(tx) :
             scores[j, :, 2 * i] = cross_val_score(pipeline[0], x, y, cv = cv,
-                  scoring = 'roc_auc')
+                  scoring = 'f1')
             scores[j, :, 2 * i + 1] = cross_val_score(pipeline[1], x, y, cv = cv,
-                  scoring = 'roc_auc')
+                  scoring = 'f1')
         
 scoresMean = np.mean(scores, axis = 1)
 scoresMean = pd.DataFrame(data = scoresMean,
                           columns = ['im_feat.', 'im_feat_OS', 'tissue_feat.',
                                      'tissue_feat_OS', 'init_tum_area',
                                      'init_tum_area_OS', '8w_tum_area_norm',
-                                     '8w_tum_area_OS_norm'])
+                                     '8w_tum_area_norm_OS'])
 #scoresMean = pd.DataFrame(data = scoresMean,
 #                          columns = ['260', '330', '360', '400'])
 #scoresMean = pd.DataFrame(data = scoresMean,
@@ -538,6 +551,21 @@ ax.set_xticklabels(['Prediction 1', "Prediction 1*", 'Prediction 2',
 ax.set_yticks([0.6, 0.7, 0.8, 0.9, 1.0])
 
 #%%
+fig, ax = plt.subplots() 
+
+ax = sns.boxplot(data = scoresMean, orient = 'v',
+                 linewidth = 2, fliersize = 6)
+#ax = sns.swarmplot(data = scoresMean, color = ".25")
+add_stat_annotation(ax, data = scoresMean, box_pairs = [('im_feat.','im_feat_OS'),
+                                                  ('tissue_feat.', 'tissue_feat_OS'),
+                                                  ('init_tum_area', 'init_tum_area_OS'),
+                                                  ('8w_tum_area_norm', '8w_tum_area_OS_norm')],
+                    test = 'Wilcoxon', text_format = 'star', loc = 'outside',
+                    linewidth = 2, line_offset = -0.05, verbose = 2)
+
+ax.set(ylabel = 'AUC')
+ax.set_xticklabels([], ha = 'center')
+#%%
 plt.rcParams.update({'font.size': 32})
 N = 100
 K = 3
@@ -545,11 +573,11 @@ logReg = LogisticRegression()
 
 #tx = [data[['tum_vol', 'ADC_ave', 'T2w_ave']],
 #      data[['tum_area_from_vol', 'dens_ADCT2w']],
-#      data[['init_tum_area_tumVolADCT2w']],
-#      data[['TTum85_ADCT2w']]]
+#      data[['init_tum_area']],
+#      data[['TTum85']]]
 
 x = data[['tum_vol', 'ADC_ave', 'T2w_ave']]
-#x = data[['TTum330_alphaG1120_ADCT2w']]
+#x = data[['TTum330_alphaG1120']]
 y = data[['bio_rec']].to_numpy().ravel() 
 
 
@@ -594,11 +622,11 @@ logReg = LogisticRegression()
 
 #tx = [data[['tum_vol', 'ADC_ave', 'T2w_ave']],
 #      data[['tum_area_from_vol', 'dens_ADCT2w']],
-#      data[['init_tum_area_tumVolADCT2w']],
-#      data[['TTum85_ADCT2w']]]
+#      data[['init_tum_area']],
+#      data[['TTum85']]]
 
 x = data[['tum_vol', 'ADC_ave', 'T2w_ave']]
-#x = data[['TTum330_alphaG1120_ADCT2w']]
+#x = data[['TTum330_alphaG1120']]
 y = data[['bio_rec']].to_numpy().ravel() 
 
 

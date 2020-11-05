@@ -9,7 +9,7 @@ import seaborn as sns
 from statannot import add_stat_annotation
 from scipy.optimize import curve_fit
 import scipy.stats as stats
-
+from sklearn.linear_model import LogisticRegression
 
 #%%
 green = [153/255, 255/255, 102/255]
@@ -36,7 +36,7 @@ black = [100/255, 100/255, 100/255]
 
 
 #%%
-path = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_ADCT2w/'
+path = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120/'
 
 eightwTumVolRec = np.loadtxt(path + "8wTumVolNormRec.res")
 eightwTumVolNoRec = np.loadtxt(path + "8wTumVolNormNoRec.res")
@@ -47,8 +47,8 @@ stats.mannwhitneyu(eightwTumVolRec, eightwTumVolNoRec, alternative = 'less')
 
 #%%
 
-path = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_ADCT2w/';
-path20x3 = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_ADCT2w_20x3/';
+path = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120/';
+path20x3 = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_20x3/';
 
 rec = [9, 10, 18, 39, 41, 47, 62, 69, 72];
 nRec = 0;
@@ -59,9 +59,9 @@ tumVolNoRec = np.zeros([361, 2, 67])
 for i in range(76) :
     if (i in rec) :     
         for k in range(5) :
-            tumVol[:, :, k] = np.loadtxt(path20x3 + 'rep' + str(k) + '/tumVol_' +
+            tumVol[:, :, k] = np.loadtxt(path + 'rep' + str(k) + '/tumVol_' +
                    str(i + 1) + '.res')
-#        tumVol[:, 1, :] = tumVol[:, 1, :] / tumVol[0, 1, :]
+        tumVol[:, 1, :] = tumVol[:, 1, :] / tumVol[0, 1, :]
         tumVolRec[:, :, nRec] = np.mean(tumVol, axis = 2)
         nRec = nRec + 1
     
@@ -69,7 +69,7 @@ for i in range(76) :
         for k in range(5) :
             tumVol[:, :, k] = np.loadtxt(path + 'rep' + str(k) + '/tumVol_' +
                    str(i + 1) + '.res')
-#        tumVol[:, 1, :] = tumVol[:, 1, :] / tumVol[0, 1, :]
+        tumVol[:, 1, :] = tumVol[:, 1, :] / tumVol[0, 1, :]
         tumVolNoRec[:, :, nNoRec] = np.mean(tumVol, axis = 2)
         nNoRec = nNoRec + 1
         
@@ -80,6 +80,14 @@ stdTumVolNoRec = np.std(tumVolNoRec, axis = 2);
 
 meanTumVolRec[:, 0] = meanTumVolRec[:, 0] / (24 * 7)
 meanTumVolNoRec[:, 0] = meanTumVolNoRec[:, 0] / (24 * 7)
+
+#%%
+fig, ax = plt.subplots() 
+for i in range(67):
+    ax.plot(tumVolNoRec[:225, 0, i], tumVolNoRec[:225, 1, i], color = green, linewidth = 6, alpha = 0.5)
+    
+for i in range(9):
+    ax.plot(tumVolRec[:225, 0, i], tumVolRec[:225, 1, i], color = red, linewidth = 6, alpha = 0.5)
 
 #%%
 fig, ax = plt.subplots() 
@@ -102,19 +110,18 @@ for i in range(3, 225) :
 #ax.plot(meanTumVolRec[:, 0], pvalue, color = gray, linewidth = 6)
 #ax.plot(meanTumVolRec[:, 0], pvalue < 0.001, color = gray, linewidth = 6)
 
-ax.fill_between(meanTumVolRec[:225, 0], np.zeros(225), 1.1 * (pvalue <= 0.01),
+ax.fill_between(meanTumVolRec[:225, 0], np.zeros(225), 1.1 * (pvalue <= 0.001),
                 color = gray, linewidth = 0, alpha = 0.1)
-ax.text(3.5, 1, 'p $\leq$ 0.001')
-
-ax.plot([8, 8], [0, 1.1], '--', color = black, linewidth = 6)
-ax.text(6.5, 1, 'Prediction 4', bbox = dict(facecolor = greenBlue + [0.5]))
+#ax.text(3.5, 1, 'p $\leq$ 0.001')
+#
+#ax.plot([8, 8], [0, 1.1], '--', color = black, linewidth = 6)
+#ax.text(6.5, 1, 'Prediction 4', bbox = dict(facecolor = greenBlue + [0.5]))
 
 ax.set(xlabel = 't (weeks)', ylabel = 'Normalized n° of tumor cells',
-       xlim = [0, 8.1], ylim = [0, 1.1])
+       xlim = [0, 8.1])
 ax.set_xticks(np.linspace(0, 8, 9))
 ax.legend(['Biochemical recurrence', 'No biochemical recurrence'],
-          loc = 'lower left')
-
+          loc = 'upper right')
 
 #%%
 fig, ax = plt.subplots() 
@@ -148,9 +155,49 @@ ax.set(xlabel = 't (weeks)', ylabel = 'Normalized n° of tumor cells',
 ax.set_xticks(np.linspace(0, 12, 13))
 ax.legend(['Biochemical recurrence', 'No biochemical recurrence'],
           loc = 'upper right')
+
 #%%
 fig, ax = plt.subplots() 
 ax.plot(meanTumVolRec[19:, 0], pvalue[19:], color = gray, linewidth = 6)
 
+#%%
+data = pd.read_csv('../../Carlos/Results/Recurrence/simp/rec_summary_frac.csv')
+N =100
+rec = [9, 10, 18, 39, 41, 47, 62, 69, 72];
+noRec = []
+for i in range(76) :
+    if i not in rec :
+        noRec.append(i)
+        
+probas = np.zeros((76, 2, 2))
 
+tx = [data[['8w_tum_vol']],
+      data[['8w_tum_vol_20x3']]]
 
+y = data[['bio_rec']].to_numpy().ravel() 
+ 
+clf = LogisticRegression()
+ 
+for j in range(N) :
+    x = tx[0].to_numpy()
+    clf.fit(x, y)
+    for i, x in enumerate(tx) :
+        x = x.to_numpy()
+        probas[:, :, i] += clf.predict_proba(x)
+
+probas /= N
+
+#%%
+fig, ax = plt.subplots()
+ax.scatter(np.linspace(0, 66, 67), probas[noRec, 1, 0], color = green)
+ax.scatter(np.linspace(0, 66, 67), probas[noRec, 1, 1], color = blue)
+ax.scatter(np.linspace(67, 75, 9), probas[rec, 1, 0], color = red)
+ax.scatter(np.linspace(67, 75, 9), probas[rec, 1, 1], color = blue)
+
+#%%
+fig, ax = plt.subplots()
+meanProbNoRec = np.mean(probas[noRec, 1, :], axis = 0)
+meanProbRec = np.mean(probas[rec, 1, :], axis = 0)
+ax.plot([0, 8], [meanProbNoRec[0], meanProbNoRec[0]], color = green)
+ax.scatter(np.linspace(0, 8, 9), probas[rec, 1, 0], color = red)
+ax.scatter(np.linspace(0, 8, 9), probas[rec, 1, 1], color = blue)
