@@ -470,17 +470,17 @@ data = pd.read_csv('../../Carlos/Results/Recurrence/simp/rec_summary_8wTumVol.cs
 plt.rcParams.update({'font.size': 32})
 N = 1000
 K = 3
-#logReg = LogisticRegression()
+logReg = LogisticRegression()
 #logReg = LinearSVC()
-logReg = RandomForestClassifier()
+#logReg = RandomForestClassifier()
 #logReg = MLPClassifier(activation = 'logistic', max_iter = 1000)
 
 #tx = data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
 #            'T2w_contrast_mean']]
 
-tx = [data[['tum_vol', 'ADC_ave', 'T2w_ave', 'total_dose']],
-      data[['tum_area_from_vol', 'dens_ADCT2w', 'total_dose']],
-      data[['init_tum_area', 'total_dose']],
+tx = [data[['tum_vol', 'ADC_ave', 'T2w_ave']],
+      data[['tum_area_from_vol', 'dens_ADCT2w']],
+      data[['init_tum_area']],
       data[['TTum330_alphaG1120_norm']]]
 
 #tx = [data[['TTum260_alphaG1120']],
@@ -504,9 +504,9 @@ for j in range(N) :
         cv = StratifiedKFold(n_splits = K, shuffle = True)
         for i, x in enumerate(tx) :
             scores[j, :, 2 * i] = cross_val_score(pipeline[0], x, y, cv = cv,
-                  scoring = 'f1')
+                  scoring = 'roc_auc')
             scores[j, :, 2 * i + 1] = cross_val_score(pipeline[1], x, y, cv = cv,
-                  scoring = 'f1')
+                  scoring = 'roc_auc')
         
 scoresMean = np.mean(scores, axis = 1)
 scoresMean = pd.DataFrame(data = scoresMean,
