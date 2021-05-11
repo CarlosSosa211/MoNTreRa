@@ -94,7 +94,7 @@ void StartWindow::advance(){
             }
 
             case 3:{
-                //new OutWindow3D(nFOutData);
+                new OutWindow3D(nFOutData);
                 break;
             }
             }

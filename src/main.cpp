@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "morris.hpp"
+#include "sensAnPy.hpp"
 #include "sensAnR.hpp"
 #include "sobol.hpp"
 #include "tcp.hpp"
@@ -12,7 +13,29 @@
 using namespace std;
 
 int main(){
-    const int kp(5), L(5), p(20), P(5), N(1000);
+    /*string nFRefParMean("../InputFiles/refParMeanRTNoDose.dat");
+    string nFInTissuePar("../InputFiles/tissuePar.dat");
+    string nFPar(nFRefParMean);
+    string nFTreatment("../InputFiles/treatment.dat");
+    srand(time(NULL));
+    varParFromFiles(nFInTissuePar, nFPar, nFTreatment);*/
+
+    /*string nFInTissueDim("../InputFiles/tissueDim.dat");
+    string nFInTum("../InputFiles/inTum.dat");
+    writeInVesFile(nFInTissueDim, nFInTum);*/
+
+    string nFRefParMean("../InputFiles/refParMeanRTNoDose.dat");
+    vector<string> nFPar;
+    nFPar.push_back(nFRefParMean);
+    string nFInTissueDim("../InputFiles/tissueDim.dat");
+    string nFInTum("../InputFiles/inTum.dat");
+    string nFInVes("../InputFiles/inVes.dat");
+    string nFTreatment("../InputFiles/treatment.dat");
+    srand(time(NULL));
+    varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes, nFTreatment);
+
+
+    //const int kp(5), L(5), p(20), P(5), N(1000);
     //const int nMethod(0), nModel(1);
     //string nFRefParInt("../InputFiles/refParIntOneAlphaBeta.dat");
     //string nFRefParInt("../InputFiles/refParIntRT.dat");
@@ -20,7 +43,7 @@ int main(){
     //string nFRefParInt("../InputFiles/refParIntToy.dat");
     //string nFRefParInt("../InputFiles/refParIntRedRT.dat");
     //string nFRefParInt("../InputFiles/refParIntFracRT.dat");
-    //string nFRefParMean("../InputFiles/refParMeanRTNoDose.dat");
+
     /*string nFMostRelPar("../InputFiles/mostRelParAlphaBeta.dat");
     string nFLeastRelPar("../InputFiles/leastRelParAlphaBeta.dat");
     string nFVarPar("../InputFiles/varParAlphaBeta.dat");*/
@@ -28,11 +51,13 @@ int main(){
     //string nFArt("../InputFiles/art.dat");
     //string nFDensInt("../InputFiles/densInt.dat");
     //string nFSigmaTumInt("../InputFiles/sigmaTumInt.dat");
-    string nFInTissuePar("../InputFiles/tissuePar.dat");
+
     //string nFInTum("../InputFiles/inTum.dat");
     //string nFInVes("../InputFiles/inVes.dat");
-    /*vector<string> nFPar;
-    nFPar.push_back(nFRefParMean);*/
+    //string nFX("../InputFiles/X.dat");
+    //string nFY("../OutputFiles/Y.res");
+    //vector<string> nFPar;
+    //nFPar.push_back(nFRefParMean);
     //nFPar.push_back("../InputFiles/par37_2.dat");
     //nFPar.push_back("../InputFiles/par20_3.dat");
     //string nFInTissueTCP("../InputFiles/inTissueTCP0.dat");
@@ -43,11 +68,8 @@ int main(){
     /*nFTreatmentTCP.push_back("../InputFiles/3MonFri.dat");
     nFTreatmentTCP.push_back("../InputFiles/4MonFri.dat");
     nFTreatmentTCP.push_back("../InputFiles/5MonFri.dat");*/
-    //string nFPar(nFRefParMean);
-    //string nFTreatment("../InputFiles/treatment.dat");
-
-    srand(time(NULL));
     //evalR(nMethod, nModel, nFInTissueDim, nFInTum, nFInVes);
+    //evalPy(nMethod, nFX, nFY);
     //morrisRT(N, p, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
     //morrisFromFiles(N, p);
     //morrisToy(N, p, nFRefParInt);
@@ -67,9 +89,8 @@ int main(){
     /*varErr(nFVarPar, nFMostRelPar, nFLeastRelPar, nFInTissueDim, nFInTum,
            nFInVes, L, P);*/
     //varParFromFiles(nFPar, nFInTissueDim, nFInTum, nFInVes);
-    //varParFromFiles(nFInTissuePar, nFPar, nFTreatment);
     //varStoch(N, P, nFRefParInt, nFInTissueDim, nFInTum, nFInVes);
-    writeInFiles(nFInTissuePar);
+    //writeInFiles(nFInTissuePar);
 }
 
 

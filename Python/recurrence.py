@@ -18,7 +18,7 @@ from sklearn.svm import SVC
 from sklearn.calibration import calibration_curve
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import cross_val_predict 
 from imblearn.over_sampling import SMOTE
@@ -30,6 +30,9 @@ def fsigmoid(x, a, b):
 #    return np.exp(-a * np.exp(-b * x + c))
     
 #%%
+plt.rcParams.update({'pdf.fonttype': 42})
+plt.rcParams.update({'ps.fonttype': 42})
+plt.rcParams.update({'font.size': 32})
 green = [153/255, 255/255, 102/255]
 darkGreen = [127/255, 207/255, 127/255]
 lightGreen = [205/255, 255/255, 105/255]
@@ -57,13 +60,12 @@ brown = [168/255, 120/255, 110/255]
 #data = pd.read_csv('../../Carlos/Results/Recurrence/vascDensUniPref0.03_ADC/'
 #                   'vascDensUniPref_03.csv')
 #data = pd.read_csv('../../Carlos/Results/Recurrence/rec_summary_8wTumVol.csv')
-#data = pd.read_csv('../../Carlos/Results/Recurrence/simp/rec_summary_8wTumVol.csv')
+data = pd.read_csv('../../Carlos/Results/Recurrence/simp/rec_summary_8wTumVol.csv')
 #data = pd.read_csv('../../Carlos/Results/Recurrence/simp/rec_summary_8wIntTumVol.csv')
-data = pd.read_csv('../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120/TTum330_alphaG1120.csv')
+#data = pd.read_csv('../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120/TTum330_alphaG1120.csv')
 
 #%%
-plt.rcParams.update({'font.size': 32})
-N = 100
+N = 1000
 K = 3
 #clf =[LogisticRegression(), LogisticRegression()]
 #clf = [RandomForestClassifier()]
@@ -72,12 +74,9 @@ K = 3
 #       LogisticRegression()]
 #clf= [MLPClassifier(activation = 'logistic', max_iter = 1000)]
 clf = [RandomForestClassifier(), LogisticRegression(), LogisticRegression(),
-       LogisticRegression(), LogisticRegression(), LogisticRegression(),
-       LogisticRegression(), LogisticRegression(), LogisticRegression()]
-#clf = [RandomForestClassifier(), RandomForestClassifier(), RandomForestClassifier(),
-#       RandomForestClassifier(), RandomForestClassifier(), RandomForestClassifier(),
-#       RandomForestClassifier(), RandomForestClassifier()]
-#
+       LogisticRegression(), LogisticRegression()]
+#clf = [RandomForestClassifier(), RandomForestClassifier(),
+#       RandomForestClassifier()]
 
 #tx = [data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
 #            'T2w_contrast_mean']],
@@ -88,7 +87,6 @@ clf = [RandomForestClassifier(), LogisticRegression(), LogisticRegression(),
 #            '8w_int_tum_area_norm', '12w_int_tum_area', 
 #            '12w_int_tum_area_norm']],
 #    data[['8w_tum_area_norm', '8w_int_tum_area_norm']]]
-
     
 #tx = [data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
 #            'T2w_contrast_mean']],
@@ -100,7 +98,16 @@ clf = [RandomForestClassifier(), LogisticRegression(), LogisticRegression(),
 #            'T2w_contrast_mean']],
 #      data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol']]]
 
-#
+#tx = [data[['ADC_med', 'T2w_diff_var_mean', 'tum_vol', 'T2w_contrast_mean']],
+#      data[['ADC_med', 'T2w_diff_var_mean', 'tum_vol', 'T2w_contrast_mean', 
+#            'tum_vol', 'ADC_ave', 'T2w_ave']],
+#      data[['ADC_med', 'T2w_diff_var_mean', 'tum_vol', 'T2w_contrast_mean',
+#            'tum_area_from_vol', 'dens_ADCT2w']],
+#      data[['ADC_med', 'T2w_diff_var_mean', 'tum_vol', 'T2w_contrast_mean',
+#            'init_tum_area']],
+#      data[['ADC_med', 'T2w_diff_var_mean', 'tum_vol', 'T2w_contrast_mean',
+#            'TTum330_alphaG1120']]]
+
 #tx = [data[['ADC_med', 'max_tum_area', 'tum_vol', 'T2w_diff_var_mean', 'T2w_contrast_mean']], 
 #      data[['tum_vol', 'ADC_ave', 'T2w_ave', 'total_dose']],
 #      data[['init_tum_area', 'total_dose']],
@@ -128,17 +135,23 @@ clf = [RandomForestClassifier(), LogisticRegression(), LogisticRegression(),
 #      data[['init_tum_area', '8w_tum_area_norm', '8w_int_tum_area_norm']],
 #      data[['8w_tum_area_norm', '8w_int_tum_area_norm']]]
       
-tx = [data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
-            'T2w_contrast_mean']],
-      data[['1w_int_tum_area_norm']],
-      data[['2w_int_tum_area_norm']],
-      data[['3w_int_tum_area_norm']],
-      data[['4w_int_tum_area_norm']],
-      data[['5w_int_tum_area_norm']],
-      data[['6w_int_tum_area_norm']],
-      data[['7w_int_tum_area_norm']],
-      data[['8w_int_tum_area_norm']]]
+tx = [data.loc[data['group'] == 3][['ADC_med', 'T2w_diff_var_mean', 'tum_vol',
+      'T2w_contrast_mean']],
+      data.loc[data['group'] == 3][['tum_vol', 'T2w_ave', 'ADC_ave']],
+      data.loc[data['group'] == 3][['tum_area_from_vol', 'dens_ADCT2w']],
+      data.loc[data['group'] == 3][['init_tum_area']],
+      data.loc[data['group'] == 3][['TTum330_alphaG1120_norm']]]
 
+
+#tx = [data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
+#            'T2w_contrast_mean']],
+#      data[['tum_vol', 'T2w_ave', 'ADC_ave']],
+#      data[['tum_area_from_vol', 'dens_ADCT2w']],
+#      data[['init_tum_area']],
+#      data[['TTum330_alphaG1120_norm']]]
+
+#tx = [data[['tum_vol', 'T2w_ave', 'ADC_ave']],
+#      data[['TTum330_alphaG1120_norm']]]
 
 #tx = [data[['8w_tum_area', '8w_tum_area_norm', '12w_tum_area', 
 #            '12w_tum_area_norm', '8w_int_tum_area', '8w_int_tum_area_norm',
@@ -168,7 +181,7 @@ tx = [data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
 #      data[['12w_int_tum_area']],
 #      data[['12w_int_tum_area_norm']]]
 
-y = data[['bio_rec_6']].to_numpy().ravel()  
+y = data.loc[data['group'] == 3][['bio_rec_6']].to_numpy().ravel()  
 #y = data[['gleason']].to_numpy().ravel()  
 
 scores = np.zeros((N, K, len(tx)))
@@ -191,7 +204,7 @@ scoresMean = np.mean(scores, axis = 1)
 #                                     'No_tum_vol', 'No_T2w_contrast_mean'])
 
 #scoresMean = pd.DataFrame(data = scoresMean,
-#                          columns = ['kheamara_feat.', 
+#                          columns = ['khemara_feat.', 
 #                                     'im_feat.', 
 #                                     'init_area',
 #                                     '8w_tum_area',
@@ -203,24 +216,27 @@ scoresMean = np.mean(scores, axis = 1)
 #                                     '12w_tum_area_norm',
 #                                     '12w_int_tum_area_norm'])  
 
-scoresMean = pd.DataFrame(data = scoresMean,
-                          columns = ['kheamara_feat.', 
-                                     '1w_int_tum_area_norm', 
-                                     '2w_int_tum_area_norm',
-                                     '3w_int_tum_area_norm',
-                                     '4w_int_tum_area_norm',
-                                     '5w_int_tum_area_norm',
-                                     '6w_int_tum_area_norm',
-                                     '7w_int_tum_area_norm',
-                                     '8w_int_tum_area_norm'])  
+#scoresMean = pd.DataFrame(data = scoresMean,
+#                          columns = ['kheamara_feat.', 
+#                                     '1w_int_tum_area_norm', 
+#                                     '2w_int_tum_area_norm',
+#                                     '3w_int_tum_area_norm',
+#                                     '4w_int_tum_area_norm',
+#                                     '5w_int_tum_area_norm',
+#                                     '6w_int_tum_area_norm',
+#                                     '7w_int_tum_area_norm',
+#                                     '8w_int_tum_area_norm'])  
 #          
 #scoresMean = pd.DataFrame(data = scoresMean,
 #                          columns = ['im_feat.', 'tissue_feat.',
-#                                     'init_tum_area', '8w_tum_area'])        
-  
+#                                     'init_tum_area', '8w_tum_area_norm'])        
+
 #scoresMean = pd.DataFrame(data = scoresMean,
-#                          columns = ['im_feat.', 'tissue_feat.',
-#                                     'init_tum_area', '8w_tum_area'])
+#                          columns = ['im_feat.', '8w_tum_area'])
+#    
+scoresMean = pd.DataFrame(data = scoresMean,
+                          columns = ['khem_feat.', 'im_feat.', 'tissue_feat.',
+                                     'init_tum_area', '8w_tum_area'])
 #scoresMean = pd.DataFrame(data = scoresMean,
 #                          columns = ['8w_tum_area', '8w_tum_area_norm',
 #                                     '12w_tum_area', '12w_tum_area_norm',
@@ -253,9 +269,8 @@ print(scoresMean.median(axis = 0))
     
 #%%
 plt.close('all')
-
-tcolor = [red, orange, blue, green, greenBlue, darkPurple, redOrange, redPurple,
-          red, orange, blue, green, greenBlue, darkPurple, redOrange, redPurple]
+#tcolor = [darkPurple, greenBlue]
+tcolor = [red, darkPurple, orangePurple, orange, greenBlue]
 ax = sns.boxplot(data = scoresMean, orient = 'v', palette = tcolor)
 #ax = sns.swarmplot(data = scoresMean, color = ".25")
 
@@ -269,54 +284,66 @@ ax = sns.boxplot(data = scoresMean, orient = 'v', palette = tcolor)
 #                    test = 'Wilcoxon', text_format = 'star', loc = 'outside',
 #                    line_offset = -0.05, verbose = 2)
 #add_stat_annotation(ax, data = scoresMean,
-#                    box_pairs = [('260',
-#                                '330'),
-#                                ('330',
-#                                '400'),
-#                                ('260',
-#                                '400')],
+#                    box_pairs = [('5_feat.',
+#                                'No_ADC_med'),
+#                                ('5_feat.',
+#                                'No_max_tum_area'),
+#                                ('5_feat.',
+#                                'No_T2w_diff_var_mean'),
+#                                ('5_feat.',
+#                                'No_tum_vol'),
+#                                ('5_feat.',
+#                                'No_T2w_contrast_mean')],
 #                    test = 'Wilcoxon', text_format = 'star', loc = 'outside',
 #                    line_offset = -0.05, verbose = 2)
-ax.set(ylabel = 'AUC', ylim = [0.6, 1])
-ax.set_yticks([0.6, 0.7, 0.8, 0.9, 1.0])
-ax.set_xticklabels([], ha = 'center')
+add_stat_annotation(ax, data = scoresMean,
+                    box_pairs = [('khem_feat.',
+                                'im_feat.'),
+                                ('im_feat.',
+                                'tissue_feat.'),
+                                ('tissue_feat.',
+                                'init_tum_area'),
+                                ('init_tum_area',
+                                '8w_tum_area')],
+                    test = 'Wilcoxon', text_format = 'star', loc = 'outside',
+                    line_offset = -0.1, verbose = 2)
+#add_stat_annotation(ax, data = scoresMean,
+#                    box_pairs = [ ('im_feat.',
+#                                 '8w_tum_area')],
+#                    test = 'Wilcoxon', text_format = 'star', loc = 'outside',
+#                    line_offset = -0.05, verbose = 2)
+ax.set(ylabel = 'AUC', ylim = [0., 1.])
+ax.set_yticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+#ax.set_xticklabels(['5 feat.', 'No ADC\nmed.', 'No max.\ntum. area',
+#                    'No T2w\ndiff. var.\nmean', 'No tum.\nvol.',
+#                    'No T2w\ncontrast mean'], ha = 'center')
+ax.set_xticklabels(['4 feat.', 'Prediction 1', 'Prediction 2',
+                    'Prediction 3', 'Prediction 4'], ha = 'center')
+#ax.set_xticklabels(['Radiomics', 'Mechanistic modeling'], ha = 'center')
 
 #%%   
 plt.close('all')
 plt.rcParams.update({'font.size': 32})  
-N = 100
+N = 1000
 K = 3
 #
-#clf = [LogisticRegression(), LogisticRegression(), LogisticRegression(),
-#       LogisticRegression()]
+#clf =[LogisticRegression(), LogisticRegression()]
+#clf = [RandomForestClassifier(), RandomForestClassifier(),
+#       RandomForestClassifier(), RandomForestClassifier(),
+#       RandomForestClassifier(), RandomForestClassifier(),
+#       RandomForestClassifier(), RandomForestClassifier()]
 
 clf = [RandomForestClassifier(), LogisticRegression(), LogisticRegression(),
-       LogisticRegression(), LogisticRegression(), LogisticRegression(),
-       LogisticRegression(), LogisticRegression(), LogisticRegression()]
+       LogisticRegression(), LogisticRegression()]
 
-#tx = [data[['max_tum_area', 'ADC_ave', 'T2w_ave',]],
-#      data[['noHypNec_vascDensNoPref_038_ADCT2w']],
-#      data[['noHypNec_vascDensNoPref_038_simp3_ADCT2w']]]
-
-#tx = [data[['tum_vol', 'ADC_ave', 'T2w_ave']],
-#      data[['tum_area_from_vol', 'dens_ADCT2w']],
-#      data[['init_tum_area']],
-#      data[['TTum330_alphaG1120']]]
-
-tx = [data[['ADC_med', 'max_tum_area', 'T2w_diff_var_mean', 'tum_vol',
-            'T2w_contrast_mean']],
-      data[['1w_int_tum_area_norm']],
-      data[['2w_int_tum_area_norm']],
-      data[['3w_int_tum_area_norm']],
-      data[['4w_int_tum_area_norm']],
-      data[['5w_int_tum_area_norm']],
-      data[['6w_int_tum_area_norm']],
-      data[['7w_int_tum_area_norm']],
-      data[['8w_int_tum_area_norm']]]
-
-
-y = data[['bio_rec']].to_numpy().ravel()  
-#y = data[['gleason']].to_numpy().ravel()  
+tx = [data.loc[data['group'] != 3][['ADC_med', 'T2w_diff_var_mean', 'tum_vol',
+      'T2w_contrast_mean']],
+      data.loc[data['group'] != 3][['tum_vol', 'T2w_ave', 'ADC_ave']],
+      data.loc[data['group'] != 3][['tum_area_from_vol', 'dens_ADCT2w']],
+      data.loc[data['group'] != 3][['init_tum_area']],
+      data.loc[data['group'] != 3][['TTum330_alphaG1120']]]
+      
+y = data.loc[data['group'] != 3][['bio_rec_6']].to_numpy().ravel()  
 
 mean_fpr = np.linspace(0, 1, 500)
 mean_tprK = np.zeros((N, 500, len(tx)))
@@ -385,15 +412,16 @@ no_skill /= N
 level = 0.95
 dof = K - 1
 
+#%%
 fig, ax_roc = plt.subplots() 
-#tcolor = [blue, 'tab:gray', brown]
 
-tcolor = [red, orange, blue, green, greenBlue, darkPurple, redOrange, redPurple, redGreen]
-#tcolor = [darkPurple, darkBlue, orangePurple, orange, greenBlue]
+#tcolor = [darkPurple, greenBlue]
+tcolor = [red, darkPurple, orangePurple, orange, greenBlue]
 
 for i in range(len(tx)) :
     ax_roc.plot(mean_fpr, mean_tprN[:, i], linewidth = 6, color = tcolor[i])
-    ci = stats.t.interval(level, dof, mean_tprN[:, i], std_tprN[:, i] / np.sqrt(N))
+    ci = stats.t.interval(level, dof, mean_tprN[:, i],
+                          std_tprN[:, i] / np.sqrt(N))
     ax_roc.fill_between(mean_fpr, ci[0], ci[1], color = tcolor[i],
                         alpha = 0.1)
 #color = tcolor[i]
@@ -402,25 +430,69 @@ ax_roc.set(xlabel = 'FPR', ylabel = 'TPR', ylim = [0, 1])
 mean_auc_roc = np.mean(auc_roc, axis = 0)
 std_auc_roc = np.std(auc_roc, axis = 0)
 
-#ax_roc.legend(['Med. ADC, max. tum. area, tum. vol.,\nT2w diff. var. mean & '
+#ax_roc.legend(['khem_feat. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[0], std_auc_roc[0]), 
+#               'khem_feat. (AdaBoost) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[1], std_auc_roc[1])], loc = 'lower right',
+#    fontsize = 21)
+
+#ax_roc.legend(['5 Khemara feat. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[0], std_auc_roc[0]), 
+#               'No ADC med. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[1], std_auc_roc[1]),
+#               'No max. tum. area (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[2], std_auc_roc[2]),
+#               'No T2w diff. var. mean (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[3], std_auc_roc[3]), 
+#               'No tum. vol (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[4], std_auc_roc[4]),
+#               'No T2w contrast_mean (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[5], std_auc_roc[5])], loc = 'lower right',
+#    fontsize = 21)
+
+ax_roc.legend(['Med. ADC, tum. vol., T2w diff. var.\nmean & '
+               'T2w contrast mean (RF)\n(AUC = %0.2f $\pm$ %0.2f)' 
+               % (mean_auc_roc[0], std_auc_roc[0]),
+               'Prediction 1 (LR) (AUC = %0.2f $\pm$ %0.2f)' 
+               % (mean_auc_roc[1], std_auc_roc[1]),
+               'Prediction 2 (LR) (AUC = %0.2f $\pm$ %0.2f)'
+               % (mean_auc_roc[2], std_auc_roc[2]),
+               'Prediction 3 (LR) (AUC = %0.2f $\pm$ %0.2f)'
+               % (mean_auc_roc[3], std_auc_roc[3]),
+               'Prediction 4 (LR) (AUC = %0.2f $\pm$ %0.2f)'
+               % (mean_auc_roc[4], std_auc_roc[4])], loc = 'lower right',
+             fontsize = 24)
+
+#ax_roc.legend(['Med. ADC, tum. vol., T2w diff. var.\nmean & '
 #               'T2w contrast mean (RF)\n(AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_roc[0], std_auc_roc[0]),
-#               'Tum. vol., ave. T2w, ave. ADC & d (LR)\n'
-#               '(AUC = %0.2f $\pm$ %0.2f)' % (mean_auc_roc[1], std_auc_roc[1]),
-#               'Init. tum. area & d (LR) (AUC = %0.2f $\pm$ %0.2f)'
+#               '0 w (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[1], std_auc_roc[1]),
+#               '2 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
 #               % (mean_auc_roc[2], std_auc_roc[2]),
-#               'Norm. tum. area at 8 w (LR)\n(AUC = %0.2f $\pm$ %0.2f)'
+#               '4 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
 #               % (mean_auc_roc[3], std_auc_roc[3]),
-#               'Norm. int. of tum. area up to 8 w (LR)'
-#               '\n(AUC = %0.2f $\pm$ %0.2f)'
-#               % (mean_auc_roc[4], std_auc_roc[4])], loc = 'lower right',
+#               '6 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_roc[4], std_auc_roc[4]),
+#               '8 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_roc[5], std_auc_roc[5]),
+#               '10 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_roc[6], std_auc_roc[6]),
+#               '12 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_roc[7], std_auc_roc[7])], loc = 'lower right',
 #             fontsize = 24)
 
-#ax_roc.legend(['kheamara_feat. (LR) (AUC = %0.2f $\pm$ %0.2f)' 
+#ax_roc.legend(['Prediction 1 (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_roc[0], std_auc_roc[0]),
+#               'Prediction 4 (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_roc[1], std_auc_roc[1])], loc = 'lower right',
+#             fontsize = 24)
+
+#ax_roc.legend(['khem_feat. (LR) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_roc[0], std_auc_roc[0]), 
-#               'kheamara_feat_init_8w_int8w (LR) (AUC = %0.2f $\pm$ %0.2f)' 
+#               'khem_feat_init_8w_int8w (LR) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_roc[1], std_auc_roc[1]),
-#               'kheamara_feat_8w_int8w (LR) (AUC = %0.2f $\pm$ %0.2f)' 
+#               'khem_feat_8w_int8w (LR) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_roc[2], std_auc_roc[2]),
 #               'im_feat. (LR) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_roc[3], std_auc_roc[3]), 
@@ -434,7 +506,7 @@ std_auc_roc = np.std(auc_roc, axis = 0)
 #               % (mean_auc_roc[7], std_auc_roc[7])], loc = 'lower right',
 #             fontsize = 21)
 
-#ax_roc.legend(['kheamara_feat. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#ax_roc.legend(['khem_feat. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_roc[0], std_auc_roc[0]), 
 #               'im_feat. (LR) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_roc[1], std_auc_roc[1]), 
@@ -486,7 +558,8 @@ fig, ax_rec_pre = plt.subplots()
 for i in range(len(tx)) :
     ax_rec_pre.plot(mean_recall, mean_preN[:, i], linewidth = 6,
                     color = tcolor[i])
-    ci = stats.t.interval(level, dof, mean_preN[:, i], std_preN[:, i] /np.sqrt(N))
+    ci = stats.t.interval(level, dof, mean_preN[:, i],
+                          std_preN[:, i] /np.sqrt(N))
     ax_rec_pre.fill_between(mean_recall, ci[0], ci[1], color = tcolor[i],
                             alpha = 0.1)
     
@@ -496,26 +569,57 @@ ax_rec_pre.set(xlabel = 'Recall', ylabel = 'Precision', ylim = [0, 1])
 mean_auc_rec_pre = np.mean(auc_rec_pre, axis = 0)
 std_auc_rec_pre = np.std(auc_rec_pre, axis = 0)
 
-#ax_rec_pre.legend(['Med. ADC, max. tum. area, tum. vol.,\nT2w diff. var. mean'
-#                   '& T2w contrast mean (RF)\n(AUC = %0.2f $\pm$ %0.2f)' 
-#                   % (mean_auc_rec_pre[0], std_auc_rec_pre[0]),
-#                   'Tum. vol., ave. T2w, ave. ADC & d (LR) '
-#                   '(AUC = %0.2f $\pm$ %0.2f)'
-#                   % (mean_auc_rec_pre[1], std_auc_rec_pre[1]),
-#                   'Init tum. area & d (LR) (AUC = %0.2f $\pm$ %0.2f)'
-#                   % (mean_auc_rec_pre[2], std_auc_rec_pre[2]),
-#                   'Norm. tum. area at 8 w (LR) (AUC = %0.2f $\pm$ %0.2f)'
-#                   % (mean_auc_rec_pre[3], std_auc_rec_pre[3]),
-#                   'Norm. int. of tum. area up to 8 w (LR)'
-#                   '(AUC = %0.2f $\pm$ %0.2f)'
-#                   % (mean_auc_rec_pre[4], std_auc_rec_pre[4])],
-#                 loc = 'upper right', fontsize = 21)
+#ax_rec_pre.legend(['khem_feat. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#                   % (mean_auc_rec_pre[0], std_auc_rec_pre[0]), 
+#                   'khem_feat. (AdaBoost) (AUC = %0.2f $\pm$ %0.2f)' 
+#                   % (mean_auc_rec_pre[1], std_auc_rec_pre[1])],
+#                   loc = 'lower right',
+#                   fontsize = 21)
 
-#ax_rec_pre.legend(['kheamara_feat. (NN) (AUC = %0.2f $\pm$ %0.2f)' 
+#ax_rec_pre.legend(['5 Khemara feat. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_rec_pre[0], std_auc_rec_pre[0]), 
-#               'kheamara_feat_init_8w_int8w (NN) (AUC = %0.2f $\pm$ %0.2f)' 
+#               'No ADC med. (RF) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_rec_pre[1], std_auc_rec_pre[1]),
-#               'kheamara_feat_8w_int8w (NN) (AUC = %0.2f $\pm$ %0.2f)' 
+#               'No max. tum. area (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[2], std_auc_rec_pre[2]),
+#               'No T2w diff. var. mean (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[3], std_auc_rec_pre[3]), 
+#               'No tum. vol (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[4], std_auc_rec_pre[4]),
+#               'No T2w contrast_mean (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[5], std_auc_rec_pre[5])],
+#    loc = 'upper right', fontsize = 21)
+
+#ax_rec_pre.legend(['Med. ADC, tum. vol., T2w diff. var.\nmean & '
+#               'T2w contrast mean (RF)\n(AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[0], std_auc_rec_pre[0]),
+#               '0 w (RF) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[1], std_auc_rec_pre[1]),
+#               '2 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[2], std_auc_rec_pre[2]),
+#               '4 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[3], std_auc_rec_pre[3]),
+#               '6 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[4], std_auc_rec_pre[4]),
+#               '8 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[5], std_auc_rec_pre[5]),
+#               '10 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[6], std_auc_rec_pre[6]),
+#               '12 w (RF) (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[7], std_auc_rec_pre[7])],
+#               loc = 'upper right', fontsize = 24)
+
+#ax_rec_pre.legend(['Prediction 1 (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[0], std_auc_rec_pre[0]),
+#               'Prediction 4 (AUC = %0.2f $\pm$ %0.2f)'
+#               % (mean_auc_rec_pre[1], std_auc_rec_pre[1])],
+#               loc = 'upper right', fontsize = 24)
+
+#ax_rec_pre.legend(['khem_feat. (NN) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[0], std_auc_rec_pre[0]), 
+#               'khem_feat_init_8w_int8w (NN) (AUC = %0.2f $\pm$ %0.2f)' 
+#               % (mean_auc_rec_pre[1], std_auc_rec_pre[1]),
+#               'khem_feat_8w_int8w (NN) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_rec_pre[2], std_auc_rec_pre[2]),
 #               'im_feat. (NN) (AUC = %0.2f $\pm$ %0.2f)' 
 #               % (mean_auc_rec_pre[3], std_auc_rec_pre[3]), 
@@ -556,7 +660,7 @@ std_auc_rec_pre = np.std(auc_rec_pre, axis = 0)
 #           (mean_auc[3], std_auc[3])],
 #           loc = 'lower right')
 
-#ax.legend(["Khemara feat.\n(AUC = %0.2f $\pm$ %0.2f)" %
+#ax.legend(["Khem. feat.\n(AUC = %0.2f $\pm$ %0.2f)" %
 #           (mean_auc[0], std_auc[0]),
 #           "No med. ADC\n(AUC = %0.2f $\pm$ %0.2f)" %
 #           (mean_auc[1], std_auc[1]),
@@ -593,9 +697,9 @@ for i in range(len(tx)) :
 ax_bal_acc.set(xlabel = 'Threshold', ylabel = 'Balanced accuracy',
                ylim = [0, 1])
 
-#ax_bal_acc.legend(['kheamara_feat. (NN)', 
-#               'kheamara_feat_init_8w_int8w (NN)',
-#               'kheamara_feat_8w_int8w (NN)',
+#ax_bal_acc.legend(['khem_feat. (NN)', 
+#               'khem_feat_init_8w_int8w (NN)',
+#               'khem_feat_8w_int8w (NN)',
 #               'im_feat. (NN)', 
 #               'im_feat_init_8w_int8w (NN)',
 #               'im_feat_8w_int8w (NN)',
@@ -611,9 +715,9 @@ for i in range(len(tx)) :
 
 ax_f1.set(xlabel = 'Threshold', ylabel = 'F1', ylim = [0, 1])
 
-#ax_f1.legend(['kheamara_feat. (NN)', 
-#               'kheamara_feat_init_8w_int8w (NN)',
-#               'kheamara_feat_8w_int8w (NN)',
+#ax_f1.legend(['khem_feat. (NN)', 
+#               'khem_feat_init_8w_int8w (NN)',
+#               'khewm_feat_8w_int8w (NN)',
 #               'im_feat. (NN)', 
 #               'im_feat_init_8w_int8w (NN)',
 #               'im_feat_8w_int8w (NN)',
@@ -639,16 +743,12 @@ ax.set(title = 'LogReg', xlabel = 'TTum330_alphaG1120',
 
 #%%
 plt.close('all')
-plt.rcParams.update({'font.size': 32})  
-N = 100
-K = 3
+N = 1
 
-tx = [data[['ADC_med', 'max_tum_area', 'tum_vol', 'T2w_diff_var_mean',
-            'T2w_contrast_mean']], 
-      data[['tum_vol', 'ADC_ave', 'T2w_ave']],
-      data[['init_tum_area']],
-      data[['8w_tum_area_norm']],
-      data[['8w_int_tum_area_norm']]]
+clf = [RandomForestClassifier()]
+
+tx = [data[['ADC_med', 'T2w_diff_var_mean', 'tum_vol', 'T2w_contrast_mean',
+            'TTum330_alphaG1120']]]
 
 y = data[['bio_rec_6']].to_numpy().ravel()  
 
@@ -660,12 +760,10 @@ fn = np.zeros((N, n_thresholds, len(tx)))
 tp = np.zeros((N, n_thresholds, len(tx)))
 conf_mat = np.zeros((2, 2, n_thresholds, len(tx)))
 
-clf = [RandomForestClassifier(), RandomForestClassifier(),
-       LogisticRegression(), LogisticRegression(),  LogisticRegression()]
+
 
 for j in range(N) :
-#    cv = LeaveOneOut()
-    cv = StratifiedKFold(n_splits = K, shuffle = True)   
+    cv = LeaveOneOut()
     for i, x in enumerate(tx) :
         x = x.to_numpy()
         for k, (train, test) in enumerate(cv.split(x, y)) :
@@ -673,28 +771,23 @@ for j in range(N) :
             xS, yS = x[train], y[train]
             xtest, ytest = x[test], y[test]
             clf[i].fit(xS, yS)
-            probas[test, :, i] += clf[i].predict_proba(xtest)
+            probas[test, :, i] = clf[i].predict_proba(xtest)
        
         t_thresholds = np.linspace(1, 0, n_thresholds)
         for l, threshold in enumerate(t_thresholds):
-                ypred  = probas[:, 1, i] > threshold
-                tnk, fpk, fnk, tpk = confusion_matrix(y, ypred,
-                                                      labels = [0, 1]).ravel()
-                tn[j, l, i] += tnk
-                fp[j, l, i] += fpk
-                fn[j, l, i] += fnk
-                tp[j, l, i] += tpk
-probas /= N
+                ypred  = (probas[:, 1, i] >= threshold).astype('int')
+                tn[j, l, i], fp[j, l, i], fn[j, l, i], tp[j, l, i] = \
+                confusion_matrix(y, ypred, labels = [0, 1]).ravel()
 
 mean_tn = np.mean(tn, axis = 0)
 mean_fp = np.mean(fp, axis = 0)
 mean_fn = np.mean(fn, axis = 0)
 mean_tp = np.mean(tp, axis = 0)
 
-conf_mat[0, 0, :, :] = mean_tn
+conf_mat[0, 0, :, :] = mean_tp
 conf_mat[0, 1, :, :] = mean_fp
 conf_mat[1, 0, :, :] = mean_fn
-conf_mat[1, 1, :, :] = mean_tp
+conf_mat[1, 1, :, :] = mean_tn
 
 #%%
 fig, ax_cal_curve = plt.subplots() 

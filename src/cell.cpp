@@ -266,6 +266,12 @@ int Cell::updateModel(const double currentTime, const double DT){
 
     if(PAR_TUM_GROWTH && ST_TUM){
         calcTumGrowth(DT);
+        //double m(1.0 / (1.0 + exp(-0.1 * (((Tissue *)m_parent)->getNumTumNotDam() - 5))));
+        //double p(double(rand()) / double(RAND_MAX));
+        //if (m < p){
+        //    IN_APOP = true;
+        //}
+        //cout << ((Tissue *)m_parent)->getNumTumNotDam() << " " << m << endl;
     }
 
     if(PAR_ANG){

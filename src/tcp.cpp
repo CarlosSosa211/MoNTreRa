@@ -295,12 +295,13 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
     const int K(38), nOut(2);
     bool art(0);
     int nrow, ncol, nlayer;
-    double cellSize, tumDens, sigmaTum, vascDens, sigmaVasc;
+    double cellSize, tumDens, radRatioTum, sigmaTum, vascDens, sigmaVasc;
     vector<bool> inTum, inVes;
     vector<Treatment> treatment;
 
     readInFilesTCP(nFInTissueTCP, nFTreatmentTCP, art, nrow, ncol, nlayer,
-                   cellSize, tumDens, sigmaTum, vascDens, sigmaVasc, treatment);
+                   cellSize, tumDens, radRatioTum, sigmaTum, vascDens,
+                   sigmaVasc, treatment);
     if(!art){
         readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,
                     cellSize, inTum, inVes);
@@ -323,8 +324,8 @@ void tcp(const int N, const string nFInTissueTCP, const string nFParTCP,
                                 ".res");
         for(int j(0); j < N; j++){
             if(art){
-                createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
-                              vascDens, sigmaVasc, inTum, inVes);
+                createInFiles(nrow, ncol, nlayer, tumDens, radRatioTum,
+                              sigmaTum, vascDens, sigmaVasc, inTum, inVes);
             }
             modelTCP(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes,
                      &(treatment[i]));

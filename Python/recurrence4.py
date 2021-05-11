@@ -38,6 +38,7 @@ black = [100/255, 100/255, 100/255]
 
 #%%
 path = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120/'
+#path = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_sph/'
 path28x25 = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_28x2.5/'
 path20x3 = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_20x3/'
 

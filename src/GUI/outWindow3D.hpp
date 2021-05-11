@@ -1,4 +1,4 @@
-/*#ifndef DEF_OUTWINDOW3D
+#ifndef DEF_OUTWINDOW3D
 #define DEF_OUTWINDOW3D
 
 #include <Q3DScatter>
@@ -91,4 +91,4 @@ signals:
     void updateSlider(int mapIter);
 };
 
-#endif*/
+#endif

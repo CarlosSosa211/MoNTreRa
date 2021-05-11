@@ -177,6 +177,7 @@ void varArtTissue(const int P, const string nFArt,
 
     double tumDens[nTumDens], sigmaTum[nSigmaTum];
     double vascDens[nVascDens], sigmaVasc[nSigmaVasc];
+    const double radRatioTum(1.0);
 
     for(int i(0); i < nTumDens; i++){
         fArt >> tumDens[i];
@@ -261,7 +262,8 @@ void varArtTissue(const int P, const string nFArt,
                                 vascDens[iVascDens]   << " " <<
                                 sigmaVasc[iSigmaVasc] << endl;
                         createInFiles(nrow, ncol, nlayer, tumDens[iTumDens],
-                                      sigmaTum[iSigmaTum], vascDens[iVascDens],
+                                      radRatioTum, sigmaTum[iSigmaTum],
+                                      vascDens[iVascDens],
                                       sigmaVasc[iSigmaVasc], inTum, inVes);
                         model(x, y[p], nrow, ncol, nlayer, cellSize, inTum,
                               inVes, nFTumDens, nFTumVol, nFVascDens,
@@ -659,6 +661,8 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
     hSigmaTum = (sigmaTumMax - sigmaTumMin) / (N - 1);
     hVascDens = (vascDensMax - vascDensMin) / (N - 1);
 
+    double radRatioTum(1.0);
+
     double x[K];
     ifstream fRefParMean(nFRefParMean.c_str());
 
@@ -725,8 +729,8 @@ void varArtTissue(const int N, const int P, const string nFDensInt,
                             "_" + to_string(p) + ".res";
                     nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(i) +
                             "_" + to_string(p) + ".res";
-                    createInFiles(nrow, ncol, nlayer, tumDens, sigmaTum,
-                                  vascDens, inTum, inVes);
+                    createInFiles(nrow, ncol, nlayer, tumDens, radRatioTum,
+                                  sigmaTum, vascDens, inTum, inVes);
                     model(x, y[p], nrow, ncol, nlayer, cellSize, inTum, inVes,
                           nFTumDens, nFTumVol, nFVascDens, nFKilledCells,
                           nFDeadDens, nFCycle, nFHypDens, nFPO2Stat,
@@ -1173,15 +1177,18 @@ void varErr(const string nFVarPar, const string nFMostRelPar,
  *  - nFInTum: name of the file containing the initial tumour cell
  *  configuration,
  *  - nFInVes: name of the file containing the initial endothelial cell
- *  configuration.
+ *  configuration,
+ * - nFTreatment: name of the file containing the administered treatment.
 ------------------------------------------------------------------------------*/
 
 void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
-                     const string nFInTum, const string nFInVes){
+                     const string nFInTum, const string nFInVes,
+                     const string nFTreatment){
     const int K(38), L(nFPar.size()), nOut(20);
     double x[K], y[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
+    string nFState, nFTimer, nFPO2, nFVegf;
     ofstream f8wTumDens, f12wTumDens, f8wTumVol, f12wTumVol;
     ofstream f8wIntTumDens, f12wIntTumDens, f8wIntTumVol, f12wIntTumVol;
     ofstream fKilled50, fKilled80, fKilled90, fKilled95, fKilled99, fKilled999;
@@ -1191,9 +1198,15 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
     int nrow, ncol, nlayer;
     double cellSize;
     vector<bool> inTum, inVes;
+    Treatment treatment;
 
     readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer, cellSize,
-                inTum, inVes);
+                inTum, inVes, nFTreatment, treatment);
+
+    cout << "nrow: " << nrow << endl;
+    cout << "ncol: " << ncol << endl;
+    cout << "nlayer: " << nlayer << endl;
+    cout << &treatment << endl;
 
     for(int i(0); i < nFPar.size(); i++){
         ifstream fPar(nFPar[i].c_str());
@@ -1211,6 +1224,15 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
         nFHypDens     = "../OutputFiles/hypDens_" + to_string(i) + ".res";
         nFPO2Stat     = "../OutputFiles/pO2Stat_" + to_string(i) + ".res";
         nFVegfStat    = "../OutputFiles/vegfStat_" + to_string(i) + ".res";
+        nFState       = "../OutputFiles/state_" + to_string(i) + ".res";
+        nFTimer       = "../OutputFiles/timer_" + to_string(i) + ".res";
+        nFPO2         = "../OutputFiles/pO2_" + to_string(i) + ".res";
+        nFVegf        = "../OutputFiles/vegf_" + to_string(i) + ".res";
+
+        model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, &treatment,
+              nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens,
+              nFCycle, nFHypDens, nFPO2Stat, nFVegfStat, nFState, nFTimer,
+              nFPO2, nFVegf);
 
         f8wTumDens.open("../OutputFiles/8wTumDens_" + to_string(i) +
                               ".res");
@@ -1240,10 +1262,6 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
         fRecTumDens.open("../OutputFiles/recTumDens_" + to_string(i) + ".res");
         fRecTumVol.open("../OutputFiles/recTumVol_" + to_string(i) + ".res");
         fRecTime.open("../OutputFiles/recTime_" + to_string(i) + ".res");
-
-        model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, nFTumDens,
-              nFTumVol, nFVascDens, nFKilledCells, nFDeadDens, nFCycle,
-              nFHypDens, nFPO2Stat, nFVegfStat);
 
         f8wTumDens     << y[0];
         f12wTumDens    << y[1];
@@ -1303,6 +1321,7 @@ void varParFromFiles(const vector<string> nFPar, const string nFInTissueDim,
  *  parameters of the model,
  *  - nFInTissuePar: name of the file containing the parameters of an
  *  artificial tissue,
+ * - nFTreatment: name of the file containing the administered treatment.
 ------------------------------------------------------------------------------*/
 
 void varParFromFiles(const string nFInTissuePar, const string nFPar,
@@ -1311,19 +1330,21 @@ void varParFromFiles(const string nFInTissuePar, const string nFPar,
     double x[K], y[nOut];
     string nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens;
     string nFCycle, nFHypDens, nFPO2Stat, nFVegfStat;
+    string nFState, nFTimer, nFPO2, nFVegf;
 
     int nrow, ncol, nlayer;
-    double cellSize, tumArea, tumDens, vascDens;
+    double cellSize, tumArea, radRatioTum, tumDens, vascDens;
     vector<bool> inTum, inVes;
     Treatment treatment;
 
-    readInFiles(nFInTissuePar, cellSize, tumArea, tumDens, vascDens,
-                nFTreatment, treatment);
-    createInFiles(cellSize, tumArea, tumDens, vascDens, nrow, ncol, nlayer,
-                  inTum, inVes);
+    readInFiles(nFInTissuePar, cellSize, tumArea, radRatioTum, tumDens,
+                vascDens, nFTreatment, treatment);
+    createInFiles(cellSize, tumArea, radRatioTum, tumDens, vascDens, nrow, ncol,
+                  nlayer, inTum, inVes);
 
     cout << "cell size: " << cellSize << endl;
     cout << "tumor area: " << tumArea << endl;
+    cout << "tumor radius ratio: " << radRatioTum << endl;
     cout << "tumor density in the tumor area: " << tumDens << endl;
     cout << "vascular density: " << vascDens << endl;
     cout << "nrow: " << nrow << endl;
@@ -1336,6 +1357,10 @@ void varParFromFiles(const string nFInTissuePar, const string nFPar,
     }
     fPar.close();
 
+    ofstream fTissueDim("../OutputFiles/tissueDim.res");
+    fTissueDim << nrow << endl << ncol << endl << nlayer << endl << cellSize;
+    fTissueDim.close();
+
     nFTumDens     = "../OutputFiles/tumDens.res";
     nFTumVol      = "../OutputFiles/tumVol.res";
     nFVascDens    = "../OutputFiles/vascDens.res";
@@ -1345,12 +1370,14 @@ void varParFromFiles(const string nFInTissuePar, const string nFPar,
     nFHypDens     = "../OutputFiles/hypDens.res";
     nFPO2Stat     = "../OutputFiles/pO2Stat.res";
     nFVegfStat    = "../OutputFiles/vegfStat.res";
+    nFState       = "../OutputFiles/state.res";
+    nFTimer       = "../OutputFiles/timer.res";
+    nFPO2         = "../OutputFiles/pO2.res";
+    nFVegf        = "../OutputFiles/vegf.res";
 
     model(x, y, nrow, ncol, nlayer, cellSize, inTum, inVes, &treatment,
           nFTumDens, nFTumVol, nFVascDens, nFKilledCells, nFDeadDens, nFCycle,
-          nFHypDens, nFPO2Stat, nFVegfStat);
-
-
+          nFHypDens, nFPO2Stat, nFVegfStat, nFState, nFTimer, nFPO2, nFVegf);
 
     ofstream f8wTumDens("../OutputFiles/8wTumDens.res");
     ofstream f12wTumDens("../OutputFiles/12wTumDens.res");

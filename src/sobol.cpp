@@ -107,10 +107,10 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
     fYb.close();*/
 
     for(int i(0); i < N; i++){
-        //toyModel(Xa[i], Ya[i]);
+        toyModel(Xa[i], Ya[i]);
         //model(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         //reducedModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
-        reducedFracModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        //reducedFracModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
@@ -120,10 +120,10 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
         }
         fYa << endl;
 
-        //toyModel(Xb[i], Yb[i]);
+        toyModel(Xb[i], Yb[i]);
         //model(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         //reducedModel(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
-        reducedFracModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        //reducedFracModel(Xb[i], Yb[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model" <<
                 endl;
@@ -166,10 +166,10 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             fXc << Xc[i][k] << " ";
         }
         fXc << endl;
-        //toyModel(Xc[i], Yc[i]);
+        toyModel(Xc[i], Yc[i]);
         //model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         //reducedModel(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
-        reducedFracModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+        //reducedFracModel(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
         nEv++;
         cout << nEv << " out of " << nEvTot << " evaluations of the model";
         cout << "---------------------------------------------" << endl;
@@ -228,11 +228,11 @@ void sobol(const int K, const int N, const int nOut, const double *x0,
             }
             fXc << endl;
 
-            //toyModel(Xc[i], Yc[i]);
+            toyModel(Xc[i], Yc[i]);
             //model(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
             /*reducedModel(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum,
                          inVes);*/
-            reducedFracModel(Xa[i], Ya[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
+            //reducedFracModel(Xc[i], Yc[i], nrow, ncol, nlayer, cellSize, inTum, inVes);
             nEv++;
             cout << nEv << " out of " << nEvTot << " evaluations of the model";
             cout << "---------------------------------------------" << endl;

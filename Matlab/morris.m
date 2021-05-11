@@ -7,17 +7,11 @@ global vascTissues nonVascTissues
 global b color colorbar nfig shape
 global fileNames outputNames
 
-% densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
-% nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
-% vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20];
-% nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
-% allTissues = [densTissues, nonDensTissues];
-
-densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 20, 21];
-nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17];
-vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 20];
-nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 21];
-allTissues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20, 21];
+densTissues = [1, 2, 5, 6, 8, 9, 11, 12, 19, 20, 21];
+nonDensTissues = [3, 4, 7, 10, 13, 14, 15, 16, 17, 18];
+vascTissues = [4, 7, 8, 10, 11, 12, 13, 14, 16, 18, 20];
+nonVascTissues = [1, 2, 3, 5, 6, 9, 15, 17, 19, 21];
+allTissues = [densTissues, nonDensTissues];
 
 green = [153, 255, 102];
 darkGreen = [127, 207, 127];

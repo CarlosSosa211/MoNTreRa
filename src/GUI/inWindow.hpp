@@ -50,7 +50,8 @@ private:
     QGroupBox *m_artifGroup;
     QSpinBox *m_nrow, *m_ncol, *m_nlayer;
     QDoubleSpinBox *m_cellSize;
-    QDoubleSpinBox *m_tumDens, *m_sigmaTum, *m_vascDens, *m_sigmaVasc;
+    QDoubleSpinBox *m_tumDens, *m_radRatioTum, *m_sigmaTum, *m_vascDens,
+    *m_sigmaVasc;
     QSpinBox *m_edgeOrder;
     QDoubleSpinBox *m_doubTime;
     QGroupBox *m_timeGroup, *m_distGroup;

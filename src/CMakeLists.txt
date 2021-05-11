@@ -32,7 +32,8 @@ morris.hpp
 oxyCell.hpp
 oxyTissue.hpp
 rootSimulator.hpp
-sensAn.hpp
+sensAnPy.hpp
+sensAnR.hpp
 simpcell.hpp
 simulator.hpp
 sobol.hpp
@@ -58,6 +59,7 @@ morris.cpp
 oxyCell.cpp
 oxyTissue.cpp
 rootSimulator.cpp
+sensAnPy.cpp
 sensAnR.cpp
 simulator.cpp
 sobol.cpp

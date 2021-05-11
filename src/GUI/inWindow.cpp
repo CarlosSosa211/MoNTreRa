@@ -40,6 +40,7 @@ InWindow::InWindow() : QWidget(){
     m_nlayer      = new QSpinBox(m_artifGroup);
     m_cellSize    = new QDoubleSpinBox(m_artifGroup);
     m_tumDens     = new QDoubleSpinBox(m_artifGroup);
+    m_radRatioTum = new QDoubleSpinBox(m_artifGroup);
     m_sigmaTum    = new QDoubleSpinBox(m_artifGroup);
     m_vascDens    = new QDoubleSpinBox(m_artifGroup);
     m_sigmaVasc   = new QDoubleSpinBox(m_artifGroup);
@@ -124,7 +125,7 @@ InWindow::InWindow() : QWidget(){
 
     m_histSpec->setChecked(true);
 
-    QStringList histSpecList = {"Test",
+    QStringList histSpecList = {"Test0",
                                 "Tissue P14 01685 6-1-cd31 101x62",
                                 "Tissue P14 01685 7-5-cd31 97x57",
                                 "Tissue P14 01685 8-5-cd31 111x75",
@@ -145,7 +146,8 @@ InWindow::InWindow() : QWidget(){
                                 "Tissue P14 26671 6-1-cd31 98x63",
                                 "Tissue P14 29860 4-1-cd31 101x56",
                                 "Tissue P14 29860 5-1-cd31 113x64",
-                                "Tissue P14 29860 6-1-cd31 125x71"};
+                                "Tissue P14 29860 6-1-cd31 125x71",
+                                "Test"};
     m_selHistSpec->addItems(histSpecList);
     m_artif->setChecked(false);
     m_artifGroup->setEnabled(false);
@@ -153,8 +155,10 @@ InWindow::InWindow() : QWidget(){
     m_ncol->setMaximum(999);
     m_nlayer->setMaximum(999);
     m_cellSize->setMaximum(30.0);
-    m_tumDens->setMaximum(1e7);
+    m_tumDens->setMaximum(1e8);
     m_tumDens->setSingleStep(0.01);
+    m_radRatioTum->setMaximum(1.0);
+    m_radRatioTum->setSingleStep(0.01);
     m_sigmaTum->setMaximum(2.0);
     m_sigmaTum->setSingleStep(0.01);
     m_vascDens->setMaximum(1.0);
@@ -238,6 +242,7 @@ InWindow::InWindow() : QWidget(){
     artifLayout->addRow("Number of layers", m_nlayer);
     artifLayout->addRow("Cell size (μm)", m_cellSize);
     artifLayout->addRow("Initial tumor density", m_tumDens);
+    artifLayout->addRow("Radius ratio of tumor", m_radRatioTum);
     artifLayout->addRow("Standard deviation\nof tumor cells", m_sigmaTum);
     artifLayout->addRow("Initial vascular density", m_vascDens);
     artifLayout->addRow("Standard deviation\nof vessels", m_sigmaVasc);
@@ -420,7 +425,7 @@ InWindow::InWindow() : QWidget(){
     QObject::connect(m_cancel, SIGNAL(clicked()), qApp, SLOT(quit()));
     QObject::connect(m_simulate, SIGNAL(clicked()), this, SLOT(simulate()));
 
-    loadInData("../InputFiles/inRed.dat");
+    loadInData("../InputFiles/inRedHistSpec.dat");
 
     setWindowTitle("Radiotherapy Simulator");
     setWindowIcon(QIcon("../Figures/logo.png"));
@@ -514,22 +519,38 @@ int InWindow::createInFiles(){
                           ".dat");
         QFile::copy(QString::fromStdString(inVes),
                     QString::fromStdString("inVes.dat"));
+
+        std::ifstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
+        int nrow, ncol, nlayer;
+        double cellSize;
+
+        fTissueDim >> nrow >> ncol >> nlayer >> cellSize;
+        m_nrow->setValue(nrow);
+        m_ncol->setValue(ncol);
+        m_nlayer->setValue(nlayer);
+        m_cellSize->setValue(cellSize);
+
+        fTissueDim.close();
+
+
     }
 
     else{
-        const int r(sqrt(m_tumDens->value() / M_PI) / m_cellSize->value());
+
+        const int r(sqrt(m_tumDens->value() * m_radRatioTum->value() / M_PI) /
+                    m_cellSize->value());
         int m, tumToDist, vesToDist;
         double n;
 
-        int nrow(2.5 * r), ncol(2.5 * r), nlayer(1);
+        int nrow(2.5 * r), ncol(2.5 * r / m_radRatioTum->value()), nlayer(1);
 
         const int nrowNcol(nrow * ncol), nrowNcolNlayer(nrowNcol * nlayer);
+        const double p2(m_radRatioTum->value() * m_radRatioTum->value());
         int halfNrow, halfNcol, halfNlayer;
         int imHalfNrow2, lmHalfNlayer2;
         int lnrowNcol;
         double R;
         std::vector<simpCell> map(nrowNcolNlayer);
-
         halfNrow = 0.5 * nrow;
         halfNcol = 0.5 * ncol;
         halfNlayer = 0.5 * nlayer;
@@ -544,7 +565,8 @@ int InWindow::createInFiles(){
                 imHalfNrow2 = (i - halfNrow) * (i - halfNrow);
                 for(int j(0); j < ncol; j++){
                     map.at(k).r = sqrt(lmHalfNlayer2 + imHalfNrow2 +
-                                       (j - halfNcol) * (j - halfNcol)) / R;
+                                        p2 * (j - halfNcol) * (j - halfNcol)) /
+                            R;
                     map.at(k).k = k;
                     map.at(k).tum = 0;
                     map.at(k).ves = 0;
@@ -577,12 +599,12 @@ int InWindow::createInFiles(){
         }
 
         //std::sort(map.begin(), map.end(), compK);
-        std::reverse(map.begin(),map.end());
+        //std::reverse(map.begin(),map.end());
 
-        std::normal_distribution<double> distVes(0, m_sigmaVasc->value());
+        //std::normal_distribution<double> distVes(0, m_sigmaVasc->value());
 
         while(vesToDist > 0){
-            n = double(rand()) / double(RAND_MAX);
+            n = double(rand()) / (RAND_MAX + 1.0);
             m = n * nrowNcolNlayer;
             if(!map.at(m).ves && !map.at(m).tum){
                 map.at(m).ves = 1;
@@ -604,16 +626,16 @@ int InWindow::createInFiles(){
 
         std::sort(map.begin(), map.end(), compK);
 
-        /*std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
+        std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
 
-        fTissueDim << m_nrow->value() << std::endl;
-        fTissueDim << m_ncol->value() << std::endl;
-        fTissueDim << m_nlayer->value() << std::endl;
+        fTissueDim << nrow << std::endl;
+        fTissueDim << ncol << std::endl;
+        fTissueDim << nlayer << std::endl;
         fTissueDim << m_cellSize->value() << std::endl;
 
         fTissueDim.close();
 
-        int ivd, ivd2, l2;
+        /*int ivd, ivd2, l2;
         int mindim, mindim2, sqrtmin, tumToDist, vesToDist;
         int nrowNcol, nrowNcolNlayer;
         std::vector<int> div;
@@ -814,16 +836,17 @@ int InWindow::createInFiles(){
                     map.at(l * nrowNcol + k).tum = 0;
                 }
             }
-        }*/
+        }
 
         std::ofstream fTissueDim("../OutputFilesGUI/tissueDim.dat");
 
-        fTissueDim << nrow << std::endl;
-        fTissueDim << ncol << std::endl;
-        fTissueDim << nlayer << std::endl;
+        fTissueDim << m_nrow->value() << std::endl;
+        fTissueDim << m_ncol->value() << std::endl;
+        fTissueDim << m_nlayer->value() << std::endl;
         fTissueDim << m_cellSize->value() << std::endl;
 
-        fTissueDim.close();
+
+        fTissueDim.close();*/
 
         std::ofstream fInTum("inTum.dat"), fInVes("inVes.dat");
 
@@ -991,7 +1014,8 @@ int InWindow::loadInData(std::string nFInData){
     int histSpec;
     int nrow(0), ncol(0), nlayer(0);
     double cellSize(20.0);
-    double tumDens(0.0), sigmaTum(0.0), vascDens(0.0), sigmaVasc(0.0);
+    double tumDens(0.0), radRatioTum(0.0), sigmaTum(0.0), vascDens(0.0),
+            sigmaVasc(0.0);
 
     fInData >> histSpec;
     m_histSpec->setChecked(histSpec);
@@ -1002,7 +1026,7 @@ int InWindow::loadInData(std::string nFInData){
     else{
         fInData >> nrow >> ncol >> nlayer;
         fInData >> cellSize;
-        fInData >> tumDens >> sigmaTum >> vascDens >> sigmaVasc;
+        fInData >> tumDens >> radRatioTum >> sigmaTum >> vascDens >> sigmaVasc;
     }
 
     m_nrow->setValue(nrow);
@@ -1010,6 +1034,7 @@ int InWindow::loadInData(std::string nFInData){
     m_nlayer->setValue(nlayer);
     m_cellSize->setValue(cellSize);
     m_tumDens->setValue(tumDens);
+    m_radRatioTum->setValue(radRatioTum);
     m_sigmaTum->setValue(sigmaTum);
     m_vascDens->setValue(vascDens);
     m_sigmaVasc->setValue(sigmaVasc);
@@ -1209,7 +1234,7 @@ void InWindow::nextWindow(int simType){
     }
 
     case 3:{
-        //new OutWindow3D("../OutputFilesGUI");
+        new OutWindow3D("../OutputFilesGUI");
         break;
     }
     }

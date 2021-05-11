@@ -10,6 +10,9 @@ def fsigmoid(x, a, b):
 #    return np.exp(-a * np.exp(-b * x + c))
 
 #%%
+plt.rcParams.update({'pdf.fonttype': 42})
+plt.rcParams.update({'ps.fonttype': 42})
+plt.rcParams.update({'font.size': 32})
 green = [153/255, 255/255, 102/255]
 darkGreen = [127/255, 207/255, 127/255]
 lightGreen = [205/255, 255/255, 105/255]
@@ -30,7 +33,6 @@ orangePurple = [207/255, 147/255, 148/255]
 greenBlue = [166/255, 220/255, 165/255]
 brown = [168/255, 120/255, 110/255]
 #%%
-plt.rcParams.update({'font.size': 32})
 #path = "../../Carlos/Results/TCP/0.8_1_0.01_1/"
 path = "../../Carlos/Results/TCP/0.8_1_0.03_1/"
 
@@ -72,17 +74,16 @@ plt.xlim(0, 100)
 plt.legend(["1 Gy", "2 Gy", "3 Gy", "4 Gy", "5 Gy"])
 
 #%%
-plt.rcParams.update({'font.size': 22})
-td = [1, 2, 3, 4, 5]
-tcolor = ['r', 'c', 'y', 'b', 'g']
+td = [2, 3, 4]
+tcolor = ['tab:blue', 'tab:green', 'tab:orange', 'tab:red', 'tab:purple']
 nrow = 90
 ncol = 90
-tumDens = 0.8
+tumDens = 0.15
 N0 = tumDens * nrow * ncol
-alpha = 0.146
-beta = 0.146 / 5.5
+alpha = 0.120
+beta = 0.120 / 5.5
 DTotMax = 100
-Ttum = 565.2
+Ttum = 330
 gamma = np.log(2) / Ttum
 nPoints = 1000
 h = DTotMax / nPoints
@@ -95,12 +96,14 @@ for i, d in enumerate(td):
         DTot[j] = j * h
         TCP[j]  = np.exp(- N0 * np.exp(-alpha * DTot[j] *
            (1. + beta /alpha * d) + gamma * T))
-    plt.plot(DTot, TCP, tcolor[i])
-plt.legend(["1 Gy", "2 Gy", "3 Gy", "4 Gy", "5 Gy"])
+    plt.plot(DTot, TCP, tcolor[i],  linewidth = 6)
+plt.legend(['2 Gy', '3 Gy', '4 Gy'])
+plt.xlabel('Total dose (Gy)')
+plt.ylabel('TCP')
+plt.grid(True)
 
 #%%
 plt.close('all')
-plt.rcParams.update({'font.size': 32})
 path = "../../Carlos/Results/TCP/Histo_10/"
 #path = "../../Carlos/Results/TCP/Histo_10_NoAng/"
 #path = "../../Carlos/Results/TCP/Histo_10_NoRes/"

@@ -1,13 +1,15 @@
 clear all
 close all
 
-
 nfig = 0;
 %%
-path = '../../Carlos/Results/180x180_0.65_0.25_0.04_1_2x37Gy_NoHypNec/';
+% path = '../../Carlos/Results/180x180_0.65_0.25_0.04_1_2x37Gy_NoHypNec/';
+path = '../../Carlos/Results/Recurrence/tissue26/';
 % path = '../../Carlos/Results/40x2GyNoHypNec/';
-endTreat = load([path, 'endTreatTumDens.res']);
-threeMon = load([path, '3MonTumDens.res']);
+% endTreat = load([path, 'endTreatTumDens.res']);
+% threeMon = load([path, '3MonTumDens.res']);
+endTreat = load([path, '8wTumDens.res']);
+threeMon = load([path, '12wTumDens.res']);
 
 %%
 blue      = [46/255, 165/255, 225/255];

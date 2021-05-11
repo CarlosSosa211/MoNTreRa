@@ -22,6 +22,9 @@ from imblearn.combine import SMOTEENN
 from imblearn.pipeline import Pipeline
 
 #%%
+plt.rcParams.update({'pdf.fonttype': 42})
+plt.rcParams.update({'ps.fonttype': 42})
+plt.rcParams.update({'font.size': 32})
 green = [153/255, 255/255, 102/255]
 darkGreen = [127/255, 207/255, 127/255]
 lightGreen = [205/255, 255/255, 105/255]
@@ -549,6 +552,103 @@ ax.set(ylabel = 'AUC', ylim = [0.57, 1])
 ax.set_xticklabels(['Prediction 1', "Prediction 1*", 'Prediction 2',
                     'Prediction 3', 'Prediction 4'], ha = 'center')
 ax.set_yticks([0.6, 0.7, 0.8, 0.9, 1.0])
+
+#%%
+plt.close('all')
+plt.rcParams.update({'font.size': 32})  
+N = 1000
+K = 3
+
+clf = [LogisticRegression(), LogisticRegression(), LogisticRegression(),
+       LogisticRegression(), LogisticRegression(), LogisticRegression(),
+       LogisticRegression(), LogisticRegression()]
+
+tx = [data[['tum_vol', 'ADC_ave', 'T2w_ave']],
+      data[['tum_vol', 'ADC_ave', 'T2w_ave']],
+      data[['tum_area_from_vol', 'dens_ADCT2w']],
+      data[['tum_area_from_vol', 'dens_ADCT2w']],
+      data[['init_tum_area']], 
+      data[['init_tum_area']],
+      data[['TTum330_alphaG1120_norm']],
+      data[['TTum330_alphaG1120_norm']]]
+
+y = data[['bio_rec']].to_numpy().ravel()  
+
+mean_fpr = np.linspace(0, 1, 500)
+mean_tprK = np.zeros((N, 500, len(tx)))
+auc_roc = np.zeros((N, len(tx))) 
+
+intercept = np.zeros((N, len(tx)))
+coef = []
+mean_coef = []
+sme = SMOTEENN(random_state = 42)
+
+for i, x in enumerate(tx):
+    coef[len(coef):] = [np.zeros((N, len(x.columns)))]
+    mean_coef[len(mean_coef):] = [np.zeros(len(x.columns))]
+
+for j in range(N) :
+    cv = StratifiedKFold(n_splits = K, shuffle = True)    
+    for i, x in enumerate(tx) :
+        x = x.to_numpy()
+        for k, (train, test) in enumerate(cv.split(x, y)) :
+            if(i % 2):
+                xS, yS = sme.fit_sample(x[train], y[train])
+            else:
+                xS, yS = x[train], y[train]
+            xtest, ytest = x[test], y[test]
+            clf[i].fit(xS, yS)
+            probas = clf[i].predict_proba(xtest)
+            fpr, tpr, _ = roc_curve(ytest, probas[:, 1]) 
+            mean_tprK[j, :, i] += np.interp(mean_fpr, fpr, tpr)
+            mean_tprK[j, 0, i] = 0.0
+            intercept[j, i] += clf[i].intercept_
+            coef[i][j, :] += clf[i].coef_.ravel()
+            
+intercept = intercept / K
+mean_intercept = np.mean(intercept, axis = 0)
+
+for i in range (len(tx)):
+    coef[i] /= K 
+    mean_coef[i] = np.mean(coef[i], axis = 0)
+       
+mean_tprK /= K
+mean_tprK[:, -1, :] = 1.0
+auc_roc = np.trapz(mean_tprK, mean_fpr, axis = 1) 
+    
+mean_tprN = np.mean(mean_tprK, axis = 0)
+std_tprN = np.std(mean_tprK, axis = 0, ddof = 1)
+
+level = 0.95
+dof = K - 1
+
+#%%
+fig, ax_roc = plt.subplots() 
+tcolor = [darkPurple, darkBlue, orangePurple, orangePurple, orange, orange,
+          greenBlue, greenBlue]
+
+for i in [0, 1, 2, 4, 6] :
+    ax_roc.plot(mean_fpr, mean_tprN[:, i], linewidth = 6, color = tcolor[i])
+    ci = stats.t.interval(level, dof, mean_tprN[:, i], std_tprN[:, i] / np.sqrt(N))
+    ax_roc.fill_between(mean_fpr, ci[0], ci[1], color = tcolor[i],
+                        alpha = 0.1)
+    
+ax_roc.plot([0, 1], [0, 1], '--', color = 'tab:gray', linewidth = 6)
+ax_roc.set(xlabel = 'FPR', ylabel = 'TPR', ylim = [0, 1])
+mean_auc_roc = np.mean(auc_roc, axis = 0)
+std_auc_roc = np.std(auc_roc, axis = 0)
+
+ax_roc.legend(['Prediction 1 (AUC = %0.2f $\pm$ %0.2f)' 
+               % (mean_auc_roc[0], std_auc_roc[0]), 
+               'Prediction 1* (AUC = %0.2f $\pm$ %0.2f)' 
+               % (mean_auc_roc[1], std_auc_roc[1]),
+               'Prediction 2 (AUC = %0.2f $\pm$ %0.2f)' 
+               % (mean_auc_roc[2], std_auc_roc[2]),
+               'Prediction 3 (AUC = %0.2f $\pm$ %0.2f)' 
+               % (mean_auc_roc[4], std_auc_roc[4]), 
+               'Prediction 4 (AUC = %0.2f $\pm$ %0.2f)' 
+               % (mean_auc_roc[6], std_auc_roc[6])], loc = 'lower right',
+               fontsize = 21)
 
 #%%
 fig, ax = plt.subplots() 

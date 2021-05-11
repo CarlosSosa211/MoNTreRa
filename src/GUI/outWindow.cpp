@@ -47,8 +47,11 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
     m_chartView = new QChartView;
     m_sDash = new QLineSeries;
     m_sDash->append(0.0, 0.0);
-    m_sDash->append(0.0, 100.0);
-    m_sDash->setPen(QPen(Qt::DashLine));
+    m_sDash->append(0.0, 5.0e4);
+    QPen pen;
+    pen.setStyle(Qt::DashLine);
+    pen.setWidth(10);
+    m_sDash->setPen(pen);
 
 //    std::ifstream fEndTreatTime((nFOutData + "/endTreatTumDens.res").c_str());
 
@@ -62,7 +65,7 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 //        fEndTreatTime.close();
 //    }
 
-    m_endTreatTime = 1440.0;
+    m_endTreatTime = 1440.0 / (24.0 * 7.0);
 
 
     std::ifstream fRec((nFOutData + "/rec.res").c_str());
@@ -81,15 +84,16 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
     m_endTreatDash = new QLineSeries;
     m_endTreatDash->append(m_endTreatTime, 0.0);
-    m_endTreatDash->append(m_endTreatTime, 100.0);
-    QPen pen;
+    m_endTreatDash->append(m_endTreatTime, 5.0e4);
+
     pen.setStyle(Qt::DashLine);
     pen.setColor(m_green);
+    pen.setWidth(10);
     m_endTreatDash->setPen(pen);
     if (m_rec){
         m_recDash = new QLineSeries;
         m_recDash->append(m_recTime, 0.0);
-        m_recDash->append(m_recTime, 100.0);
+        m_recDash->append(m_recTime, 5.0e4);
         pen.setColor(m_red);
         m_recDash->setPen(pen);
     }
@@ -115,25 +119,28 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fTumDens >> a >> b;
         while(!fTumDens.eof()){
-            sTumDens->append(a, b);
+            sTumDens->append(a / (24.0 * 7.0), b);
             fTumDens >> a >> b;
         }
         fTumDens.close();
         QPen pen;
-        pen.setWidth(5);
+        pen.setWidth(10);
+        pen.setStyle(Qt::SolidLine);
         pen.setColor(m_blueTum);
         sTumDens->setPen(pen);
         m_cTumDens->addSeries(sTumDens);
         m_cTumDens->legend()->hide();
         m_cTumDens->setTitle("Evolution of the tumor density");
 
-        m_xTumDens->setTitleText("Time (h)");
+        m_xTumDens->setTitleText("t (weeks)");
         m_xTumDens->setLabelFormat("%i");
+        m_xTumDens->setLabelsFont(QFont("Times", 32, QFont::Bold));
         sTumDens->attachAxis(m_xTumDens);
         m_xTumDens->applyNiceNumbers();
 
         m_yTumDens->setTitleText("Tumor density");
         m_yTumDens->setLabelFormat("%i");
+        m_yTumDens->setLabelsFont(QFont("Times", 32, QFont::Bold));
         sTumDens->attachAxis(m_yTumDens);
         m_yTumDens->setMin(0.0);
         m_yTumDens->applyNiceNumbers();
@@ -148,8 +155,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         if(m_rec){
             m_cTumDens->addSeries(m_recDash);
-            m_recDash->attachAxis(m_xTumDens);
-            m_recDash->attachAxis(m_yTumDens);
+            //m_recDash->attachAxis(m_xTumDens);
+            //m_recDash->attachAxis(m_yTumDens);
         }
 
         m_selChart->addItem("Tumor density");
@@ -174,22 +181,34 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fTumVol >> a >> b;
         while(!fTumVol.eof()){
-            sTumVol->append(a, b);
+            sTumVol->append(a / (24.0 * 7.0), b / (0.02 * 0.02));
             fTumVol >> a >> b;
         }
         fTumVol.close();
 
+        pen.setWidth(10);
+        pen.setStyle(Qt::SolidLine);
+        pen.setColor(m_blueTum);
+        sTumVol->setPen(pen);
         m_cTumVol->addSeries(sTumVol);
         m_cTumVol->legend()->hide();
-        m_cTumVol->setTitle("Evolution of the tumor volume");
+        //m_cTumVol->setTitle("Evolution of the tumor volume");
 
-        m_xTumVol->setTitleText("Time (h)");
+        m_xTumVol->setTitleText("t (weeks)");
+        m_xTumVol->setTitleFont(QFont("Times", 32, QFont::Bold));
         m_xTumVol->setLabelFormat("%i");
+        m_xTumVol->setLabelsFont(QFont("Times", 32, QFont::Bold));
         sTumVol->attachAxis(m_xTumVol);
+        //m_xTumVol->setRange(0.0, 13.0);
+        //m_xTumVol->setTickCount(7);
         m_xTumVol->applyNiceNumbers();
 
-        m_yTumVol->setTitleText("Tumor volume (mm³)");
-        m_yTumVol->setLabelFormat("%4.2f");
+        //m_yTumVol->setTitleText("Tumor volume (mm³)");
+        //m_yTumVol->setLabelFormat("%4.2f");
+        m_yTumVol->setTitleText("N° of tumor cells");
+        m_yTumVol->setTitleFont(QFont("Times", 32, QFont::Bold));
+        m_yTumVol->setLabelFormat("%1.1e");
+        m_yTumVol->setLabelsFont(QFont("Times", 32, QFont::Bold));
         sTumVol->attachAxis(m_yTumVol);
         m_yTumVol->setMin(0.0);
         m_yTumVol->applyNiceNumbers();
@@ -219,16 +238,21 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fVascDens >> a >> b >> c >> d;
         while(!fVascDens.eof()){
-            sVascDens->append(a, b);
-            sNormVascDens->append(a, c);
-            sTumVascDens->append(a, d);
+            sVascDens->append(a / (24.0 * 7.0), b);
+            sNormVascDens->append(a / (24.0 * 7.0), c);
+            sTumVascDens->append(a / (24.0 * 7.0), d);
             fVascDens >> a >> b >> c >> d;
         }
         fVascDens.close();
 
+        pen.setWidth(10);
+        pen.setStyle(Qt::SolidLine);
+        sVascDens->setPen(pen);
         m_cVascDens->addSeries(sVascDens);
-        QPen pen(m_red);
-        pen.setWidth(2);
+
+        pen.setWidth(10);
+        pen.setStyle(Qt::SolidLine);
+        pen.setColor(m_red);
         sNormVascDens->setPen(pen);
         m_cVascDens->addSeries(sNormVascDens);
         pen.setColor(m_redTum);
@@ -240,8 +264,9 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         sNormVascDens->setName("Normal vessels");
         sTumVascDens->setName("Tumor vessels");
 
-        m_xVascDens->setTitleText("Time (h)");
+        m_xVascDens->setTitleText("t (weeks)");
         m_xVascDens->setLabelFormat("%i");
+        m_xVascDens->setLabelsFont(QFont("Times", 32, QFont::Bold));
         sVascDens->attachAxis(m_xVascDens);
         sNormVascDens->attachAxis(m_xVascDens);
         sTumVascDens->attachAxis(m_xVascDens);
@@ -277,10 +302,15 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fKilledCells >> a >> b;
         while(!fKilledCells.eof()){
-            sKilledCells->append(a, b);
+            sKilledCells->append(a / (24.0 * 7.0), b);
             fKilledCells >> a >> b;
         }
         fKilledCells.close();
+
+        pen.setWidth(10);
+        pen.setStyle(Qt::SolidLine);
+        pen.setColor(m_blueTum);
+        sKilledCells->setPen(pen);
 
         m_cKilledCells->addSeries(sKilledCells);
         m_cKilledCells->legend()->hide();
@@ -320,10 +350,15 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fDeadDens >> a >> b;
         while(!fDeadDens.eof()){
-            sDeadDens->append(a, b);
+            sDeadDens->append(a / (24.0 * 7.0), b);
             fDeadDens >> a >> b;
         }
         fDeadDens.close();
+
+        pen.setWidth(10);
+        pen.setStyle(Qt::SolidLine);
+        pen.setColor(m_brownMit);
+        sDeadDens->setPen(pen);
 
         m_cDeadDens->addSeries(sDeadDens);
         m_cDeadDens->legend()->hide();
@@ -365,11 +400,11 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fCycle >> a >> b >> c >> d >> e >> f;
         while(!fCycle.eof()){
-            sG1->append(a, b);
-            sS->append(a, c);
-            sG2->append(a, d);
-            sM->append(a, e);
-            sG0->append(a, f);
+            sG1->append(a / (24.0 * 7.0), b);
+            sS->append(a / (24.0 * 7.0), c);
+            sG2->append(a / (24.0 * 7.0), d);
+            sM->append(a / (24.0 * 7.0), e);
+            sG0->append(a / (24.0 * 7.0), f);
             fCycle >> a >> b >> c >> d >> e >> f;
         }
         fCycle.close();
@@ -428,10 +463,15 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fHypDens >> a >> b;
         while(!fHypDens.eof()){
-            sHypDens->append(a, b);
+            sHypDens->append(a / (24.0 * 7.0), b);
             fHypDens >> a >> b;
         }
         fHypDens.close();
+
+        pen.setWidth(10);
+        pen.setStyle(Qt::SolidLine);
+        pen.setColor(m_blueTum);
+        sHypDens->setPen(pen);
 
         m_cHypDens->addSeries(sHypDens);
         m_cHypDens->legend()->hide();
@@ -471,8 +511,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
 
         fPO2Stat >> a >> b >> c;
         while(!fPO2Stat.eof()){
-            sPO2Med->append(a, b);
-            sPO2Mean->append(a, c);
+            sPO2Med->append(a / (24.0 * 7.0), b);
+            sPO2Mean->append(a / (24.0 * 7.0), c);
             fPO2Stat >> a >> b >> c;
         }
         fPO2Stat.close();
@@ -610,7 +650,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         m_imState->setColor(2, m_blueTumDam.rgb());
         m_imState->setColor(3, m_red.rgb());
         m_imState->setColor(4, m_redTum.rgb());
-        m_imState->setColor(5, m_yellowNec.rgb());
+        m_imState->setColor(5, m_brownMit.rgb());
+        //m_imState->setColor(5, m_yellowNec.rgb());
         m_imState->setColor(6, m_brownMit.rgb());
         m_imState->setColor(7, m_greenApop.rgb());
 
@@ -645,7 +686,8 @@ OutWindow::OutWindow(std::string nFOutData) : QWidget(){
         tumDamIm.fill(m_blueTumDam.rgb());
         normVesIm.fill(m_red.rgb());
         tumVesIm.fill(m_redTum.rgb());
-        hypNecIm.fill(m_yellowNec.rgb());
+        //hypNecIm.fill(m_yellowNec.rgb());
+        hypNecIm.fill(m_brownMit.rgb());
         mitCatIm.fill(m_brownMit.rgb());
         apopIm.fill(m_greenApop.rgb());
 
@@ -1017,13 +1059,13 @@ void OutWindow::changeChart(const int numChart){
         m_cTumDens->addSeries(m_endTreatDash);
         m_sDash->attachAxis(m_xTumDens);
         m_sDash->attachAxis(m_yTumDens);
-        m_endTreatDash->attachAxis(m_xTumDens);
-        m_endTreatDash->attachAxis(m_yTumDens);
+        //m_endTreatDash->attachAxis(m_xTumDens);
+        //m_endTreatDash->attachAxis(m_yTumDens);
         if(m_rec){
             m_chartView->chart()->removeSeries(m_recDash);
             m_cTumDens->addSeries(m_recDash);
-            m_recDash->attachAxis(m_xTumDens);
-            m_recDash->attachAxis(m_yTumDens);
+            //m_recDash->attachAxis(m_xTumDens);
+            //m_recDash->attachAxis(m_yTumDens);
         }
         m_chartView->setChart(m_cTumDens);
         break;
@@ -1033,16 +1075,16 @@ void OutWindow::changeChart(const int numChart){
         m_chartView->chart()->removeSeries(m_sDash);
         m_chartView->chart()->removeSeries(m_endTreatDash);
         m_cTumVol->addSeries(m_sDash);
-        m_cTumVol->addSeries(m_endTreatDash);
+        //m_cTumVol->addSeries(m_endTreatDash);
         m_sDash->attachAxis(m_xTumVol);
         m_sDash->attachAxis(m_yTumVol);
         m_endTreatDash->attachAxis(m_xTumVol);
         m_endTreatDash->attachAxis(m_yTumVol);
         if(m_rec){
             m_chartView->chart()->removeSeries(m_recDash);
-            m_cTumVol->addSeries(m_recDash);
-            m_recDash->attachAxis(m_xTumVol);
-            m_recDash->attachAxis(m_yTumVol);
+            //m_cTumVol->addSeries(m_recDash);
+            //m_recDash->attachAxis(m_xTumVol);
+            //m_recDash->attachAxis(m_yTumVol);
         }
         m_chartView->setChart(m_cTumVol);
         break;
@@ -1248,8 +1290,8 @@ void OutWindow::changeNumMap(const int numMap){
 
 void OutWindow::drawChartDashLine(const int iter){
     QVector<QPointF> points;
-    points.push_back(QPointF(iter, 0.0));
-    points.push_back(QPointF(iter, 100.0));
+    points.push_back(QPointF(iter / (24.0 * 7.0), 0.0));
+    points.push_back(QPointF(iter / (24.0 * 7.0), 5.0e4));
     m_sDash->replace(points);
 }
 
@@ -1412,6 +1454,7 @@ void OutWindow::saveAllMaps(){
     case 0:{
         QDir().mkdir("../Figures/state");
         QDir().mkdir("../Figures/tumDens");
+        QDir().mkdir("../Figures/tumVol");
         const int K(m_state.size() * m_simTimeStep);
 
         for(int k(0); k < K; k += m_simTimeStep){
@@ -1423,7 +1466,7 @@ void OutWindow::saveAllMaps(){
             m_pixState->save(fileName);
             /*fileName = QString::number(k);
             fileName = fileName.rightJustified(4, '0');
-            fileName = "../Figures/tumDens/" + fileName + ".png";
+            fileName = "../Figures/tumVol/" + fileName + ".png";
             m_chartView->grab().save(fileName);*/
             qApp->processEvents();
         }

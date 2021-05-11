@@ -16,7 +16,9 @@ from scipy.fft import fft, ifft
 
 #%%
 plt.close('all')
-plt.rcParams.update({'font.size': 32})  
+plt.rcParams.update({'pdf.fonttype': 42})
+plt.rcParams.update({'ps.fonttype': 42})
+plt.rcParams.update({'font.size': 32})
 green = [153/255, 255/255, 102/255]
 darkGreen = [127/255, 207/255, 127/255]
 lightGreen = [205/255, 255/255, 105/255]
@@ -53,7 +55,7 @@ path28x25 = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_28x2.5/'
 path20x3 = '../../Carlos/Results/Recurrence/simp/TTum330_alphaG1120_20x3/'
 
 nTissues = 76
-nRep = 10
+nRep = 5
 N = 361
 dx = 6
 #rec = [9, 10, 18, 39, 41, 47, 62, 69, 72]
@@ -75,7 +77,7 @@ for i in range(nTissues) :
     for k in range(nRep) :
         tumVolK[:, :, k] = np.loadtxt(path + 'rep' + str(k) + '/tumVol_' +
               str(i + 1) + '.res')
-        tumVolK[:, 1, :] = tumVolK[:, 1, :] / tumVolK[0, 1, :]
+#        tumVolK[:, 1, :] = tumVolK[:, 1, :] / tumVolK[0, 1, :]
     tumVol[:, i] = np.mean(tumVolK[:, 1, :], axis = 1)
 #   tumVol[:, 1, i] = np.convolve(tumVol[:, 1, i], kern, mode = 'same')
 
@@ -88,7 +90,7 @@ stdTumVolRec = np.std(tumVol[:, tRec], axis = 1)
 meanTumVolNoRec = np.mean(tumVol[:, tNoRec], axis = 1)
 stdTumVolNoRec = np.std(tumVol[:, tNoRec], axis = 1)
 
-wn = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+wn = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 tn = wn * 28 #eight w
 
 wTumVol = tumVol[tn, :]
@@ -110,6 +112,11 @@ stdWIntTumVolRec = np.std(wIntTumVol[:, tRec], axis = 1)
 meanWIntTumVolNoRec = np.mean(wIntTumVol[:, tNoRec], axis = 1)
 stdWIntTumVolNoRec = np.std(wIntTumVol[:, tNoRec], axis = 1)
 
+pvalueTumVol = np.ones(N)
+for i in range(3, N) :
+    _, pvalueTumVol[i] = stats.mannwhitneyu(tumVol[i, tRec].ravel(),
+                 tumVol[i, tNoRec].ravel())
+
 #%%
 fig, ax = plt.subplots() 
 
@@ -125,13 +132,14 @@ wTumVol_ = np.reshape(wTumVol, len(twn), order = 'C')
 
 data = np.concatenate((wRec, twn, wTumVol_.reshape((len(wTumVol_), 1))),
                       axis = 1)
-wTumVolDF = pd.DataFrame(data = data, columns = ['bio_rec', 'w', 'tum_vol'])
+wTumVolDF = pd.DataFrame(data = data, columns = ['bio_rec', 'w',
+                                                 'norm_tum_vol'])
 
-ax = sns.boxplot(data = wTumVolDF, x = 'w', y = 'tum_vol', hue = 'bio_rec',
+ax = sns.boxplot(data = wTumVolDF, x = 'w', y = 'norm_tum_vol', hue = 'bio_rec',
                  orient = 'v', palette = tcolor)
 
 #%%
-i = 4
+i = 12
 ind = np.argsort(wTumVol[i, :])
 
 fig, ax = plt.subplots()
@@ -157,9 +165,9 @@ wIntTumVol_ = np.reshape(wIntTumVol, len(twn), order = 'C')
 data = np.concatenate((wRec, twn, wIntTumVol_.reshape((len(wIntTumVol_)), 1)),
                       axis = 1)
 wIntTumVolDF = pd.DataFrame(data = data,
-                            columns = ['bio_rec', 'w', 'int_tum_vol'])
+                            columns = ['bio_rec', 'w', 'int_norm_tum_vol'])
 
-ax = sns.boxplot(data = wIntTumVolDF, x = 'w', y = 'int_tum_vol',
+ax = sns.boxplot(data = wIntTumVolDF, x = 'w', y = 'int_norm_tum_vol',
                  hue = 'bio_rec', orient = 'v', palette = tcolor)
 
 #%%
@@ -175,18 +183,23 @@ for j, ii in enumerate(ind) :
 ax.grid()
 
 #%%
-N = 225
-
+N = 361
 fig, ax = plt.subplots() 
-for i in tNoRec:
-    ax.plot(tW[:N], tumVol[:N, i], color = green, linewidth = 6, alpha = 0.5)
-    
-for i in tRec:
-    ax.plot(tW[:N], tumVol[:N, i], color = red, linewidth = 6, alpha = 0.5)
+
+pltNoRec = ax.plot(tW[:N], tumVol[:N, tNoRec], color = green, linewidth = 6,
+                   alpha = 0.5, label = 'No biochemical recurrence')
+plt.setp(pltNoRec[1:], label="_")
+pltRec = ax.plot(tW[:N], tumVol[:N, tRec], color = red, linewidth = 6,
+                 alpha = 0.5, label = 'Biochemical recurrence')
+plt.setp(pltRec[1:], label="_")
+ax.set(xlabel = 't (weeks)', ylabel = 'N° of tumor cells',
+       xlim = [0, 12.1])
+ax.set_xticks(np.linspace(0, 12, 13))
+ax.legend(loc = 'upper right')
     
 #%%
 fig, ax = plt.subplots() 
-N = 255
+N = 361
 
 ax.plot(tW[:N], meanTumVolRec[:N], color = red, linewidth = 6)
 ax.fill_between(tW[:N], meanTumVolRec[:N] - stdTumVolRec[:N],
@@ -197,31 +210,27 @@ ax.fill_between(tW[:N], meanTumVolNoRec[:N] - stdTumVolNoRec[:N],
                 meanTumVolNoRec[:N] + stdTumVolNoRec[:N], color = green,
                 alpha = 0.1)
 
-pvalue = np.ones(N)
-for i in range(3, N) :
-    _, pvalue[i] = stats.mannwhitneyu(tumVol[i, tRec].ravel(),
-                                     tumVol[i, tNoRec].ravel(),
-                                     alternative = 'greater')
-
 #ax.plot(meanTumVolRec[:, 0], pvalue, color = gray, linewidth = 6)
-#ax.plot(meanTumVolRec[:, 0], pvalue < 0.001, color = gray, linewidth = 6)
 
-ax.fill_between(tW[:N], np.zeros(N), 1.1 * (pvalue <= 0.001),
+
+upLim = 1.1 * max(meanTumVolRec[:N] + stdTumVolRec[:N]) * np.ones(N)
+lowLim = 0.9 * min(meanTumVolNoRec[:N] - stdTumVolNoRec[:N]) * np.ones(N)
+ax.fill_between(tW[:N], lowLim, upLim, where = pvalueTumVol[:N] <= 0.001,
                 color = gray, linewidth = 0, alpha = 0.5)
 #ax.text(3.5, 1, 'p $\leq$ 0.001')
 #
 #ax.plot([8, 8], [0, 1.1], '--', color = black, linewidth = 6)
 #ax.text(6.5, 1, 'Prediction 4', bbox = dict(facecolor = greenBlue + [0.5]))
 
-ax.set(xlabel = 't (weeks)', ylabel = 'Normalized n° of tumor cells',
-       xlim = [0, 8.1])
-ax.set_xticks(np.linspace(0, 8, 9))
+ax.set(xlabel = 't (weeks)', ylabel = 'N° of tumor cells',
+       xlim = [0, 12.1])
+ax.set_xticks(np.linspace(0, 12, 13))
 ax.legend(['Biochemical recurrence', 'No biochemical recurrence'],
           loc = 'upper right')
 
 #%%
 fig, ax = plt.subplots() 
-ax.plot(meanTumVolRec[19:225, 0], pvalue[19:], color = gray, linewidth = 6)
+ax.plot(t[19:], pvalueTumVol[19:], color = gray, linewidth = 6)
 
 #%%%
 Nd = N - 1
@@ -237,7 +246,7 @@ diff = np.diff(tumVol, axis = 0) / dx
 for i in range(nTissues) :
     diff[:, i] = np.convolve(diff[:, i], kern, mode = 'same')
         
-wn = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+wn = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 tn = wn * 28 #eight w
 
 wDiff = diff[tn, :]
@@ -279,10 +288,11 @@ wDiff_ = np.reshape(wDiff, len(twn), order = 'C')
 
 data = np.concatenate((wRec, twn, wDiff_.reshape((len(wDiff_), 1))),
                       axis = 1)
-wDiffDF = pd.DataFrame(data = data, columns = ['bio_rec', 'w', 'diff_tum_vol'])
+wDiffDF = pd.DataFrame(data = data, columns = ['bio_rec', 'w',
+                                               'diff_norm_tum_vol'])
 
-ax = sns.boxplot(data = wDiffDF, x = 'w', y = 'diff_tum_vol', hue = 'bio_rec',
-                 orient = 'v', palette = tcolor)
+ax = sns.boxplot(data = wDiffDF, x = 'w', y = 'diff_norm_tum_vol',
+                 hue = 'bio_rec', orient = 'v', palette = tcolor)
 
 #%%
 i = -1
@@ -312,8 +322,8 @@ wIntDiff_ = np.reshape(wIntDiff, len(twn), order = 'C')
 data = np.concatenate((wRec, twn, wIntDiff_.reshape((len(wIntDiff_), 1))),
                       axis = 1)
 wIntDiffDF = pd.DataFrame(data = data, columns = ['bio_rec', 'w',
-                                                  'int_diff_tum_vol'])
-ax = sns.boxplot(data = wIntDiffDF, x = 'w', y = 'int_diff_tum_vol',
+                                                  'int_diff_norm_tum_vol'])
+ax = sns.boxplot(data = wIntDiffDF, x = 'w', y = 'int_diff_norm_tum_vol',
                  hue = 'bio_rec', orient = 'v', palette = tcolor)
 
 #%%
@@ -327,6 +337,21 @@ for j, ii in enumerate(ind) :
     else : 
         ax.scatter(j, wIntDiff[i, ii], color = red)
 ax.grid()
+
+#%%
+Nd = 360
+fig, ax = plt.subplots() 
+
+pltNoRec = ax.plot(tW[:Nd], diff[:Nd, tNoRec], color = green, linewidth = 6,
+                   alpha = 0.5, label = 'No biochemical recurrence')
+plt.setp(pltNoRec[1:], label="_")
+pltRec = ax.plot(tW[:Nd], diff[:Nd, tRec], color = red, linewidth = 6,
+                 alpha = 0.5, label = 'Biochemical recurrence')
+plt.setp(pltRec[1:], label="_")
+ax.set(xlabel = 't (weeks)', ylabel = 'Diff. of n° of tumor cells',
+       xlim = [0, 12.1])
+ax.set_xticks(np.linspace(0, 12, 13))
+ax.legend(loc = 'upper left')
 
 #%%
 fig, ax = plt.subplots() 
@@ -343,17 +368,27 @@ ax.fill_between(tW[:Nd], meanDiffNoRec[:Nd] - stdDiffNoRec[:Nd],
 #ax.plot(meanTumVolRec[:, 0], pvalue, color = gray, linewidth = 6)
 
 upLim = 1.1 * max(meanDiffRec[:Nd] + stdDiffRec[:Nd]) * np.ones(Nd)
-lowLim = 1.1 * min(meanDiffRec[:Nd] - stdDiffRec[:Nd]) * np.ones(Nd)
-ax.fill_between(tW[:Nd][pvalueDiff[:Nd] <= 0.001], lowLim[pvalueDiff[:Nd] <= 0.001],
-                upLim[pvalueDiff[:Nd] <= 0.001],
+lowLim = 0.9 * min(meanDiffNoRec[:Nd] - stdDiffNoRec[:Nd]) * np.ones(Nd)
+ax.fill_between(tW[:Nd], lowLim, upLim, where = pvalueDiff[:Nd] <= 0.001,
                 color = gray, linewidth = 0, alpha = 0.5)
 
-ax.set(xlabel = 't (weeks)', ylabel = 'Diff. of normalized n° of tumor cells',
-       xlim = [0, 8.1])
-ax.set_xticks(np.linspace(0, 8, 9))
+ax.set(xlabel = 't (weeks)', ylabel = 'Diff. of n° of tumor cells',
+       xlim = [0, 12.1])
+ax.set_xticks(np.linspace(0, 12, 13))
 ax.legend(['Biochemical recurrence', 'No biochemical recurrence'],
-          loc = 'upper right')
+          loc = 'upper left')
     
+#%%
+i = 3
+ind = np.argsort(wIntTumVol[i, :])
+
+fig, ax = plt.subplots()
+for j, ii in enumerate(ind) :
+    if ii in tNoRec :
+        ax.scatter(wTumVol[i, ii], wIntTumVol[i, ii], color = green)
+    else : 
+        ax.scatter(wTumVol[i, ii], wIntTumVol[i, ii], color = red)
+ax.grid()
 
 #%%%
 T = 6
@@ -397,7 +432,7 @@ for i in range(Nd // 2) :
 
 #%%
 fig, ax = plt.subplots() 
-Nf = 10
+Nf = 180
 ax.plot(fTumVol[:Nf], meanFftTumVolRec[:Nf], color = red, linewidth = 6)
 ax.fill_between(fTumVol[:Nf], meanFftTumVolRec[:Nf] - stdFftTumVolRec[:Nf],
                 meanFftTumVolRec[:Nf] + stdFftTumVolRec[:Nf],
@@ -410,16 +445,19 @@ ax.fill_between(fTumVol[:Nf], meanFftTumVolNoRec[:Nf] - stdFftTumVolNoRec[:Nf],
 
 #ax.plot(meanTumVolRec[:, 0], pvalue, color = gray, linewidth = 6)
 
-ax.fill_between(fTumVol[:Nf], np.zeros(Nf),
-                1.1 * (pvalueFftTumVol[:Nf] <= 0.001), color = gray,
-                linewidth = 0, alpha = 0.5)
+upLim = 1.1 * max(meanFftTumVolRec[:Nf] + stdFftTumVolRec[:Nf]) * np.ones(Nf)
+lowLim = 0.9 * min(meanFftTumVolNoRec[:Nf] -
+                   stdFftTumVolNoRec[:Nf]) * np.ones(Nf)
+ax.fill_between(fDiff[:Nf], lowLim, upLim, where = pvalueFftTumVol[:Nf] <= 0.001,
+                color = gray, linewidth = 0, alpha = 0.5)
+    
 ax.set(xlabel = 'f', ylabel = 'Fft. of normalized n° of tumor cells')
 ax.legend(['Biochemical recurrence', 'No biochemical recurrence'],
           loc = 'upper right')
 
 #%%
 fig, ax = plt.subplots() 
-Nf = 25
+Nf = 18
 ax.plot(fDiff[:Nf], meanFftDiffRec[:Nf], color = red, linewidth = 6)
 ax.fill_between(fDiff[:Nf], meanFftDiffRec[:Nf] - stdFftDiffRec[:Nf],
                 meanFftDiffRec[:Nf] + stdFftDiffRec[:Nf],
@@ -432,11 +470,12 @@ ax.fill_between(fDiff[:Nf], meanFftDiffNoRec[:Nf] - stdFftDiffNoRec[:Nf],
 
 #ax.plot(meanDiffRec[:, 0], pvalue, color = gray, linewidth = 6)
 
-ax.fill_between(fDiff[:Nf], np.zeros(Nf),
-                1.1 * (pvalueFftDiff[:Nf] <= 0.001), color = gray,
-                linewidth = 0, alpha = 0.5)
-ax.set(xlabel = 'f', ylabel = 'Fft. of diff. of normalized n° of tumor cells',
-       ylim = [-0.00001, 0.001])
+upLim = 1.1 * max(meanFftDiffRec[:Nf] + stdFftDiffRec[:Nf]) * np.ones(Nf)
+lowLim = 0.9 * min(meanFftDiffNoRec[:Nf] - stdFftDiffNoRec[:Nf]) * np.ones(Nf)
+ax.fill_between(fDiff[:Nf], lowLim, upLim, where = pvalueDiff[:Nf] <= 0.001,
+                color = gray, linewidth = 0, alpha = 0.5)
+
+ax.set(xlabel = 'f', ylabel = 'Fft. of diff. of n° of tumor cells')
 ax.legend(['Biochemical recurrence', 'No biochemical recurrence'],
           loc = 'upper right')
     
@@ -497,8 +536,8 @@ clf = LogisticRegression()
 #clf = RandomForestClassifier()
 #clf = MLPClassifier(activation = 'logistic', max_iter = 1000)
 
-threshold = 0.09
-#threshold = 0.1205
+#threshold = 0.09
+threshold = 0.25
  
 for j in range(N) :
     x = tx[0].to_numpy()

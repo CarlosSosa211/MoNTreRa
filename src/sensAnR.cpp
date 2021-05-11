@@ -80,7 +80,6 @@ void evalR(const int nMethod, const int nModel, const string nFInTissueDim,
         int nrow, ncol, nlayer;
         double cellSize;
         vector<bool> inTum, inVes;
-        vector<double> inPO2;
 
         if(!nFInTissueDim.empty() && !nFInTum.empty() && !nFInVes.empty()){
             readInFiles(nFInTissueDim, nFInTum, nFInVes, nrow, ncol, nlayer,

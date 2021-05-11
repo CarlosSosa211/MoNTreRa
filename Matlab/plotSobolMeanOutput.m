@@ -3,7 +3,7 @@ global nPar nTotPar selPar
 global allTissues
 global densTissues nonDensTissues;
 global vascTissues nonVascTissues;
-global b colorbar nfig;
+global b colorbar colorbar2 nfig;
 global fileNames outputNames;
 
 tissueSet = input(['Define a set [all (1), dense (2), non-dense (3), '...
@@ -38,7 +38,7 @@ meanOutput = mean(output, 3);
 stdOutput = std(output, [], 3);
 
 cOutput = [num2cell(meanOutput), num2cell(stdOutput), b'...
-    num2cell(colorbar)];
+    num2cell(colorbar), num2cell(colorbar2)];
 cOutput = sortrows(cOutput, 2, 'descend');
 
 % nfig = nfig + 1;
@@ -46,10 +46,11 @@ cOutput = sortrows(cOutput, 2, 'descend');
 fig = figure('position', get(0, 'screensize'));
 
 hold on
-hBar = bar(cell2mat(cOutput(:, [1, 3])), 'stacked', 'faceColor',...
-    'flat');
+hBar = bar(cell2mat(cOutput(:, [1, 3])), 'stacked', 'faceColor', 'flat',...
+    'Linewidth', 2);
+% hBar = bar(cell2mat(cOutput(:, [1, 2])), 'faceColor', 'flat');
 hBar(1).CData = cell2mat(cOutput(:, 8:10));
-hBar(2).CData = cell2mat(cOutput(:, 8:10));
+hBar(2).CData = cell2mat(cOutput(:, 11:13));
 
 ax = gca;
 ax.TickLabelInterpreter = 'latex';
@@ -58,18 +59,21 @@ set(ax,'XTickLabel', cOutput(:, 7));
 ax.YGrid = 'on';
 ax.FontSize = 42;
 
-% xpos = hBar(1).XData;
-% ypos = hBar(1).YData;
-% errorbar(xpos, ypos, cell2mat(cOutput(:, 5)), 'ok', 'Linewidth', 2)
-xpos = hBar(2).XData;
-ypos = hBar(2).YData + hBar(1).YData;
+xpos = hBar(1).XData;
+ypos = hBar(1).YData;
+errorbar(xpos, ypos, cell2mat(cOutput(:, 4)), 'ok', 'Linewidth', 2)
+
+xpos = hBar(1).XData;
+ypos = hBar(1).YData + hBar(2).YData;
 errorbar(xpos, ypos, cell2mat(cOutput(:, 5)), 'ok', 'Linewidth', 2)
 hold off
 
 ylim([0, 1])
-title(['21 tissues - ', char(outputNames(selOut))], 'fontsize', 42)
+title(['76 tissues - ', char(outputNames(selOut))], 'fontsize', 42)
 legend({'Main', 'Interactions'}, 'location', 'northeast',...
     'interpreter', 'latex', 'fontsize', 42)
+% legend({'SI', 'TSI'}, 'location', 'northeast',...
+%     'interpreter', 'latex', 'fontsize', 42)
 xtickangle(45)
 
 outerpos = ax.OuterPosition;

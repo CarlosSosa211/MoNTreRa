@@ -27,7 +27,7 @@ HEADERS += \
 
 QT += \
     charts \
-    #datavisualization \
+    datavisualization \
     widgets
 
 

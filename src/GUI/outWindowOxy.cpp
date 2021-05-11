@@ -611,17 +611,38 @@ void OutWindowOxy::play(){
 
 void OutWindowOxy::saveAllMaps(){
     QString fileName;
-    QDir().mkdir("../Figures/pO2ms");
-    const int K(m_pO2.size() * m_simOxyTimeStep);
+    switch (m_selMap->currentIndex()){
+    case 0:{
+        QDir().mkdir("../Figures/pO2ms");
+        const int K(m_pO2.size() * m_simOxyTimeStep);
 
-    for(int k(0); k < K; k += m_simOxyTimeStep){
-        drawMap(m_selMap->currentIndex(), k);
-        emit updateSlider(k);
-        fileName = QString::number(k);
-        fileName = fileName.rightJustified(5, '0');
-        fileName = "../Figures/pO2ms/" + fileName + ".png";
-        m_map->grab().save(fileName);
-        qApp->processEvents();
+        for(int k(0); k < K; k += m_simOxyTimeStep){
+            drawMap(m_selMap->currentIndex(), k);
+            emit updateSlider(k);
+            fileName = QString::number(k);
+            fileName = fileName.rightJustified(5, '0');
+            fileName = "../Figures/pO2ms/" + fileName + ".png";
+            m_pixPO2 ->save(fileName);
+            qApp->processEvents();
+        }
+        break;
+    }
+
+    case 1:{
+        QDir().mkdir("../Figures/vegfms");
+        const int K(m_pO2.size() * m_simOxyTimeStep);
+
+        for(int k(0); k < K; k += m_simOxyTimeStep){
+            drawMap(m_selMap->currentIndex(), k);
+            emit updateSlider(k);
+            fileName = QString::number(k);
+            fileName = fileName.rightJustified(5, '0');
+            fileName = "../Figures/vegfms/" + fileName + ".png";
+            m_pixVegf ->save(fileName);
+            qApp->processEvents();
+        }
+        break;
+    }
     }
 }
 
